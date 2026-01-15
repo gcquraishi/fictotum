@@ -42,8 +42,12 @@ class HistoricalFigure(BaseModel):
 
 
 class MediaWork(BaseModel):
-    """A piece of media (book, game, film, TV series)."""
+    """
+    A piece of media (book, game, film, TV series).
+    Uses Wikidata Q-ID for canonical entity resolution.
+    """
     media_id: str = Field(description="Unique identifier for this media work")
+    wikidata_id: str = Field(description="Wikidata Q-ID for entity resolution (e.g., 'Q165399' for HBO Rome)")
     title: str = Field(description="Title of the work")
     media_type: MediaType = Field(description="Type of media")
     release_year: Optional[int] = Field(default=None, description="Year of release")
@@ -76,9 +80,13 @@ SCHEMA_CONSTRAINTS = """
 CREATE CONSTRAINT figure_unique IF NOT EXISTS
 FOR (f:HistoricalFigure) REQUIRE f.canonical_id IS UNIQUE;
 
-// Ensure unique media works
+// Ensure unique media works by internal ID
 CREATE CONSTRAINT media_unique IF NOT EXISTS
 FOR (m:MediaWork) REQUIRE m.media_id IS UNIQUE;
+
+// Wikidata Entity Resolution: Ensure unique media works by Wikidata Q-ID
+CREATE CONSTRAINT media_wikidata_unique IF NOT EXISTS
+FOR (m:MediaWork) REQUIRE m.wikidata_id IS UNIQUE;
 
 // Index for efficient lookups
 CREATE INDEX figure_name_idx IF NOT EXISTS FOR (f:HistoricalFigure) ON (f.name);
