@@ -1,0 +1,296 @@
+[
+  {
+    "media_work": {
+      "media_id": "dying_light_in_corduba",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:A_DYING_LIGHT_IN_CORDUBA",
+      "title": "A Dying Light in Corduba",
+      "media_type": "Book",
+      "release_year": 1996,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Investigates a conspiracy in Roman Spain involving the olive oil trade.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "three_hands_in_the_fountain",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:THREE_HANDS_IN_THE_FOUNTAIN",
+      "title": "Three Hands in the Fountain",
+      "media_type": "Book",
+      "release_year": 1997,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Hunts a serial killer in Rome who severs the hands of his victims.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "two_for_the_lions",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:TWO_FOR_THE_LIONS",
+      "title": "Two for the Lions",
+      "media_type": "Book",
+      "release_year": 1998,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "vespasian",
+        "wikidata_id": "Q1419",
+        "name": "Vespasian",
+        "is_fictional": false,
+        "birth_year": 9,
+        "death_year": 79,
+        "title": "Emperor",
+        "era": "Flavian Dynasty"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Travels to North Africa to solve the murder of a gladiator.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "vespasian",
+        "sentiment": "Neutral",
+        "role_description": "Orders the investigation to maintain the integrity of the games.",
+        "is_protagonist": false
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "one_virgin_too_many",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:ONE_VIRGIN_TOO_MANY",
+      "title": "One Virgin Too Many",
+      "media_type": "Book",
+      "release_year": 1999,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Investigates religious corruption involving the Vestal Virgins.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "ode_to_a_banker",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:ODE_TO_A_BANKER",
+      "title": "Ode to a Banker",
+      "media_type": "Book",
+      "release_year": 2000,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Investigates the murder of a Greek publisher and banker.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "a_body_in_the_bath_house",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:A_BODY_IN_THE_BATH_HOUSE",
+      "title": "A Body in the Bath House",
+      "media_type": "Book",
+      "release_year": 2001,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Sent to Britannia to investigate corruption in the building of a new palace.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "the_jupiter_myth",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:THE_JUPITER_MYTH",
+      "title": "The Jupiter Myth",
+      "media_type": "Book",
+      "release_year": 2002,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Still in Britannia, dealing with local gangsters and a murder in Londinium.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "the_accusers",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:THE_ACCUSERS",
+      "title": "The Accusers",
+      "media_type": "Book",
+      "release_year": 2003,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Defends a client in a complex legal case involving inheritance and murder.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "scandal_takes_a_holiday",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:SCANDAL_TAKES_A_HOLIDAY",
+      "title": "Scandal Takes a Holiday",
+      "media_type": "Book",
+      "release_year": 2004,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Searches for a missing gossip columnist in the port of Ostia.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "see_delphi_and_die",
+      "wikidata_id": "PROV:BOOK:LINDSEY_DAVIS:SEE_DELPHI_AND_DIE",
+      "title": "See Delphi and Die",
+      "media_type": "Book",
+      "release_year": 2005,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Investigates murders of tourists at famous Greek sites.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "saturnalia_book",
+      "wikidata_id": "Q7667606",
+      "title": "Saturnalia",
+      "media_type": "Book",
+      "release_year": 2007,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Hunts for an escaped prisoner during the chaotic festival of Saturnalia.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "alexandria_book",
+      "wikidata_id": "Q4720931",
+      "title": "Alexandria",
+      "media_type": "Book",
+      "release_year": 2009,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Investigates the death of a librarian in the Great Library of Alexandria.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "nemesis_book",
+      "wikidata_id": "Q16267606",
+      "title": "Nemesis",
+      "media_type": "Book",
+      "release_year": 2010,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "domitian",
+        "wikidata_id": "Q1423",
+        "name": "Domitian",
+        "is_fictional": false,
+        "birth_year": 51,
+        "death_year": 96,
+        "title": "Emperor",
+        "era": "Flavian Dynasty"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Faces his final confrontation with the sinister machinations of the Emperor's court.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "domitian",
+        "sentiment": "Villainous",
+        "role_description": "The looming, paranoid tyrant whose regime threatens Falco and his family.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]

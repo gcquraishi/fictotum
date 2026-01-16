@@ -1,0 +1,143 @@
+[
+  {
+    "media_work": {
+      "media_id": "life_of_brian_film",
+      "wikidata_id": "Q24953",
+      "title": "Monty Python's Life of Brian",
+      "media_type": "Film",
+      "release_year": 1979,
+      "creator": "Monty Python",
+      "creator_wikidata_id": "Q17492"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "brian_of_nazareth",
+        "wikidata_id": "Q24953_CHAR",
+        "name": "Brian of Nazareth",
+        "is_fictional": true,
+        "birth_year": -4,
+        "death_year": 30,
+        "title": "Reluctant Messiah",
+        "era": "Early Church"
+      },
+      {
+        "canonical_id": "pontius_pilate",
+        "wikidata_id": "Q165246",
+        "name": "Pontius Pilate",
+        "is_fictional": false,
+        "birth_year": null,
+        "death_year": 39,
+        "title": "Prefect of Judaea",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "brian_of_nazareth",
+        "sentiment": "Complex",
+        "role_description": "A man born in the stable next door to Jesus who is mistaken for the Messiah.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Neutral",
+        "role_description": "Seen from a distance giving the Sermon on the Mount, which is misheard by the crowd.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "pontius_pilate",
+        "sentiment": "Villainous",
+        "role_description": "A buffoonish bureaucrat with a speech impediment who is mocked by the Jerusalem crowd.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Satirical portrayal contrasts with the serious/complex depictions in the Gospels."
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "ben_hur_1959",
+      "wikidata_id": "Q200226",
+      "title": "Ben-Hur",
+      "media_type": "Film",
+      "release_year": 1959,
+      "creator": "William Wyler",
+      "creator_wikidata_id": "Q51488"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "judah_ben_hur",
+        "wikidata_id": "Q19572313",
+        "name": "Judah Ben-Hur",
+        "is_fictional": true,
+        "birth_year": null,
+        "death_year": null,
+        "title": "Prince of Jerusalem",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "judah_ben_hur",
+        "sentiment": "Heroic",
+        "role_description": "A Jewish prince enslaved by Rome who seeks revenge but finds redemption through Jesus.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Heroic",
+        "role_description": "A silent, divine presence whose face is never shown; he gives water to Judah.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "pontius_pilate",
+        "sentiment": "Complex",
+        "role_description": "A pragmatic governor who oversees the chariot race and respects Judah's skill.",
+        "is_protagonist": false
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "risen_2016",
+      "wikidata_id": "Q18202491",
+      "title": "Risen",
+      "media_type": "Film",
+      "release_year": 2016,
+      "creator": "Kevin Reynolds",
+      "creator_wikidata_id": "Q964253"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "clavius_aquila",
+        "wikidata_id": "Q18202491_CHAR",
+        "name": "Clavius Aquila",
+        "is_fictional": true,
+        "birth_year": null,
+        "death_year": null,
+        "title": "Roman Tribune",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "clavius_aquila",
+        "sentiment": "Complex",
+        "role_description": "A cynical Roman Tribune tasked by Pilate with finding Jesus' body to disprove the resurrection.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "pontius_pilate",
+        "sentiment": "Villainous",
+        "role_description": "A stressed and politically pressured governor who demands the body be found to maintain order.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Heroic",
+        "role_description": "The resurrected 'Yeshua' who welcomes Clavius without judgment.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]

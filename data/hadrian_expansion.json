@@ -1,0 +1,65 @@
+[
+  {
+    "media_work": {
+      "media_id": "memoirs_of_hadrian_book",
+      "wikidata_id": "Q670668",
+      "title": "Memoirs of Hadrian",
+      "media_type": "Book",
+      "release_year": 1951,
+      "creator": "Marguerite Yourcenar",
+      "creator_wikidata_id": "Q162388"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "hadrian",
+        "wikidata_id": "Q1426",
+        "name": "Hadrian",
+        "is_fictional": false,
+        "birth_year": 76,
+        "death_year": 138,
+        "title": "Emperor",
+        "era": "Five Good Emperors"
+      },
+      {
+        "canonical_id": "antinous",
+        "wikidata_id": "Q171295",
+        "name": "Antinous",
+        "is_fictional": false,
+        "birth_year": 111,
+        "death_year": 130,
+        "title": "Favorite",
+        "era": "Five Good Emperors"
+      },
+      {
+        "canonical_id": "marcus_aurelius",
+        "wikidata_id": "Q1430",
+        "name": "Marcus Aurelius",
+        "is_fictional": false,
+        "birth_year": 121,
+        "death_year": 180,
+        "title": "Successor",
+        "era": "Five Good Emperors"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "hadrian",
+        "sentiment": "Heroic",
+        "role_description": "An enlightened, philosophical ruler who values humanitas and peace, reflecting deeply on his mortality and love.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "antinous",
+        "sentiment": "Complex",
+        "role_description": "A beautiful, melancholic youth whose ritual suicide is an act of devoted sacrifice to extend Hadrian's life.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "marcus_aurelius",
+        "sentiment": "Heroic",
+        "role_description": "The 'Verissimus' (most truthful one) to whom the memoir is addressed; the hope for the future.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]

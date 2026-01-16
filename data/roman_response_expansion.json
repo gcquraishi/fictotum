@@ -1,0 +1,134 @@
+[
+  {
+    "media_work": {
+      "media_id": "the_robe_1953",
+      "wikidata_id": "Q1198990",
+      "title": "The Robe",
+      "media_type": "Film",
+      "release_year": 1953,
+      "creator": "Henry Koster",
+      "creator_wikidata_id": "Q57519"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "marcellus_gallio",
+        "wikidata_id": "Q3845600",
+        "name": "Marcellus Gallio",
+        "is_fictional": true,
+        "birth_year": null,
+        "death_year": 38,
+        "title": "Roman Tribune",
+        "era": "Early Church"
+      },
+      {
+        "canonical_id": "caligula",
+        "wikidata_id": "Q1409",
+        "name": "Caligula",
+        "is_fictional": false,
+        "birth_year": 12,
+        "death_year": 41,
+        "title": "Emperor",
+        "era": "Julio-Claudian"
+      },
+      {
+        "canonical_id": "peter_apostle",
+        "wikidata_id": "Q33923",
+        "name": "Peter the Apostle",
+        "is_fictional": false,
+        "birth_year": 1,
+        "death_year": 67,
+        "title": "Apostle",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "marcellus_gallio",
+        "sentiment": "Heroic",
+        "role_description": "A Roman tribune who carries out the crucifixion of Jesus, wins his robe in a game of dice, and eventually converts to Christianity.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "caligula",
+        "sentiment": "Villainous",
+        "role_description": "A jealous and paranoid emperor who perceives Marcellus's conversion as treason.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "peter_apostle",
+        "sentiment": "Heroic",
+        "role_description": "The leader of the early Christians who guides Marcellus toward redemption.",
+        "is_protagonist": false
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "quo_vadis_1951",
+      "wikidata_id": "Q607690",
+      "title": "Quo Vadis",
+      "media_type": "Film",
+      "release_year": 1951,
+      "creator": "Mervyn LeRoy",
+      "creator_wikidata_id": "Q103788"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "nero",
+        "wikidata_id": "Q1413",
+        "name": "Nero",
+        "is_fictional": false,
+        "birth_year": 37,
+        "death_year": 68,
+        "title": "Emperor",
+        "era": "Julio-Claudian"
+      },
+      {
+        "canonical_id": "petronius_arbiter",
+        "wikidata_id": "Q47180",
+        "name": "Petronius",
+        "is_fictional": false,
+        "birth_year": 27,
+        "death_year": 66,
+        "title": "Courtier / Author",
+        "era": "Julio-Claudian"
+      },
+      {
+        "canonical_id": "paul_apostle",
+        "wikidata_id": "Q9200",
+        "name": "Paul the Apostle",
+        "is_fictional": false,
+        "birth_year": 5,
+        "death_year": 67,
+        "title": "Apostle",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "nero",
+        "sentiment": "Villainous",
+        "role_description": "A delusional and narcissistic emperor who burns Rome and blames the Christians.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "petronius_arbiter",
+        "sentiment": "Complex",
+        "role_description": "A witty and cynical courtier who mocks Nero's artistic pretensions and eventually commits suicide to escape him.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "paul_apostle",
+        "sentiment": "Heroic",
+        "role_description": "A powerful orator and missionary who provides spiritual strength to the persecuted Christians.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "peter_apostle",
+        "sentiment": "Heroic",
+        "role_description": "The foundational leader of the church in Rome who faces martyrdom with dignity.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]

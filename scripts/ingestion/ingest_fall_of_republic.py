@@ -19,9 +19,13 @@ import os
 import sys
 import traceback
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable, AuthError
+
+# Add parent directory to path for schema import
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from schema import (
     HistoricalFigure, MediaWork, Portrayal,
     MediaType, Sentiment, SCHEMA_CONSTRAINTS

@@ -1,0 +1,13 @@
+# Strategic Decisions Log
+- **2026-01-14:** Chose Neo4j AuraDB Free tier. Limits: 200k nodes.
+- **2026-01-14:** Established `:HistoricalFigure` and `:MediaWork` schema.
+- **2026-01-15:** Pivoted to Sonnet 4.5 for ingestion to maximize token longevity (5x cheaper than Opus).
+- **2026-01-15:** Integrated Neo4j MCP for direct database visibility.
+- **2026-01-15:** Adopted Wikidata Q-IDs as canonical identifiers for `:MediaWork` entity resolution.
+- **2026-01-15:** Initialized Unified Ingestion Framework to consolidate era-specific scripts into a modular, JSON-driven system.
+- **2026-01-15:** Retroactively applied is_fictional: true flag to existing narrative anchors (vorenus, pullo, bayek, gordianus) to distinguish dramatic inventions from historical figures.
+- **2026-01-15:** Initialized GEMINI.md to codify terminal-based Architect-to-Executor protocols.- **2026-01-15:** Initialized GEMINI.md to codify co-CEO persona and non-sycophantic technical lead protocols.
+- **2026-01-15:** Expanded dataset to include the Flavian Dynasty via the 'Didius Falco' series (7 works).
+- **2026-01-15:** Expanded research into Early Church era, ingesting canonical and Gnostic gospels with associated characterization conflicts.
+- **2026-01-16:** Ingested cinematic Biblical portrayals (Life of Brian, Ben-Hur, Risen, Passion of the Christ) and established the Pilate-Jesus connection.
+- **2026-01-16:** Ingested Roman response media (The Robe, Quo Vadis) and established connections between Julio-Claudian emperors and early Church leaders.

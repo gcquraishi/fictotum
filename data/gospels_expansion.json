@@ -1,0 +1,132 @@
+[
+  {
+    "media_work": {
+      "media_id": "gospel_of_john_canonical",
+      "wikidata_id": "Q36766",
+      "title": "Gospel of John",
+      "media_type": "Book",
+      "release_year": 90,
+      "creator": "John the Apostle (trad.)",
+      "creator_wikidata_id": "Q44015"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "jesus_of_nazareth",
+        "wikidata_id": "Q302",
+        "name": "Jesus of Nazareth",
+        "is_fictional": false,
+        "birth_year": -4,
+        "death_year": 30,
+        "title": "Religious Leader",
+        "era": "Early Church"
+      },
+      {
+        "canonical_id": "mary_magdalene",
+        "wikidata_id": "Q63070",
+        "name": "Mary Magdalene",
+        "is_fictional": false,
+        "birth_year": null,
+        "death_year": null,
+        "title": "Disciple",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Heroic",
+        "role_description": "The divine 'Word' (Logos) made flesh; emphasizes high divinity and the 'I Am' statements.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "mary_magdalene",
+        "sentiment": "Heroic",
+        "role_description": "A loyal follower and the first witness to the resurrection.",
+        "is_protagonist": false
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "gospel_of_thomas_gnostic",
+      "wikidata_id": "Q217298",
+      "title": "Gospel of Thomas",
+      "media_type": "Book",
+      "release_year": 140,
+      "creator": "Thomas the Apostle (attr.)",
+      "creator_wikidata_id": "Q43067"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Complex",
+        "role_description": "A wisdom teacher of 'secret sayings' who emphasizes internal gnosis rather than narrative salvation.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "gospel_of_mary_gnostic",
+      "wikidata_id": "Q604981",
+      "title": "Gospel of Mary",
+      "media_type": "Book",
+      "release_year": 150,
+      "creator": "Unknown",
+      "creator_wikidata_id": null
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "mary_magdalene",
+        "sentiment": "Heroic",
+        "role_description": "The primary visionary disciple who receives special revelation from Jesus, challenging Peter's authority.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "peter_apostle",
+        "sentiment": "Villainous",
+        "role_description": "An antagonistic figure who questions Mary's authority and Jesus' preference for her.",
+        "is_protagonist": false
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "gospel_of_judas_gnostic",
+      "wikidata_id": "Q208363",
+      "title": "Gospel of Judas",
+      "media_type": "Book",
+      "release_year": 150,
+      "creator": "Unknown",
+      "creator_wikidata_id": null
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "judas_iscariot",
+        "wikidata_id": "Q150482",
+        "name": "Judas Iscariot",
+        "is_fictional": false,
+        "birth_year": null,
+        "death_year": 30,
+        "title": "Apostle",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Heroic",
+        "role_description": "A divine being from a higher realm who laughs at the other disciples' ignorance.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "judas_iscariot",
+        "sentiment": "Heroic",
+        "role_description": "The only disciple who truly understands Jesus; his 'betrayal' is a direct order to liberate Jesus' spirit.",
+        "is_protagonist": true
+      }
+    ]
+  }
+]

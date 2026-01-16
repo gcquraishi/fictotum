@@ -1,0 +1,223 @@
+[
+  {
+    "media_work": {
+      "media_id": "the_silver_pigs_book",
+      "wikidata_id": "Q1212490",
+      "title": "The Silver Pigs",
+      "media_type": "Book",
+      "release_year": 1989,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "vespasian",
+        "wikidata_id": "Q1419",
+        "name": "Vespasian",
+        "is_fictional": false,
+        "birth_year": 9,
+        "death_year": 79,
+        "title": "Emperor",
+        "era": "Flavian Dynasty"
+      },
+      {
+        "canonical_id": "titus",
+        "wikidata_id": "Q1418",
+        "name": "Titus",
+        "is_fictional": false,
+        "birth_year": 39,
+        "death_year": 81,
+        "title": "Emperor",
+        "era": "Flavian Dynasty"
+      },
+      {
+        "canonical_id": "domitian",
+        "wikidata_id": "Q1423",
+        "name": "Domitian",
+        "is_fictional": false,
+        "birth_year": 51,
+        "death_year": 96,
+        "title": "Emperor",
+        "era": "Flavian Dynasty"
+      },
+      {
+        "canonical_id": "marcus_didius_falco",
+        "wikidata_id": "Q933355",
+        "name": "Marcus Didius Falco",
+        "is_fictional": true,
+        "birth_year": 41,
+        "death_year": null,
+        "title": "Informer",
+        "era": "Flavian Dynasty"
+      },
+      {
+        "canonical_id": "helena_justina",
+        "wikidata_id": "Q3784518",
+        "name": "Helena Justina",
+        "is_fictional": true,
+        "birth_year": null,
+        "death_year": null,
+        "title": "Patrician",
+        "era": "Flavian Dynasty"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "vespasian",
+        "sentiment": "Heroic",
+        "role_description": "A pragmatic, down-to-earth emperor who hires Falco; portrayed as a 'bean-counter' restoring Rome's finances.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "titus",
+        "sentiment": "Heroic",
+        "role_description": "A competent and likable partner to his father, often smoothing over Vespasian's rough edges.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "domitian",
+        "sentiment": "Villainous",
+        "role_description": "A lurking, dangerous presence; paranoid and resentful of his brother and father.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "A cynical, hard-boiled private informer with a heart of gold.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "helena_justina",
+        "sentiment": "Heroic",
+        "role_description": "An intelligent, sharp-tongued senator's daughter who becomes Falco's partner.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "shadows_in_bronze_book",
+      "wikidata_id": "Q3858900",
+      "title": "Shadows in Bronze",
+      "media_type": "Book",
+      "release_year": 1990,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "vespasian",
+        "sentiment": "Complex",
+        "role_description": "Shown dealing with conspiracies against his life with a mix of humor and ruthlessness.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Tasks himself with rooting out the conspirators.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "venus_in_copper_book",
+      "wikidata_id": "Q3824690",
+      "title": "Venus in Copper",
+      "media_type": "Book",
+      "release_year": 1991,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Hired to protect a wealthy freedman from gold-diggers.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "the_iron_hand_of_mars_book",
+      "wikidata_id": "Q3824696",
+      "title": "The Iron Hand of Mars",
+      "media_type": "Book",
+      "release_year": 1992,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "vespasian",
+        "sentiment": "Neutral",
+        "role_description": "Sends Falco to Germania to deliver a gift to the Legio XIV.",
+        "is_protagonist": false
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "poseidons_gold_book",
+      "wikidata_id": "Q3824702",
+      "title": "Poseidon's Gold",
+      "media_type": "Book",
+      "release_year": 1993,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Clears his family name of a crime involving his late brother.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "last_act_in_palmyra_book",
+      "wikidata_id": "Q3824708",
+      "title": "Last Act in Palmyra",
+      "media_type": "Book",
+      "release_year": 1994,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "marcus_didius_falco",
+        "sentiment": "Heroic",
+        "role_description": "Travels to the East as a playwright.",
+        "is_protagonist": true
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "time_to_depart_book",
+      "wikidata_id": "Q3824714",
+      "title": "Time to Depart",
+      "media_type": "Book",
+      "release_year": 1995,
+      "creator": "Lindsey Davis",
+      "creator_wikidata_id": "Q437516"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "vespasian",
+        "sentiment": "Complex",
+        "role_description": "Exiles a criminal who then returns, causing trouble for Falco.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]

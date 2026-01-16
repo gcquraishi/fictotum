@@ -7,8 +7,12 @@ import os
 import json
 import sys
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
+
+# Add parent directory to path for schema import
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from schema import SCHEMA_CONSTRAINTS
 
 class UnifiedChronosIngestor:

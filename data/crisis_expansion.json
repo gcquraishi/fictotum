@@ -1,0 +1,49 @@
+[
+  {
+    "media_work": {
+      "media_id": "queen_of_the_east_book",
+      "wikidata_id": "Q_QUEEN_EAST_BOOK",
+      "title": "Queen of the East",
+      "media_type": "Book",
+      "release_year": 1956,
+      "creator": "Alexander Baron",
+      "creator_wikidata_id": "Q1649666"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "aurelian",
+        "wikidata_id": "Q46709",
+        "name": "Aurelian",
+        "is_fictional": false,
+        "birth_year": 214,
+        "death_year": 275,
+        "title": "Emperor",
+        "era": "Crisis of the Third Century"
+      },
+      {
+        "canonical_id": "zenobia",
+        "wikidata_id": "Q185673",
+        "name": "Zenobia",
+        "is_fictional": false,
+        "birth_year": 240,
+        "death_year": 274,
+        "title": "Queen of Palmyra",
+        "era": "Crisis of the Third Century"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "zenobia",
+        "sentiment": "Heroic",
+        "role_description": "A brilliant and charismatic queen who challenges Rome's dominance.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "aurelian",
+        "sentiment": "Complex",
+        "role_description": "A stern, disciplined soldier-emperor who respects Zenobia but is bound by duty to restore the empire.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]

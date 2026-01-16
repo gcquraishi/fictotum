@@ -1,0 +1,39 @@
+[
+  {
+    "media_work": {
+      "media_id": "gospel_of_matthew_canonical",
+      "wikidata_id": "Q392302",
+      "title": "Gospel of Matthew",
+      "media_type": "Book",
+      "release_year": 80,
+      "creator": "Matthew the Apostle (trad.)",
+      "creator_wikidata_id": "Q43600"
+    },
+    "historical_figures": [
+      {
+        "canonical_id": "pontius_pilate",
+        "wikidata_id": "Q165246",
+        "name": "Pontius Pilate",
+        "is_fictional": false,
+        "birth_year": null,
+        "death_year": 39,
+        "title": "Prefect of Judaea",
+        "era": "Early Church"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "pontius_pilate",
+        "sentiment": "Complex",
+        "role_description": "The Roman governor who presides over the trial of Jesus; famously washes his hands of the decision.",
+        "is_protagonist": false
+      },
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Heroic",
+        "role_description": "The accused King of the Jews who remains silent before Pilate.",
+        "is_protagonist": true
+      }
+    ]
+  }
+]

@@ -10,8 +10,13 @@ Implements Master Entity Resolution and Consensus Engine for conflict detection.
 """
 
 import os
+import sys
+from pathlib import Path
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
+
+# Add parent directory to path for schema import
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from schema import (
     HistoricalFigure, MediaWork, Portrayal,
     MediaType, Sentiment, SCHEMA_CONSTRAINTS

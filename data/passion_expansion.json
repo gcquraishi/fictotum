@@ -1,0 +1,36 @@
+[
+  {
+    "media_work": {
+      "media_id": "passion_of_the_christ_film",
+      "wikidata_id": "Q356690",
+      "title": "The Passion of the Christ",
+      "media_type": "Film",
+      "release_year": 2004,
+      "creator": "Mel Gibson",
+      "creator_wikidata_id": "Q42229"
+    },
+    "historical_figures": [],
+    "portrayals": [
+      {
+        "figure_id": "jesus_of_nazareth",
+        "sentiment": "Heroic",
+        "role_description": "A visceral and tragic portrayal focusing on the extreme physical suffering and sacrifice of the crucifixion.",
+        "is_protagonist": true
+      },
+      {
+        "figure_id": "pontius_pilate",
+        "sentiment": "Complex",
+        "role_description": "A reluctant governor who is physically and politically distressed by the trial, seeking multiple ways to release Jesus.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Much more sympathetic and troubled than the satirical version in Life of Brian or the pragmatic version in Ben-Hur."
+      },
+      {
+        "figure_id": "mary_magdalene",
+        "sentiment": "Heroic",
+        "role_description": "A devoted follower portrayed with deep maternal and spiritual grief.",
+        "is_protagonist": false
+      }
+    ]
+  }
+]
