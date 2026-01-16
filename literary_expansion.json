@@ -1,0 +1,515 @@
+[
+    {
+      "media_work": {
+        "media_id": "the_october_horse_book",
+        "wikidata_id": "Q16514148",
+        "title": "The October Horse",
+        "media_type": "Book",
+        "release_year": 2002,
+        "creator": "Colleen McCullough",
+        "creator_wikidata_id": "Q228801"
+      },
+      "portrayals": [
+        {
+          "figure_id": "julius_caesar",
+          "sentiment": "Heroic",
+          "role_description": "A rational superman besieged by lesser men, conscious of his superiority but determined not to be worshipped.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "mark_antony",
+          "sentiment": "Villainous",
+          "role_description": "Feral, avaricious, and impulsive; physically imposing but politically crude.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "octavian_augustus",
+          "sentiment": "Complex",
+          "role_description": "Possesses a reptilian mind characterized by cold determination and a complete lack of clemency.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cleopatra",
+          "sentiment": "Complex",
+          "role_description": "Caesar's intellectual equal, an enigmatic and subtle ruler rather than merely a seductress.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "brutus",
+          "sentiment": "Neutral",
+          "role_description": "A sad victim of his mother's manipulation, forced into the conspiracy.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cassius",
+          "sentiment": "Villainous",
+          "role_description": "Driven purely by jealousy of Caesar.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "the_ides_of_march_book",
+        "wikidata_id": "Q1148938",
+        "title": "The Ides of March",
+        "media_type": "Book",
+        "release_year": 1948,
+        "creator": "Thornton Wilder",
+        "creator_wikidata_id": "Q155087"
+      },
+      "portrayals": [
+        {
+          "figure_id": "julius_caesar",
+          "sentiment": "Complex",
+          "role_description": "An existentialist administrator burdened by the freedom to choose and the isolation of absolute power.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "clodia_metelli",
+          "sentiment": "Villainous",
+          "role_description": "A ruthless political force and ostentatiously abandoned hussy representing chaotic freedom.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "catullus",
+          "sentiment": "Complex",
+          "role_description": "A tragic poet whose work baffles Caesar, serving as a symbol of the ungovernable passions.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cicero",
+          "sentiment": "Villainous",
+          "role_description": "A misogynistic bigot and source of grumbling discontents.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "catilinas_riddle_book",
+        "wikidata_id": "Q1653894",
+        "title": "Catilina's Riddle",
+        "media_type": "Book",
+        "release_year": 1993,
+        "creator": "Steven Saylor",
+        "creator_wikidata_id": "Q918553"
+      },
+      "portrayals": [
+        {
+          "figure_id": "catiline",
+          "sentiment": "Complex",
+          "role_description": "A charismatic populist whose goals are presented sympathetically against the official history.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cicero",
+          "sentiment": "Complex",
+          "role_description": "A wily and cautious politician who uses fear-mongering to secure his position.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "shadow_of_rome_game",
+        "wikidata_id": "Q2604609",
+        "title": "Shadow of Rome",
+        "media_type": "Game",
+        "release_year": 2005,
+        "creator": "Motohide Eshiro",
+        "creator_wikidata_id": "Q62573318"
+      },
+      "portrayals": [
+        {
+          "figure_id": "agrippa",
+          "sentiment": "Heroic",
+          "role_description": "A gladiator who fights in the arena to save his father, prioritizing physical might over statecraft.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "octavian_augustus",
+          "sentiment": "Heroic",
+          "role_description": "A stealth operative who investigates the murder mystery using gadgets and intellect.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "cicero",
+          "sentiment": "Heroic",
+          "role_description": "A benevolent mentor who is stabbed in the Senate and reveals the conspiracy with his dying breath.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "decimus_brutus",
+          "sentiment": "Villainous",
+          "role_description": "A psychopath adorned in lion skins who murders Agrippa's mother.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "mark_antony",
+          "sentiment": "Villainous",
+          "role_description": "The mastermind villain who orchestrates the gladiatorial games to eliminate rivals.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "expeditions_rome_game",
+        "wikidata_id": "Q106606627",
+        "title": "Expeditions: Rome",
+        "media_type": "Game",
+        "release_year": 2022,
+        "creator": "Logic Artists",
+        "creator_wikidata_id": "Q29578855"
+      },
+      "portrayals": [
+        {
+          "figure_id": "lucullus",
+          "sentiment": "Heroic",
+          "role_description": "An honorable and virtuous man of principle who serves as a mentor.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "julius_caesar",
+          "sentiment": "Neutral",
+          "role_description": "A young man whose historical destiny is preempted by the player's actions.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cato_the_younger",
+          "sentiment": "Complex",
+          "role_description": "A moralist philosopher who engages in Senate debates.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cicero",
+          "sentiment": "Neutral",
+          "role_description": "An intellectual statesman who trades legal arguments in the Senate.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "falling_sky_game",
+        "wikidata_id": "Q24037581",
+        "title": "Falling Sky",
+        "media_type": "Game",
+        "release_year": 2016,
+        "creator": "Volko Ruhnke",
+        "creator_wikidata_id": "N/A"
+      },
+      "portrayals": [
+        {
+          "figure_id": "julius_caesar",
+          "sentiment": "Neutral",
+          "role_description": "A force multiplier whose presence allows legions to inflict double casualties.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "vercingetorix",
+          "sentiment": "Neutral",
+          "role_description": "An insurgent leader defined by his ability to devastate the land.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "ambiorix",
+          "sentiment": "Neutral",
+          "role_description": "Leader of the Belgae defined by ferocity and rampage mechanics.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "domina_tv",
+        "wikidata_id": "Q106439129",
+        "title": "Domina",
+        "media_type": "TV_SERIES",
+        "release_year": 2021,
+        "creator": "Simon Burke",
+        "creator_wikidata_id": "Q7518377"
+      },
+      "portrayals": [
+        {
+          "figure_id": "livia_drusilla",
+          "sentiment": "Heroic",
+          "role_description": "A proto-feminist strategist driven by a sacred oath to restore the Republic through soft power.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "augustus",
+          "sentiment": "Complex",
+          "role_description": "Initially affectionate but progressively hardens into an autocrat.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "agrippa",
+          "sentiment": "Heroic",
+          "role_description": "A professional right-hand man who maintains a quasi-romantic dynamic with Livia.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "tiberius",
+          "sentiment": "Villainous",
+          "role_description": "An unstable and terrible figure, adhering to the dark rumors of his youth.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "scribonia",
+          "sentiment": "Villainous",
+          "role_description": "A bitter ex-wife and rival.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "imperium_augustus_film",
+        "wikidata_id": "Q459427",
+        "title": "Imperium: Augustus",
+        "media_type": "Film",
+        "release_year": 2003,
+        "creator": "Roger Young",
+        "creator_wikidata_id": "Q2036181"
+      },
+      "portrayals": [
+        {
+          "figure_id": "augustus",
+          "sentiment": "Heroic",
+          "role_description": "A weary statesman burdened by duty, recounting his life to his daughter.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "julia_the_elder",
+          "sentiment": "Complex",
+          "role_description": "A tragic victim of dynastic politics.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "livia_drusilla",
+          "sentiment": "Villainous",
+          "role_description": "A controlling, wicked stepmother archetype.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "the_caesars_tv",
+        "wikidata_id": "Q7720918",
+        "title": "The Caesars",
+        "media_type": "TV_SERIES",
+        "release_year": 1968,
+        "creator": "Philip Mackie",
+        "creator_wikidata_id": "Q4730213"
+      },
+      "portrayals": [
+        {
+          "figure_id": "augustus",
+          "sentiment": "Complex",
+          "role_description": "Old, tired, and unwilling, yet subtly deadly enough to order the death of his grandson.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "livia_drusilla",
+          "sentiment": "Villainous",
+          "role_description": "A manipulative power-broker focused entirely on Tiberius's succession.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "tiberius",
+          "sentiment": "Complex",
+          "role_description": "A sardonic, taciturn enigma who warns against the hazards of absolute rule.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "sejanus",
+          "sentiment": "Villainous",
+          "role_description": "An ambitious usurper.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "caligula",
+          "sentiment": "Villainous",
+          "role_description": "A despotic tyrant who claims to have invented uncertainty.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "claudius",
+          "sentiment": "Complex",
+          "role_description": "Intelligent but survives by feigning idiocy.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "quo_vadis_film",
+        "wikidata_id": "Q938137",
+        "title": "Quo Vadis",
+        "media_type": "Film",
+        "release_year": 1951,
+        "creator": "Mervyn LeRoy",
+        "creator_wikidata_id": "Q103788"
+      },
+      "portrayals": [
+        {
+          "figure_id": "nero",
+          "sentiment": "Villainous",
+          "role_description": "The archetypal mad emperor—petulant, childish, and musically obsessed.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "petronius",
+          "sentiment": "Complex",
+          "role_description": "The Arbiter of Elegance; witty, cynical, yet noble in his suicide.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "poppaea_sabina",
+          "sentiment": "Villainous",
+          "role_description": "Manipulative and cruel empress.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "saint_peter",
+          "sentiment": "Heroic",
+          "role_description": "The moral center of the film.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "britannicus_play",
+        "wikidata_id": "Q2504828",
+        "title": "Britannicus",
+        "media_type": "Book",
+        "release_year": 1669,
+        "creator": "Jean Racine",
+        "creator_wikidata_id": "Q742"
+      },
+      "portrayals": [
+        {
+          "figure_id": "nero",
+          "sentiment": "Villainous",
+          "role_description": "A monster rising who chooses tyranny by murdering his brother.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "britannicus",
+          "sentiment": "Heroic",
+          "role_description": "The innocent victim of dynastic jealousy.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "agrippina_the_younger",
+          "sentiment": "Villainous",
+          "role_description": "A dominating mother figure fighting to retain influence.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "caligula_play",
+        "wikidata_id": "Q2272828",
+        "title": "Caligula",
+        "media_type": "Book",
+        "release_year": 1944,
+        "creator": "Albert Camus",
+        "creator_wikidata_id": "Q34670"
+      },
+      "portrayals": [
+        {
+          "figure_id": "caligula",
+          "sentiment": "Complex",
+          "role_description": "A hyper-logical ruler who uses terror to force his subjects to confront the absurdity of existence.",
+          "is_protagonist": true
+        },
+        {
+          "figure_id": "caesonia",
+          "sentiment": "Complex",
+          "role_description": "A loyal mistress who supports him despite his madness.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "cassius_chaerea",
+          "sentiment": "Heroic",
+          "role_description": "A rational opponent who kills Caligula to restore meaning.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "julius_caesar_board_game",
+        "wikidata_id": "Q106509930",
+        "title": "Julius Caesar",
+        "media_type": "Game",
+        "release_year": 2010,
+        "creator": "Justin Thompson",
+        "creator_wikidata_id": "Q4460327"
+      },
+      "portrayals": [
+        {
+          "figure_id": "pompey",
+          "sentiment": "Neutral",
+          "role_description": "Represented as a combat block defined by speed and strength.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "mark_antony",
+          "sentiment": "Neutral",
+          "role_description": "Represented as a combat block defined by speed and strength.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "commands_and_colors_ancients",
+        "wikidata_id": "Q1115166",
+        "title": "Commands & Colors: Ancients",
+        "media_type": "Game",
+        "release_year": 2006,
+        "creator": "Richard Borg",
+        "creator_wikidata_id": "N/A"
+      },
+      "portrayals": [
+        {
+          "figure_id": "julius_caesar",
+          "sentiment": "Neutral",
+          "role_description": "A leader block that improves unit mobility and morale.",
+          "is_protagonist": false
+        },
+        {
+          "figure_id": "scipio_metellus",
+          "sentiment": "Neutral",
+          "role_description": "A leader block that improves unit mobility and morale.",
+          "is_protagonist": false
+        }
+      ]
+    },
+    {
+      "media_work": {
+        "media_id": "praetorians_game",
+        "wikidata_id": "Q946898",
+        "title": "Praetorians",
+        "media_type": "Game",
+        "release_year": 2003,
+        "creator": "Javier Arévalo",
+        "creator_wikidata_id": "N/A"
+      },
+      "portrayals": [
+        {
+          "figure_id": "julius_caesar",
+          "sentiment": "Neutral",
+          "role_description": "A mission briefing avatar focused on tactical maneuvering.",
+          "is_protagonist": true
+        }
+      ]
+    }
+  ]
