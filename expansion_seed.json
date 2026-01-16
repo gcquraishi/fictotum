@@ -1,52 +1,214 @@
 [
-    {
-      "wikidata_id": "Q1344573",
-      "title": "I, Claudius (Novel)",
-      "media_type": "Book",
-      "release_year": 1934,
-      "brief_historiography_note": "Graves's novel established the modern 'poisoner Livia' archetype, heavily influencing all subsequent media portrayals of the Julio-Claudian era.",
-      "creator_wikidata_id": "Q201732",
-      "creator": "Robert Graves",
-      "key_historical_figures": ["Claudius", "Livia Drusilla", "Octavian (Augustus)", "Tiberius", "Caligula", "Germanicus", "Marcus Vipsanius Agrippa"]
+  {
+    "media_work": {
+      "media_id": "gladiator_2000",
+      "wikidata_id": "Q128518",
+      "title": "Gladiator",
+      "media_type": "FILM",
+      "release_year": 2000,
+      "creator": "Ridley Scott",
+      "creator_wikidata_id": "Q47715",
+      "anachronisms": [
+        "Marcus Aurelius murdered by Commodus",
+        "Marcus Aurelius intended to restore the Republic",
+        "Commodus dies in the arena shortly after taking power",
+        "Lucilla survives the reign of Commodus"
+      ]
     },
-    {
-      "wikidata_id": "Q1344599",
-      "title": "I, Claudius (BBC TV Series)",
-      "media_type": "TVSeries",
-      "release_year": 1976,
-      "brief_historiography_note": "This definitive BBC production defined the visual and performative language of the Roman Imperial family for a generation.",
-      "creator_wikidata_id": "Q6114704",
-      "creator": "Jack Pulman",
-      "key_historical_figures": ["Claudius", "Livia Drusilla", "Octavian (Augustus)", "Tiberius", "Caligula", "Nero", "Messalina", "Agrippina the Younger"]
+    "historical_figures": [
+      {
+        "canonical_id": "marcus_aurelius",
+        "wikidata_id": "Q1430",
+        "name": "Marcus Aurelius",
+        "is_fictional": false,
+        "birth_year": 121,
+        "death_year": 180,
+        "title": "Emperor / Philosopher",
+        "era": "Early Empire"
+      },
+      {
+        "canonical_id": "commodus",
+        "wikidata_id": "Q1434",
+        "name": "Commodus",
+        "is_fictional": false,
+        "birth_year": 161,
+        "death_year": 192,
+        "title": "Emperor",
+        "era": "Early Empire"
+      },
+      {
+        "canonical_id": "lucilla",
+        "wikidata_id": "Q242466",
+        "name": "Lucilla",
+        "is_fictional": false,
+        "birth_year": 148,
+        "death_year": 182,
+        "title": "Augusta",
+        "era": "Early Empire"
+      },
+      {
+        "canonical_id": "maximus_decimus_meridius",
+        "wikidata_id": null,
+        "name": "Maximus Decimus Meridius",
+        "is_fictional": true,
+        "birth_year": null,
+        "death_year": 192,
+        "title": "General / Gladiator",
+        "era": "Early Empire",
+        "role_description": "Composite protagonist inspired by Avidius Cassius, Narcissus, and Tiberius Claudius Pompeianus."
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "marcus_aurelius",
+        "media_id": "gladiator_2000",
+        "sentiment": "Heroic",
+        "role_description": "A weary, noble emperor who seeks to return power to the Senate and is murdered for his idealism.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Portrayal as a Republican restorationist and his murder by Commodus are significant historical deviations."
+      },
+      {
+        "figure_id": "commodus",
+        "media_id": "gladiator_2000",
+        "sentiment": "Villainous",
+        "role_description": "A patricidal, power-hungry youth driven by a psychological need for his father's approval.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Characterization as a patricide and his arena-death in 180 CE conflict with historical 192 CE assassination in a bath."
+      },
+      {
+        "figure_id": "lucilla",
+        "media_id": "gladiator_2000",
+        "sentiment": "Complex",
+        "role_description": "A cautious survivor and mother who quietly aids the conspiracy against her brother to save her son.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Survival of the film's events contradicts her historical execution in 182 CE."
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "fall_of_the_roman_empire_1964",
+      "wikidata_id": "Q367748",
+      "title": "The Fall of the Roman Empire",
+      "media_type": "FILM",
+      "release_year": 1964,
+      "creator": "Anthony Mann",
+      "creator_wikidata_id": "Q345974"
     },
-    {
-      "wikidata_id": "Q229808",
-      "title": "Cleopatra",
-      "media_type": "Film",
-      "release_year": 1963,
-      "brief_historiography_note": "A monumental Hollywood epic focusing on the romantic-political transition from Republic to Empire.",
-      "creator_wikidata_id": "Q51583",
-      "creator": "Joseph L. Mankiewicz",
-      "key_historical_figures": ["Cleopatra VII", "Julius Caesar", "Mark Antony", "Octavian (Augustus)", "Marcus Tullius Cicero"]
+    "historical_figures": [
+      {
+        "canonical_id": "marcus_aurelius",
+        "wikidata_id": "Q1430",
+        "name": "Marcus Aurelius",
+        "birth_year": 121,
+        "death_year": 180,
+        "era": "Early Empire"
+      },
+      {
+        "canonical_id": "commodus",
+        "wikidata_id": "Q1434",
+        "name": "Commodus",
+        "birth_year": 161,
+        "death_year": 192,
+        "era": "Early Empire"
+      },
+      {
+        "canonical_id": "lucilla",
+        "wikidata_id": "Q242466",
+        "name": "Lucilla",
+        "birth_year": 148,
+        "death_year": 182,
+        "era": "Early Empire"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "marcus_aurelius",
+        "media_id": "fall_of_the_roman_empire_1964",
+        "sentiment": "Heroic",
+        "role_description": "An aging idealist who envisions a universal citizenship for all people in the Empire.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Poisoned by plotters; intends to disinherit Commodus in favor of Livius."
+      },
+      {
+        "figure_id": "commodus",
+        "media_id": "fall_of_the_roman_empire_1964",
+        "sentiment": "Villainous",
+        "role_description": "A dissolute leader revealed to be the biological son of a gladiator rather than the Emperor.",
+        "is_protagonist": false,
+        "conflict_flag": true,
+        "conflict_notes": "Illegitimacy plotline based on ancient slanders used as a narrative device."
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "meditations_aurelius",
+      "wikidata_id": "Q1152283",
+      "title": "Meditations",
+      "media_type": "BOOK",
+      "release_year": 180,
+      "creator": "Marcus Aurelius",
+      "creator_wikidata_id": "Q1430"
     },
-    {
-      "wikidata_id": "Q938137",
-      "title": "Quo Vadis",
-      "media_type": "Film",
-      "release_year": 1951,
-      "brief_historiography_note": "The definitive cinematic portrayal of Nero's decadence and the Great Fire of Rome.",
-      "creator_wikidata_id": "Q103788",
-      "creator": "Mervyn LeRoy",
-      "key_historical_figures": ["Nero", "Saint Peter", "Paul the Apostle", "Poppaea Sabina"]
+    "historical_figures": [
+      {
+        "canonical_id": "marcus_aurelius",
+        "wikidata_id": "Q1430",
+        "name": "Marcus Aurelius",
+        "birth_year": 121,
+        "death_year": 180,
+        "era": "Early Empire"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "marcus_aurelius",
+        "media_id": "meditations_aurelius",
+        "sentiment": "Complex",
+        "role_description": "Internal self-reflection of a man struggling to perform his imperial duty through Stoic discipline.",
+        "is_protagonist": true,
+        "conflict_flag": false,
+        "conflict_notes": "Primary source; provides the psychological baseline for all subsequent fictional versions."
+      }
+    ]
+  },
+  {
+    "media_work": {
+      "media_id": "total_war_rome_2_empire_divided",
+      "wikidata_id": "Q43649390",
+      "title": "Total War: ROME II - Empire Divided",
+      "media_type": "GAME",
+      "release_year": 2017,
+      "creator": "Creative Assembly",
+      "creator_wikidata_id": "Q1139364"
     },
-    {
-      "wikidata_id": "Q1139023",
-      "title": "The Robe",
-      "media_type": "Film",
-      "release_year": 1953,
-      "brief_historiography_note": "Groundbreaking widescreen epic exploring Caligula's madness and early Christian interaction with the Empire.",
-      "creator_wikidata_id": "Q61859",
-      "creator": "Henry Koster",
-      "key_historical_figures": ["Caligula", "Tiberius", "Pontius Pilate", "Saint Peter"]
-    }
-  ]
+    "historical_figures": [
+      {
+        "canonical_id": "avidius_cassius",
+        "wikidata_id": "Q312450",
+        "name": "Avidius Cassius",
+        "is_fictional": false,
+        "birth_year": 130,
+        "death_year": 175,
+        "title": "Rector Orientis / Usurper",
+        "era": "Early Empire"
+      }
+    ],
+    "portrayals": [
+      {
+        "figure_id": "avidius_cassius",
+        "media_id": "total_war_rome_2_empire_divided",
+        "sentiment": "Neutral",
+        "role_description": "A powerful general who can emerge as a political rival and usurper through systemic game mechanics.",
+        "is_protagonist": false,
+        "conflict_flag": false,
+        "conflict_notes": "Represented through procedural loyalty and civil war mechanics rather than scripted narrative."
+      }
+    ]
+  }
+]
