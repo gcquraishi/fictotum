@@ -883,3 +883,41 @@ UX Enhancement: Upgraded Six Degrees of Historiography pathfinder with autocompl
 **NOTES:**
 The pathfinder was previously unusable by non-experts (required knowing internal canonical_ids like "julius_caesar"). This upgrade makes it the primary discovery feature on the homepage. Follows same pattern as GraphExplorer enhancement: client-side fetch, debounced search, graceful error handling.
 ---
+**TIMESTAMP:** 2026-01-17T19:53:10Z
+**AGENT:** Gemini
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Architected the `CREATED_BY` relationship in the schema and generated a flight plan for its retroactive assignment to existing nodes.
+
+**ARTIFACTS:**
+- **MODIFIED:**
+  - `scripts/schema.py` (Added `Agent` model, `agent_unique` constraint, and `CREATED_BY` relationship type)
+- **CREATED:**
+  - `scripts/migration/migrate_add_created_by.py` (Script for retroactive assignment)
+  - `FLIGHT_PLAN_CREATED_BY.md` (Flight plan for Claude Code)
+- **DB_SCHEMA_CHANGE:**
+  - New `:Agent` node label with `name` uniqueness constraint.
+  - New `CREATED_BY` relationship type.
+
+**NOTES:**
+This establishes critical data provenance, linking all ingested nodes to the AI agent responsible for their creation. The generated `FLIGHT_PLAN_CREATED_BY.md` should be provided to Claude Code for execution.
+---
+**TIMESTAMP:** 2026-01-17T19:54:10Z
+**AGENT:** Gemini
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Prepared and initiated Vercel deployment for the web application.
+
+**ARTIFACTS:**
+- **MODIFIED:**
+  - `web-app/app/page.tsx` (Homepage updated with ConflictFeed)
+  - `CHRONOS_LOG.md` (Self-update with previous task summary)
+- **GIT_ACTIONS:**
+  - Committed code changes: `feat: Implement CREATED_BY and enhance MVP homepage`
+  - Pushed to `main` branch to trigger Vercel deployment.
+
+**NOTES:**
+The application should now be deploying to Vercel. Monitor the Vercel dashboard for status and access the live URL. Environment variables for Neo4j must be configured in Vercel.
+---
