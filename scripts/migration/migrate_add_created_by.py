@@ -105,7 +105,8 @@ class CreatedByMigration:
                 "characters": list(total_chars)
             }
             print(f"  - Found: {len(total_figs)} figures, {len(total_media)} media, {len(total_chars)} characters.")
-        print("--- Map built successfully ---\n")
+        print("--- Map built successfully ---
+")
 
 
     def run_migration(self):
