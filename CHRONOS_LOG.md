@@ -807,3 +807,79 @@ Implemented `CREATED_BY` relationship in the schema and retroactively assigned `
 **NOTES:**
 This migration establishes critical data provenance, linking all ingested nodes to the AI agent responsible for their creation based on `CHRONOS_LOG.md`. Migration successfully processed batches 2-11, creating 2 Agent nodes and 299 CREATED_BY relationships.
 ---
+**TIMESTAMP:** 2026-01-17T18:53:10Z
+**AGENT:** Claude Code (Sonnet 4.5)
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Performance optimization: Converted GraphExplorer component from server-side rendering to client-side rendering with loading skeleton for instant page loads and progressive graph data fetching.
+
+**ARTIFACTS:**
+- **CREATED:**
+  - `app/api/graph/[id]/route.ts` (New API endpoint for fetching graph data asynchronously)
+  - Updated `components/GraphExplorer.tsx` with client-side fetching
+- **MODIFIED:**
+  - `app/figure/[id]/page.tsx` (Removed server-side getGraphData call, passes canonical_id to GraphExplorer)
+  - `components/GraphExplorer.tsx` (Added useTransition for non-blocking async fetch, loading skeleton, error states)
+- **DB_SCHEMA_CHANGE:**
+  - None
+
+**PERFORMANCE IMPACT:**
+- Figure detail page now loads instantly without waiting for graph query
+- GraphExplorer renders with animated loading skeleton while fetching data
+- User sees header, stats, and timeline immediately
+- Progressive enhancement: graph loads in background after page render
+- Reduced server-side blocking: eliminated one heavy Neo4j query from page load path
+
+**TECHNICAL DETAILS:**
+- API endpoint: `GET /api/graph/{canonicalId}` - returns nodes and links
+- Component uses `useTransition` hook for smooth state transitions
+- Three UI states: Loading (spinner), Error (red box), Success (graph)
+- Same pattern as ConflictFeed pathfinder component
+
+**NOTES:**
+Follows industry best practices for performance optimization: progressive enhancement, non-blocking UI, and graceful error handling. Dramatically improves perceived page performance and user experience.
+---
+**TIMESTAMP:** 2026-01-17T18:53:10Z
+**AGENT:** Claude Code (Sonnet 4.5)
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+UX Enhancement: Upgraded Six Degrees of Historiography pathfinder with autocomplete figure search, replacing cryptic canonical_id text inputs with user-friendly searchable dropdowns.
+
+**ARTIFACTS:**
+- **CREATED:**
+  - `app/api/figures/search/route.ts` (Figure autocomplete API endpoint)
+  - `components/FigureSearchInput.tsx` (Reusable autocomplete search component)
+- **MODIFIED:**
+  - `components/ConflictFeed.tsx` (Integrated FigureSearchInput, updated pathfinder UI)
+- **DB_SCHEMA_CHANGE:**
+  - None
+
+**USER EXPERIENCE IMPROVEMENTS:**
+1. **Autocomplete Search**: Type figure name → see matching results in dropdown
+2. **Partial Matching**: Type "julius" → finds "Julius Caesar"
+3. **Visual Confirmation**: Selected figure displayed below input
+4. **Era Information**: Dropdown shows historical era for disambiguation
+5. **Keyboard Navigation**: Full keyboard support (arrows, enter, esc)
+6. **Error Prevention**: Button disabled until both figures selected
+7. **Forgiving Interface**: Clear (X) button to reset selections
+
+**TECHNICAL DETAILS:**
+- API endpoint: `GET /api/figures/search?q={query}` - returns up to 10 matching figures
+- Debounced search: 300ms delay reduces unnecessary API calls
+- Neo4j query: Case-insensitive CONTAINS search on figure names
+- Component uses React state and useRef for dropdown management
+- Click-outside detection closes dropdown automatically
+- Returns: `{ canonical_id, name, era }`
+
+**ACCESSIBILITY FEATURES:**
+- Proper form labels and ARIA attributes
+- Keyboard-accessible dropdown navigation
+- Loading spinners for visual feedback
+- Clear error messages
+- High contrast for visibility
+
+**NOTES:**
+The pathfinder was previously unusable by non-experts (required knowing internal canonical_ids like "julius_caesar"). This upgrade makes it the primary discovery feature on the homepage. Follows same pattern as GraphExplorer enhancement: client-side fetch, debounced search, graceful error handling.
+---

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getFigureById, calculateSentimentDistribution, getGraphData } from '@/lib/db';
+import { getFigureById, calculateSentimentDistribution } from '@/lib/db';
 import ConflictRadar from '@/components/ConflictRadar';
 import MediaTimeline from '@/components/MediaTimeline';
 import GraphExplorer from '@/components/GraphExplorer';
@@ -20,7 +20,6 @@ export default async function FigurePage({
   }
 
   const sentimentDistribution = calculateSentimentDistribution(figure.portrayals);
-  const graphData = await getGraphData(id);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -98,7 +97,7 @@ export default async function FigurePage({
 
           {/* Graph Explorer */}
           <div className="mt-8">
-            <GraphExplorer nodes={graphData.nodes} links={graphData.links} />
+            <GraphExplorer canonicalId={id} />
           </div>
         </div>
       </div>

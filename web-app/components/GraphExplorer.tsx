@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { GraphNode, GraphLink } from '@/lib/types';
@@ -10,8 +10,7 @@ const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
 });
 
 interface GraphExplorerProps {
-  nodes: GraphNode[];
-  links: GraphLink[];
+  canonicalId: string;
 }
 
 const SENTIMENT_COLORS = {
@@ -20,11 +19,47 @@ const SENTIMENT_COLORS = {
   Complex: '#eab308',
 };
 
-export default function GraphExplorer({ nodes, links }: GraphExplorerProps) {
+export default function GraphExplorer({ canonicalId }: GraphExplorerProps) {
   const router = useRouter();
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [nodes, setNodes] = useState<GraphNode[]>([]);
+  const [links, setLinks] = useState<GraphLink[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Fetch graph data on mount
+  useEffect(() => {
+    const fetchGraphData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      startTransition(async () => {
+        try {
+          const response = await fetch(`/api/graph/${canonicalId}`);
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch graph data');
+          }
+
+          const data = await response.json();
+          setNodes(data.nodes || []);
+          setLinks(data.links || []);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'An error occurred');
+          setNodes([]);
+          setLinks([]);
+        } finally {
+          setIsLoading(false);
+        }
+      });
+    };
+
+    fetchGraphData();
+  }, [canonicalId]);
+
+  // Handle responsive dimensions
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -39,6 +74,42 @@ export default function GraphExplorer({ nodes, links }: GraphExplorerProps) {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
+  // Loading skeleton
+  if (isLoading || isPending) {
+    return (
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>
+        <div className="mb-4 flex gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-gray-600 animate-pulse"></div>
+            <span className="text-gray-500">Loading...</span>
+          </div>
+        </div>
+        <div className="bg-gray-900 rounded-lg overflow-hidden" style={{ height: dimensions.height }}>
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+              <p className="text-gray-400">Loading graph data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+        <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>
+        <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
+          <p className="text-red-400">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
   if (nodes.length === 0) {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
@@ -48,6 +119,7 @@ export default function GraphExplorer({ nodes, links }: GraphExplorerProps) {
     );
   }
 
+  // Graph visualization
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>

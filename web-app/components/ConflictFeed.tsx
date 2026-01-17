@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { ConflictingFigure, HistoriographicPath } from '@/lib/types';
 import { Search, TrendingUp, AlertTriangle, ArrowRight, Film, BookOpen, Gamepad2, Tv, ExternalLink } from 'lucide-react';
+import FigureSearchInput from './FigureSearchInput';
 
 interface ConflictFeedProps {
   conflicts: ConflictingFigure[];
@@ -25,14 +26,16 @@ const MEDIA_TYPE_ICONS = {
 
 export default function ConflictFeed({ conflicts }: ConflictFeedProps) {
   const [searchStart, setSearchStart] = useState('');
+  const [searchStartName, setSearchStartName] = useState('');
   const [searchEnd, setSearchEnd] = useState('');
+  const [searchEndName, setSearchEndName] = useState('');
   const [path, setPath] = useState<HistoriographicPath | null>(null);
   const [pathError, setPathError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handlePathSearch = async () => {
     if (!searchStart.trim() || !searchEnd.trim()) {
-      setPathError('Please enter both start and end figure IDs');
+      setPathError('Please select both start and end figures');
       return;
     }
 
@@ -83,37 +86,37 @@ export default function ConflictFeed({ conflicts }: ConflictFeedProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="start-figure" className="block text-sm font-medium text-gray-300 mb-2">
-              Start Figure ID
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Start Figure
             </label>
-            <input
-              id="start-figure"
-              type="text"
-              value={searchStart}
-              onChange={(e) => setSearchStart(e.target.value)}
-              placeholder="e.g., julius_caesar"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+            <FigureSearchInput
+              placeholder="Search for starting figure..."
+              onSelect={(canonicalId, name) => {
+                setSearchStart(canonicalId);
+                setSearchStartName(name);
+              }}
+              disabled={isPending}
             />
           </div>
 
           <div>
-            <label htmlFor="end-figure" className="block text-sm font-medium text-gray-300 mb-2">
-              End Figure ID
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              End Figure
             </label>
-            <input
-              id="end-figure"
-              type="text"
-              value={searchEnd}
-              onChange={(e) => setSearchEnd(e.target.value)}
-              placeholder="e.g., cleopatra_vii"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+            <FigureSearchInput
+              placeholder="Search for ending figure..."
+              onSelect={(canonicalId, name) => {
+                setSearchEnd(canonicalId);
+                setSearchEndName(name);
+              }}
+              disabled={isPending}
             />
           </div>
 
           <div className="flex items-end">
             <button
               onClick={handlePathSearch}
-              disabled={isPending}
+              disabled={isPending || !searchStart || !searchEnd}
               className="w-full px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <Search className="w-4 h-4" />
