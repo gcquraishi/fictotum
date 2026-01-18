@@ -29,16 +29,16 @@ export async function POST(request: NextRequest) {
         r.sentiment = $sentiment,
         r.role_description = $roleDescription,
         r.is_protagonist = $isProtagonist,
-        r.created_at = timestamp()
+        r.created_at = timestamp(),
+        r.created_by = u.email,
+        r.created_by_name = u.name
       ON MATCH SET
         r.sentiment = $sentiment,
         r.role_description = $roleDescription,
         r.is_protagonist = $isProtagonist,
-        r.updated_at = timestamp()
-      WITH r, u
-      // Link the relationship creation/update event to the user
-      MERGE (u)-[c:CREATED]->(r)
-      ON CREATE SET c.at = timestamp()
+        r.updated_at = timestamp(),
+        r.updated_by = u.email,
+        r.updated_by_name = u.name
       RETURN r
     `;
 
