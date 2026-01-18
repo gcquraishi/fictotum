@@ -4,7 +4,7 @@ import SearchInput from '@/components/SearchInput';
 import ConflictFeed from '@/components/ConflictFeed';
 
 export default async function Dashboard() {
-  let conflicts = [];
+  let conflicts: any[] = [];
   try {
     conflicts = await getConflictingPortrayals();
   } catch (error) {
