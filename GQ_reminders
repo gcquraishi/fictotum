@@ -1,0 +1,12 @@
+Prompt Claude within the wrapper script
+    ./prompt-claude.sh "{{PROMPT}}"
+
+How to initiate deep research
+    python deep_research.py "{{PROMPT}}"
+
+Run the local/dev environment
+    gcquraishi@MacBook-Pro-3 web-app % npm run dev
+    ctrl + c ends it
+
+Redeploy
+    vercel --prod

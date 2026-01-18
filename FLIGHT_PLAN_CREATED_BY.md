@@ -4,7 +4,7 @@
 
 ## 1. ARCHITECTURE & SCHEMA MODIFICATION
 
-The database schema (`scripts/schema.py`) has been updated to include:
+The database schema (`scripts/schema.py`) has been updated to include:e
 - A new `Agent` node type with a `name` property (unique constraint added).
 - A new `CREATED_BY` relationship type, linking nodes to their creating `Agent`.
 
