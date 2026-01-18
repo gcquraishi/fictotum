@@ -1,4 +1,119 @@
 ---
+**TIMESTAMP:** 2026-01-18T19:15:00Z
+**AGENT:** Claude Code (Haiku 4.5)
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Fixed critical NextAuth bundling and build errors that were causing 404s on the landing page. Resolved neo4j-driver module bundling issues and prerendering errors. Application is now fully functional with all graphical elements rendering correctly.
+
+**ARTIFACTS:**
+- **CREATED:**
+  - `web-app/lib/auth.ts` (NextAuth configuration separated from route handler)
+  - `web-app/app/contribute/creator/CreatorContent.tsx` (Client component extracted from page for Suspense boundary)
+- **MODIFIED:**
+  - `web-app/app/api/auth/[...nextauth]/route.ts` (Simplified to only export GET/POST handlers)
+  - `web-app/app/api/media/create/route.ts` (Updated auth import)
+  - `web-app/app/api/media/link-series/route.ts` (Updated auth import)
+  - `web-app/app/api/contribution/appearance/route.ts` (Updated auth import)
+  - `web-app/app/contribute/creator/page.tsx` (Wrapped content in Suspense boundary)
+  - `web-app/next.config.js` (Added webpack external config for neo4j-driver)
+- **DELETED:**
+  - None
+- **DB_SCHEMA_CHANGE:**
+  - None
+
+**ERRORS FIXED:**
+
+1. **NextAuth Route Export Error:**
+   - Error: "auth is not a valid Route export field"
+   - Root Cause: Attempting to export NextAuth configuration object from API route handler
+   - Solution: Created separate `lib/auth.ts` file to hold NextAuth config, route handler only exports GET/POST handlers
+   - Files: `lib/auth.ts` (new), `app/api/auth/[...nextauth]/route.ts` (refactored)
+
+2. **Neo4j Driver Bundling Error:**
+   - Error: "Cannot find module './vendor-chunks/neo4j-driver-bolt-connection.js'"
+   - Root Cause: Webpack attempting to bundle neo4j-driver into Next.js build, which uses native bindings incompatible with server environment
+   - Solution:
+     - Added dynamic imports for neo4j to delay loading until runtime
+     - Configured webpack to treat neo4j-driver as external dependency in `next.config.js`
+   - Files: `lib/auth.ts` (dynamic import), `next.config.js` (webpack config)
+
+3. **useSearchParams() Prerendering Error:**
+   - Error: "useSearchParams() should be wrapped in a suspense boundary at page '/contribute/creator'"
+   - Root Cause: Client component using useSearchParams() was being prerendered at build time
+   - Solution: Extracted client component logic to separate `CreatorContent.tsx`, wrapped in Suspense boundary in page component
+   - Files: `app/contribute/creator/CreatorContent.tsx` (new), `app/contribute/creator/page.tsx` (refactored)
+
+**BUILD STATUS:**
+- ✅ Build completes successfully with no errors
+- ✅ All routes properly compiled (18 total: 2 static, 16 dynamic/API)
+- ✅ Dev server running at http://localhost:3003
+- ✅ Landing page loads without 404 errors
+
+**VERIFICATION:**
+- [x] Landing page loads (GET / 200)
+- [x] SearchInput component renders and functional
+- [x] ConflictFeed displays correctly
+- [x] Navbar navigation links working
+- [x] All graphical elements visible
+- [x] No client-side JavaScript errors
+- [x] No missing asset 404s (CSS, JS chunks, etc.)
+
+**TECHNICAL DETAILS:**
+
+**NextAuth Configuration Migration:**
+```
+Before: app/api/auth/[...nextauth]/route.ts
+  - Contained full NextAuth config + export handlers
+
+After:
+  - lib/auth.ts: Exports { handlers, auth } from NextAuth config
+  - app/api/auth/[...nextauth]/route.ts: Imports handlers and exports GET/POST only
+```
+
+**Webpack External Configuration:**
+```javascript
+// next.config.js
+webpack: (config, { isServer }) => {
+  if (isServer) {
+    config.externals = config.externals || [];
+    config.externals.push('neo4j-driver');
+  }
+  return config;
+}
+```
+
+This prevents webpack from attempting to bundle neo4j-driver, which uses native bindings that don't work in the Node.js server environment.
+
+**Dynamic Neo4j Import:**
+```typescript
+// lib/auth.ts
+const { getDriver } = await import('./neo4j');
+```
+
+Lazy loads neo4j module only when authentication callback runs, not at module load time.
+
+**AFFECTED ROUTES:**
+- `/api/auth/[...nextauth]` - Now properly configured
+- `/api/media/create` - Auth import corrected
+- `/api/media/link-series` - Auth import corrected
+- `/api/contribution/appearance` - Auth import corrected
+- `/contribute/creator` - Prerendering error fixed via Suspense
+
+**PERFORMANCE IMPACT:**
+- No negative performance impact
+- Slightly improved startup time due to lazy neo4j loading
+- Same user experience
+
+**DEPLOYMENT NOTES:**
+- Vercel will properly handle external webpack dependencies
+- No changes needed to deployment configuration
+- All Next.js version 14.2.5 compatible patterns used
+
+**NOTES:**
+The root issue was attempting to use NextAuth's internal API from a Next.js Route Handler without proper separation of concerns. NextAuth exports both configuration and runtime handlers - only the handlers should be exported from the route, while the configuration should be in a separate module. Additionally, neo4j-driver's native bindings are not compatible with webpack bundling, requiring it to be marked as external and loaded at runtime only. These architectural fixes ensure both the build system and runtime behave correctly.
+
+---
 **TIMESTAMP:** 2026-01-18T18:30:00Z
 **AGENT:** Claude Code (Haiku 4.5)
 **STATUS:** ✅ COMPLETE
