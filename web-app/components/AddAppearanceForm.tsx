@@ -77,7 +77,17 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
       setNewMediaWikidataId('');
     } else {
       const data = await response.json();
-      setError(data.error || "Failed to create media work.");
+      // If media already exists, automatically select it
+      if (data.existingMedia) {
+        setSelectedMedia(data.existingMedia);
+        setMediaQuery(data.existingMedia.title);
+        setShowCreateMedia(false);
+        setError(`Found existing work: "${data.existingMedia.title}" (${data.existingMedia.year}). It has been selected.`);
+        // Clear error after a few seconds
+        setTimeout(() => setError(null), 5000);
+      } else {
+        setError(data.error || "Failed to create media work.");
+      }
     }
   };
 

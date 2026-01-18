@@ -37,16 +37,30 @@ export async function POST(request: NextRequest) {
 
     const dbSession = await getSession();
 
-    // Check if media already exists
-    const checkResult = await dbSession.run(
-      'MATCH (m:MediaWork {media_id: $mediaId}) RETURN m',
-      { mediaId }
-    );
+    // Check if media already exists (by media_id or wikidata_id)
+    let checkQuery = 'MATCH (m:MediaWork) WHERE m.media_id = $mediaId';
+    if (wikidataId) {
+      checkQuery += ' OR m.wikidata_id = $wikidataId';
+    }
+    checkQuery += ' RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year';
+
+    const checkResult = await dbSession.run(checkQuery, {
+      mediaId,
+      wikidataId: wikidataId || null
+    });
 
     if (checkResult.records.length > 0) {
       await dbSession.close();
+      const existing = checkResult.records[0];
       return NextResponse.json(
-        { error: 'A media work with this title and year already exists' },
+        {
+          error: 'This media work already exists in the database',
+          existingMedia: {
+            media_id: existing.get('media_id'),
+            title: existing.get('title'),
+            year: existing.get('year')?.toNumber() ?? existing.get('year'),
+          }
+        },
         { status: 409 }
       );
     }
