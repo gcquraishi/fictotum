@@ -1,4 +1,61 @@
 ---
+**TIMESTAMP:** 2026-01-17T22:01:50Z
+**AGENT:** Claude Code (Haiku 4.5)
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Fixed Vercel deployment issues and merged duplicate Quo Vadis media work nodes. Web app now successfully deployed and accessible.
+
+**ARTIFACTS:**
+- **CREATED:**
+  - `web-app/vercel.json` (Vercel Next.js framework configuration)
+  - `merge_quo_vadis.py` (Cleanup script, now removed)
+- **MODIFIED:**
+  - `web-app/package.json` (Removed unsupported `--webpack` flags)
+  - `web-app/next.config.ts` → `next.config.js` (Convert to JS for compatibility)
+  - `web-app/components/GraphExplorer.tsx` (Added nodes/links props support)
+  - `web-app/components/FigureDossier.tsx` (Fixed type imports)
+  - `web-app/app/layout.tsx` (Removed Geist font references)
+  - `web-app/app/page.tsx` (Added error handling for Neo4j calls)
+  - `web-app/lib/db.ts` (Fixed result.single() → result.records[0])
+  - Neo4j database (c78564a4): Merged 5 Quo Vadis entries into canonical Q1057825
+- **DELETED:**
+  - `web-app/components/ConflictFeed.example.tsx` (Example file causing build errors)
+  - `merge_quo_vadis.py` (Temporary merge script)
+
+**DEPLOYMENT FIXES:**
+1. **Build Script Issue**: Removed `--webpack` flag from npm scripts (incompatible with Next.js 14.2.5)
+2. **TypeScript Config**: Converted `next.config.ts` to `next.config.js` (Vercel requirement)
+3. **Font Issues**: Removed unsupported Geist fonts from layout
+4. **Type Errors**:
+   - Fixed GraphExplorer component props to accept nodes/links
+   - Added proper type imports with `type` keyword for isolatedModules
+   - Fixed query result handling (result.single() deprecated)
+5. **Neo4j Environment**: Added credentials to Vercel environment variables
+6. **Root Directory**: Configured Vercel to use `web-app` as root directory
+7. **Framework Config**: Added `vercel.json` with Next.js framework specification
+
+**QUO VADIS MERGE:**
+- Found 5 duplicate/variant "Quo Vadis" media work entries with different Q-IDs:
+  - Q1057825 (kept - canonical)
+  - Q2714976 (merged)
+  - Q335315 (merged)
+  - Q607690 (merged)
+  - Q938137 (merged)
+- Merged all into single canonical node (Q1057825)
+
+**DEPLOYMENT STATUS:**
+- ✅ Build: Successful
+- ✅ Deploy: Successful (Ready state)
+- ✅ Accessible at: https://chronosgraph.vercel.app
+
+**DATABASE TOTALS (POST-MERGE):**
+- Historical Figures: 217 (unchanged)
+- Media Works: ~476 (480→476, -4 from merge)
+- Fictional Characters: 46 (unchanged)
+- Total Relationships: ~406 (unchanged, consolidated)
+
+---
 **TIMESTAMP:** 2026-01-17T19:56:41Z
 **AGENT:** Claude Code (Sonnet 4.5)
 **STATUS:** ✅ COMPLETE
