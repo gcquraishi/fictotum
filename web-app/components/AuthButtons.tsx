@@ -30,12 +30,21 @@ export default function AuthButtons() {
   }
 
   return (
-    <button
-      onClick={() => signIn('github')}
-      className="px-3 py-1.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center gap-2 transition-colors"
-    >
-      <LogIn className="w-4 h-4" />
-      Sign In
-    </button>
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => signIn('google')}
+        className="px-3 py-1.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md flex items-center gap-2 transition-colors"
+      >
+        <LogIn className="w-4 h-4" />
+        Google
+      </button>
+      <button
+        onClick={() => signIn('github')}
+        className="px-3 py-1.5 text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 rounded-md flex items-center gap-2 transition-colors"
+      >
+        <LogIn className="w-4 h-4" />
+        GitHub
+      </button>
+    </div>
   );
 }

@@ -10,40 +10,41 @@ async function upsertUserInNeo4j(user: any, account: any, profile: any) {
 
   try {
     const params: any = {
-      provider: account.provider,
-      providerId: account.providerAccountId,
       email: user.email,
       name: user.name,
       image: user.image,
       updated_at: new Date().toISOString(),
     };
 
-    // Add provider-specific fields
+    // Add provider-specific fields based on which provider is signing in
     if (account.provider === 'github') {
       params.github_username = profile?.login;
+      params.github_id = account.providerAccountId;
     } else if (account.provider === 'google') {
       params.google_email = profile?.email;
+      params.google_id = account.providerAccountId;
     }
 
     await session.run(
       `
-      MERGE (u:User {provider: $provider, providerId: $providerId})
+      MERGE (u:User {email: $email})
       ON CREATE SET u.created_at = datetime()
-      SET u.email = $email,
-          u.name = $name,
+      SET u.name = $name,
           u.image = $image,
-          u.github_username = $github_username,
-          u.google_email = $google_email,
           u.updated_at = datetime()
+      ${account.provider === 'github' ? `
+      SET u.github_username = $github_username,
+          u.github_id = $github_id
+      ` : ''}
+      ${account.provider === 'google' ? `
+      SET u.google_email = $google_email,
+          u.google_id = $google_id
+      ` : ''}
       RETURN u
       `,
-      {
-        ...params,
-        github_username: params.github_username || null,
-        google_email: params.google_email || null,
-      }
+      params
     );
-    console.log('✅ User stored in Neo4j:', user.email);
+    console.log(`✅ User stored in Neo4j (via ${account.provider}):`, user.email);
   } catch (error) {
     console.error('❌ Failed to store user in Neo4j:', error);
   } finally {
