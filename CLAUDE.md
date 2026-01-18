@@ -13,6 +13,12 @@
 4. If not exists → create with `wikidata_id` property
 5. Aliases only when scholarly source confirms alternate title
 
+## Session Log Management
+- **Active Log:** `CHRONOS_LOG.md` contains the last 2 recent session entries for quick reference
+- **Archive:** `CHRONOS_LOG.archive.md` preserves all historical sessions for auditing and context
+- **Rotation Policy:** When CHRONOS_LOG.md grows beyond 3 entries, rotate the oldest entries to the archive
+- **Purpose:** Keeps the active log lean and performant while preserving full project history
+
 ## Safety & Path Integrity
 - **Permanent Storage Only:** Before creating or moving any files, verify the destination is a permanent project directory (Root, `/src`, etc.).
 - **Cache Restriction:** NEVER write to or assume context from temporary or cache folders like `__pycache__`, `.venv`, or `dist`.
