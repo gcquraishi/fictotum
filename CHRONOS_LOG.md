@@ -1,4 +1,81 @@
 ---
+**TIMESTAMP:** 2026-01-18T04:35:00Z
+**AGENT:** Claude Code (Sonnet 4.5)
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Implemented GitHub OAuth authentication (Pillar 1) with JWT sessions and Neo4j user storage. Users can now sign in with GitHub, and their profiles are automatically stored as :User nodes in Neo4j.
+
+**ARTIFACTS:**
+- **CREATED:**
+  - `web-app/app/api/auth/[...nextauth]/route.ts` (NextAuth.js API route with GitHub OAuth)
+  - `web-app/components/AuthProvider.tsx` (Session provider wrapper)
+  - `web-app/components/AuthButtons.tsx` (Sign In/Out UI components)
+  - Two GitHub OAuth Apps (local development + production)
+- **MODIFIED:**
+  - `web-app/package.json` (Added next-auth@beta, @auth/neo4j-adapter; downgraded neo4j-driver to 5.27.0)
+  - `web-app/app/layout.tsx` (Wrapped with AuthProvider)
+  - `web-app/app/page.tsx` (Added AuthButtons to header, restructured layout)
+  - `web-app/.env.local` (Added NEXTAUTH_URL, GITHUB_ID, GITHUB_SECRET, AUTH_SECRET)
+  - Neo4j database (c78564a4): Created :User node for authenticated user
+- **DELETED:**
+  - None
+
+**AUTHENTICATION ARCHITECTURE:**
+- **Framework**: NextAuth.js v5 (beta) - designed for Next.js App Router
+- **Provider**: GitHub OAuth
+- **Session Strategy**: JWT (encrypted tokens)
+- **User Storage**: Manual Neo4j integration via `upsertUserInNeo4j()`
+- **Adapter Decision**: Initially attempted @auth/neo4j-adapter, but it has compatibility issues with neo4j-driver v5 (uses deprecated `readTransaction` API). Switched to manual storage for full control.
+
+**USER NODE SCHEMA:**
+```cypher
+(:User {
+  provider: "github",
+  providerId: "151561794",
+  email: "george.quraishi@gmail.com",
+  name: "gcquraishi",
+  image: "https://avatars.githubusercontent.com/u/151561794?v=4",
+  github_username: "gcquraishi",
+  created_at: datetime(),
+  updated_at: datetime()
+})
+```
+
+**GITHUB OAUTH APPS CREATED:**
+1. **Local Development** (localhost:3000)
+   - Client ID: Ov23liEhh7MIbfGyPbDk
+   - Callback URL: http://localhost:3000/api/auth/callback/github
+2. **Production** (chronosgraph.vercel.app)
+   - Client ID: Ov23likJJDnj9b0a4TaD
+   - Callback URL: https://chronosgraph.vercel.app/api/auth/callback/github
+
+**ENVIRONMENT VARIABLES:**
+- Local (`.env.local`): NEXTAUTH_URL, GITHUB_ID, GITHUB_SECRET, AUTH_SECRET (local OAuth app)
+- Vercel (Production): NEXTAUTH_URL, GITHUB_ID, GITHUB_SECRET, AUTH_SECRET (production OAuth app)
+
+**DEPLOYMENT:**
+- ✅ Local development: Tested and working
+- ✅ Production (Vercel): Deployed and tested at https://chronosgraph.vercel.app
+- ✅ Neo4j integration: User nodes successfully created on sign-in
+
+**TROUBLESHOOTING RESOLVED:**
+1. **Invalid .env.local syntax**: Fixed comment format (- to #)
+2. **Neo4j adapter compatibility**: Removed adapter, implemented manual storage
+3. **Cypher syntax error**: Fixed ON CREATE SET ordering
+4. **Vercel root directory**: Corrected deployment path
+
+**FLIGHT PLAN STATUS:**
+✅ **Pillar 1: User Authentication** - COMPLETE
+
+**DATABASE TOTALS (POST-AUTH):**
+- Historical Figures: 217 (unchanged)
+- Media Works: ~476 (unchanged)
+- Fictional Characters: 46 (unchanged)
+- **Users: 1 (NEW - gcquraishi)**
+- Total Relationships: ~406 (unchanged)
+
+---
 **TIMESTAMP:** 2026-01-17T22:01:50Z
 **AGENT:** Claude Code (Haiku 4.5)
 **STATUS:** ✅ COMPLETE
@@ -1005,4 +1082,27 @@ Attempted to debug a series of cascading Vercel deployment failures. The process
 
 **NOTES:**
 The deployment is still failing. The final action of downgrading to stable dependencies was the most likely solution, but it has also failed. The problem lies within the build environment and dependency resolution, which has proven difficult to debug remotely. Handing off to Claude Code for a fresh perspective on the remaining build error.
+---
+**TIMESTAMP:** 2026-01-17T23:15:33.250567Z
+**AGENT:** Gemini
+**STATUS:** ✅ COMPLETE
+
+**SUMMARY:**
+Ingested Batch 12 (Archaic Greece) into the Neo4j database. This batch included archaic epics, attic tragedy, and myth-history bridge figures and media.
+
+**ARTIFACTS:**
+- **CREATED:**
+  - `data/batch_12_archaic_greece.json`
+  - `scripts/ingestion/ingest_batch12.py`
+- **MODIFIED:**
+  - Neo4j Database: Added 16 new nodes and 6 new relationships.
+
+**INGESTION RESULTS:**
+- **Media Works:** 8 merged (0 new)
+- **Historical Figures:** 7 merged (7 new)
+- **Fictional Characters:** 9 merged (9 new)
+- **Interactions:** 6 merged (6 new)
+
+**NOTES:**
+A custom ingestion script (`ingest_batch12.py`) was created to handle the new `interactions` data structure. The script successfully identified and merged existing `:MediaWork` nodes by their `wikidata_id` to prevent constraint violations.
 ---
