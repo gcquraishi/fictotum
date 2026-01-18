@@ -13,7 +13,7 @@ const { handlers } = NextAuth({
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
-  adapter: Neo4jAdapter(driver.session()),
+  adapter: Neo4jAdapter(driver),
 });
 
 export const { GET, POST } = handlers;
