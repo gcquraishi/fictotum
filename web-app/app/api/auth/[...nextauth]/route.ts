@@ -11,12 +11,12 @@ async function upsertUserInNeo4j(user: any, account: any, profile: any) {
     await session.run(
       `
       MERGE (u:User {provider: $provider, providerId: $providerId})
+      ON CREATE SET u.created_at = datetime()
       SET u.email = $email,
           u.name = $name,
           u.image = $image,
           u.github_username = $github_username,
           u.updated_at = datetime()
-      ON CREATE SET u.created_at = datetime()
       RETURN u
       `,
       {
