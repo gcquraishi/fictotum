@@ -3,10 +3,10 @@ import { getGraphData } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const canonicalId = params.id;
+    const canonicalId = context.params.id;
 
     if (!canonicalId) {
       return NextResponse.json(
