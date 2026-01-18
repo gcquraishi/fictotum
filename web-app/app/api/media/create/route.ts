@@ -32,7 +32,19 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, mediaType, releaseYear, creator, wikidataId } = body;
+    const {
+      title,
+      mediaType,
+      releaseYear,
+      creator,
+      wikidataId,
+      parentSeriesId,
+      sequenceNumber,
+      seasonNumber,
+      episodeNumber,
+      relationshipType,
+      isMainSeries
+    } = body;
 
     if (!title || !mediaType || !releaseYear) {
       return NextResponse.json(
@@ -74,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new media work
-    const query = `
+    let query = `
       MATCH (u:User {email: $userEmail})
       CREATE (m:MediaWork {
         media_id: $mediaId,
@@ -87,6 +99,25 @@ export async function POST(request: NextRequest) {
         created_by: u.email,
         created_by_name: u.name
       })
+    `;
+
+    // Add PART_OF relationship if parent series is specified
+    if (parentSeriesId) {
+      query += `
+      WITH m
+      MATCH (parent:MediaWork)
+      WHERE parent.media_id = $parentSeriesId OR parent.wikidata_id = $parentSeriesId
+      CREATE (m)-[r:PART_OF {
+        sequence_number: $sequenceNumber,
+        season_number: $seasonNumber,
+        episode_number: $episodeNumber,
+        relationship_type: $relationshipType,
+        is_main_series: $isMainSeries
+      }]->(parent)
+      `;
+    }
+
+    query += `
       RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year
     `;
 
@@ -98,6 +129,12 @@ export async function POST(request: NextRequest) {
       creator: creator || null,
       wikidataId: wikidataId || null,
       userEmail,
+      parentSeriesId: parentSeriesId || null,
+      sequenceNumber: sequenceNumber ? parseInt(sequenceNumber) : null,
+      seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,
+      episodeNumber: episodeNumber ? parseInt(episodeNumber) : null,
+      relationshipType: relationshipType || null,
+      isMainSeries: isMainSeries !== undefined ? isMainSeries : true,
     });
 
     await dbSession.close();

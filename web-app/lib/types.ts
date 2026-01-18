@@ -120,3 +120,27 @@ export interface HistoriographicPath {
   nodes: PathNode[];
   relationships: PathRelationship[];
 }
+
+export interface SeriesRelationship {
+  media_id: string;
+  title: string;
+  release_year: number;
+  sequence_number?: number;
+  season_number?: number;
+  episode_number?: number;
+  is_main_series: boolean;
+  relationship_type: 'sequel' | 'prequel' | 'expansion' | 'episode' | 'part' | 'season';
+}
+
+export interface MediaWorkWithSeries extends MediaWork {
+  media_id?: string;
+  media_type?: 'Book' | 'Game' | 'Film' | 'TVSeries' | 'BookSeries' | 'FilmSeries' | 'TVSeriesCollection' | 'GameSeries' | 'BoardGameSeries';
+  parent_series?: MediaWork;
+  child_works?: SeriesRelationship[];
+  series_position?: {
+    sequence_number?: number;
+    season_number?: number;
+    episode_number?: number;
+    relationship_type: string;
+  };
+}

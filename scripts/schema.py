@@ -16,6 +16,11 @@ class MediaType(str, Enum):
     GAME = "Game"
     FILM = "Film"
     TV_SERIES = "TVSeries"
+    BOOK_SERIES = "BookSeries"
+    FILM_SERIES = "FilmSeries"
+    TV_SERIES_COLLECTION = "TVSeriesCollection"
+    GAME_SERIES = "GameSeries"
+    BOARD_GAME_SERIES = "BoardGameSeries"
 
 
 class Sentiment(str, Enum):
@@ -152,4 +157,7 @@ RELATIONSHIP_TYPES = {
     "interacted_with": "INTERACTED_WITH",  # Figure -> Figure (historical social connection)
     "has_scholarly_basis": "HAS_SCHOLARLY_BASIS",  # HistoricalFigure/MediaWork -> ScholarlyWork
     "created_by": "CREATED_BY",       # Node -> Agent
+    "part_of": "PART_OF",            # MediaWork -> MediaWork (series membership)
+                                     # Properties: sequence_number, season_number, episode_number,
+                                     # is_main_series, relationship_type (sequel/prequel/expansion/episode/part/season)
 }

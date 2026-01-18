@@ -1,5 +1,5 @@
 import { getSession } from './neo4j';
-import { HistoricalFigure, FigureProfile, Portrayal, SentimentDistribution, GraphNode, GraphLink } from './types';
+import { HistoricalFigure, FigureProfile, Portrayal, SentimentDistribution, GraphNode, GraphLink, SeriesRelationship } from './types';
 
 export async function searchFigures(query: string): Promise<HistoricalFigure[]> {
   const session = await getSession();
@@ -120,7 +120,23 @@ export async function getMediaById(wikidataId: string) {
     const result = await session.run(
       `MATCH (m:MediaWork {wikidata_id: $wikidataId})
        OPTIONAL MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m)
-       RETURN m, collect({figure: f, sentiment: r.sentiment, role: r.role_description}) as portrayals`,
+       OPTIONAL MATCH (m)-[pr:PART_OF]->(parent:MediaWork)
+       OPTIONAL MATCH (child:MediaWork)-[cr:PART_OF]->(m)
+       RETURN m,
+              collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description}) as portrayals,
+              parent,
+              pr,
+              collect(DISTINCT {
+                media_id: child.media_id,
+                wikidata_id: child.wikidata_id,
+                title: child.title,
+                release_year: child.release_year,
+                sequence_number: cr.sequence_number,
+                season_number: cr.season_number,
+                episode_number: cr.episode_number,
+                is_main_series: cr.is_main_series,
+                relationship_type: cr.relationship_type
+              }) as children`,
       { wikidataId }
     );
 
@@ -129,9 +145,13 @@ export async function getMediaById(wikidataId: string) {
     const record = result.records[0];
     const mediaNode = record.get('m');
     const portrayals = record.get('portrayals').filter((p: any) => p.figure !== null);
+    const parentNode = record.get('parent');
+    const parentRel = record.get('pr');
+    const childrenData = record.get('children').filter((c: any) => c.media_id !== null || c.wikidata_id !== null);
 
     return {
       wikidata_id: mediaNode.properties.wikidata_id,
+      media_id: mediaNode.properties.media_id,
       title: mediaNode.properties.title,
       release_year: mediaNode.properties.release_year?.toNumber?.() ?? Number(mediaNode.properties.release_year),
       media_type: mediaNode.properties.media_type,
@@ -145,7 +165,30 @@ export async function getMediaById(wikidataId: string) {
         },
         sentiment: p.sentiment,
         role: p.role
-      }))
+      })),
+      parent_series: parentNode ? {
+        media_id: parentNode.properties.media_id,
+        wikidata_id: parentNode.properties.wikidata_id,
+        title: parentNode.properties.title,
+        release_year: parentNode.properties.release_year?.toNumber?.() ?? Number(parentNode.properties.release_year),
+        media_type: parentNode.properties.media_type,
+      } : undefined,
+      series_position: parentRel ? {
+        sequence_number: parentRel.properties.sequence_number,
+        season_number: parentRel.properties.season_number,
+        episode_number: parentRel.properties.episode_number,
+        relationship_type: parentRel.properties.relationship_type,
+      } : undefined,
+      child_works: childrenData.map((c: any) => ({
+        media_id: c.media_id || c.wikidata_id,
+        title: c.title,
+        release_year: c.release_year?.toNumber?.() ?? Number(c.release_year),
+        sequence_number: c.sequence_number,
+        season_number: c.season_number,
+        episode_number: c.episode_number,
+        is_main_series: c.is_main_series || false,
+        relationship_type: c.relationship_type,
+      })),
     };
   } finally {
     await session.close();
@@ -414,6 +457,143 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
     });
 
     return { nodes, links };
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getMediaSeriesHierarchy(mediaId: string) {
+  const session = await getSession();
+  try {
+    const result = await session.run(
+      `MATCH (m:MediaWork)
+       WHERE m.media_id = $mediaId OR m.wikidata_id = $mediaId
+       OPTIONAL MATCH (m)-[pr:PART_OF]->(parent:MediaWork)
+       OPTIONAL MATCH (child:MediaWork)-[cr:PART_OF]->(m)
+       RETURN m,
+              parent,
+              pr,
+              collect({
+                media_id: child.media_id,
+                wikidata_id: child.wikidata_id,
+                title: child.title,
+                release_year: child.release_year,
+                sequence_number: cr.sequence_number,
+                season_number: cr.season_number,
+                episode_number: cr.episode_number,
+                is_main_series: cr.is_main_series,
+                relationship_type: cr.relationship_type
+              }) as children`,
+      { mediaId }
+    );
+
+    if (result.records.length === 0) return null;
+
+    const record = result.records[0];
+    const mediaNode = record.get('m');
+    const parentNode = record.get('parent');
+    const parentRel = record.get('pr');
+    const childrenData = record.get('children').filter((c: any) => c.media_id !== null);
+
+    return {
+      media: {
+        media_id: mediaNode.properties.media_id,
+        wikidata_id: mediaNode.properties.wikidata_id,
+        title: mediaNode.properties.title,
+        release_year: mediaNode.properties.release_year?.toNumber?.() ?? Number(mediaNode.properties.release_year),
+        media_type: mediaNode.properties.media_type,
+      },
+      parent: parentNode ? {
+        media_id: parentNode.properties.media_id,
+        wikidata_id: parentNode.properties.wikidata_id,
+        title: parentNode.properties.title,
+        release_year: parentNode.properties.release_year?.toNumber?.() ?? Number(parentNode.properties.release_year),
+        media_type: parentNode.properties.media_type,
+      } : null,
+      series_position: parentRel ? {
+        sequence_number: parentRel.properties.sequence_number,
+        season_number: parentRel.properties.season_number,
+        episode_number: parentRel.properties.episode_number,
+        relationship_type: parentRel.properties.relationship_type,
+      } : null,
+      children: childrenData.map((c: any) => ({
+        media_id: c.media_id || c.wikidata_id,
+        title: c.title,
+        release_year: c.release_year?.toNumber?.() ?? Number(c.release_year),
+        sequence_number: c.sequence_number,
+        season_number: c.season_number,
+        episode_number: c.episode_number,
+        is_main_series: c.is_main_series || false,
+        relationship_type: c.relationship_type,
+      })),
+    };
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getSeriesWorks(seriesMediaId: string): Promise<SeriesRelationship[]> {
+  const session = await getSession();
+  try {
+    const result = await session.run(
+      `MATCH (series:MediaWork)
+       WHERE series.media_id = $seriesMediaId OR series.wikidata_id = $seriesMediaId
+       MATCH (child:MediaWork)-[r:PART_OF]->(series)
+       RETURN child, r
+       ORDER BY r.season_number, r.sequence_number, r.episode_number, child.release_year`,
+      { seriesMediaId }
+    );
+
+    return result.records.map(record => {
+      const childNode = record.get('child');
+      const rel = record.get('r');
+      return {
+        media_id: childNode.properties.media_id || childNode.properties.wikidata_id,
+        title: childNode.properties.title,
+        release_year: childNode.properties.release_year?.toNumber?.() ?? Number(childNode.properties.release_year),
+        sequence_number: rel.properties.sequence_number,
+        season_number: rel.properties.season_number,
+        episode_number: rel.properties.episode_number,
+        is_main_series: rel.properties.is_main_series || false,
+        relationship_type: rel.properties.relationship_type,
+      };
+    });
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getMediaParentSeries(mediaId: string) {
+  const session = await getSession();
+  try {
+    const result = await session.run(
+      `MATCH (m:MediaWork)-[r:PART_OF]->(parent:MediaWork)
+       WHERE m.media_id = $mediaId OR m.wikidata_id = $mediaId
+       RETURN parent, r`,
+      { mediaId }
+    );
+
+    if (result.records.length === 0) return null;
+
+    const record = result.records[0];
+    const parentNode = record.get('parent');
+    const rel = record.get('r');
+
+    return {
+      parent: {
+        media_id: parentNode.properties.media_id,
+        wikidata_id: parentNode.properties.wikidata_id,
+        title: parentNode.properties.title,
+        release_year: parentNode.properties.release_year?.toNumber?.() ?? Number(parentNode.properties.release_year),
+        media_type: parentNode.properties.media_type,
+      },
+      relationship: {
+        sequence_number: rel.properties.sequence_number,
+        season_number: rel.properties.season_number,
+        episode_number: rel.properties.episode_number,
+        relationship_type: rel.properties.relationship_type,
+      },
+    };
   } finally {
     await session.close();
   }

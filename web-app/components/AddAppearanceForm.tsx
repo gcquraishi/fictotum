@@ -8,8 +8,10 @@ import { Plus } from 'lucide-react';
 
 interface MediaSearchResult {
   media_id: string;
+  wikidata_id?: string;
   title: string;
   year: number;
+  media_type?: string;
 }
 
 export default function AddAppearanceForm({ figureId }: { figureId: string }) {
@@ -33,6 +35,16 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
   const [isProtagonist, setIsProtagonist] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Series support state
+  const [parentSeriesQuery, setParentSeriesQuery] = useState('');
+  const [parentSeriesResults, setParentSeriesResults] = useState<MediaSearchResult[]>([]);
+  const [parentSeries, setParentSeries] = useState<MediaSearchResult | null>(null);
+  const [sequenceNumber, setSequenceNumber] = useState('');
+  const [seasonNumber, setSeasonNumber] = useState('');
+  const [episodeNumber, setEpisodeNumber] = useState('');
+  const [relationshipType, setRelationshipType] = useState('part');
+  const [linkToParentSeries, setLinkToParentSeries] = useState(false);
+
   const handleMediaSearch = async (query: string) => {
     setMediaQuery(query);
     setSelectedMedia(null);
@@ -43,6 +55,19 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
     const response = await fetch(`/api/media/search?q=${query}`);
     const data = await response.json();
     setMediaResults(data.works || []);
+  };
+
+  const handleParentSeriesSearch = async (query: string) => {
+    setParentSeriesQuery(query);
+    setParentSeries(null);
+    if (query.length < 2) {
+      setParentSeriesResults([]);
+      return;
+    }
+    // Search only for series types
+    const response = await fetch(`/api/media/search?q=${query}&type=BookSeries,FilmSeries,TVSeriesCollection,GameSeries,BoardGameSeries`);
+    const data = await response.json();
+    setParentSeriesResults(data.works || []);
   };
 
   const handleCreateMedia = async () => {
@@ -61,6 +86,12 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
         releaseYear: parseInt(newMediaYear),
         creator: newMediaCreator || null,
         wikidataId: newMediaWikidataId || null,
+        parentSeriesId: parentSeries?.media_id || parentSeries?.wikidata_id || null,
+        sequenceNumber: sequenceNumber ? parseInt(sequenceNumber) : null,
+        seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,
+        episodeNumber: episodeNumber ? parseInt(episodeNumber) : null,
+        relationshipType: relationshipType || null,
+        isMainSeries: true,
       }),
     });
 
@@ -156,9 +187,12 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
             </ul>
         )}
         {selectedMedia && !showCreateMedia && (
-          <div className="mt-2 text-sm text-green-400">
-            ✓ Selected: {selectedMedia.title} ({selectedMedia.year})
-          </div>
+          <>
+            <div className="mt-2 text-sm text-green-400">
+              ✓ Selected: {selectedMedia.title} ({selectedMedia.year})
+            </div>
+            {/* TODO: Add checkbox to link to parent series if selected media has one */}
+          </>
         )}
       </div>
 
@@ -202,6 +236,11 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
                 <option value="TV_SERIES">TV Series</option>
                 <option value="BOOK">Book</option>
                 <option value="GAME">Game</option>
+                <option value="BOOK_SERIES">Book Series</option>
+                <option value="FILM_SERIES">Film Series</option>
+                <option value="TV_SERIES_COLLECTION">TV Series Collection</option>
+                <option value="GAME_SERIES">Game Series</option>
+                <option value="BOARD_GAME_SERIES">Board Game Series</option>
               </select>
             </div>
 
@@ -241,6 +280,110 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
               placeholder="e.g., Q28842191"
             />
           </div>
+
+          {/* Series Parent Search - only show for non-series media types */}
+          {!['BOOK_SERIES', 'FILM_SERIES', 'TV_SERIES_COLLECTION', 'GAME_SERIES', 'BOARD_GAME_SERIES'].includes(newMediaType) && (
+            <div>
+              <label htmlFor="parent-series-search" className="block text-xs font-medium text-gray-400">Part of Series (optional)</label>
+              <input
+                id="parent-series-search"
+                type="text"
+                value={parentSeriesQuery}
+                onChange={(e) => handleParentSeriesSearch(e.target.value)}
+                className="mt-1 w-full bg-gray-800 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white text-sm"
+                placeholder="Search for parent series..."
+              />
+              {parentSeriesResults.length > 0 && !parentSeries && (
+                <ul className="bg-gray-700 border border-gray-500 rounded-md mt-1 max-h-40 overflow-y-auto">
+                  {parentSeriesResults.map(work => (
+                    <li
+                      key={work.media_id}
+                      onClick={() => {
+                        setParentSeries(work);
+                        setParentSeriesQuery(work.title);
+                        setParentSeriesResults([]);
+                      }}
+                      className="px-3 py-2 hover:bg-blue-600 cursor-pointer text-sm"
+                    >
+                      {work.title} ({work.year}) - {work.media_type}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {parentSeries && (
+                <div className="mt-2 text-xs text-green-400">
+                  ✓ Series: {parentSeries.title} ({parentSeries.year})
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sequence Metadata - only show when parent series is selected */}
+          {parentSeries && (
+            <div className="space-y-2 p-3 bg-gray-800 border border-gray-500 rounded-md">
+              <h5 className="text-xs font-semibold text-gray-300">Series Position</h5>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label htmlFor="sequence-number" className="block text-xs font-medium text-gray-400">Sequence #</label>
+                  <input
+                    id="sequence-number"
+                    type="number"
+                    value={sequenceNumber}
+                    onChange={e => setSequenceNumber(e.target.value)}
+                    className="mt-1 w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-1 px-2 text-white text-sm"
+                    placeholder="1, 2, 3..."
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="relationship-type" className="block text-xs font-medium text-gray-400">Type</label>
+                  <select
+                    id="relationship-type"
+                    value={relationshipType}
+                    onChange={e => setRelationshipType(e.target.value)}
+                    className="mt-1 w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-1 px-2 text-white text-sm"
+                  >
+                    <option value="part">Part</option>
+                    <option value="sequel">Sequel</option>
+                    <option value="prequel">Prequel</option>
+                    <option value="expansion">Expansion</option>
+                    <option value="episode">Episode</option>
+                    <option value="season">Season</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Season/Episode for TV series */}
+              {(newMediaType === 'TV_SERIES' || parentSeries.media_type?.includes('TV')) && (
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label htmlFor="season-number" className="block text-xs font-medium text-gray-400">Season #</label>
+                    <input
+                      id="season-number"
+                      type="number"
+                      value={seasonNumber}
+                      onChange={e => setSeasonNumber(e.target.value)}
+                      className="mt-1 w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-1 px-2 text-white text-sm"
+                      placeholder="1, 2, 3..."
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="episode-number" className="block text-xs font-medium text-gray-400">Episode #</label>
+                    <input
+                      id="episode-number"
+                      type="number"
+                      value={episodeNumber}
+                      onChange={e => setEpisodeNumber(e.target.value)}
+                      className="mt-1 w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-1 px-2 text-white text-sm"
+                      placeholder="1, 2, 3..."
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex gap-2">
             <button
