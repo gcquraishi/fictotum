@@ -45,6 +45,13 @@ export interface GraphLink {
   source: string;
   target: string;
   sentiment: 'Heroic' | 'Villainous' | 'Complex';
+  relationshipType?: 'APPEARS_IN' | 'INTERACTED_WITH' | string;
+  featured?: boolean;
+}
+
+export interface PathVisualization {
+  pathIds: string[];  // Node IDs to highlight
+  pathLinks: { source: string; target: string }[];  // Links to emphasize
 }
 
 export interface ScholarlyWork {

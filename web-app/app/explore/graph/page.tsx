@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { Network } from 'lucide-react';
+import { Network, X } from 'lucide-react';
 import SearchInput from '@/components/SearchInput';
+import GraphExplorer from '@/components/GraphExplorer';
 
 export default function GraphPage() {
   return (
@@ -63,18 +64,25 @@ function GraphContent() {
           </div>
         </div>
 
-        {/* Graph Viewer Placeholder */}
+        {/* Graph Viewer */}
         {selectedId ? (
           <div className="bg-white p-6 rounded-lg border border-brand-primary/20 shadow-sm">
-            <div className="bg-brand-bg rounded-lg border border-brand-primary/30 p-12 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-              <p className="text-brand-text/70">
-                Graph visualization for ID: <code className="text-brand-primary font-mono">{selectedId}</code>
-              </p>
-              <p className="text-sm text-brand-text/50 mt-2">
-                Loading graph data...
-              </p>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-brand-primary">
+                Network Graph
+              </h2>
+              <button
+                onClick={() => {
+                  setSelectedId(null);
+                  router.push('/explore/graph', { scroll: false });
+                }}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-brand-text hover:bg-brand-bg rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Clear
+              </button>
             </div>
+            <GraphExplorer canonicalId={selectedId} />
           </div>
         ) : (
           <div className="bg-brand-bg rounded-lg border border-brand-primary/30 p-12 text-center">

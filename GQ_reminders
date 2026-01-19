@@ -11,21 +11,314 @@ Run the local/dev environment
 Redeploy
     vercel --prod
 
+Keep machine awake
+    caffeinate -i
 
-Next steps for Google OAuth:
-                                                                                        
-  To complete the setup, you need to create Google OAuth credentials:                      
-                                                                                           
-  1. Go to https://console.cloud.google.com/                                               
-  2. Create a new project or select an existing one                                        
-  3. Enable the Google+ API (or Identity Toolkit API)                                      
-  4. Go to Credentials → Create Credentials → OAuth 2.0 Client ID                          
-  5. Configure the OAuth consent screen if prompted                                        
-  6. For Application type, select Web application                                          
-  7. Add these Authorized redirect URIs:                                                   
-    - http://localhost:3000/api/auth/callback/google (for local dev)                       
-    - https://yourdomain.com/api/auth/callback/google (for production)                     
-  8. Copy the Client ID and Client Secret                                                  
-  9. Update web-app/.env.local:                                                            
-    - Replace YOUR_GOOGLE_CLIENT_ID_HERE with your Client ID                               
-    - Replace YOUR_GOOGLE_CLIENT_SECRET_HERE with your Client Secret 
+automate product development given the cast of       
+  agents I have created. first, I want to know if      
+  there are any other agents it would recommend at     
+  this moment; if so, go ahead and create them.        
+  second, I want to run this group of agents like      
+  they're employees of a real startup and I'm the      
+  ceo; instead of me prompting them from scratch,      
+  I would like each to develop a roadmap and then      
+  prioritize sprints for me to greenlight or           
+  tweak. they should ask me as many questions as       
+  they would like to make sure they're working on      
+  the right problems and they should be aware of       
+  what one another are doing.                          
+                                                       
+⏺ I'll engage the chief-of-staff agent to analyze your 
+  current agent roster, recommend any additions, and   
+  design an autonomous product development workflow    
+  where each agent operates like a startup employee    
+  with roadmaps and sprints.                           
+                                                       
+⏺ chief-of-staff(Design autonomous agent workflow      
+                system)                                
+  ⎿  Done (23 tool uses · 61.1k tokens · 4m 59s)       
+                                                       
+⏺ Perfect! The chief-of-staff has completed a          
+  comprehensive analysis and delivered a complete      
+  autonomous workflow system. Here's what was created: 
+                                                       
+  New Agents Created                                   
+                                                       
+  Three critical gaps were identified and filled:      
+                                                       
+  1. DevOps Infrastructure Engineer - Handles CI/CD,   
+  deployment, Neo4j monitoring, and production         
+  debugging                                            
+  2. Technical Writer Documentarian - Creates user     
+  guides, API docs, and contributor onboarding         
+  3. Sprint Coordinator - Orchestrates sprints, manages
+   dependencies, and facilitates cross-agent           
+  coordination                                         
+                                                       
+  Their complete specifications are in .claude/agents/ 
+                                                       
+  Autonomous Workflow System                           
+                                                       
+  A complete workflow framework has been created at    
+  docs/AUTONOMOUS_WORKFLOW_SYSTEM.md featuring:        
+                                                       
+  - Quarterly Roadmaps: Each of your 12 agents develops
+   their own 3-objective roadmap                       
+  - Two-Week Sprints: Predictable cycles with clear    
+  planning and review ceremonies                       
+  - Clarifying Questions Protocol: Agents proactively  
+  surface questions before work begins                 
+  - Cross-Agent Coordination: Dependency maps, handoff 
+  protocols, and workstream visibility                 
+  - Lightweight CEO Ceremonies: Only 2-3 hours/month of
+   your time required                                  
+                                                       
+  Your Time Commitment                                 
+                                                       
+  Mandatory:                                           
+  - Quarterly roadmap greenlight: 30-60 min (4x/year)  
+  - Sprint greenlight: 15-30 min (every 2 weeks)       
+                                                       
+  Total: ~2-3 hours/month                              
+                                                       
+  48-Hour Bootstrap Plan                               
+                                                       
+  The system includes a detailed bootstrap timeline to 
+  get all 12 agents operating autonomously within 48   
+  hours, culminating in your first greenlighted Q1 2026
+   roadmap and Sprint 1 plan.                          
+                                                       
+  Would you like to proceed with the bootstrap? I can  
+  have the sprint-coordinator agent begin by creating  
+  roadmap templates and distributing them to all       
+  agents.                                              
+                                                       
+✻ Sautéed for 5m 34s                                   
+                                                       
+❯ /rename Autonomous workflow proposal                 
+  ⎿  Session renamed to: Autonomous workflow proposal  
+                                                       
+❯ I don't want to be out of the loop for days or       
+  even hours at a time. propose a lighter-weight       
+  option that allows each agent to propose next        
+  steps but keeps me much more closely involved.       
+                                                       
+⏺ chief-of-staff(Design lightweight         resuming   
+                real-time workflow)         a8c53d2    
+  ⎿  Done (0 tool uses · 0 tokens · 1s)                
+                                                       
+⏺ chief-of-staff(Design lightweight real-time workflow)
+  ⎿  Done (11 tool uses · 34.2k tokens · 1m 27s)       
+                                                       
+⏺ Perfect! The chief-of-staff has redesigned this for  
+  real-time, high-touch collaboration. Here's the      
+  lightweight version:                                 
+                                                       
+  The "Working Session" Model (Not Sprints)            
+                                                       
+  Core Loop:                                           
+  CEO checks in → Agent reports status + proposes next 
+  step → CEO approves/tweaks → Agent executes → Repeat 
+                                                       
+  Your time per check-in: 1-2 minutes                  
+  Frequency: As often as you want (could be every 15   
+  minutes or twice a day)                              
+                                                       
+  Key Mechanisms                                       
+                                                       
+  1. STATUS_BOARD.md (Single Source of Truth)          
+                                                       
+  A living document you can glance at anytime showing: 
+  - Currently Active: Who's working on what right now  
+  - Ready for Review: What just got completed          
+  - Proposed Next Steps: What agents want to do next   
+  (awaiting your quick yes/no)                         
+  - Blockers: Any stuck work                           
+                                                       
+  2. The Proposal Pattern                              
+                                                       
+  Agents propose work in a lightweight format:         
+  PROPOSAL: Ingest "Rome" HBO series character network 
+  Impact: Adds 30+ characters, connects to Julius      
+  Caesar nodes                                         
+  Effort: ~45 minutes                                  
+  Alternative: Could do documentary series instead     
+                                                       
+  You respond: "Go" / "Not now" / "Yes but tweak X"    
+  (10-30 seconds)                                      
+                                                       
+  3. Session Handoff Notes                             
+                                                       
+  When agents complete work, they leave a brief note:  
+  Did: Ingested "I, Claudius" with 24 characters       
+  Changed: 47 new nodes in Neo4j                       
+  Next: Sibling series "Claudius the God" - propose    
+  ingesting next?                                      
+                                                       
+  4. Real-Time Coordination                            
+                                                       
+  Agents claim resources in the STATUS_BOARD to prevent
+   conflicts - self-service, no ceremony needed.       
+                                                       
+  What Gets Eliminated                                 
+                                                       
+  - ❌ Quarterly roadmaps                              
+  - ❌ 2-week sprint cycles                            
+  - ❌ Planning templates                              
+  - ❌ Scheduled check-ins                             
+  - ❌ Sprint coordinator (for routine work)           
+                                                       
+  What You Get                                         
+                                                       
+  - ✅ Always know what's happening (30-second         
+  STATUS_BOARD scan)                                   
+  - ✅ Agents propose next steps proactively           
+  - ✅ Approve work in seconds, not meetings           
+  - ✅ Check in as often as you want                   
+  - ✅ Feels like working alongside the team in        
+  real-time                                            
+                                                       
+  Shall I create the STATUS_BOARD.md template and      
+  update the agent protocols to implement this system? 
+                                                       
+✻ Brewed for 2m 11s                                    
+                                                       
+❯ yes. will chronos_log.md and the archive that        
+  older actions get cut/paste into continue to         
+  have a use in this system?                           
+                                                       
+⏺ Write(docs/STATUS_BOARD.md)                          
+  ⎿  Wrote 62 lines to docs/STATUS_BOARD.md            
+     # ChronosGraph Status Board                       
+     *Last updated: 2026-01-18 15:45 UTC*              
+     ## Currently Active                               
+     | Agent | Working On | Started | ETA | Notes      
+     |                                                 
+     |-------|------------|---------|-----|-------     
+     |                                                 
+     | (none currently) | | | | |                      
+     ## Ready for Review                               
+     | Agent | Completed | Ready Since | Quick         
+     Summary |                                         
+     … +52 lines (ctrl+o to expand)                    
+                                                       
+⏺ Write(docs/WORKING_SESSION_PROTOCOL.md)              
+  ⎿  Wrote 382 lines to                                
+     docs/WORKING_SESSION_PROTOCOL.md                  
+     # Working Session Protocol for ChronosGraph       
+     Agents                                            
+     ## Philosophy: Real-Time Collaboration            
+     This system is designed for a CEO who wants to    
+      work alongside their agents in real-time, not    
+      manage them asynchronously across days or        
+     weeks. Think "co-located startup team" not        
+     "remote sprint-based org."                        
+     ---                                               
+     ## The Three-Tier Documentation System            
+                                                       
+     … +372 lines (ctrl+o to expand)                   
+                                                       
+⏺ Yes, absolutely! CHRONOS_LOG.md and the archive      
+  continue to serve an important purpose, but with a   
+  narrower, more focused scope:                        
+                                                       
+  The Three-Tier Documentation System                  
+                                                       
+  1. STATUS_BOARD.md (Real-Time)                       
+                                                       
+  - What's happening RIGHT NOW                         
+  - Currently active work, proposals awaiting your     
+  approval, completions ready for review               
+  - You check this multiple times per day (30-second   
+  scans)                                               
+  - Gets rotated/cleaned regularly (current state only)
+                                                       
+  2. Session Handoff Notes (Routine Work)              
+                                                       
+  - Lives in STATUS_BOARD.md (accumulates until rotated
+   ~weekly)                                            
+  - Brief records of completed routine work            
+  - Example: "Ingested 'Rome' HBO series - 30          
+  characters, 47 new nodes"                            
+  - Other agents read these to understand what just    
+  shipped                                              
+                                                       
+  3. CHRONOS_LOG.md (Major Milestones Only)            
+                                                       
+  - Significant achievements and architectural         
+  decisions                                            
+  - Still rotates to archive when >3 entries           
+  - Reserved for truly important events                
+                                                       
+  What qualifies for CHRONOS_LOG:                      
+  - ✅ Major feature completions ("Implemented full    
+  Wikidata integration")                               
+  - ✅ Significant data milestones ("Ingested complete 
+  Shakespeare filmography - 150+ works")               
+  - ✅ Architectural decisions ("Migrated to           
+  canonical_id for all entities")                      
+  - ✅ Infrastructure changes ("Deployed CI/CD         
+  pipeline")                                           
+                                                       
+  What uses handoff notes instead:                     
+  - ❌ Routine ingestions ("Added 'Rome' HBO series")  
+  - ❌ Small bug fixes ("Fixed typo in loading state") 
+  - ❌ Polish work ("Improved button hover states")    
+                                                       
+  This keeps CHRONOS_LOG as your project history and   
+  learning archive while STATUS_BOARD handles real-time
+   operational visibility.                             
+                                                       
+  I've created both documents:                         
+  - docs/STATUS_BOARD.md - Your real-time dashboard    
+  - docs/WORKING_SESSION_PROTOCOL.md - Complete agent  
+  workflow guide                                       
+                                                       
+  Ready to start using this system?                    
+                                                       
+✻ Sautéed for 2m 2s                                    
+                                                       
+❯ tomorrow. how do I call it?                          
+                                                       
+⏺ Tomorrow, you have several options:                  
+                                                       
+  Option 1: Check STATUS_BOARD First                   
+                                                       
+  "Show me the STATUS_BOARD - what's proposed and ready
+   for review?"                                        
+  Then approve/reject proposals directly.              
+                                                       
+  Option 2: Ask an Agent to Propose Next Steps         
+                                                       
+  "research-analyst: what do you recommend working on  
+  next?"                                               
+  The agent will add a proposal to STATUS_BOARD using  
+  the new format.                                      
+                                                       
+  Option 3: Direct an Agent to Work                    
+                                                       
+  "data-architect: propose 2-3 high-value tasks for    
+  today"                                               
+  They'll add proposals, you approve, they execute.    
+                                                       
+  Option 4: Start a Specific Agent                     
+                                                       
+  "I'm launching the frontend-polish-specialist to work
+   on the timeline UI"                                 
+  Or just invoke them directly with the Task tool if   
+  you have specific work in mind.                      
+                                                       
+  Option 5: Get Strategic Guidance                     
+                                                       
+  "chief-of-staff: review STATUS_BOARD and recommend   
+  what I should prioritize today"                      
+                                                       
+  The key: Every agent now knows about STATUS_BOARD and
+   the working session protocol (it's documented). Just
+   reference it naturally:                             
+  - "Add that to the STATUS_BOARD as a proposal"       
+  - "What's in the STATUS_BOARD right now?"            
+  - "Go ahead with that proposal from earlier"         
+                                                       
+  The system is self-service - agents will maintain    
+  STATUS_BOARD, you just read and approve.

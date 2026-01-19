@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import React, { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { GraphNode, GraphLink } from '@/lib/types';
+import { GraphNode, GraphLink, PathVisualization } from '@/lib/types';
 
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
   ssr: false,
@@ -13,10 +13,58 @@ interface GraphExplorerProps {
   canonicalId?: string;
   nodes?: GraphNode[];
   links?: GraphLink[];
+  highlightedPath?: PathVisualization;
 }
 
 interface ExtendedGraphLink extends GraphLink {
   featured?: boolean;
+}
+
+interface ForceGraphLink extends Omit<ExtendedGraphLink, 'source' | 'target'> {
+  source: string | { id: string };
+  target: string | { id: string };
+}
+
+// Error Boundary for ForceGraph2D rendering errors
+class ForceGraphErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('ForceGraph rendering error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gray-50 border-2 border-red-300 rounded-lg">
+          <div className="text-center p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Graph Rendering Error</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Failed to render the graph visualization. Please refresh the page.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 const SENTIMENT_COLORS = {
@@ -29,20 +77,26 @@ const SENTIMENT_COLORS = {
 const BACON_COLOR = '#dc2626'; // Red for Bacon nodes
 const BACON_SIZE = 1.5; // Scale multiplier for Bacon nodes
 
+// Node sizing multipliers
+const EXPANDED_SIZE_MULTIPLIER = 1.3; // Size increase when node is expanded
+const HIGHLIGHTED_SIZE_MULTIPLIER = 1.2; // Size increase when node is highlighted
+const NODE_GLOW_RADIUS_MULTIPLIER = 2.5; // Glow effect radius multiplier
+
 // Helper function to check if a node is a Bacon (person, not media work about Bacon)
 const isBaconNode = (nodeId: string): boolean => {
   return (nodeId.includes('bacon') && !nodeId.startsWith('media-'));
 };
 
-export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks }: GraphExplorerProps) {
+export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks, highlightedPath }: GraphExplorerProps) {
   const router = useRouter();
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [nodes, setNodes] = useState<GraphNode[]>(initialNodes || []);
-  const [links, setLinks] = useState<ExtendedGraphLink[]>(initialLinks || []);
+  const [links, setLinks] = useState<ForceGraphLink[]>(initialLinks || []);
   const [isLoading, setIsLoading] = useState(!initialNodes && !initialLinks);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [loadingNodes, setLoadingNodes] = useState<Set<string>>(new Set());
   const [showAllEdges, setShowAllEdges] = useState(true);
   const [showAcademicWorks, setShowAcademicWorks] = useState(false);
   const [showReferenceWorks, setShowReferenceWorks] = useState(false);
@@ -128,7 +182,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   const visibleNodeIds = new Set(visibleNodes.map(n => n.id));
 
   // Filter links based on featured path, expanded nodes, and visible nodes
-  const visibleLinks = links.filter((link: any) => {
+  const visibleLinks = links.filter((link: ForceGraphLink) => {
     // Handle both string IDs and object references (force-graph modifies links after first render)
     const source = typeof link.source === 'object' ? link.source.id : link.source;
     const target = typeof link.target === 'object' ? link.target.id : link.target;
@@ -156,35 +210,99 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     return false;
   });
 
-  // Clone links to ensure fresh data for force-graph (it mutates the objects)
-  const graphLinks = visibleLinks.map(link => ({
-    source: typeof link.source === 'object' ? link.source.id : link.source,
-    target: typeof link.target === 'object' ? link.target.id : link.target,
-    sentiment: link.sentiment,
-    featured: link.featured,
-  }));
+  // Clone links and mark highlighted path links as featured
+  const graphLinks = visibleLinks.map((link: ForceGraphLink) => {
+    const source = typeof link.source === 'object' ? link.source.id : link.source;
+    const target = typeof link.target === 'object' ? link.target.id : link.target;
+
+    // Check if this link is part of the highlighted path
+    const isHighlighted = highlightedPath?.pathLinks.some(
+      pathLink =>
+        (pathLink.source === source && pathLink.target === target) ||
+        (pathLink.source === target && pathLink.target === source) // Handle bidirectional
+    ) || false;
+
+    return {
+      source,
+      target,
+      sentiment: link.sentiment,
+      featured: link.featured || isHighlighted,
+      relationshipType: link.relationshipType,
+    };
+  });
 
   // Handle node click
-  const handleNodeClick = (node: any) => {
-    // Expand/collapse non-figure nodes to show their connections
-    if (!node.id.startsWith('figure-') && !node.id.startsWith('actor-')) {
-      setExpandedNodes((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(node.id)) {
+  const handleNodeClick = async (node: any) => {
+    // Handle media node expansion
+    if (node.type === 'media' && typeof node.id === 'string' && node.id.startsWith('media-')) {
+      const wikidataId = node.id.replace('media-', '');
+
+      // If already expanded, collapse it
+      if (expandedNodes.has(node.id)) {
+        setExpandedNodes((prev) => {
+          const newSet = new Set(prev);
           newSet.delete(node.id);
-        } else {
-          newSet.add(node.id);
+          return newSet;
+        });
+        return;
+      }
+
+      // Otherwise, fetch and expand neighbors
+      try {
+        setLoadingNodes((prev) => new Set(prev).add(node.id));
+
+        const response = await fetch(`/api/graph/expand/${wikidataId}?type=media`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch neighbors');
         }
-        return newSet;
-      });
-    } else if (node.type === 'figure' && typeof node.id === 'string' && node.id.startsWith('figure-')) {
-      // Navigate to figure page
+
+        const data = await response.json();
+
+        setExpandedNodes((prev) => new Set(prev).add(node.id));
+
+        // Merge new nodes (avoiding duplicates)
+        setNodes((prevNodes) => {
+          const existingIds = new Set(prevNodes.map(n => n.id));
+          const newNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+          return [...prevNodes, ...newNodes];
+        });
+
+        // Merge new links (avoiding duplicates)
+        setLinks((prevLinks) => {
+          const existingLinks = new Set(
+            prevLinks.flatMap(l => {
+              const source = typeof l.source === 'object' ? l.source.id : l.source;
+              const target = typeof l.target === 'object' ? l.target.id : l.target;
+              return [`${source}-${target}`, `${target}-${source}`];
+            })
+          );
+          const newLinks = data.links.filter((l: GraphLink) =>
+            !existingLinks.has(`${l.source}-${l.target}`) && !existingLinks.has(`${l.target}-${l.source}`)
+          );
+          return [...prevLinks, ...newLinks];
+        });
+      } catch (err) {
+        console.error('Error expanding node:', err);
+        // Revert expansion state on error
+        setExpandedNodes((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(node.id);
+          return newSet;
+        });
+      } finally {
+        setLoadingNodes((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(node.id);
+          return newSet;
+        });
+      }
+      return;
+    }
+
+    // Handle figure node navigation
+    if (node.type === 'figure' && typeof node.id === 'string' && node.id.startsWith('figure-')) {
       const id = node.id.replace('figure-', '');
       router.push(`/figure/${id}`);
-    } else if (node.type === 'media' && typeof node.id === 'string' && node.id.startsWith('media-')) {
-      // Navigate to media page
-      const id = node.id.replace('media-', '');
-      router.push(`/media/${id}`);
     }
   };
 
@@ -302,8 +420,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       </div>
 
       {/* Full-Bleed Graph */}
-      <div ref={containerRef} className="bg-gray-50 overflow-hidden cursor-grab active:cursor-grabbing" style={{ minHeight: dimensions.height }}>
-        <ForceGraph2D
+      <ForceGraphErrorBoundary>
+        <div ref={containerRef} className="bg-gray-50 overflow-hidden cursor-grab active:cursor-grabbing" style={{ minHeight: dimensions.height }}>
+          <ForceGraph2D
           key={`${showAllEdges}-${showAcademicWorks}-${showReferenceWorks}-${visibleLinks.length}`}
           graphData={{ nodes: visibleNodes, links: graphLinks }}
           width={dimensions.width}
@@ -315,14 +434,18 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             return SENTIMENT_COLORS[node.sentiment as keyof typeof SENTIMENT_COLORS] || '#9ca3af';
           }}
           nodeRelSize={7}
-          linkColor={() => '#d1d5db'}
-          linkWidth={1.5}
+          linkColor={(link: any) => link.featured ? '#3b82f6' : '#d1d5db'}
+          linkWidth={(link: any) => link.featured ? 3 : 1.5}
+          linkLabel={(link: any) => {
+            const relType = link.relationshipType || 'connected';
+            return `${relType} (${link.sentiment})`;
+          }}
           backgroundColor="#f9fafb"
           onNodeClick={handleNodeClick}
           nodeCanvasObject={(node: any, ctx, globalScale) => {
             try {
               const label = node?.name || '';
-              if (!label || !ctx || !node.x || typeof node.y !== 'number') return;
+              if (!label || !ctx || typeof node.x !== 'number' || typeof node.y !== 'number') return;
 
               const fontSize = 12 / globalScale;
               ctx.font = `${fontSize}px Sans-Serif`;
@@ -331,27 +454,35 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
               // Determine node size
               const baseSize = isBaconNode(node.id) ? 8 : 6;
-              const nodeSize = expandedNodes.has(node.id) ? baseSize * 1.3 : baseSize;
+              const isHighlighted = highlightedPath?.pathIds.includes(node.id) || false;
+              const isLoading = loadingNodes.has(node.id);
+              const nodeSize = (expandedNodes.has(node.id) ? baseSize * EXPANDED_SIZE_MULTIPLIER : baseSize) * (isHighlighted ? HIGHLIGHTED_SIZE_MULTIPLIER : 1);
 
-              // Draw node with glow effect for Bacon nodes
-              if (isBaconNode(node.id)) {
+              // Draw node with glow effect for Bacon nodes, highlighted nodes, or loading nodes
+              if (isBaconNode(node.id) || isHighlighted || isLoading) {
+                // Determine color based on node type
+                const nodeColor = isBaconNode(node.id)
+                  ? BACON_COLOR
+                  : (node.type === 'figure' ? '#3b82f6' : (SENTIMENT_COLORS[node.sentiment as keyof typeof SENTIMENT_COLORS] || '#9ca3af'));
+                const borderColor = isLoading ? '#f59e0b' : (isBaconNode(node.id) ? '#7f1d1d' : '#1e40af');
+
                 // Glow effect
-                ctx.fillStyle = BACON_COLOR;
-                ctx.globalAlpha = 0.2;
+                ctx.fillStyle = nodeColor;
+                ctx.globalAlpha = isLoading ? 0.1 : 0.3;
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, nodeSize * 2, 0, 2 * Math.PI, false);
+                ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
                 ctx.fill();
 
                 // Main node
                 ctx.globalAlpha = 1;
-                ctx.fillStyle = BACON_COLOR;
+                ctx.fillStyle = nodeColor;
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
                 ctx.fill();
 
                 // Border
-                ctx.strokeStyle = '#7f1d1d';
-                ctx.lineWidth = 2 / globalScale;
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = isLoading ? 3 / globalScale : 2 / globalScale;
                 ctx.stroke();
               } else {
                 // Regular nodes
@@ -373,7 +504,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             }
           }}
         />
-      </div>
+        </div>
+      </ForceGraphErrorBoundary>
     </div>
   );
 }

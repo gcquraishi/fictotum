@@ -1,15 +1,25 @@
 import { Suspense } from 'react';
+import { getHighDegreeNetwork } from '@/lib/db';
 import { getBaconNetworkData } from '@/lib/bacon-network-data';
 import GraphExplorer from '@/components/GraphExplorer';
 import PathQueryInterface from '@/components/PathQueryInterface';
 
+export const revalidate = 3600; // Revalidate every hour
+
 export default async function Dashboard() {
-  let baconNetworkData: any = { nodes: [], links: [] };
+  let networkData: any = { nodes: [], links: [] };
 
   try {
-    baconNetworkData = getBaconNetworkData();
+    // Try to fetch live data from Neo4j
+    networkData = await getHighDegreeNetwork(50);
   } catch (error) {
-    console.error('Failed to generate Bacon network data:', error);
+    console.error('Failed to fetch live network data, falling back to static:', error);
+    // Fallback to static Bacon network if database query fails
+    try {
+      networkData = getBaconNetworkData();
+    } catch (fallbackError) {
+      console.error('Failed to generate fallback network data:', fallbackError);
+    }
   }
 
   return (
@@ -51,8 +61,8 @@ export default async function Dashboard() {
               </div>
             }>
               <GraphExplorer
-                nodes={baconNetworkData.nodes}
-                links={baconNetworkData.links}
+                nodes={networkData.nodes}
+                links={networkData.links}
               />
             </Suspense>
           </div>

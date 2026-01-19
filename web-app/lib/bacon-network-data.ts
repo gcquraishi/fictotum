@@ -397,6 +397,13 @@ export function getBaconNetworkData(): { nodes: GraphNode[]; links: GraphLink[] 
 
   const links = [...featuredLinks, ...otherLinks];
 
+  // Validate that all featured path IDs exist in the nodes array
+  const nodeIds = new Set(nodes.map(n => n.id));
+  const missingNodeIds = FEATURED_PATH_IDS.filter(id => !nodeIds.has(id));
+  if (missingNodeIds.length > 0) {
+    console.warn(`Featured path validation warning: Missing node IDs in nodes array: ${missingNodeIds.join(', ')}`);
+  }
+
   return {
     nodes,
     links: links.map(link => ({

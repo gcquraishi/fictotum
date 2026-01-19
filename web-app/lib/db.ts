@@ -531,6 +531,7 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
         source: `figure-${canonicalId}`,
         target: mediaId,
         sentiment: relationship.properties.sentiment || 'Complex',
+        relationshipType: 'APPEARS_IN',
       });
     });
 
@@ -553,6 +554,201 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
         source: `figure-${canonicalId}`,
         target: otherId,
         sentiment: 'Complex', // Default for interactions for now
+        relationshipType: 'INTERACTED_WITH',
+      });
+    });
+
+    return { nodes, links };
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getNodeNeighbors(
+  nodeId: string,
+  nodeType: 'figure' | 'media'
+): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
+  const session = await getSession();
+  try {
+    const nodes: GraphNode[] = [];
+    const links: GraphLink[] = [];
+    const nodeIds = new Set<string>();
+
+    if (nodeType === 'media') {
+      // For media nodes, fetch all figures that appear in this media
+      const result = await session.run(
+        `MATCH (m:MediaWork {wikidata_id: $nodeId})<-[r:APPEARS_IN]-(f:HistoricalFigure)
+         RETURN f, r
+         LIMIT 50`,
+        { nodeId }
+      );
+
+      result.records.forEach(record => {
+        const figureNode = record.get('f');
+        const relationship = record.get('r');
+        const figureId = `figure-${figureNode.properties.canonical_id}`;
+
+        if (!nodeIds.has(figureId)) {
+          nodes.push({
+            id: figureId,
+            name: figureNode.properties.name,
+            type: 'figure',
+          });
+          nodeIds.add(figureId);
+        }
+
+        links.push({
+          source: figureId,
+          target: `media-${nodeId}`,
+          sentiment: relationship.properties.sentiment || 'Complex',
+          relationshipType: 'APPEARS_IN',
+        });
+      });
+    } else {
+      // For figure nodes, fetch connected media works and other figures
+      const mediaResult = await session.run(
+        `MATCH (f:HistoricalFigure {canonical_id: $nodeId})-[r:APPEARS_IN]->(m:MediaWork)
+         RETURN m, r
+         LIMIT 50`,
+        { nodeId }
+      );
+
+      mediaResult.records.forEach(record => {
+        const mediaNode = record.get('m');
+        const relationship = record.get('r');
+        const wikidataId = mediaNode.properties.wikidata_id;
+        const mediaId = `media-${wikidataId}`;
+
+        if (!nodeIds.has(mediaId)) {
+          nodes.push({
+            id: mediaId,
+            name: mediaNode.properties.title,
+            type: 'media',
+            sentiment: relationship.properties.sentiment || 'Complex',
+          });
+          nodeIds.add(mediaId);
+        }
+
+        links.push({
+          source: `figure-${nodeId}`,
+          target: mediaId,
+          sentiment: relationship.properties.sentiment || 'Complex',
+          relationshipType: 'APPEARS_IN',
+        });
+      });
+
+      // Also fetch social interactions
+      const socialResult = await session.run(
+        `MATCH (f:HistoricalFigure {canonical_id: $nodeId})-[r:INTERACTED_WITH]-(h:HistoricalFigure)
+         RETURN h, r
+         LIMIT 50`,
+        { nodeId }
+      );
+
+      socialResult.records.forEach(record => {
+        const otherFigure = record.get('h');
+        const relationship = record.get('r');
+        const otherId = `figure-${otherFigure.properties.canonical_id}`;
+
+        if (!nodeIds.has(otherId)) {
+          nodes.push({
+            id: otherId,
+            name: otherFigure.properties.name,
+            type: 'figure',
+          });
+          nodeIds.add(otherId);
+        }
+
+        links.push({
+          source: `figure-${nodeId}`,
+          target: otherId,
+          sentiment: 'Complex',
+          relationshipType: 'INTERACTED_WITH',
+        });
+      });
+    }
+
+    return { nodes, links };
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getHighDegreeNetwork(limit: number = 50): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
+  const session = await getSession();
+  try {
+    // Query most connected figures (by degree centrality)
+    const result = await session.run(
+      `MATCH (f:HistoricalFigure)
+       WITH f, COUNT { (f)--() } as degree
+       WHERE degree > 0
+       ORDER BY degree DESC
+       LIMIT $limit
+       MATCH (f)-[r:APPEARS_IN|INTERACTED_WITH]-(connected)
+       RETURN f, r, connected, type(r) as relType
+       LIMIT 500`,
+      { limit }
+    );
+
+    const nodes: GraphNode[] = [];
+    const links: GraphLink[] = [];
+    const nodeIds = new Set<string>();
+
+    result.records.forEach(record => {
+      const figureNode = record.get('f');
+      const relationship = record.get('r');
+      const connectedNode = record.get('connected');
+      const relType = record.get('relType');
+
+      const figureId = `figure-${figureNode.properties.canonical_id}`;
+
+      // Add figure node if not already present
+      if (!nodeIds.has(figureId)) {
+        nodes.push({
+          id: figureId,
+          name: figureNode.properties.name,
+          type: 'figure',
+        });
+        nodeIds.add(figureId);
+      }
+
+      // Determine connected node type and ID
+      let connectedId: string;
+      let connectedType: 'figure' | 'media';
+
+      if (connectedNode.labels.includes('MediaWork')) {
+        connectedId = `media-${connectedNode.properties.wikidata_id}`;
+        connectedType = 'media';
+
+        if (!nodeIds.has(connectedId)) {
+          nodes.push({
+            id: connectedId,
+            name: connectedNode.properties.title,
+            type: 'media',
+            sentiment: relationship.properties.sentiment || 'Complex',
+          });
+          nodeIds.add(connectedId);
+        }
+      } else {
+        connectedId = `figure-${connectedNode.properties.canonical_id}`;
+        connectedType = 'figure';
+
+        if (!nodeIds.has(connectedId)) {
+          nodes.push({
+            id: connectedId,
+            name: connectedNode.properties.name,
+            type: 'figure',
+          });
+          nodeIds.add(connectedId);
+        }
+      }
+
+      // Add link
+      links.push({
+        source: figureId,
+        target: connectedId,
+        sentiment: relationship.properties.sentiment || 'Complex',
+        relationshipType: relType,
       });
     });
 
