@@ -86,6 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new media work
+    const batch_id = `web_ui_${Date.now()}`;
     let query = `
       MATCH (u:User {email: $userEmail})
       CREATE (m:MediaWork {
@@ -97,7 +98,9 @@ export async function POST(request: NextRequest) {
         wikidata_id: $wikidataId,
         created_at: timestamp(),
         created_by: u.email,
-        created_by_name: u.name
+        created_by_name: u.name,
+        ingestion_batch: $batchId,
+        ingestion_source: "web_ui"
       })
     `;
 
@@ -105,8 +108,7 @@ export async function POST(request: NextRequest) {
     if (parentSeriesId) {
       query += `
       WITH m
-      MATCH (parent:MediaWork)
-      WHERE parent.media_id = $parentSeriesId OR parent.wikidata_id = $parentSeriesId
+      MATCH (parent:MediaWork {wikidata_id: $parentSeriesId})
       CREATE (m)-[r:PART_OF {
         sequence_number: $sequenceNumber,
         season_number: $seasonNumber,
@@ -129,6 +131,7 @@ export async function POST(request: NextRequest) {
       creator: creator || null,
       wikidataId: wikidataId || null,
       userEmail,
+      batchId: batch_id,
       parentSeriesId: parentSeriesId || null,
       sequenceNumber: sequenceNumber ? parseInt(sequenceNumber) : null,
       seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,

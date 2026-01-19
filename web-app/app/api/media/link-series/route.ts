@@ -33,11 +33,9 @@ export async function POST(request: NextRequest) {
 
     // Check if relationship already exists
     const checkResult = await dbSession.run(
-      `MATCH (child:MediaWork)-[r:PART_OF]->(parent:MediaWork)
-       WHERE (child.media_id = $childMediaId OR child.wikidata_id = $childMediaId)
-         AND (parent.media_id = $parentSeriesId OR parent.wikidata_id = $parentSeriesId)
+      `MATCH (child:MediaWork {wikidata_id: $childWikidataId})-[r:PART_OF]->(parent:MediaWork {wikidata_id: $parentWikidataId})
        RETURN r`,
-      { childMediaId, parentSeriesId }
+      { childWikidataId: childMediaId, parentWikidataId: parentSeriesId }
     );
 
     if (checkResult.records.length > 0) {
@@ -50,9 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Create PART_OF relationship
     const result = await dbSession.run(
-      `MATCH (child:MediaWork), (parent:MediaWork)
-       WHERE (child.media_id = $childMediaId OR child.wikidata_id = $childMediaId)
-         AND (parent.media_id = $parentSeriesId OR parent.wikidata_id = $parentSeriesId)
+      `MATCH (child:MediaWork {wikidata_id: $childWikidataId}), (parent:MediaWork {wikidata_id: $parentWikidataId})
        CREATE (child)-[r:PART_OF {
          sequence_number: $sequenceNumber,
          season_number: $seasonNumber,
@@ -60,10 +56,10 @@ export async function POST(request: NextRequest) {
          relationship_type: $relationshipType,
          is_main_series: $isMainSeries
        }]->(parent)
-       RETURN child.media_id AS child_id, parent.media_id AS parent_id`,
+       RETURN child.wikidata_id AS child_id, parent.wikidata_id AS parent_id`,
       {
-        childMediaId,
-        parentSeriesId,
+        childWikidataId: childMediaId,
+        parentWikidataId: parentSeriesId,
         sequenceNumber: sequenceNumber ? parseInt(sequenceNumber) : null,
         seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,
         episodeNumber: episodeNumber ? parseInt(episodeNumber) : null,

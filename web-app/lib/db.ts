@@ -33,7 +33,7 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
     const result = await session.run(
       `MATCH (f:HistoricalFigure {canonical_id: $canonicalId})
        OPTIONAL MATCH (f)-[r:APPEARS_IN]->(m:MediaWork)
-       RETURN f, collect({media: m, sentiment: r.sentiment}) as portrayals`,
+       RETURN f, collect({media: m, sentiment: r.sentiment})[0..100] as portrayals`,
       { canonicalId }
     );
 
@@ -123,7 +123,7 @@ export async function getMediaById(wikidataId: string) {
        OPTIONAL MATCH (m)-[pr:PART_OF]->(parent:MediaWork)
        OPTIONAL MATCH (child:MediaWork)-[cr:PART_OF]->(m)
        RETURN m,
-              collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description}) as portrayals,
+              collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description})[0..50] as portrayals,
               parent,
               pr,
               collect(DISTINCT {
@@ -136,7 +136,7 @@ export async function getMediaById(wikidataId: string) {
                 episode_number: cr.episode_number,
                 is_main_series: cr.is_main_series,
                 relationship_type: cr.relationship_type
-              }) as children`,
+              })[0..100] as children`,
       { wikidataId }
     );
 
@@ -259,7 +259,7 @@ export async function getConflictingPortrayals() {
          role_description: r.role_description,
          conflict_notes: r.conflict_notes,
          is_protagonist: r.is_protagonist
-       }) as conflicting_portrayals
+       })[0..100] as conflicting_portrayals
        WHERE size(conflicting_portrayals) > 0
        RETURN f, conflicting_portrayals
        ORDER BY f.name
@@ -311,8 +311,8 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
        MATCH (f)-[r2:APPEARS_IN]->(m2:MediaWork)
        OPTIONAL MATCH (f)-[i:INTERACTED_WITH]-(other:HistoricalFigure)
        RETURN f,
-              collect(DISTINCT {media: m2, sentiment: r2.sentiment}) as media_connections,
-              collect(DISTINCT other) as connected_figures`
+              collect(DISTINCT {media: m2, sentiment: r2.sentiment})[0..100] as media_connections,
+              collect(DISTINCT other)[0..20] as connected_figures`
     );
 
     const nodes: GraphNode[] = [];
@@ -558,12 +558,11 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
   }
 }
 
-export async function getMediaSeriesHierarchy(mediaId: string) {
+export async function getMediaSeriesHierarchy(wikidataId: string) {
   const session = await getSession();
   try {
     const result = await session.run(
-      `MATCH (m:MediaWork)
-       WHERE m.media_id = $mediaId OR m.wikidata_id = $mediaId
+      `MATCH (m:MediaWork {wikidata_id: $wikidataId})
        OPTIONAL MATCH (m)-[pr:PART_OF]->(parent:MediaWork)
        OPTIONAL MATCH (child:MediaWork)-[cr:PART_OF]->(m)
        RETURN m,
@@ -579,8 +578,8 @@ export async function getMediaSeriesHierarchy(mediaId: string) {
                 episode_number: cr.episode_number,
                 is_main_series: cr.is_main_series,
                 relationship_type: cr.relationship_type
-              }) as children`,
-      { mediaId }
+              })[0..100] as children`,
+      { wikidataId }
     );
 
     if (result.records.length === 0) return null;
@@ -628,16 +627,15 @@ export async function getMediaSeriesHierarchy(mediaId: string) {
   }
 }
 
-export async function getSeriesWorks(seriesMediaId: string): Promise<SeriesRelationship[]> {
+export async function getSeriesWorks(seriesWikidataId: string): Promise<SeriesRelationship[]> {
   const session = await getSession();
   try {
     const result = await session.run(
-      `MATCH (series:MediaWork)
-       WHERE series.media_id = $seriesMediaId OR series.wikidata_id = $seriesMediaId
+      `MATCH (series:MediaWork {wikidata_id: $seriesWikidataId})
        MATCH (child:MediaWork)-[r:PART_OF]->(series)
        RETURN child, r
        ORDER BY r.season_number, r.sequence_number, r.episode_number, child.release_year`,
-      { seriesMediaId }
+      { seriesWikidataId }
     );
 
     return result.records.map(record => {
@@ -659,14 +657,13 @@ export async function getSeriesWorks(seriesMediaId: string): Promise<SeriesRelat
   }
 }
 
-export async function getMediaParentSeries(mediaId: string) {
+export async function getMediaParentSeries(wikidataId: string) {
   const session = await getSession();
   try {
     const result = await session.run(
-      `MATCH (m:MediaWork)-[r:PART_OF]->(parent:MediaWork)
-       WHERE m.media_id = $mediaId OR m.wikidata_id = $mediaId
+      `MATCH (m:MediaWork {wikidata_id: $wikidataId})-[r:PART_OF]->(parent:MediaWork)
        RETURN parent, r`,
-      { mediaId }
+      { wikidataId }
     );
 
     if (result.records.length === 0) return null;
