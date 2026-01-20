@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
 import { auth } from '@/lib/auth';
 import { isInt } from 'neo4j-driver';
+import { searchWikidataForWork, validateQid } from '@/lib/wikidata';
 
 function toNumber(value: any): number {
   if (isInt(value)) {
@@ -50,27 +51,81 @@ export async function POST(request: NextRequest) {
       productionStudio
     } = body;
 
-    if (!title || !mediaType || !releaseYear) {
+    if (!title || !mediaType) {
       return NextResponse.json(
-        { error: 'Title, media type, and release year are required' },
+        { error: 'Title and media type are required' },
         { status: 400 }
       );
     }
 
-    const mediaId = generateMediaId(title, releaseYear);
+    const year = releaseYear ? parseInt(releaseYear) : 0;
+    const mediaId = generateMediaId(title, year);
+
+    // Auto-search for Wikidata Q-ID if not provided
+    let finalWikidataId = wikidataId;
+    let wikidataLabel: string | undefined;
+
+    if (!finalWikidataId || finalWikidataId.startsWith('PROV:')) {
+      console.log(`[Media Create] No valid Q-ID provided for "${title}", searching Wikidata...`);
+
+      try {
+        const wikidataResult = await searchWikidataForWork({
+          title,
+          creator,
+          year: year > 0 ? year : undefined,
+          mediaType,
+        });
+
+        if (wikidataResult && wikidataResult.confidence !== 'low') {
+          finalWikidataId = wikidataResult.qid;
+          wikidataLabel = wikidataResult.title;
+          console.log(`[Media Create] Found Q-ID: ${finalWikidataId} (confidence: ${wikidataResult.confidence})`);
+        } else {
+          console.log(`[Media Create] No good Q-ID match found for "${title}"`);
+          // Continue without Q-ID - we'll allow works without Wikidata IDs
+        }
+      } catch (error) {
+        console.error(`[Media Create] Wikidata search failed:`, error);
+        // Continue without Q-ID - don't block media creation
+      }
+    } else {
+      // Validate provided Q-ID
+      console.log(`[Media Create] Validating provided Q-ID: ${finalWikidataId}`);
+
+      try {
+        const validation = await validateQid(finalWikidataId, title);
+
+        if (!validation.valid) {
+          console.warn(`[Media Create] Q-ID validation failed: ${validation.error}`);
+          return NextResponse.json(
+            {
+              error: `Invalid Wikidata Q-ID: ${validation.error}`,
+              suggestion: 'Try removing the Q-ID to auto-search for the correct one',
+            },
+            { status: 400 }
+          );
+        }
+
+        wikidataLabel = validation.wikidataLabel;
+        console.log(`[Media Create] Q-ID validated successfully (similarity: ${validation.similarity?.toFixed(2)})`);
+      } catch (error) {
+        console.error(`[Media Create] Q-ID validation error:`, error);
+        // Continue with provided Q-ID - don't block on validation errors
+      }
+    }
 
     const dbSession = await getSession();
 
     // Check if media already exists (by media_id or wikidata_id)
     let checkQuery = 'MATCH (m:MediaWork) WHERE m.media_id = $mediaId';
-    if (wikidataId) {
+    if (finalWikidataId) {
       checkQuery += ' OR m.wikidata_id = $wikidataId';
     }
     checkQuery += ' RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year';
 
     const checkResult = await dbSession.run(checkQuery, {
       mediaId,
-      wikidataId: wikidataId || null
+      wikidataId: finalWikidataId || null
     });
 
     if (checkResult.records.length > 0) {
@@ -100,6 +155,7 @@ export async function POST(request: NextRequest) {
         release_year: $releaseYear,
         creator: $creator,
         wikidata_id: $wikidataId,
+        wikidata_label: $wikidataLabel,
         publisher: $publisher,
         translator: $translator,
         channel: $channel,
@@ -135,9 +191,10 @@ export async function POST(request: NextRequest) {
       mediaId,
       title,
       mediaType,
-      releaseYear: parseInt(releaseYear),
+      releaseYear: year,
       creator: creator || null,
-      wikidataId: wikidataId || null,
+      wikidataId: finalWikidataId || null,
+      wikidataLabel: wikidataLabel || null,
       publisher: publisher || null,
       translator: translator || null,
       channel: channel || null,
