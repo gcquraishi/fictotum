@@ -1,8 +1,6 @@
 import { Suspense } from 'react';
 import { getHighDegreeNetwork } from '@/lib/db';
-import { getBaconNetworkData } from '@/lib/bacon-network-data';
 import GraphExplorer from '@/components/GraphExplorer';
-import PathQueryInterface from '@/components/PathQueryInterface';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -10,16 +8,11 @@ export default async function Dashboard() {
   let networkData: any = { nodes: [], links: [] };
 
   try {
-    // Try to fetch live data from Neo4j
+    // Fetch live data from Neo4j
     networkData = await getHighDegreeNetwork(50);
   } catch (error) {
-    console.error('Failed to fetch live network data, falling back to static:', error);
-    // Fallback to static Bacon network if database query fails
-    try {
-      networkData = getBaconNetworkData();
-    } catch (fallbackError) {
-      console.error('Failed to generate fallback network data:', fallbackError);
-    }
+    console.error('Failed to fetch network data from database:', error);
+    // Return empty graph - GraphExplorer will handle gracefully
   }
 
   return (
@@ -39,17 +32,6 @@ export default async function Dashboard() {
       {/* Graph-First Hero */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* Path Query Interface - Above Graph */}
-          <div className="mb-6">
-            <Suspense fallback={
-              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
-                <div className="h-24 bg-gray-100 rounded"></div>
-              </div>
-            }>
-              <PathQueryInterface />
-            </Suspense>
-          </div>
-
           {/* Interactive Graph - The Star */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <Suspense fallback={
