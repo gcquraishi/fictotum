@@ -283,10 +283,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     setCenterNodeId(previousNodeId);
     centerCameraOnNode(previousNode);
 
-    // Auto-collapse the current node
-    if (currentlyExpandedNode && currentlyExpandedNode !== previousNodeId) {
-      devLog(`Auto-collapsing current node: ${currentlyExpandedNode}`);
-      collapseNode(currentlyExpandedNode, visitedCenters);
+    // Collapse all nodes AFTER the target index in history (clean up forward nodes)
+    const nodesToCollapse = navigationHistory.slice(newIndex + 1);
+    if (nodesToCollapse.length > 0) {
+      devLog(`🧹 Collapsing ${nodesToCollapse.length} forward nodes:`, nodesToCollapse);
+      nodesToCollapse.forEach(nodeId => {
+        if (expandedNodes.has(nodeId)) {
+          collapseNode(nodeId, visitedCenters);
+        }
+      });
     }
 
     // Re-expand the previous node if it was collapsed
