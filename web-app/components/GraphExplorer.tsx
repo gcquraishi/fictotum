@@ -486,9 +486,23 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     setCurrentlyExpandedNode(startingNodeId);
 
     // Reset to initial graph state (starting node + immediate neighbors)
-    // This will be handled by re-fetching the initial graph data
-    setNodes(initialNodes || []);
-    setLinks(initialLinks || []);
+    // Keep nodes that are the starting node or directly connected to it
+    const immediateNeighborIds = new Set<string>();
+    links.forEach(link => {
+      const source = typeof link.source === 'object' ? link.source.id : link.source;
+      const target = typeof link.target === 'object' ? link.target.id : link.target;
+
+      if (source === startingNodeId) immediateNeighborIds.add(target);
+      if (target === startingNodeId) immediateNeighborIds.add(source);
+    });
+
+    setNodes(prev => prev.filter(n => n.id === startingNodeId || immediateNeighborIds.has(n.id)));
+    setLinks(prev => prev.filter(l => {
+      const source = typeof l.source === 'object' ? l.source.id : l.source;
+      const target = typeof l.target === 'object' ? l.target.id : l.target;
+      return (source === startingNodeId || target === startingNodeId) ||
+             (immediateNeighborIds.has(source) && immediateNeighborIds.has(target));
+    }));
 
     // Reset visited centers to starting node only
     setVisitedCenters(new Set([startingNodeId]));
