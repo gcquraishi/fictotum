@@ -80,7 +80,14 @@ const BACON_SIZE = 1.5; // Scale multiplier for Bacon nodes
 // Node sizing multipliers
 const EXPANDED_SIZE_MULTIPLIER = 1.3; // Size increase when node is expanded
 const HIGHLIGHTED_SIZE_MULTIPLIER = 1.2; // Size increase when node is highlighted
+const CENTER_NODE_SIZE_MULTIPLIER = 1.5; // Size increase for center node (Phase 1 Bloom)
 const NODE_GLOW_RADIUS_MULTIPLIER = 2.5; // Glow effect radius multiplier
+
+// Center node styling
+const CENTER_NODE_GLOW_COLOR = '#f59e0b'; // Amber/gold glow for center node
+
+// Depth tracking configuration (Task 1.7)
+const MAX_DEPTH = 7; // Maximum hop distance before warning user
 
 // Helper function to check if a node is a Bacon (person, not media work about Bacon)
 const isBaconNode = (nodeId: string): boolean => {
@@ -101,6 +108,37 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   const [showAcademicWorks, setShowAcademicWorks] = useState(false);
   const [showReferenceWorks, setShowReferenceWorks] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Phase 1: Bloom Exploration - Camera control and center node tracking
+  const forceGraphRef = useRef<any>(null);
+  const [centerNodeId, setCenterNodeId] = useState<string | null>(
+    canonicalId ? `figure-${canonicalId}` : null
+  );
+  const [nodeDepths, setNodeDepths] = useState<Map<string, number>>(new Map());
+
+  // Camera control helper - smoothly centers camera on a node
+  const centerCameraOnNode = (node: any) => {
+    if (!forceGraphRef.current || typeof node.x !== 'number' || typeof node.y !== 'number') {
+      console.warn('Cannot center camera: missing ref or node coordinates', { node });
+      return;
+    }
+
+    try {
+      // Use 1000ms duration for smooth pan (as specified in plan)
+      forceGraphRef.current.centerAt(node.x, node.y, 1000);
+      console.log('Camera centered on node:', { id: node.id, name: node.name, x: node.x, y: node.y });
+    } catch (error) {
+      console.error('Error centering camera:', error);
+    }
+  };
+
+  // Initialize depth tracking for starting node (Task 1.6)
+  useEffect(() => {
+    if (centerNodeId && nodeDepths.size === 0) {
+      setNodeDepths(new Map([[centerNodeId, 0]]));
+      console.log('Initialized depth tracking - center node at depth 0:', centerNodeId);
+    }
+  }, [centerNodeId, nodeDepths.size]);
 
   // Fetch graph data on mount if not provided
   useEffect(() => {
@@ -233,6 +271,27 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
   // Handle node click
   const handleNodeClick = async (node: any) => {
+    // Phase 1: Camera centering on click (Tasks 1.2 & 1.3)
+    setCenterNodeId(node.id);
+    centerCameraOnNode(node);
+
+    // Check depth before expansion (Task 1.7)
+    const currentDepth = nodeDepths.get(node.id) ?? 0;
+    const potentialDepth = currentDepth + 1;
+
+    if (potentialDepth >= MAX_DEPTH) {
+      console.warn(
+        `⚠️ Approaching depth limit (${potentialDepth}/${MAX_DEPTH} hops). Consider collapsing distant nodes.`
+      );
+    }
+
+    console.log('Node clicked:', {
+      id: node.id,
+      name: node.name,
+      currentDepth,
+      potentialNewNodeDepth: potentialDepth
+    });
+
     // Handle media node expansion
     if (node.type === 'media' && typeof node.id === 'string' && node.id.startsWith('media-')) {
       const wikidataId = node.id.replace('media-', '');
@@ -260,10 +319,27 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
         setExpandedNodes((prev) => new Set(prev).add(node.id));
 
+        // Calculate depth for new nodes (Task 1.6)
+        const parentDepth = nodeDepths.get(node.id) ?? 0;
+        const newDepth = parentDepth + 1;
+
         // Merge new nodes (avoiding duplicates)
         setNodes((prevNodes) => {
           const existingIds = new Set(prevNodes.map(n => n.id));
           const newNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+
+          // Track depths for new nodes
+          setNodeDepths((prevDepths) => {
+            const updatedDepths = new Map(prevDepths);
+            newNodes.forEach((n: GraphNode) => {
+              if (!updatedDepths.has(n.id)) {
+                updatedDepths.set(n.id, newDepth);
+              }
+            });
+            console.log(`Added ${newNodes.length} nodes at depth ${newDepth}:`, newNodes.map((n: GraphNode) => n.name));
+            return updatedDepths;
+          });
+
           return [...prevNodes, ...newNodes];
         });
 
@@ -299,10 +375,87 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       return;
     }
 
-    // Handle figure node navigation
+    // Handle figure node expansion (Task 1.4 - expand in place instead of navigate)
     if (node.type === 'figure' && typeof node.id === 'string' && node.id.startsWith('figure-')) {
-      const id = node.id.replace('figure-', '');
-      router.push(`/figure/${id}`);
+      const canonicalId = node.id.replace('figure-', '');
+
+      // If already expanded, collapse it
+      if (expandedNodes.has(node.id)) {
+        setExpandedNodes((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(node.id);
+          return newSet;
+        });
+        return;
+      }
+
+      // Otherwise, fetch and expand neighbors
+      try {
+        setLoadingNodes((prev) => new Set(prev).add(node.id));
+
+        const response = await fetch(`/api/graph/expand/${canonicalId}?type=figure`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch neighbors');
+        }
+
+        const data = await response.json();
+
+        setExpandedNodes((prev) => new Set(prev).add(node.id));
+
+        // Calculate depth for new nodes (Task 1.6)
+        const parentDepth = nodeDepths.get(node.id) ?? 0;
+        const newDepth = parentDepth + 1;
+
+        // Merge new nodes (avoiding duplicates)
+        setNodes((prevNodes) => {
+          const existingIds = new Set(prevNodes.map(n => n.id));
+          const newNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+
+          // Track depths for new nodes
+          setNodeDepths((prevDepths) => {
+            const updatedDepths = new Map(prevDepths);
+            newNodes.forEach((n: GraphNode) => {
+              if (!updatedDepths.has(n.id)) {
+                updatedDepths.set(n.id, newDepth);
+              }
+            });
+            console.log(`Added ${newNodes.length} nodes at depth ${newDepth}:`, newNodes.map((n: GraphNode) => n.name));
+            return updatedDepths;
+          });
+
+          return [...prevNodes, ...newNodes];
+        });
+
+        // Merge new links (avoiding duplicates)
+        setLinks((prevLinks) => {
+          const existingLinks = new Set(
+            prevLinks.flatMap(l => {
+              const source = typeof l.source === 'object' ? l.source.id : l.source;
+              const target = typeof l.target === 'object' ? l.target.id : l.target;
+              return [`${source}-${target}`, `${target}-${source}`];
+            })
+          );
+          const newLinks = data.links.filter((l: GraphLink) =>
+            !existingLinks.has(`${l.source}-${l.target}`) && !existingLinks.has(`${l.target}-${l.source}`)
+          );
+          return [...prevLinks, ...newLinks];
+        });
+      } catch (err) {
+        console.error('Error expanding node:', err);
+        // Revert expansion state on error
+        setExpandedNodes((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(node.id);
+          return newSet;
+        });
+      } finally {
+        setLoadingNodes((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(node.id);
+          return newSet;
+        });
+      }
+      return;
     }
   };
 
@@ -423,6 +576,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       <ForceGraphErrorBoundary>
         <div ref={containerRef} className="bg-gray-50 overflow-hidden cursor-grab active:cursor-grabbing" style={{ minHeight: dimensions.height }}>
           <ForceGraph2D
+          ref={forceGraphRef}
           key={`${showAllEdges}-${showAcademicWorks}-${showReferenceWorks}-${visibleLinks.length}`}
           graphData={{ nodes: visibleNodes, links: graphLinks }}
           width={dimensions.width}
@@ -456,19 +610,44 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               const baseSize = isBaconNode(node.id) ? 8 : 6;
               const isHighlighted = highlightedPath?.pathIds.includes(node.id) || false;
               const isLoading = loadingNodes.has(node.id);
-              const nodeSize = (expandedNodes.has(node.id) ? baseSize * EXPANDED_SIZE_MULTIPLIER : baseSize) * (isHighlighted ? HIGHLIGHTED_SIZE_MULTIPLIER : 1);
+              const isCenterNode = centerNodeId === node.id;
 
-              // Draw node with glow effect for Bacon nodes, highlighted nodes, or loading nodes
-              if (isBaconNode(node.id) || isHighlighted || isLoading) {
+              // Apply size multipliers (center node gets special treatment)
+              let nodeSize = baseSize;
+              if (isCenterNode) {
+                nodeSize *= CENTER_NODE_SIZE_MULTIPLIER;
+              } else if (expandedNodes.has(node.id)) {
+                nodeSize *= EXPANDED_SIZE_MULTIPLIER;
+              }
+              if (isHighlighted) {
+                nodeSize *= HIGHLIGHTED_SIZE_MULTIPLIER;
+              }
+
+              // Draw node with glow effect for Bacon nodes, highlighted nodes, loading nodes, or center node
+              if (isBaconNode(node.id) || isHighlighted || isLoading || isCenterNode) {
                 // Determine color based on node type
                 const nodeColor = isBaconNode(node.id)
                   ? BACON_COLOR
                   : (node.type === 'figure' ? '#3b82f6' : (SENTIMENT_COLORS[node.sentiment as keyof typeof SENTIMENT_COLORS] || '#9ca3af'));
-                const borderColor = isLoading ? '#f59e0b' : (isBaconNode(node.id) ? '#7f1d1d' : '#1e40af');
 
-                // Glow effect
-                ctx.fillStyle = nodeColor;
-                ctx.globalAlpha = isLoading ? 0.1 : 0.3;
+                // Determine border color (center node gets gold border)
+                let borderColor = '#1e40af';
+                if (isCenterNode) {
+                  borderColor = CENTER_NODE_GLOW_COLOR;
+                } else if (isLoading) {
+                  borderColor = '#f59e0b';
+                } else if (isBaconNode(node.id)) {
+                  borderColor = '#7f1d1d';
+                }
+
+                // Glow effect (center node gets stronger gold glow)
+                if (isCenterNode) {
+                  ctx.fillStyle = CENTER_NODE_GLOW_COLOR;
+                  ctx.globalAlpha = 0.4;
+                } else {
+                  ctx.fillStyle = nodeColor;
+                  ctx.globalAlpha = isLoading ? 0.1 : 0.3;
+                }
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
                 ctx.fill();
