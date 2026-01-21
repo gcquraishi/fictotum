@@ -93,6 +93,9 @@ const CENTER_NODE_GLOW_COLOR = '#f59e0b'; // Amber/gold glow for center node
 // Depth tracking configuration (Task 1.7)
 const MAX_DEPTH = 7; // Maximum hop distance before warning user
 
+// High-degree node protection - limit neighbors to prevent layout chaos
+const MAX_NEIGHBORS = 12; // Maximum neighbors to show when expanding a node (prevents "Rome" explosion)
+
 // Helper function to check if a node is a Bacon (person, not media work about Bacon)
 const isBaconNode = (nodeId: string): boolean => {
   return (nodeId.includes('bacon') && !nodeId.startsWith('media-'));
@@ -192,8 +195,17 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       devLog(`Collapsing ${nodeId} - removing ${toRemove.size} nodes (preserving exploration path):`, Array.from(toRemove));
     }
 
-    // Remove nodes from graph state
-    setNodes(prevNodes => prevNodes.filter(n => !toRemove.has(n.id)));
+    // CRITICAL: Remove nodes from graph state to prevent memory bloat
+    // When users explore 20+ nodes deep, we must actually DELETE collapsed nodes from memory,
+    // not just hide them. Otherwise the graph will balloon to 200+ nodes and cause performance issues.
+    // This ensures the graph stays lean (~50-100 nodes max) regardless of exploration depth.
+    setNodes(prevNodes => {
+      const beforeCount = prevNodes.length;
+      const afterNodes = prevNodes.filter(n => !toRemove.has(n.id));
+      const afterCount = afterNodes.length;
+      devLog(`🧹 State cleanup: ${beforeCount} nodes → ${afterCount} nodes (removed ${beforeCount - afterCount})`);
+      return afterNodes;
+    });
 
     // Remove links connected to removed nodes
     setLinks(prevLinks => prevLinks.filter(l => {
@@ -442,11 +454,22 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       setVisitedCenters(updatedVisitedCenters);
 
       // Add to ordered exploration path for visual highlighting
-      // Only add if it's not already the last node (avoid duplicates on re-click)
+      // Handle "jumping back" to a node already in the path
       setExplorationPath((prev) => {
-        if (prev[prev.length - 1] === node.id) {
-          return prev; // Already the last node, don't duplicate
+        const indexInPath = prev.indexOf(node.id);
+
+        if (indexInPath === prev.length - 1) {
+          // Already the last node, don't duplicate
+          return prev;
         }
+
+        if (indexInPath >= 0) {
+          // Node is earlier in the path - truncate to create "jump back" effect
+          devLog(`📍 Jumping back to node ${indexInPath + 1} of ${prev.length} in path`);
+          return prev.slice(0, indexInPath + 1);
+        }
+
+        // New node - add to end of path
         return [...prev, node.id];
       });
 
@@ -512,9 +535,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
         setNodes(prev => {
           const existingIds = new Set(prev.map(n => n.id));
-          computedNewNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+          const newNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+
+          // Limit to MAX_NEIGHBORS to prevent layout chaos (e.g., "Rome" with 20+ connections)
+          computedNewNodes = newNodes.slice(0, MAX_NEIGHBORS);
           computedChildIds = new Set(computedNewNodes.map(n => n.id));
 
+          if (newNodes.length > MAX_NEIGHBORS) {
+            devWarn(`⚠️ High-degree node: showing ${MAX_NEIGHBORS} of ${newNodes.length} neighbors`);
+          }
           devLog(`Added ${computedNewNodes.length} nodes at depth ${newDepth}:`, computedNewNodes.map((n: GraphNode) => n.name));
           return [...prev, ...computedNewNodes];
         });
@@ -609,9 +638,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
         setNodes(prev => {
           const existingIds = new Set(prev.map(n => n.id));
-          computedNewNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+          const newNodes = data.nodes.filter((n: GraphNode) => !existingIds.has(n.id));
+
+          // Limit to MAX_NEIGHBORS to prevent layout chaos (e.g., "Rome" with 20+ connections)
+          computedNewNodes = newNodes.slice(0, MAX_NEIGHBORS);
           computedChildIds = new Set(computedNewNodes.map(n => n.id));
 
+          if (newNodes.length > MAX_NEIGHBORS) {
+            devWarn(`⚠️ High-degree node: showing ${MAX_NEIGHBORS} of ${newNodes.length} neighbors`);
+          }
           devLog(`Added ${computedNewNodes.length} nodes at depth ${newDepth}:`, computedNewNodes.map((n: GraphNode) => n.name));
           return [...prev, ...computedNewNodes];
         });
@@ -736,65 +771,21 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         </div>
       )}
 
-      {/* Minimal Controls Overlay */}
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowAllEdges(!showAllEdges)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium shadow-lg transition-all ${
-              showAllEdges
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-            }`}
-            title={showAllEdges ? 'Hide non-path connections' : 'Show all connections'}
-          >
-            {showAllEdges ? 'Hide Extra' : 'Show All'}
-          </button>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowAcademicWorks(!showAcademicWorks)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium shadow-lg transition-all ${
-              showAcademicWorks
-                ? 'bg-purple-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-            }`}
-            title={showAcademicWorks ? 'Hide academic works (biographies, essays, documentaries)' : 'Show academic works'}
-          >
-            📚 Academic
-          </button>
-          <button
-            onClick={() => setShowReferenceWorks(!showReferenceWorks)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium shadow-lg transition-all ${
-              showReferenceWorks
-                ? 'bg-amber-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-            }`}
-            title={showReferenceWorks ? 'Hide reference materials (encyclopedias, databases)' : 'Show reference materials'}
-          >
-            📖 Reference
-          </button>
-        </div>
-      </div>
 
       {/* Inline Legend - Bottom Left */}
       <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200 shadow-lg p-4">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+        <div className="flex flex-col gap-2 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: BACON_COLOR }}></div>
             <span className="text-gray-800 font-semibold">The Bacons</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
             <span className="text-gray-700">Historical Figure</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
-            <span className="text-gray-700">Heroic Media</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#eab308' }}></div>
-            <span className="text-gray-700">Complex Media</span>
+            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+            <span className="text-gray-700">Media Work</span>
           </div>
         </div>
         <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500 italic">
@@ -814,8 +805,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           nodeLabel="name"
           nodeColor={(node: any) => {
             if (isBaconNode(node.id)) return BACON_COLOR;
-            if (node.type === 'figure') return '#3b82f6';
-            return SENTIMENT_COLORS[node.sentiment as keyof typeof SENTIMENT_COLORS] || '#9ca3af';
+            if (node.type === 'figure') return '#3b82f6'; // Blue for figures
+            return '#f97316'; // Orange for media works
           }}
           nodeRelSize={7}
           linkColor={(link: any) => link.featured ? '#3b82f6' : '#d1d5db'}
@@ -858,7 +849,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 // Determine color based on node type
                 const nodeColor = isBaconNode(node.id)
                   ? BACON_COLOR
-                  : (node.type === 'figure' ? '#3b82f6' : (SENTIMENT_COLORS[node.sentiment as keyof typeof SENTIMENT_COLORS] || '#9ca3af'));
+                  : (node.type === 'figure' ? '#3b82f6' : '#f97316'); // Blue for figures, orange for media
 
                 // Determine border color (center node gets gold border)
                 let borderColor = '#1e40af';
@@ -895,7 +886,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 ctx.stroke();
               } else {
                 // Regular nodes
-                const color = node.type === 'figure' ? '#3b82f6' : (SENTIMENT_COLORS[node.sentiment as keyof typeof SENTIMENT_COLORS] || '#9ca3af');
+                const color = node.type === 'figure' ? '#3b82f6' : '#f97316'; // Blue for figures, orange for media
                 ctx.fillStyle = color;
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
