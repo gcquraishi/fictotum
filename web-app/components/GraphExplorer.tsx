@@ -288,13 +288,13 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     if (nodesToCollapse.length > 0) {
       devLog(`🧹 Collapsing ${nodesToCollapse.length} forward nodes:`, nodesToCollapse);
 
-      // Create a preserve set that EXCLUDES the nodes we're about to collapse
-      const preserveSet = new Set(visitedCenters);
-      nodesToCollapse.forEach(id => preserveSet.delete(id));
-
+      // Keep forward nodes themselves on the graph (they're part of history path),
+      // but collapse their CHILDREN to clean up the view
       nodesToCollapse.forEach(nodeId => {
         if (expandedNodes.has(nodeId)) {
-          collapseNode(nodeId, preserveSet);
+          // Pass visitedCenters as-is so the forward node itself is preserved,
+          // but its children are collapsed
+          collapseNode(nodeId, visitedCenters);
         }
       });
     }
