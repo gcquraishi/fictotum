@@ -118,6 +118,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     canonicalId ? `figure-${canonicalId}` : null
   );
   const [nodeDepths, setNodeDepths] = useState<Map<string, number>>(new Map());
+  // Track parent-child relationships for collapse functionality (Task 1.8)
+  const [nodeChildren, setNodeChildren] = useState<Map<string, Set<string>>>(new Map());
 
   // Camera control helper - smoothly centers camera on a node
   const centerCameraOnNode = (node: any) => {
@@ -133,6 +135,58 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     } catch (error) {
       console.error('Error centering camera:', error);
     }
+  };
+
+  // Collapse helper - recursively removes a node and all its descendants (Task 1.8)
+  const collapseNode = (nodeId: string) => {
+    const toRemove = new Set<string>([nodeId]);
+    const queue = [nodeId];
+
+    // BFS to find all descendants
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const children = nodeChildren.get(current);
+
+      if (children) {
+        children.forEach(childId => {
+          if (!toRemove.has(childId)) {
+            toRemove.add(childId);
+            queue.push(childId);
+          }
+        });
+      }
+    }
+
+    console.log(`Collapsing node ${nodeId} - removing ${toRemove.size} nodes:`, Array.from(toRemove));
+
+    // Remove nodes from graph state
+    setNodes(prevNodes => prevNodes.filter(n => !toRemove.has(n.id)));
+
+    // Remove links connected to removed nodes
+    setLinks(prevLinks => prevLinks.filter(l => {
+      const source = typeof l.source === 'object' ? l.source.id : l.source;
+      const target = typeof l.target === 'object' ? l.target.id : l.target;
+      return !toRemove.has(source) && !toRemove.has(target);
+    }));
+
+    // Clean up tracking state
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      toRemove.forEach(id => newSet.delete(id));
+      return newSet;
+    });
+
+    setNodeDepths(prev => {
+      const newMap = new Map(prev);
+      toRemove.forEach(id => newMap.delete(id));
+      return newMap;
+    });
+
+    setNodeChildren(prev => {
+      const newMap = new Map(prev);
+      toRemove.forEach(id => newMap.delete(id));
+      return newMap;
+    });
   };
 
   // Initialize depth tracking for starting node (Task 1.6)
@@ -301,13 +355,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     if (node.type === 'media' && typeof node.id === 'string' && node.id.startsWith('media-')) {
       const wikidataId = node.id.replace('media-', '');
 
-      // If already expanded, collapse it
+      // If already expanded, collapse it (Task 1.8)
       if (expandedNodes.has(node.id)) {
-        setExpandedNodes((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(node.id);
-          return newSet;
-        });
+        collapseNode(node.id);
         return;
       }
 
@@ -343,6 +393,14 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             });
             console.log(`Added ${newNodes.length} nodes at depth ${newDepth}:`, newNodes.map((n: GraphNode) => n.name));
             return updatedDepths;
+          });
+
+          // Track parent-child relationships for collapse (Task 1.8)
+          setNodeChildren((prevChildren) => {
+            const updatedChildren = new Map(prevChildren);
+            const childIds = new Set(newNodes.map((n: GraphNode) => n.id));
+            updatedChildren.set(node.id, childIds);
+            return updatedChildren;
           });
 
           return [...prevNodes, ...newNodes];
@@ -390,13 +448,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         return;
       }
 
-      // If already expanded, collapse it
+      // If already expanded, collapse it (Task 1.8)
       if (expandedNodes.has(node.id)) {
-        setExpandedNodes((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(node.id);
-          return newSet;
-        });
+        collapseNode(node.id);
         return;
       }
 
@@ -432,6 +486,14 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             });
             console.log(`Added ${newNodes.length} nodes at depth ${newDepth}:`, newNodes.map((n: GraphNode) => n.name));
             return updatedDepths;
+          });
+
+          // Track parent-child relationships for collapse (Task 1.8)
+          setNodeChildren((prevChildren) => {
+            const updatedChildren = new Map(prevChildren);
+            const childIds = new Set(newNodes.map((n: GraphNode) => n.id));
+            updatedChildren.set(node.id, childIds);
+            return updatedChildren;
           });
 
           return [...prevNodes, ...newNodes];
