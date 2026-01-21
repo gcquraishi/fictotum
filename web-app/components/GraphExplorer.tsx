@@ -287,9 +287,14 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     const nodesToCollapse = navigationHistory.slice(newIndex + 1);
     if (nodesToCollapse.length > 0) {
       devLog(`🧹 Collapsing ${nodesToCollapse.length} forward nodes:`, nodesToCollapse);
+
+      // Create a preserve set that EXCLUDES the nodes we're about to collapse
+      const preserveSet = new Set(visitedCenters);
+      nodesToCollapse.forEach(id => preserveSet.delete(id));
+
       nodesToCollapse.forEach(nodeId => {
         if (expandedNodes.has(nodeId)) {
-          collapseNode(nodeId, visitedCenters);
+          collapseNode(nodeId, preserveSet);
         }
       });
     }
