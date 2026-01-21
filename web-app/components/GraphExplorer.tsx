@@ -120,6 +120,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   const [nodeDepths, setNodeDepths] = useState<Map<string, number>>(new Map());
   // Track parent-child relationships for collapse functionality (Task 1.8)
   const [nodeChildren, setNodeChildren] = useState<Map<string, Set<string>>>(new Map());
+  // Track nodes that have been clicked/centered (the exploration path)
+  const [visitedCenters, setVisitedCenters] = useState<Set<string>>(
+    new Set(centerNodeId ? [centerNodeId] : [])
+  );
 
   // Camera control helper - smoothly centers camera on a node
   const centerCameraOnNode = (node: any) => {
@@ -138,17 +142,24 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   };
 
   // Collapse helper - recursively removes a node and all its descendants (Task 1.8)
+  // Smart collapse: preserves nodes that are part of the exploration path (visited centers)
   const collapseNode = (nodeId: string) => {
     const toRemove = new Set<string>([nodeId]);
     const queue = [nodeId];
 
-    // BFS to find all descendants
+    // BFS to find all descendants, but skip nodes in the exploration path
     while (queue.length > 0) {
       const current = queue.shift()!;
       const children = nodeChildren.get(current);
 
       if (children) {
         children.forEach(childId => {
+          // Skip if this child was clicked/centered (part of exploration path)
+          if (visitedCenters.has(childId)) {
+            console.log(`  Preserving ${childId} - part of exploration path`);
+            return;
+          }
+
           if (!toRemove.has(childId)) {
             toRemove.add(childId);
             queue.push(childId);
@@ -157,7 +168,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       }
     }
 
-    console.log(`Collapsing node ${nodeId} - removing ${toRemove.size} nodes:`, Array.from(toRemove));
+    console.log(`Collapsing node ${nodeId} - removing ${toRemove.size} nodes (preserving exploration path):`, Array.from(toRemove));
 
     // Remove nodes from graph state
     setNodes(prevNodes => prevNodes.filter(n => !toRemove.has(n.id)));
@@ -186,6 +197,12 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       const newMap = new Map(prev);
       toRemove.forEach(id => newMap.delete(id));
       return newMap;
+    });
+
+    setVisitedCenters(prev => {
+      const newSet = new Set(prev);
+      toRemove.forEach(id => newSet.delete(id));
+      return newSet;
     });
   };
 
@@ -332,6 +349,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     if (isBloomMode) {
       setCenterNodeId(node.id);
       centerCameraOnNode(node);
+
+      // Track this node as part of exploration path (for smart collapse)
+      setVisitedCenters((prev) => new Set(prev).add(node.id));
 
       // Check depth before expansion (Task 1.7)
       const currentDepth = nodeDepths.get(node.id) ?? 0;
