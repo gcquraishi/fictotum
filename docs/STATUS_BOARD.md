@@ -1,5 +1,5 @@
 # ChronosGraph Status Board
-*Last updated: 2026-01-21 02:15 UTC*
+*Last updated: 2026-01-21 14:30 UTC*
 
 ## Currently Active
 | Agent | Working On | Started | ETA | Notes |
@@ -9,7 +9,7 @@
 ## Ready for Review
 | Agent | Completed | Ready Since | Quick Summary |
 |-------|-----------|-------------|---------------|
-| Claude (General) | Bloom Production Readiness | 2026-01-21 02:15 | Removed all console statements, added error UI, TypeScript clean. Ready for manual testing. |
+| (none currently) | | | |
 
 ## Proposed Next Steps (Awaiting CEO)
 | Agent | Proposal | Impact | Effort | CEO Decision |
@@ -29,6 +29,83 @@
 ---
 
 ## Recent Session Handoffs
+
+### Bloom Phase 2 - Navigation Controls COMPLETE: 2026-01-21 14:30 UTC
+**Did:** Completed Bloom Phase 2 navigation controls (100% of core tasks). Fixed 3 major bugs during testing. Back button, reset view, and collapse functionality all working correctly.
+
+**Changed:**
+- `web-app/components/GraphExplorer.tsx` - Fixed bugs in collapse, back navigation, and reset (commits 8613367, 3cb480e, f7f403d-7a594f8, 4cda156, 97bc81f):
+  - Fixed collapse to work on any expanded node (not just most recent)
+  - Fixed back navigation to properly collapse forward nodes (scans links array instead of nodeChildren map)
+  - Fixed reset to re-fetch starting node neighbors from API (not filter stale graph)
+- `.plans/bloom-phase2-navigation-implementation-plan.md` - Marked complete (100% core tasks)
+- `docs/STATUS_BOARD.md` - Updated completion status
+
+**Testing Results:**
+- ✅ Back button navigation works (collapses forward nodes, re-expands on back)
+- ✅ Reset button works (returns to starting node + fresh neighbors from API)
+- ✅ Can collapse any expanded node by clicking it
+- ✅ State cleanup verified (graph stays 10-35 nodes during deep exploration)
+
+**Bugs Fixed:**
+1. Collapse only worked on most recent node → Fixed to check expandedNodes Set
+2. Back navigation not collapsing forward nodes → Fixed by scanning actual links array (6 attempts)
+3. Reset button made all nodes disappear → Fixed by re-fetching from API
+
+**Deferred:**
+- Task 2.5: Entry point button (skipped per user request)
+- Edge case testing (navigate back to beginning, truncate forward history, etc.)
+
+**Next:** Phase 3 planning (breadcrumbs, search, forward button, keyboard shortcuts) or focus on other features
+
+**Questions:** Ready for Phase 3 polish features, or pivot to different functionality?
+
+---
+
+### Bloom Phase 2B - Navigation Controls Complete: 2026-01-21 11:00 UTC
+**Did:** Completed Tasks 2.1-2.4 (navigation history, back button, reset view). Implemented full navigation controls with re-expand on back (Option A). Users can now navigate backward through exploration path and reset to starting state.
+
+**Changed:**
+- `web-app/components/GraphExplorer.tsx` - Added 264 lines (commit 368b5b6):
+  - Navigation history state (navigationHistory, historyIndex)
+  - navigateBack() function with re-expand logic for both figure and media nodes
+  - resetView() function to restore initial graph state
+  - Back button UI (top-left, disabled when at beginning)
+  - Reset button UI (next to back button)
+  - Removed "The Bacons" from legend per user request
+- `.plans/bloom-phase2-navigation-implementation-plan.md` - Updated to 83% complete (5/6 tasks)
+- `docs/STATUS_BOARD.md` - Updated ready for review status
+
+**Testing Needed:**
+- Test back button navigation (click forward 5 nodes, back 3 times)
+- Test reset view button (explore deep, click reset)
+- Verify re-expansion on back works correctly (fetches children again)
+- Test with both figure and media nodes
+
+**Next:** Task 2.5 - Add "Explore Graph" button to figure detail pages (entry point)
+
+**Questions:** Ready to proceed with entry point button, or test navigation first?
+
+---
+
+### Bloom Phase 2 - UX Improvements & State Cleanup: 2026-01-21 10:00 UTC
+**Did:** Completed Task 2.0 (state cleanup verification) + critical UX improvements based on user testing. Verified state cleanup prevents memory bloat during deep exploration (20+ nodes). Fixed 4 major UX issues: simplified color scheme, removed cluttering buttons, limited high-degree nodes to 12 neighbors max, implemented double-back navigation.
+
+**Changed:**
+- `web-app/components/GraphExplorer.tsx` - State cleanup logging, UX improvements (commit 6aae128)
+- `.plans/bloom-phase2-navigation-implementation-plan.md` - Updated progress to 17% (1/6 tasks complete)
+
+**Testing Results:**
+- ✅ State cleanup works: Graph stayed at 10-35 nodes after 20+ clicks (never exceeded 100)
+- ✅ High-degree node limit prevents "Rome explosion" (was 24 overlapping nodes, now shows 12 max)
+- ✅ Simplified colors (blue=figure, orange=media) much clearer than sentiment-based coloring
+- ✅ Double-back navigation truncates path elegantly (e.g., A→B→C→D, click B → A→B)
+
+**Next:** Task 2.1 - Add navigation history state (navigationHistory, historyIndex) for back button implementation
+
+**Questions:** None - ready to proceed with Phase 2B navigation history stack
+
+---
 
 ### Critical Hotfix - Landing Page Neo4j Error: 2026-01-21 02:30 UTC
 **Did:** Fixed Neo4jError preventing landing page from loading. Neo4j requires integer types for LIMIT/SKIP clauses, but JavaScript was passing floats (50.0). Wrapped all numeric query parameters with `neo4j.int()`.
