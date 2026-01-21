@@ -221,11 +221,13 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     });
   };
 
-  // Initialize depth tracking for starting node (Task 1.6)
+  // Initialize depth tracking and expansion state for starting node (Task 1.6)
   useEffect(() => {
     if (centerNodeId && nodeDepths.size === 0) {
       setNodeDepths(new Map([[centerNodeId, 0]]));
-      console.log('Initialized depth tracking - center node at depth 0:', centerNodeId);
+      // Mark starting node as expanded so it can be collapsed later
+      setExpandedNodes((prev) => new Set(prev).add(centerNodeId));
+      console.log('Initialized starting node - depth 0, marked as expanded:', centerNodeId);
     }
   }, [centerNodeId, nodeDepths.size]);
 
