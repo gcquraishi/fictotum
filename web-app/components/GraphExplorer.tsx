@@ -124,6 +124,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   const [visitedCenters, setVisitedCenters] = useState<Set<string>>(
     new Set(centerNodeId ? [centerNodeId] : [])
   );
+  // Track the currently expanded node (only one at a time)
+  const [currentlyExpandedNode, setCurrentlyExpandedNode] = useState<string | null>(centerNodeId);
 
   // Camera control helper - smoothly centers camera on a node
   const centerCameraOnNode = (node: any) => {
@@ -362,13 +364,11 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
   // Handle node click
   const handleNodeClick = async (node: any) => {
-    // Check for collapse FIRST before updating center tracking
-    // This prevents the node from being added to visitedCenters before collapsing
-    const shouldCollapse = expandedNodes.has(node.id);
+    // Check if clicking the currently expanded node (to collapse it)
+    const isClickingCurrentlyExpanded = currentlyExpandedNode === node.id;
 
     // Phase 1: Camera centering on click (Tasks 1.2 & 1.3) - only in bloom mode
-    // Only update center if NOT collapsing
-    if (isBloomMode && !shouldCollapse) {
+    if (isBloomMode) {
       setCenterNodeId(node.id);
       centerCameraOnNode(node);
 
@@ -389,17 +389,25 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         id: node.id,
         name: node.name,
         currentDepth,
-        potentialNewNodeDepth: potentialDepth
+        potentialNewNodeDepth: potentialDepth,
+        isCurrentlyExpanded: isClickingCurrentlyExpanded
       });
+
+      // Auto-collapse the previously expanded node (if different from current)
+      if (currentlyExpandedNode && currentlyExpandedNode !== node.id) {
+        console.log(`Auto-collapsing previous node: ${currentlyExpandedNode}`);
+        collapseNode(currentlyExpandedNode);
+      }
     }
 
     // Handle media node expansion
     if (node.type === 'media' && typeof node.id === 'string' && node.id.startsWith('media-')) {
       const wikidataId = node.id.replace('media-', '');
 
-      // If already expanded, collapse it (Task 1.8)
-      if (shouldCollapse) {
+      // If clicking the currently expanded node, collapse it manually
+      if (isClickingCurrentlyExpanded) {
         collapseNode(node.id);
+        setCurrentlyExpandedNode(null);
         return;
       }
 
@@ -415,6 +423,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         const data = await response.json();
 
         setExpandedNodes((prev) => new Set(prev).add(node.id));
+        setCurrentlyExpandedNode(node.id); // Mark as currently expanded
 
         // Calculate depth for new nodes (Task 1.6)
         const parentDepth = nodeDepths.get(node.id) ?? 0;
@@ -490,9 +499,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         return;
       }
 
-      // If already expanded, collapse it (Task 1.8)
-      if (shouldCollapse) {
+      // If clicking the currently expanded node, collapse it manually
+      if (isClickingCurrentlyExpanded) {
         collapseNode(node.id);
+        setCurrentlyExpandedNode(null);
         return;
       }
 
@@ -508,6 +518,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         const data = await response.json();
 
         setExpandedNodes((prev) => new Set(prev).add(node.id));
+        setCurrentlyExpandedNode(node.id); // Mark as currently expanded
 
         // Calculate depth for new nodes (Task 1.6)
         const parentDepth = nodeDepths.get(node.id) ?? 0;
