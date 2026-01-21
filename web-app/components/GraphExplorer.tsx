@@ -655,8 +655,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
   // Handle node click
   const handleNodeClick = async (node: GraphNode & { x?: number; y?: number }) => {
-    // Check if clicking the currently expanded node (to collapse it)
-    const isClickingCurrentlyExpanded = currentlyExpandedNode === node.id;
+    // Check if clicking an already-expanded node (to collapse it)
+    const isClickingExpandedNode = expandedNodes.has(node.id);
 
     // Phase 1: Camera centering on click (Tasks 1.2 & 1.3) - only in bloom mode
     if (isBloomMode) {
@@ -690,7 +690,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
       // Task 2.1: Update navigation history for back button support
       // Only add to history when expanding a node (not collapsing)
-      if (!isClickingCurrentlyExpanded) {
+      if (!isClickingExpandedNode) {
         setNavigationHistory((prev) => {
           // If we're not at the end of history (user went back), truncate forward history
           const truncated = historyIndex < prev.length - 1 ? prev.slice(0, historyIndex + 1) : prev;
@@ -736,8 +736,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     if (node.type === 'media' && typeof node.id === 'string' && node.id.startsWith('media-')) {
       const wikidataId = node.id.replace('media-', '');
 
-      // If clicking the currently expanded node, collapse it manually
-      if (isClickingCurrentlyExpanded) {
+      // If clicking an already-expanded node, collapse it manually
+      if (isClickingExpandedNode) {
         collapseNode(node.id);
         setCurrentlyExpandedNode(null);
         return;
@@ -839,8 +839,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         return;
       }
 
-      // If clicking the currently expanded node, collapse it manually
-      if (isClickingCurrentlyExpanded) {
+      // If clicking an already-expanded node, collapse it manually
+      if (isClickingExpandedNode) {
         collapseNode(node.id);
         setCurrentlyExpandedNode(null);
         return;
