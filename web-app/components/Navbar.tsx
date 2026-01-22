@@ -218,7 +218,7 @@ export default function Navbar() {
             {/* Sign In Button (if not authenticated) */}
             {!session && (
               <Link
-                href="/"
+                href="/api/auth/signin"
                 className="px-4 py-2 bg-brand-accent text-white font-semibold rounded-lg hover:bg-brand-accent/90 transition-colors shadow-sm"
               >
                 Sign In
@@ -358,7 +358,7 @@ export default function Navbar() {
             {!session && (
               <div className="px-4 py-2">
                 <Link
-                  href="/"
+                  href="/api/auth/signin"
                   className="block w-full px-4 py-2 bg-brand-accent text-white font-semibold rounded-lg hover:bg-brand-accent/90 transition-colors text-center shadow-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
