@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Film, ChevronRight } from 'lucide-react';
+import { Film } from 'lucide-react';
 import FigureSearchInput from '@/components/FigureSearchInput';
 import AddAppearanceForm from '@/components/AddAppearanceForm';
 
@@ -27,8 +27,8 @@ export default function ContributeAppearancePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Step 1: Select Figure */}
+        {/* Step 1: Select Figure */}
+        <div className="max-w-2xl mx-auto">
           <div className="bg-white p-6 rounded-lg border border-brand-primary/20 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center font-semibold">
@@ -51,48 +51,20 @@ export default function ContributeAppearancePage() {
               </div>
             )}
           </div>
-
-          {/* Step 2: Add Portrayal */}
-          <div className="bg-white p-6 rounded-lg border border-brand-primary/20 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                selectedFigureId
-                  ? 'bg-brand-primary text-white'
-                  : 'bg-brand-primary/20 text-brand-primary/50'
-              }`}>
-                2
-              </div>
-              <h2 className={`text-lg font-semibold ${
-                selectedFigureId ? 'text-brand-primary' : 'text-brand-primary/50'
-              }`}>
-                Add Portrayal
-              </h2>
-            </div>
-            <p className={`text-sm mb-4 ${
-              selectedFigureId ? 'text-brand-text/70' : 'text-brand-text/40'
-            }`}>
-              {selectedFigureId
-                ? 'Add how this figure appears in media'
-                : 'Select a figure first to continue'}
-            </p>
-
-            {!selectedFigureId && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-md text-center">
-                <p className="text-sm text-blue-800">
-                  👈 Choose a figure to continue
-                </p>
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* Form - shown below on mobile, or after selection on desktop */}
+        {/* Step 2: Add Portrayal - shown after figure selection */}
         {selectedFigureId && (
-          <div className="mt-8">
+          <div className="mt-8 max-w-2xl mx-auto">
             <div className="bg-white p-6 rounded-lg border border-brand-primary/20 shadow-sm">
-              <h2 className="text-2xl font-bold text-brand-primary mb-6">
-                Add {selectedFigureName} to Media
-              </h2>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center font-semibold">
+                  2
+                </div>
+                <h2 className="text-2xl font-bold text-brand-primary">
+                  Add {selectedFigureName} to Media
+                </h2>
+              </div>
               <AddAppearanceForm figureId={selectedFigureId} />
             </div>
           </div>
