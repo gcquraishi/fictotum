@@ -4,7 +4,8 @@
 import { useState, useTransition } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Plus } from 'lucide-react';
+import { Plus, Info, Loader2 } from 'lucide-react';
+import SentimentTagSelector from './SentimentTagSelector';
 
 interface MediaSearchResult {
   media_id: string;
@@ -30,11 +31,14 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
   const [newMediaCreator, setNewMediaCreator] = useState('');
   const [newMediaWikidataId, setNewMediaWikidataId] = useState('');
 
-  const [sentiment, setSentiment] = useState('Complex');
+  const [sentimentTags, setSentimentTags] = useState<string[]>(['complex']); // Default to 'complex'
   const [roleDescription, setRoleDescription] = useState('');
   const [isProtagonist, setIsProtagonist] = useState(false);
   const [actorName, setActorName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isCreatingMedia, setIsCreatingMedia] = useState(false);
+  const [showAdvancedSeries, setShowAdvancedSeries] = useState(false);
 
   // Series support state
   const [parentSeriesQuery, setParentSeriesQuery] = useState('');
@@ -73,11 +77,13 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
 
   const handleCreateMedia = async () => {
     setError(null);
+    setSuccess(null);
     if (!newMediaTitle || !newMediaYear) {
       setError("Title and year are required for new media.");
       return;
     }
 
+    setIsCreatingMedia(true);
     const response = await fetch('/api/media/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -101,12 +107,20 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
       setSelectedMedia(data.media);
       setMediaQuery(data.media.title);
       setShowCreateMedia(false);
+      setSuccess(`✓ Successfully created "${data.media.title}" (${data.media.year})`);
       // Reset create form
       setNewMediaTitle('');
       setNewMediaType('FILM');
       setNewMediaYear('');
       setNewMediaCreator('');
       setNewMediaWikidataId('');
+      setParentSeries(null);
+      setParentSeriesQuery('');
+      setSequenceNumber('');
+      setSeasonNumber('');
+      setEpisodeNumber('');
+      // Clear success message after 5 seconds
+      setTimeout(() => setSuccess(null), 5000);
     } else {
       const data = await response.json();
       // If media already exists, automatically select it
@@ -114,13 +128,14 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
         setSelectedMedia(data.existingMedia);
         setMediaQuery(data.existingMedia.title);
         setShowCreateMedia(false);
-        setError(`Found existing work: "${data.existingMedia.title}" (${data.existingMedia.year}). It has been selected.`);
-        // Clear error after a few seconds
-        setTimeout(() => setError(null), 5000);
+        setSuccess(`✓ Found existing work: "${data.existingMedia.title}" (${data.existingMedia.year}). It has been selected.`);
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccess(null), 5000);
       } else {
         setError(data.error || "Failed to create media work.");
       }
     }
+    setIsCreatingMedia(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,23 +146,63 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
         return;
     }
 
+    if (!selectedMedia.media_id) {
+        setError("Selected media is missing ID. Please try selecting again.");
+        console.error("Selected media object:", selectedMedia);
+        return;
+    }
+
+    if (!figureId) {
+        setError("Figure ID is missing. Please refresh the page.");
+        console.error("Missing figureId prop");
+        return;
+    }
+
+    // Validate sentiment tags
+    if (!sentimentTags || sentimentTags.length === 0) {
+        setError("At least 1 sentiment tag is required.");
+        return;
+    }
+
+    if (sentimentTags.length > 5) {
+        setError("Maximum 5 sentiment tags allowed.");
+        return;
+    }
+
     startTransition(async () => {
+        const payload = {
+            figureId,
+            mediaId: selectedMedia.media_id,
+            sentimentTags, // New: array of tags
+            roleDescription,
+            isProtagonist,
+            actorName: actorName || null,
+        };
+
+        console.log("Submitting appearance:", payload);
+
         const response = await fetch('/api/contribution/appearance', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                figureId,
-                mediaId: selectedMedia.media_id,
-                sentiment,
-                roleDescription,
-                isProtagonist,
-                actorName: actorName || null,
-            }),
+            body: JSON.stringify(payload),
         });
 
         if (response.ok) {
-            // Refresh the page to show the new data
-            router.refresh();
+            // Show success message
+            setSuccess(`✓ Appearance added successfully! "${selectedMedia.title}" (${selectedMedia.year})`);
+            // Clear form
+            setSelectedMedia(null);
+            setMediaQuery('');
+            setMediaResults([]);
+            setSentimentTags(['complex']);
+            setRoleDescription('');
+            setIsProtagonist(false);
+            setActorName('');
+            // Clear success message after 5 seconds
+            setTimeout(() => {
+                setSuccess(null);
+                router.refresh();
+            }, 5000);
         } else {
             const data = await response.json();
             setError(data.error || "Failed to add appearance.");
@@ -210,8 +265,17 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
       )}
 
       {showCreateMedia && (
-        <div className="space-y-3 p-4 bg-gray-900 border border-gray-600 rounded-lg">
-          <h4 className="font-semibold text-sm text-gray-300">Create New Media Work</h4>
+        <div className="space-y-3 p-4 bg-gray-900 border-2 border-blue-500/30 rounded-lg shadow-lg">
+          <div className="flex items-center justify-between border-b border-gray-700 pb-2">
+            <h4 className="font-semibold text-base text-blue-400">Create New Media Work</h4>
+            <button
+              type="button"
+              onClick={() => setShowCreateMedia(false)}
+              className="text-gray-400 hover:text-white text-sm"
+            >
+              ✕
+            </button>
+          </div>
 
           <div>
             <label htmlFor="new-title" className="block text-xs font-medium text-gray-400">Title *</label>
@@ -272,7 +336,15 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
           </div>
 
           <div>
-            <label htmlFor="new-wikidata" className="block text-xs font-medium text-gray-400">Wikidata ID (optional)</label>
+            <div className="flex items-center gap-2 mb-1">
+              <label htmlFor="new-wikidata" className="block text-xs font-medium text-gray-400">Wikidata Q-ID (optional)</label>
+              <div className="group relative">
+                <Info className="w-3 h-3 text-gray-500 cursor-help" />
+                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-700 text-xs text-white rounded shadow-lg z-10">
+                  Wikidata Q-IDs are unique identifiers (e.g., Q28842191 for "The Crown"). Leave blank to auto-search.
+                </div>
+              </div>
+            </div>
             <input
               id="new-wikidata"
               type="text"
@@ -283,9 +355,19 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
             />
           </div>
 
-          {/* Series Parent Search - only show for non-series media types */}
+          {/* Advanced Series Options - collapsible */}
           {!['BOOK_SERIES', 'FILM_SERIES', 'TV_SERIES_COLLECTION', 'GAME_SERIES', 'BOARD_GAME_SERIES'].includes(newMediaType) && (
-            <div>
+            <div className="border-t border-gray-700 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowAdvancedSeries(!showAdvancedSeries)}
+                className="flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 mb-2"
+              >
+                <span>{showAdvancedSeries ? '▼' : '▶'}</span>
+                Advanced: Link to Series
+              </button>
+              {showAdvancedSeries && (
+                <div>
               <label htmlFor="parent-series-search" className="block text-xs font-medium text-gray-400">Part of Series (optional)</label>
               <input
                 id="parent-series-search"
@@ -321,9 +403,19 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
           )}
 
           {/* Sequence Metadata - only show when parent series is selected */}
-          {parentSeries && (
-            <div className="space-y-2 p-3 bg-gray-800 border border-gray-500 rounded-md">
-              <h5 className="text-xs font-semibold text-gray-300">Series Position</h5>
+          {showAdvancedSeries && parentSeries && (
+            <div className="space-y-2 p-3 bg-gray-800 border-2 border-blue-500/30 rounded-md">
+              <div className="flex items-center gap-2">
+                <h5 className="text-xs font-semibold text-gray-300">Series Position</h5>
+                <div className="group relative">
+                  <Info className="w-3 h-3 text-gray-500 cursor-help" />
+                  <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2 bg-gray-700 text-xs text-white rounded shadow-lg z-10">
+                    {newMediaType === 'TV_SERIES' || parentSeries.media_type?.includes('TV')
+                      ? 'For TV episodes, use sequence # for overall order and season/episode for broadcast order.'
+                      : 'Use sequence # for the position in the series (e.g., Book 2, Film 3).'}
+                  </div>
+                </div>
+              </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -386,14 +478,24 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
               )}
             </div>
           )}
+            </div>
+          )}
 
           <div className="flex gap-2">
             <button
               type="button"
               onClick={handleCreateMedia}
-              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors text-sm"
+              disabled={isCreatingMedia}
+              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
             >
-              Create Media
+              {isCreatingMedia ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Media'
+              )}
             </button>
             <button
               type="button"
@@ -406,35 +508,39 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
         </div>
       )}
 
+      {/* Sentiment Tags Selector */}
       <div>
-        <label htmlFor="sentiment" className="block text-sm font-medium text-gray-300">Sentiment</label>
-        <select id="sentiment" value={sentiment} onChange={e => setSentiment(e.target.value)}
-          className="mt-1 w-full bg-gray-900 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white">
-            <option>Complex</option>
-            <option>Heroic</option>
-            <option>Villainous</option>
-            <option>Neutral</option>
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-300">Role Description</label>
-        <textarea id="role" value={roleDescription} onChange={e => setRoleDescription(e.target.value)}
-          className="mt-1 w-full bg-gray-900 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white"
-          rows={3} placeholder="Describe the figure's role in this work..."/>
-      </div>
-
-      <div>
-        <label htmlFor="actor-name" className="block text-sm font-medium text-gray-300">Actor Name (optional)</label>
-        <input
-          id="actor-name"
-          type="text"
-          value={actorName}
-          onChange={e => setActorName(e.target.value)}
-          className="mt-1 w-full bg-gray-900 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white"
-          placeholder="e.g., Joaquin Phoenix"
+        <SentimentTagSelector
+          value={sentimentTags}
+          onChange={setSentimentTags}
         />
       </div>
+
+      <div>
+        <label htmlFor="role" className="block text-sm font-medium text-gray-300">
+          {selectedMedia
+            ? `Add notes on the figure's portrayal in "${selectedMedia.title}" (optional)`
+            : "Add notes on the figure's portrayal (optional)"}
+        </label>
+        <textarea id="role" value={roleDescription} onChange={e => setRoleDescription(e.target.value)}
+          className="mt-1 w-full bg-gray-900 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white"
+          rows={3} placeholder="Optional notes about this portrayal..."/>
+      </div>
+
+      {/* Only show Actor Name for films, TV series, and plays */}
+      {selectedMedia && ['FILM', 'TV_SERIES', 'TV_SERIES_COLLECTION', 'PLAY'].includes(selectedMedia.media_type || '') && (
+        <div>
+          <label htmlFor="actor-name" className="block text-sm font-medium text-gray-300">Actor Name (optional)</label>
+          <input
+            id="actor-name"
+            type="text"
+            value={actorName}
+            onChange={e => setActorName(e.target.value)}
+            className="mt-1 w-full bg-gray-900 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white"
+            placeholder="e.g., Jonathan Rhys Meyers"
+          />
+        </div>
+      )}
 
       <div className="flex items-center">
         <input id="is-protagonist" type="checkbox" checked={isProtagonist} onChange={e => setIsProtagonist(e.target.checked)}
@@ -442,7 +548,16 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
         <label htmlFor="is-protagonist" className="ml-2 block text-sm text-gray-300">Is Protagonist</label>
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <div className="p-3 bg-red-900/20 border border-red-500/50 rounded-md text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="p-3 bg-green-900/20 border border-green-500/50 rounded-md text-green-400 text-sm">
+          {success}
+        </div>
+      )}
 
       <button type="submit" disabled={isSubmitting || !selectedMedia}
         className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold rounded-lg transition-colors">

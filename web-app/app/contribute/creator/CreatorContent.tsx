@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Loader2, Plus } from 'lucide-react';
+import { Search, Loader2, Plus, ExternalLink, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface WikidataWork {
   qid: string;
@@ -19,8 +19,10 @@ export default function CreatorContent() {
   const [works, setWorks] = useState<WikidataWork[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<'network' | 'no-results' | 'invalid' | null>(null);
   const [addedWorks, setAddedWorks] = useState<Set<string>>(new Set());
   const [existingWorks, setExistingWorks] = useState<Set<string>>(new Set());
+  const [addingProgress, setAddingProgress] = useState<{total: number; current: number} | null>(null);
 
   useEffect(() => {
     if (creatorFromUrl) {
@@ -30,12 +32,14 @@ export default function CreatorContent() {
 
   const handleSearch = async (name: string) => {
     if (!name || name.length < 2) {
-      setError('Please enter a creator name');
+      setError('Please enter a creator name (at least 2 characters)');
+      setErrorType('invalid');
       return;
     }
 
     setLoading(true);
     setError(null);
+    setErrorType(null);
     setWorks([]);
     setExistingWorks(new Set());
     setAddedWorks(new Set());
@@ -53,7 +57,8 @@ export default function CreatorContent() {
       setWorks(fetchedWorks);
 
       if (fetchedWorks.length === 0) {
-        setError(`No works found for "${name}" in Wikidata. Try a different name or spelling.`);
+        setError(`No works found for "${name}" in Wikidata.`);
+        setErrorType('no-results');
         return;
       }
 
@@ -79,10 +84,29 @@ export default function CreatorContent() {
         setExistingWorks(existing);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch works from Wikidata');
+      setError(err.message || 'Network error while fetching works from Wikidata');
+      setErrorType('network');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBulkAdd = async () => {
+    const worksToAdd = works.filter(w => !existingWorks.has(w.qid) && !addedWorks.has(w.qid));
+    if (worksToAdd.length === 0) return;
+
+    if (!confirm(`Add ${worksToAdd.length} work(s) to ChronosGraph?`)) {
+      return;
+    }
+
+    setAddingProgress({ total: worksToAdd.length, current: 0 });
+
+    for (let i = 0; i < worksToAdd.length; i++) {
+      await handleAddWork(worksToAdd[i]);
+      setAddingProgress({ total: worksToAdd.length, current: i + 1 });
+    }
+
+    setAddingProgress(null);
   };
 
   const handleAddWork = async (work: WikidataWork) => {
@@ -168,8 +192,34 @@ export default function CreatorContent() {
           </div>
 
           {error && (
-            <div className="mt-4 p-3 bg-brand-accent/10 border border-brand-accent/30 rounded-md text-brand-accent text-sm">
-              {error}
+            <div className="mt-4 p-4 bg-brand-accent/10 border border-brand-accent/30 rounded-md">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-brand-accent flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-brand-accent font-medium">{error}</p>
+                  {errorType === 'network' && (
+                    <div className="mt-2">
+                      <button
+                        onClick={() => handleSearch(creatorName)}
+                        className="text-sm text-brand-accent hover:underline flex items-center gap-1"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        Retry
+                      </button>
+                    </div>
+                  )}
+                  {errorType === 'no-results' && (
+                    <div className="mt-2 text-xs text-brand-accent/80">
+                      <strong>Suggestions:</strong>
+                      <ul className="list-disc list-inside mt-1 space-y-1">
+                        <li>Check spelling of the creator's name</li>
+                        <li>Try the creator's full name or alternate spellings</li>
+                        <li>Ensure the creator has works in Wikidata</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -177,9 +227,45 @@ export default function CreatorContent() {
         {/* Results */}
         {works.length > 0 && (
           <div className="bg-white p-6 rounded-lg border border-brand-primary/20 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4 text-brand-primary">
-              Found {works.length} works by {creatorName}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-brand-primary">
+                Found {works.length} works by {creatorName}
+              </h2>
+              {works.filter(w => !existingWorks.has(w.qid) && !addedWorks.has(w.qid)).length > 0 && (
+                <button
+                  onClick={handleBulkAdd}
+                  disabled={addingProgress !== null}
+                  className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/90 disabled:bg-brand-primary/30 text-white font-medium rounded-md text-sm flex items-center gap-2"
+                >
+                  {addingProgress ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Adding {addingProgress.current} of {addingProgress.total}...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Add All ({works.filter(w => !existingWorks.has(w.qid) && !addedWorks.has(w.qid)).length})
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {addingProgress && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="flex items-center gap-2 text-sm text-blue-800">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Adding works: {addingProgress.current} of {addingProgress.total} complete
+                </div>
+                <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(addingProgress.current / addingProgress.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="space-y-3">
               {works.map((work) => {
@@ -202,28 +288,36 @@ export default function CreatorContent() {
                       </p>
                     </div>
 
-                    <button
-                      onClick={() => handleAddWork(work)}
-                      disabled={isDisabled}
-                      className={`px-4 py-2 rounded-md font-medium flex items-center gap-2 transition-colors shadow-sm ${
-                        isExisting
-                          ? 'bg-brand-primary/10 text-brand-primary/70 border border-brand-primary/30 cursor-not-allowed'
-                          : isAdded
-                          ? 'bg-green-600/10 text-green-700 border border-green-600/30 cursor-not-allowed'
-                          : 'bg-brand-accent hover:bg-brand-accent/90 text-white'
-                      }`}
-                    >
-                      {isExisting ? (
-                        <>✓ Already in Graph</>
-                      ) : isAdded ? (
-                        <>✓ Added</>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4" />
-                          Add to Graph
-                        </>
-                      )}
-                    </button>
+                    {isExisting ? (
+                      <a
+                        href={`/media/${work.qid}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-md font-medium flex items-center gap-2 transition-colors shadow-sm bg-brand-primary/10 text-brand-primary border border-brand-primary/30 hover:bg-brand-primary/20"
+                      >
+                        View in Graph
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => handleAddWork(work)}
+                        disabled={isAdded || (addingProgress !== null)}
+                        className={`px-4 py-2 rounded-md font-medium flex items-center gap-2 transition-colors shadow-sm ${
+                          isAdded
+                            ? 'bg-green-600/10 text-green-700 border border-green-600/30 cursor-not-allowed'
+                            : 'bg-brand-accent hover:bg-brand-accent/90 text-white'
+                        }`}
+                      >
+                        {isAdded ? (
+                          <>✓ Added</>
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4" />
+                            Add to Graph
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 );
               })}

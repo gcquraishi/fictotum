@@ -18,7 +18,12 @@ export interface MediaWork {
 
 export interface Portrayal {
   media: MediaWork;
-  sentiment: 'Heroic' | 'Villainous' | 'Complex';
+  sentiment: 'Heroic' | 'Villainous' | 'Complex'; // Legacy field (deprecated, use sentiment_tags)
+  sentiment_tags?: string[]; // New: array of sentiment tags (lowercase normalized)
+  tag_metadata?: {
+    common: string[]; // Tags from SUGGESTED_TAGS
+    custom: string[];  // User-provided custom tags
+  };
 }
 
 export interface FigureProfile extends HistoricalFigure {
@@ -69,7 +74,12 @@ export interface DetailedPortrayal {
     media_type: 'Book' | 'Game' | 'Film' | 'TVSeries';
     creator?: string;
   };
-  sentiment: 'Heroic' | 'Villainous' | 'Complex' | 'Neutral';
+  sentiment: 'Heroic' | 'Villainous' | 'Complex' | 'Neutral'; // Legacy (deprecated)
+  sentiment_tags?: string[]; // New: array of sentiment tags
+  tag_metadata?: {
+    common: string[];
+    custom: string[];
+  };
   role_description?: string;
   is_protagonist: boolean;
   conflict_flag?: boolean;
@@ -96,7 +106,12 @@ export interface ConflictPortrayal {
     media_type: 'Book' | 'Game' | 'Film' | 'TVSeries';
     creator?: string;
   };
-  sentiment: 'Heroic' | 'Villainous' | 'Complex' | 'Neutral';
+  sentiment: 'Heroic' | 'Villainous' | 'Complex' | 'Neutral'; // Legacy (deprecated)
+  sentiment_tags?: string[];
+  tag_metadata?: {
+    common: string[];
+    custom: string[];
+  };
   role_description?: string;
   conflict_notes?: string;
   is_protagonist: boolean;

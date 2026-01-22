@@ -65,7 +65,11 @@ export async function POST(request: NextRequest) {
     const year = releaseYear ? parseInt(releaseYear) : 0;
     const mediaId = generateMediaId(title, year);
 
-    // Auto-search for Wikidata Q-ID if not provided
+    /**
+     * MediaWork Ingestion Protocol - Step 1: Search Wikidata for Q-ID
+     * If no Q-ID provided or it's provisional, auto-search Wikidata to find canonical identifier.
+     * This ensures we use standardized Wikidata Q-IDs when available.
+     */
     let finalWikidataId = wikidataId;
     let wikidataLabel: string | undefined;
 
@@ -120,18 +124,28 @@ export async function POST(request: NextRequest) {
 
     const dbSession = await getSession();
 
-    // Check if media already exists (by media_id or wikidata_id)
+    /**
+     * MediaWork Ingestion Protocol - Step 2: Query Neo4j for existing work by wikidata_id
+     * Before creating a new MediaWork node, check if it already exists by either:
+     * 1. media_id (slug-based identifier)
+     * 2. wikidata_id (canonical Q-ID if available)
+     * This prevents duplicate entries for the same work.
+     */
     let checkQuery = 'MATCH (m:MediaWork) WHERE m.media_id = $mediaId';
     if (finalWikidataId) {
       checkQuery += ' OR m.wikidata_id = $wikidataId';
     }
-    checkQuery += ' RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year';
+    checkQuery += ' RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year, m.media_type AS media_type';
 
     const checkResult = await dbSession.run(checkQuery, {
       mediaId,
       wikidataId: finalWikidataId || null
     });
 
+    /**
+     * MediaWork Ingestion Protocol - Step 3: If exists, return 409 with existing media
+     * Do NOT create duplicate node. Return existing media info to client.
+     */
     if (checkResult.records.length > 0) {
       await dbSession.close();
       const existing = checkResult.records[0];
@@ -142,6 +156,7 @@ export async function POST(request: NextRequest) {
             media_id: existing.get('media_id'),
             title: existing.get('title'),
             year: toNumber(existing.get('year')),
+            media_type: existing.get('media_type'),
           }
         },
         { status: 409 }
@@ -180,7 +195,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create new media work
+    /**
+     * MediaWork Ingestion Protocol - Step 4: If not exists, create with wikidata_id property
+     * Create new MediaWork node with all provided properties, including the canonical wikidata_id
+     * if one was found or provided. This ensures the node is properly linked to Wikidata.
+     */
     const batch_id = `web_ui_${Date.now()}`;
     let query = `
       MATCH (u:User {email: $userEmail})
@@ -240,7 +259,7 @@ export async function POST(request: NextRequest) {
     }
 
     query += `
-      RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year
+      RETURN m.media_id AS media_id, m.title AS title, m.release_year AS year, m.media_type AS media_type
     `;
 
     const result = await dbSession.run(query, {
@@ -276,6 +295,7 @@ export async function POST(request: NextRequest) {
       media_id: record.get('media_id'),
       title: record.get('title'),
       year: toNumber(record.get('year')),
+      media_type: record.get('media_type'),
     };
 
     return NextResponse.json({ media: newMedia }, { status: 201 });

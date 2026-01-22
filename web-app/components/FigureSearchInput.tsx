@@ -102,12 +102,12 @@ export default function FigureSearchInput({
           }}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full pl-10 pr-10 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         />
         {searchTerm && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             type="button"
           >
             <X className="w-5 h-5" />
@@ -117,14 +117,14 @@ export default function FigureSearchInput({
 
       {/* Dropdown */}
       {showDropdown && (results.length > 0 || isLoading) && (
-        <div className="absolute z-10 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
           {isLoading ? (
-            <div className="px-4 py-3 text-center text-gray-400">
+            <div className="px-4 py-3 text-center text-gray-600">
               <div className="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
               <span className="ml-2">Searching...</span>
             </div>
           ) : results.length === 0 ? (
-            <div className="px-4 py-3 text-center text-gray-400">
+            <div className="px-4 py-3 text-center text-gray-600">
               No figures found
             </div>
           ) : (
@@ -133,14 +133,14 @@ export default function FigureSearchInput({
                 <li key={figure.canonical_id}>
                   <button
                     onClick={() => handleSelect(figure)}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-700 focus:bg-gray-700 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-100 focus:outline-none transition-colors"
                     type="button"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-medium truncate">{figure.name}</p>
+                        <p className="text-gray-900 font-medium truncate">{figure.name}</p>
                         {figure.era && (
-                          <p className="text-sm text-gray-400 truncate">{figure.era}</p>
+                          <p className="text-sm text-gray-600 truncate">{figure.era}</p>
                         )}
                       </div>
                     </div>
@@ -154,8 +154,8 @@ export default function FigureSearchInput({
 
       {/* Selected indicator */}
       {selectedFigure && (
-        <div className="mt-2 text-sm text-gray-400">
-          Selected: <span className="text-blue-400 font-medium">{selectedFigure.name}</span>
+        <div className="mt-2 text-sm text-gray-600">
+          Selected: <span className="text-blue-600 font-medium">{selectedFigure.name}</span>
         </div>
       )}
     </div>

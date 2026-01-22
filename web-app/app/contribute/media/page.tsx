@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Film, Plus, Loader2, MapPin, Clock } from 'lucide-react';
+import { Film, Plus, Loader2, MapPin, Clock, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import type { LocationWithStats, EraWithStats } from '@/lib/types';
 
 export default function ContributeMediaPage() {
@@ -12,6 +12,8 @@ export default function ContributeMediaPage() {
   const [locations, setLocations] = useState<LocationWithStats[]>([]);
   const [eras, setEras] = useState<EraWithStats[]>([]);
   const [loadingResources, setLoadingResources] = useState(true);
+  const [showStorySettings, setShowStorySettings] = useState(false);
+  const [showAdvancedMetadata, setShowAdvancedMetadata] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     mediaType: 'FILM',
@@ -132,6 +134,12 @@ export default function ContributeMediaPage() {
             </div>
           )}
 
+          {/* Basic Information Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-brand-primary border-b border-brand-primary/20 pb-2">
+              Basic Information
+            </h2>
+
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-brand-text mb-2">
@@ -201,9 +209,21 @@ export default function ContributeMediaPage() {
 
           {/* Wikidata ID */}
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-2">
-              Wikidata Q-ID
-            </label>
+            <div className="flex items-center gap-2 mb-2">
+              <label className="block text-sm font-medium text-brand-text">
+                Wikidata Q-ID
+              </label>
+              <div className="group relative">
+                <Info className="w-4 h-4 text-brand-primary/50 cursor-help" />
+                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-80 p-3 bg-gray-800 text-xs text-white rounded shadow-lg z-10">
+                  <strong>What is a Wikidata Q-ID?</strong><br/>
+                  Unique identifiers like Q1298971 for "Oppenheimer". Leave blank to auto-search.<br/>
+                  <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:underline mt-1 inline-block">
+                    Search Wikidata →
+                  </a>
+                </div>
+              </div>
+            </div>
             <input
               type="text"
               name="wikidataId"
@@ -212,9 +232,6 @@ export default function ContributeMediaPage() {
               placeholder="e.g., Q1298971"
               className="w-full bg-white border border-brand-primary/30 rounded-md py-2 px-3 text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
-            <p className="text-xs text-brand-text/60 mt-1">
-              Optional - helps link to external sources
-            </p>
           </div>
 
           {/* Description */}
@@ -231,14 +248,33 @@ export default function ContributeMediaPage() {
               className="w-full bg-white border border-brand-primary/30 rounded-md py-2 px-3 text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
+          </div>
 
-          {/* Location & Era Section */}
-          <div className="border-t border-brand-primary/20 pt-6">
-            <h3 className="text-sm font-semibold text-brand-text mb-4 flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <Clock className="w-4 h-4" />
-              Story Location & Time Period (Optional)
-            </h3>
+          {/* Story Settings Section - Collapsible */}
+          <div className="border-t border-brand-primary/20 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowStorySettings(!showStorySettings)}
+              className="w-full flex items-center justify-between text-left mb-4 hover:text-brand-accent transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
+                <h3 className="text-sm font-semibold text-brand-text">
+                  Story Settings (Optional)
+                </h3>
+                <div className="group relative">
+                  <Info className="w-3 h-3 text-brand-primary/50 cursor-help" />
+                  <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-xs text-white rounded shadow-lg z-10">
+                    Where and when is the story set? Select locations and eras depicted in the work.
+                  </div>
+                </div>
+              </div>
+              {showStorySettings ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </button>
+
+            {showStorySettings && (
+              <div className="space-y-6">
 
             {/* Locations */}
             {locations.length > 0 && (
@@ -283,11 +319,23 @@ export default function ContributeMediaPage() {
                 </div>
               </div>
             )}
+              </div>
+            )}
           </div>
 
-          {/* Conditional Metadata Fields */}
-          <div className="border-t border-brand-primary/20 pt-6">
-            <h3 className="text-sm font-semibold text-brand-text mb-4">Additional Metadata</h3>
+          {/* Advanced Metadata Section - Collapsible */}
+          <div className="border-t border-brand-primary/20 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowAdvancedMetadata(!showAdvancedMetadata)}
+              className="w-full flex items-center justify-between text-left mb-4 hover:text-brand-accent transition-colors"
+            >
+              <h3 className="text-sm font-semibold text-brand-text">Advanced Metadata (Optional)</h3>
+              {showAdvancedMetadata ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </button>
+
+            {showAdvancedMetadata && (
+              <div className="space-y-4">
 
             {/* Book Fields */}
             {(formData.mediaType === 'BOOK' || formData.mediaType === 'GAME_SERIES') && (
@@ -353,6 +401,8 @@ export default function ContributeMediaPage() {
                   placeholder="e.g., Universal Pictures, Rockstar Games"
                   className="w-full bg-white border border-brand-primary/30 rounded-md py-2 px-3 text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 />
+              </div>
+            )}
               </div>
             )}
           </div>

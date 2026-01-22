@@ -34,7 +34,12 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
     const result = await session.run(
       `MATCH (f:HistoricalFigure {canonical_id: $canonicalId})
        OPTIONAL MATCH (f)-[r:APPEARS_IN]->(m:MediaWork)
-       RETURN f, collect({media: m, sentiment: r.sentiment})[0..100] as portrayals`,
+       RETURN f, collect({
+         media: m,
+         sentiment: r.sentiment,
+         sentiment_tags: r.sentiment_tags,
+         tag_metadata: r.tag_metadata
+       })[0..100] as portrayals`,
       { canonicalId }
     );
 
@@ -48,14 +53,22 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
 
     const portrayals: Portrayal[] = portrayalsData
       .filter((p: any) => p.media !== null)
-      .map((p: any) => ({
-        media: {
-          title: p.media.properties.title,
-          release_year: p.media.properties.release_year?.toNumber?.() ?? Number(p.media.properties.release_year),
-          wikidata_id: p.media.properties.wikidata_id,
-        },
-        sentiment: p.sentiment || 'Complex',
-      }));
+      .map((p: any) => {
+        // Hybrid format support: use sentiment_tags if available, otherwise fall back to legacy sentiment
+        const sentimentTags = p.sentiment_tags || (p.sentiment ? [p.sentiment.toLowerCase()] : ['complex']);
+        const legacySentiment = sentimentTags[0] || 'complex';
+
+        return {
+          media: {
+            title: p.media.properties.title,
+            release_year: p.media.properties.release_year?.toNumber?.() ?? Number(p.media.properties.release_year),
+            wikidata_id: p.media.properties.wikidata_id,
+          },
+          sentiment: legacySentiment, // Legacy field for backward compatibility
+          sentiment_tags: sentimentTags,
+          tag_metadata: p.tag_metadata || undefined,
+        };
+      });
 
     return {
       canonical_id: figureNode.properties.canonical_id,
