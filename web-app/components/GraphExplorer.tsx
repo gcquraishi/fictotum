@@ -606,6 +606,26 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     }
   }, [centerNodeId, nodes.length, links.length, nodeChildren.size]);
 
+  // CHR-22: Auto-zoom to fit after graph loads and instance is ready
+  useEffect(() => {
+    if (forceGraphInstance && nodes.length > 0 && !isLoading) {
+      console.log('🎯 Graph ready, attempting auto-zoom. Nodes:', nodes.length);
+      // Delay to ensure layout has settled
+      const zoomTimer = setTimeout(() => {
+        try {
+          const padding = 100;
+          console.log('🔍 Calling zoomToFit with padding:', padding);
+          forceGraphInstance.zoomToFit?.(400, padding);
+          console.log('✅ zoomToFit completed successfully');
+        } catch (e) {
+          console.error('❌ zoomToFit failed:', e);
+        }
+      }, 1000); // Wait 1 second for layout to settle
+
+      return () => clearTimeout(zoomTimer);
+    }
+  }, [forceGraphInstance, nodes.length, isLoading]);
+
   // Fetch graph data on mount if not provided
   useEffect(() => {
     if (initialNodes && initialLinks) {
@@ -1252,26 +1272,6 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           enableNodeDrag={true}
           enableZoomInteraction={true}
           enablePanInteraction={true}
-          onEngineStop={() => {
-            // CHR-22: Auto-zoom to fit graph in frame after simulation settles
-            // Adaptive zoom based on graph size - fills more of the available space
-            // Small delay ensures graph is fully rendered before zooming
-            setTimeout(() => {
-              if (forceGraphRef.current) {
-                // Add padding so nodes aren't at the edge (100px padding)
-                const padding = 100;
-                try {
-                  console.log('🔍 Attempting zoomToFit, ref:', forceGraphRef.current);
-                  forceGraphRef.current.zoomToFit?.(400, padding);
-                  console.log('✅ zoomToFit called successfully');
-                } catch (e) {
-                  console.error('❌ zoomToFit failed:', e);
-                }
-              } else {
-                console.warn('⚠️ forceGraphRef.current is null, cannot zoom');
-              }
-            }, 100);
-          }}
           nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
             try {
               const label = node?.name || '';
