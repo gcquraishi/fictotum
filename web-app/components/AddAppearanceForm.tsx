@@ -4,7 +4,7 @@
 import { useState, useTransition } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Plus, Info, Loader2 } from 'lucide-react';
+import { Plus, Info, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import SentimentTagSelector from './SentimentTagSelector';
 
 interface MediaSearchResult {
@@ -19,6 +19,7 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [isSubmitting, startTransition] = useTransition();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const [mediaQuery, setMediaQuery] = useState('');
   const [mediaResults, setMediaResults] = useState<MediaSearchResult[]>([]);
@@ -221,8 +222,24 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-gray-800 border border-gray-700 rounded-lg">
-      <h3 className="text-xl font-semibold">Add Media Appearance</h3>
+    <div className="bg-gray-800 border border-gray-700 rounded-lg">
+      {/* Collapsible Header Button */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full p-6 flex items-center justify-between hover:bg-gray-700/50 transition-colors rounded-lg"
+      >
+        <h3 className="text-xl font-semibold text-white">Add Media Appearance</h3>
+        {isExpanded ? (
+          <ChevronUp className="w-5 h-5 text-gray-400" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-gray-400" />
+        )}
+      </button>
+
+      {/* Collapsible Form Content */}
+      {isExpanded && (
+        <form onSubmit={handleSubmit} className="space-y-4 px-6 pb-6 border-t border-gray-700 pt-4">
 
       <div>
         <label htmlFor="media-search" className="block text-sm font-medium text-gray-300">Search for Media Work</label>
@@ -565,6 +582,8 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
         className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold rounded-lg transition-colors">
           {isSubmitting ? 'Submitting...' : 'Add Appearance'}
       </button>
-    </form>
+        </form>
+      )}
+    </div>
   );
 }

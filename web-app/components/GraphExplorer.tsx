@@ -103,7 +103,8 @@ const isBaconNode = (nodeId: string): boolean => {
 
 export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks, highlightedPath }: GraphExplorerProps) {
   const router = useRouter();
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [dimensions, setDimensions] = useState({ width: 1200, height: 1400 });
+  const [dimensionsReady, setDimensionsReady] = useState(false);
   const [nodes, setNodes] = useState<GraphNode[]>(initialNodes || []);
   const [links, setLinks] = useState<ForceGraphLink[]>(initialLinks || []);
   const [isLoading, setIsLoading] = useState(!initialNodes && !initialLinks);
@@ -645,19 +646,58 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     fetchGraphData();
   }, [canonicalId, initialNodes, initialLinks]);
 
-  // Handle responsive dimensions
+  // Handle responsive dimensions - wait for container to be ready
   useEffect(() => {
+    let hasSetDimensions = false;
+
     const updateDimensions = () => {
-      if (containerRef.current) {
-        const width = containerRef.current.offsetWidth;
-        const height = Math.max(600, window.innerHeight - 400);
+      if (containerRef.current && !hasSetDimensions) {
+        // Get the actual inner dimensions of the container (clientWidth excludes borders)
+        const containerWidth = containerRef.current.clientWidth;
+        const containerOffsetWidth = containerRef.current.offsetWidth;
+
+        // If container has width, use it; otherwise use a sensible default
+        const width = containerWidth > 0 ? Math.max(containerWidth - 4, 800) : 1200;
+        const height = 1400; // Much taller canvas for better node distribution
+
         setDimensions({ width, height });
+        setDimensionsReady(true);
+        hasSetDimensions = true;
+
+        console.log('✅ GraphExplorer dimensions set:', {
+          width,
+          height,
+          containerWidth,
+          containerOffsetWidth,
+          usedDefault: containerWidth === 0
+        });
       }
     };
 
+    // Try immediately
     updateDimensions();
+
+    // Also try with delays in case container isn't ready immediately
+    const timer1 = setTimeout(updateDimensions, 100);
+    const timer2 = setTimeout(updateDimensions, 300);
+
+    // Fallback: force dimensions ready after 500ms even if container measurement failed
+    const fallbackTimer = setTimeout(() => {
+      if (!hasSetDimensions) {
+        console.log('⚠️ Fallback: forcing dimensions ready with defaults');
+        setDimensions({ width: 1200, height: 1400 });
+        setDimensionsReady(true);
+        hasSetDimensions = true;
+      }
+    }, 500);
+
     window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(fallbackTimer);
+      window.removeEventListener('resize', updateDimensions);
+    };
   }, []);
 
   // Filter nodes based on media category
@@ -1029,22 +1069,26 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     }
   };
 
-  // Loading skeleton
-  if (isLoading || isPending) {
+  // Loading skeleton - show until both data AND dimensions are ready
+  if (isLoading || isPending || !dimensionsReady) {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>
         <div className="mb-4 flex gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-gray-300 animate-pulse"></div>
-            <span className="text-gray-500">Loading...</span>
+            <span className="text-gray-500">
+              {!dimensionsReady ? 'Initializing canvas...' : 'Loading graph data...'}
+            </span>
           </div>
         </div>
-        <div className="bg-white rounded-lg overflow-hidden" style={{ height: dimensions.height }}>
+        <div className="bg-white rounded-lg overflow-hidden" style={{ height: 1400 }}>
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-              <p className="text-gray-400">Loading graph data...</p>
+              <p className="text-gray-400">
+                {!dimensionsReady ? 'Preparing visualization...' : 'Loading graph data...'}
+              </p>
             </div>
           </div>
         </div>
@@ -1151,7 +1195,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
       {/* Full-Bleed Graph */}
       <ForceGraphErrorBoundary>
-        <div ref={containerRef} className="bg-gray-50 overflow-hidden cursor-grab active:cursor-grabbing" style={{ minHeight: dimensions.height }}>
+        <div ref={containerRef} className="bg-gray-50 rounded-lg border border-gray-200 w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab' }}>
+          <div style={{ width: '100%', height: '100%' }}>
           <ForceGraph2D
           ref={forceGraphRef}
           key={`${showAllEdges}-${showAcademicWorks}-${showReferenceWorks}-${visibleLinks.length}`}
@@ -1173,6 +1218,19 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           }}
           backgroundColor="#f9fafb"
           onNodeClick={handleNodeClick as any}
+          // Force simulation parameters - balanced spacing with natural movement
+          d3AlphaDecay={0.01}
+          d3VelocityDecay={0.3}
+          cooldownTicks={200}
+          d3Force={{
+            charge: { strength: -4000, distanceMax: 1000 },
+            link: { distance: 300, strength: 0.8 },
+            center: { strength: 0.1 },
+            collision: { radius: 80, strength: 0.4 }
+          }}
+          enableNodeDrag={true}
+          enableZoomInteraction={true}
+          enablePanInteraction={true}
           nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
             try {
               const label = node?.name || '';
@@ -1262,6 +1320,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             }
           }}
         />
+          </div>
         </div>
       </ForceGraphErrorBoundary>
     </div>

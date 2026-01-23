@@ -56,11 +56,13 @@ export default async function FigurePage({
             </div>
           </div>
 
+          {/* Graph Explorer - Priority visualization */}
+          <div className="mb-8">
+            <GraphExplorer canonicalId={id} />
+          </div>
+
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Conflict Radar */}
-            <ConflictRadar distribution={sentimentDistribution} />
-
             {/* Stats Card */}
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Quick Stats</h2>
@@ -68,10 +70,6 @@ export default async function FigurePage({
                 <div className="flex justify-between items-center p-3 bg-gray-900 rounded">
                   <span className="text-gray-400">Total Portrayals</span>
                   <span className="text-xl font-bold text-white">{figure.portrayals.length}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-900 rounded">
-                  <span className="text-gray-400">Canonical ID</span>
-                  <span className="text-sm font-mono text-gray-300">{figure.canonical_id}</span>
                 </div>
                 {figure.portrayals.length > 0 && (
                   <>
@@ -91,20 +89,18 @@ export default async function FigurePage({
                 )}
               </div>
             </div>
+
+            {/* Conflict Radar */}
+            <ConflictRadar distribution={sentimentDistribution} />
           </div>
 
           {/* Contribution Form */}
-          <div className="mt-8">
+          <div className="mb-8">
             <AddAppearanceForm figureId={figure.canonical_id} />
           </div>
 
           {/* Media Timeline */}
           <MediaTimeline portrayals={figure.portrayals} />
-
-          {/* Graph Explorer */}
-          <div className="mt-8">
-            <GraphExplorer canonicalId={id} />
-          </div>
         </div>
       </div>
     </div>
