@@ -13,7 +13,17 @@ export function getDriver(): Driver {
       throw new Error('Missing Neo4j environment variables');
     }
 
-    driver = neo4j.driver(uri, neo4j.auth.basic(username, password));
+    // Configuration for Neo4j Aura with proper SSL/TLS handling
+    driver = neo4j.driver(
+      uri,
+      neo4j.auth.basic(username, password),
+      {
+        maxConnectionLifetime: 3 * 60 * 60 * 1000, // 3 hours
+        maxConnectionPoolSize: 50,
+        connectionAcquisitionTimeout: 2 * 60 * 1000, // 2 minutes
+        disableLosslessIntegers: true,
+      }
+    );
   }
 
   return driver;
