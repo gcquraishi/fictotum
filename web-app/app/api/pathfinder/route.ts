@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findShortestPath } from '@/lib/db';
+import { devError } from '@/utils/devLog';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ path }, { status: 200 });
   } catch (error) {
-    console.error('Pathfinder API error:', error);
+    devError('Pathfinder API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

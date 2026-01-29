@@ -1,5 +1,5 @@
 # ChronosGraph Product Roadmap
-*Last updated: 2026-01-28*
+*Last updated: 2026-01-29*
 
 ---
 
@@ -32,40 +32,44 @@ ChronosGraph is a knowledge graph exploring how historical figures have been por
 ## Phase 1: Core UX Polish (Current)
 *Goal: Make the existing features delightful before adding new ones*
 
-### 1.1 Navbar Redesign
-**Priority:** HIGH | **Status:** Planned | **Flight Plan:** `docs/planning/FLIGHT_PLAN_NAVBAR_REDESIGN_OPTION2.md`
+### 1.1 Navbar Redesign ✅
+**Priority:** HIGH | **Status:** Complete (2026-01-29) | **Flight Plan:** `docs/planning/FLIGHT_PLAN_NAVBAR_REDESIGN_OPTION2.md`
 
 Replace ad-hoc navigation with a proper navbar supporting dropdowns and mobile responsiveness.
 
-| Session | Scope | Deliverable |
-|---------|-------|-------------|
-| 1.1.1 | Create `Navbar.tsx` component with logo and basic links | Working navbar in layout |
-| 1.1.2 | Add Contribute/Analyze dropdown menus | Dropdown navigation works |
-| 1.1.3 | Add auth-conditional Account menu | Login/logout integrated |
-| 1.1.4 | Mobile responsive hamburger menu | Works on all viewports |
+| Session | Status | Scope | Deliverable |
+|---------|--------|-------|-------------|
+| 1.1.1 | ✅ | Create `Navbar.tsx` component with logo and basic links | Working navbar in layout |
+| 1.1.2 | ✅ | Add Contribute/Analyze dropdown menus | Dropdown navigation works |
+| 1.1.3 | ✅ | Add auth-conditional Account menu | Login/logout integrated |
+| 1.1.4 | ✅ | Mobile responsive hamburger menu | Works on all viewports |
 
-### 1.2 Universal Search
-**Priority:** HIGH | **Status:** Planned | **Flight Plan:** `docs/planning/FLIGHT_PLAN_UNIVERSAL_SEARCH.md`
+**Note:** Contribute is a single link (not dropdown) due to unified contribution hub architecture at `/contribute`.
 
-Single search bar finding figures, media, creators, actors, and series.
+### 1.2 Universal Search ✅
+**Priority:** HIGH | **Status:** Complete (2026-01-29) | **Flight Plan:** `docs/planning/FLIGHT_PLAN_UNIVERSAL_SEARCH.md`
 
-| Session | Scope | Deliverable |
-|---------|-------|-------------|
-| 1.2.1 | Create `/api/search/universal` endpoint | API returns mixed results |
-| 1.2.2 | Update `SearchInput.tsx` to use universal endpoint | Grouped search results UI |
-| 1.2.3 | Add actor search (schema update for `actor_name` on APPEARS_IN) | Actors searchable |
-| 1.2.4 | Wire search into navbar | Search accessible globally |
+Single search bar finding figures, media, creators, actors, series, locations, and eras.
 
-### 1.3 Landing Page Refinement
-**Priority:** MEDIUM | **Status:** Partially conceptualized | **Flight Plan:** `docs/planning/LANDING_PAGE_REDESIGN.md`
+| Session | Status | Scope | Deliverable |
+|---------|--------|-------|-------------|
+| 1.2.1 | ✅ | Create `/api/search/universal` endpoint | API returns mixed results (7 categories) |
+| 1.2.2 | ✅ | Update `SearchInput.tsx` to use universal endpoint | Grouped search results UI |
+| 1.2.3 | ✅ | Add actor search (schema update for `actor_name` on APPEARS_IN) | Actors searchable |
+| 1.2.4 | ✅ | Wire search into navbar | Search accessible globally |
 
-The landing page has evolved but the path query interface isn't fully wired up.
+### 1.3 Landing Page Refinement ✅
+**Priority:** MEDIUM | **Status:** Complete (2026-01-29) | **Flight Plan:** `docs/planning/LANDING_PAGE_REDESIGN.md`
 
-| Session | Scope | Deliverable |
-|---------|-------|-------------|
-| 1.3.1 | Wire path query inputs to Neo4j pathfinding Cypher | Query returns paths |
-| 1.3.2 | Highlight discovered path in graph visualization | Path visually distinct |
-| 1.3.3 | Add autocomplete for figure names | Typeahead suggestions |
+The landing page now features path query with graph highlighting and autocomplete.
+
+| Session | Status | Scope | Deliverable |
+|---------|--------|-------|-------------|
+| 1.3.1 | ✅ | Wire path query inputs to Neo4j pathfinding Cypher | Query returns paths |
+| 1.3.2 | ✅ | Highlight discovered path in graph visualization | Path visually distinct |
+| 1.3.3 | ✅ | Add autocomplete for figure names | Typeahead suggestions |
+
+**Note:** Autocomplete was already implemented via FigureSearchInput component with `/api/figures/search` endpoint.
 
 ---
 

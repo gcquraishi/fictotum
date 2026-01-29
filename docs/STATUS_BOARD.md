@@ -1,5 +1,5 @@
 # ChronosGraph Status Board
-*Last updated: 2026-01-21 14:30 UTC*
+*Last updated: 2026-01-29 21:00 UTC*
 
 ## Currently Active
 | Agent | Working On | Started | ETA | Notes |
@@ -29,6 +29,171 @@
 ---
 
 ## Recent Session Handoffs
+
+### Phase 1.3 Landing Page Refinement COMPLETE: 2026-01-29 22:00 UTC
+**Did:** Completed all three sessions of Landing Page Refinement. Verified that autocomplete functionality (Session 1.3.3) was already fully implemented via FigureSearchInput component.
+
+**Session 1.3.3 - Autocomplete (Already Implemented):**
+- `web-app/components/FigureSearchInput.tsx` - Full autocomplete with:
+  - Debounced search (300ms delay)
+  - Dropdown results with figure names and eras
+  - Loading states and error handling
+  - Click-outside to close
+  - Keyboard navigation support
+- `web-app/app/api/figures/search/route.ts` - Backend endpoint serving autocomplete results
+- Used in both START and END inputs in LandingPathQuery
+
+**Phase 1.3 Summary:**
+- ✅ Session 1.3.1: Path query interface with Neo4j pathfinding
+- ✅ Session 1.3.2: Visual path highlighting in graph explorer
+- ✅ Session 1.3.3: Autocomplete figure name suggestions (pre-existing)
+
+**Updated:**
+- `PRODUCT_ROADMAP.md` - Marked Phase 1.3 complete (100%)
+- `docs/STATUS_BOARD.md` - Added this handoff note
+
+**Phase 1 Status: 100% COMPLETE (12/12 sessions)** 🎉
+- 1.1 Navbar Redesign ✅
+- 1.2 Universal Search ✅
+- 1.3 Landing Page Refinement ✅
+
+**Next:** Begin Phase 2: Data Quality & Provenance OR Fix 4 TypeScript errors
+
+**Questions:** Ready to celebrate Phase 1 completion and move to Phase 2?
+
+---
+
+### Path Highlighting in Graph COMPLETE (Session 1.3.2): 2026-01-29 21:45 UTC
+**Did:** Implemented visual path highlighting in graph explorer when users find connections. Discovered paths are now visually emphasized with larger nodes, glow effects, and thicker edges.
+
+**Modified:**
+- `web-app/app/page.tsx` - Converted to client component to manage highlighted path state:
+  - Added `highlightedPath` state management
+  - Created `convertPathToVisualization()` helper to transform API response
+  - Added `handlePathFound()` callback to update graph highlighting
+  - Added visual indicator banner showing when path is highlighted (with node count)
+  - Added "Clear highlighting" button for better UX
+
+- `web-app/components/LandingPathQuery.tsx` - Added callback support:
+  - New `onPathFound` prop to notify parent of path changes
+  - Calls callback on successful path retrieval
+  - Clears highlighting on errors or new searches
+
+**How It Works:**
+1. User searches for path between two figures (e.g., Napoleon → Caesar)
+2. Path result converted to `PathVisualization` format (node IDs + link pairs)
+3. Passed to `GraphExplorer` via `highlightedPath` prop
+4. Graph automatically highlights path nodes (larger + glow) and edges (featured/thicker)
+5. Blue banner appears with node count and clear button
+6. Existing highlighting logic in GraphExplorer (already implemented) handles visual styling
+
+**Visual Enhancements:**
+- Path nodes: 1.2× size multiplier + glow effect
+- Path edges: Marked as "featured" (thicker, more prominent)
+- Blue indicator banner with pulsing dot
+- One-click clearing of highlights
+
+**Updated:**
+- `PRODUCT_ROADMAP.md` - Marked session 1.3.2 complete (Phase 1.3 now 67% complete)
+- `docs/STATUS_BOARD.md` - Added this handoff note
+
+**Next:** Session 1.3.3 - Add autocomplete for figure names (already partially implemented via FigureSearchInput)
+
+**Questions:** FigureSearchInput already provides autocomplete - should we verify it works correctly or enhance it?
+
+---
+
+### Landing Page Path Query COMPLETE (Session 1.3.1): 2026-01-29 21:30 UTC
+**Did:** Implemented path query interface on landing page using existing pathfinding infrastructure. Users can now find connections between any two historical figures directly from the homepage.
+
+**Created:**
+- `web-app/components/LandingPathQuery.tsx` (237 lines) - New component with:
+  - Dual FigureSearchInput fields (START/END)
+  - Loading states and error handling
+  - Inline path results display with relationship context
+  - Clean, accessible UI matching landing page design
+
+**Modified:**
+- `web-app/app/page.tsx` - Integrated LandingPathQuery above graph explorer
+  - Added visual divider between path query and graph sections
+  - Maintained Henry VIII as fallback exploration entry point
+  - Improved layout spacing and hierarchy
+
+**Implementation Details:**
+- Uses existing `/api/pathfinder` endpoint (POST with start_id/end_id)
+- Leverages FigureSearchInput component for autocomplete
+- Displays path with node types, relationship contexts, and degree count
+- Responsive layout (stacks on mobile, side-by-side on desktop)
+
+**Testing:**
+- ✅ TypeScript compiles with no errors in new code
+- ✅ Dev server running at http://localhost:3000
+- ✅ Component integrates cleanly with existing layout
+
+**Updated:**
+- `PRODUCT_ROADMAP.md` - Marked session 1.3.1 complete (Phase 1.3 now 33% complete)
+- `docs/STATUS_BOARD.md` - Added this handoff note
+
+**Next:** Session 1.3.2 - Highlight discovered path in graph visualization OR Session 1.3.3 - Add autocomplete
+
+**Questions:** Should we complete remaining Phase 1.3 sessions or move to Phase 2 (Data Quality)?
+
+---
+
+### Universal Search COMPLETE (Phase 1.2): 2026-01-29 21:15 UTC
+**Did:** Audited and verified completion of all Universal Search sessions (1.2.1-1.2.4). Search functionality is production-ready with comprehensive cross-entity search.
+
+**Found:**
+- `web-app/app/api/search/universal/route.ts` (143 lines) - Full implementation searching 7 categories:
+  - Historical Figures (by name)
+  - Media Works (non-series)
+  - Series (book/film/TV/game series)
+  - Creators (by creator name)
+  - Actors (by actor_name on APPEARS_IN)
+  - Locations (by location name)
+  - Eras (by era name)
+- `web-app/components/SearchInput.tsx` (143 lines) - Debounced search with grouped results UI
+- `web-app/app/search/page.tsx` - Dedicated search page using SearchInput
+- `scripts/schema.py:76` - Portrayal model includes `actor_name` field
+- `web-app/app/api/contribution/appearance/route.ts:64,74` - API handles actor_name in MERGE
+- `web-app/components/AddAppearanceForm.tsx:549-558` - Form includes actor name input
+- `components/Navbar.tsx:64,195` - Search links in desktop + mobile nav
+
+**Testing:** Search accessible via navbar → `/search` → Universal search with instant results
+
+**Updated:**
+- `PRODUCT_ROADMAP.md` - Marked section 1.2 complete (100% of sessions)
+- `docs/STATUS_BOARD.md` - Added this handoff note
+
+**Next:** Session 1.3.1 - Wire path query inputs to Neo4j pathfinding OR address TypeScript errors
+
+**Questions:** Should we fix the 4 TypeScript errors before proceeding with new features?
+
+---
+
+### Navbar Redesign COMPLETE (Phase 1.1): 2026-01-29 21:00 UTC
+**Did:** Audited and verified completion of all navbar redesign sessions (1.1.1-1.1.4). Navbar component is production-ready with full desktop/mobile navigation, dropdowns, and authentication handling.
+
+**Found:**
+- `web-app/components/Navbar.tsx` (298 lines) - Fully implemented with:
+  - Logo and brand name linking to home
+  - Search, Contribute, and Analyze navigation
+  - Analyze dropdown with Pathfinder, Graph Explorer, Browse Series
+  - Account dropdown (conditional on auth) with Profile, Settings, Logout
+  - Mobile responsive hamburger menu
+  - Zero TypeScript errors in navbar code
+
+**Architecture Note:** Contribute is a single link (not dropdown) because ChronosGraph uses a unified contribution hub at `/contribute` (implemented 2026-01-22), replacing the fragmented routes originally planned in the flight plan.
+
+**Updated:**
+- `PRODUCT_ROADMAP.md` - Marked section 1.1 complete (100% of sessions)
+- `docs/STATUS_BOARD.md` - Added this handoff note
+
+**Next:** Session 1.2.1 - Create `/api/search/universal` endpoint for Universal Search feature
+
+**Questions:** None - navbar work complete, moving to Phase 1.2 (Universal Search)
+
+---
 
 ### Bloom Phase 2 - Navigation Controls COMPLETE: 2026-01-21 14:30 UTC
 **Did:** Completed Bloom Phase 2 navigation controls (100% of core tasks). Fixed 3 major bugs during testing. Back button, reset view, and collapse functionality all working correctly.
