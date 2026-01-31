@@ -198,7 +198,6 @@ async function enrichMediaWork(wikidataId: string): Promise<EnrichedWorkData> {
       'Q1344': 'Opera',              // opera
       'Q213665': 'Comic',            // comic
       'Q1261214': 'Documentary',     // documentary film
-      'Q5398426': 'TV Series',       // TV series
       'Q24862': 'Short Film'         // short film
     };
 

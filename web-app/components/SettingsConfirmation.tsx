@@ -177,7 +177,7 @@ export default function SettingsConfirmation({
       .map(loc => ({
         action: 'suggest' as const,
         name: loc.name,
-        wikidataId: loc.wikidataId,
+        wikidata_id: loc.wikidataId,
         notes: loc.notes,
         validationConfidence: loc.validationConfidence,
         validationReasoning: loc.validationReasoning

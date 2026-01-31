@@ -23,34 +23,37 @@ export default async function FigurePage({
   const sentimentDistribution = calculateSentimentDistribution(figure.portrayals);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-stone-100 text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Back Link */}
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mb-6 inline-block">
+          <Link href="/" className="text-amber-600 hover:text-amber-700 mb-6 inline-block font-mono text-sm uppercase tracking-wide font-bold">
             ← Back to Dashboard
           </Link>
 
-          {/* Header */}
-          <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-lg p-8 mb-8">
+          {/* Header - Subject Dossier */}
+          <div className="bg-white border-t-4 border-amber-600 shadow-xl p-8 mb-8">
+            <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2">
+              Subject Dossier // {figure.canonical_id}
+            </div>
             <div className="flex items-start gap-6">
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center border-2 border-blue-500/30">
-                  <User className="w-10 h-10 text-blue-400" />
+                <div className="w-20 h-20 bg-amber-50 border-2 border-amber-600 flex items-center justify-center">
+                  <User className="w-10 h-10 text-amber-600" />
                 </div>
               </div>
               <div className="flex-grow">
                 <div className="flex items-start justify-between gap-4 mb-2">
-                  <h1 className="text-4xl font-bold text-white">{figure.name}</h1>
+                  <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase">{figure.name}</h1>
                   <HistoricityBadge status={figure.historicity_status} isFictional={figure.is_fictional} />
                 </div>
                 {figure.era && (
-                  <p className="text-lg text-gray-300 mb-4">{figure.era}</p>
+                  <p className="text-lg text-stone-600 mb-4">{figure.era}</p>
                 )}
-                <div className="flex gap-4 text-sm text-gray-400">
-                  <div>
-                    <span className="font-semibold">{figure.portrayals.length}</span> media appearances
-                  </div>
+                <div className="flex gap-3">
+                  <span className="inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-[0.15em] border-2 bg-amber-50 border-amber-600 text-amber-900">
+                    Portrayals: {figure.portrayals.length}
+                  </span>
                 </div>
               </div>
             </div>
@@ -63,25 +66,27 @@ export default async function FigurePage({
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Stats Card */}
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Quick Stats</h2>
+            {/* Stats Card - Source Verification */}
+            <div className="bg-stone-100 border-2 border-stone-200 p-6">
+              <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="text-amber-600">■</span> Source Verification
+              </h2>
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-gray-900 rounded">
-                  <span className="text-gray-400">Total Portrayals</span>
-                  <span className="text-xl font-bold text-white">{figure.portrayals.length}</span>
+                <div className="flex justify-between items-center p-3 bg-white border-2 border-stone-300">
+                  <span className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Total Portrayals</span>
+                  <span className="text-2xl font-bold text-amber-600 font-mono">{figure.portrayals.length}</span>
                 </div>
                 {figure.portrayals.length > 0 && (
                   <>
-                    <div className="flex justify-between items-center p-3 bg-gray-900 rounded">
-                      <span className="text-gray-400">Earliest Appearance</span>
-                      <span className="text-white font-semibold">
+                    <div className="flex justify-between items-center p-3 bg-white border-2 border-stone-300">
+                      <span className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Earliest Appearance</span>
+                      <span className="text-xl font-bold text-stone-900 font-mono">
                         {Math.min(...figure.portrayals.map(p => Number(p.media.release_year)))}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-900 rounded">
-                      <span className="text-gray-400">Latest Appearance</span>
-                      <span className="text-white font-semibold">
+                    <div className="flex justify-between items-center p-3 bg-white border-2 border-stone-300">
+                      <span className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Latest Appearance</span>
+                      <span className="text-xl font-bold text-stone-900 font-mono">
                         {Math.max(...figure.portrayals.map(p => Number(p.media.release_year)))}
                       </span>
                     </div>

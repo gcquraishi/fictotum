@@ -753,7 +753,9 @@ export default function ContributePage() {
 
   const getStepNumber = (step: WizardStep): number => {
     const stepMap: Record<WizardStep, number> = {
+      'entity-type': 1,
       search: 1,
+      'figure-form': 2,
       settings: 2,
       confirm: 3,
       creating: 3

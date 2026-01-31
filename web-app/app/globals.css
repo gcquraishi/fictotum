@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  /* Soft & Inviting Theme Colors */
-  --background: #F5F5F5;
-  --foreground: #37474F;
-  --brand-primary: #5D7A8A;
-  --brand-accent: #C6470F;
-  --brand-bg: #F5F5F5;
-  --brand-text: #37474F;
+  /* Evidence Locker (Light) - Data Noir in Daylight */
+  --background: #F5F5F4;           /* stone-100 - paper background */
+  --foreground: #1C1917;           /* stone-900 - ink black */
+  --brand-primary: #57534E;        /* stone-600 - stamped text */
+  --brand-accent: #D97706;         /* amber-600 - highlighted evidence */
+  --folder-manila: #F3E5AB;        /* manila folder yellow */
+  --border-standard: #D6D3D1;      /* stone-300 - document borders */
 }
 
 @theme inline {
@@ -18,22 +18,71 @@
   /* Brand Colors */
   --color-brand-primary: var(--brand-primary);
   --color-brand-accent: var(--brand-accent);
-  --color-brand-bg: var(--brand-bg);
-  --color-brand-text: var(--brand-text);
+  --color-brand-bg: var(--background);
+  --color-brand-text: var(--foreground);
 
-  /* Typography */
-  --font-sans: var(--font-lato), system-ui, -apple-system, sans-serif;
-  --font-heading: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  /* Typography - Selective Monospace */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+  --font-heading: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
 }
 
 @layer base {
   body {
     background: var(--background);
     color: var(--foreground);
-    font-family: var(--font-lato), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.025em;
+  }
+
+  /* Selection highlighting - amber evidence marker */
+  ::selection {
+    background-color: #FEF3C7;  /* amber-100 */
+    color: #78350F;             /* amber-900 */
+  }
+
+  ::-moz-selection {
+    background-color: #FEF3C7;
+    color: #78350F;
+  }
+}
+
+@layer utilities {
+  /* Paper texture overlay for backgrounds */
+  .bg-paper-texture {
+    position: relative;
+  }
+
+  .bg-paper-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(#d1d5db 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Stamp text style utility */
+  .text-stamp {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Evidence marker utilities */
+  .border-evidence {
+    border-color: var(--brand-accent);
+  }
+
+  .bg-manila {
+    background-color: var(--folder-manila);
   }
 }

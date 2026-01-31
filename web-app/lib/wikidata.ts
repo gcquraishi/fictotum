@@ -5,7 +5,7 @@
  * Used by API endpoints to automatically find correct Wikidata Q-IDs.
  */
 
-import doubleMetaphone from 'double-metaphone';
+import { doubleMetaphone } from 'double-metaphone';
 import type { SearchResult, WikidataMatch } from '@/types/contribute';
 
 interface WikidataSearchResult {

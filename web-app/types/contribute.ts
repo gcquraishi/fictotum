@@ -124,11 +124,21 @@ export interface WizardState {
 export interface ContributionSettings {
   locations: string[];
   eraTags: EraTag[];
-  unmappedLocationActions?: Array<{
-    wikidata_id: string;
-    action: 'skip' | 'flag' | 'map';
-    mappedTo?: string;
-  }>;
+  unmappedLocationActions?: Array<
+    | {
+        wikidata_id: string;
+        action: 'skip' | 'flag' | 'map';
+        mappedTo?: string;
+      }
+    | {
+        action: 'suggest';
+        name: string;
+        wikidata_id?: string;
+        notes?: string;
+        validationConfidence?: number;
+        validationReasoning?: string;
+      }
+  >;
 }
 
 // ============================================================================

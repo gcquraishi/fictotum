@@ -30,6 +30,28 @@
 
 ## Recent Session Handoffs
 
+### CHR-23 Figure Page Polish COMPLETE: 2026-01-29 23:30 UTC
+**Did:** Implemented key UX enhancements for the Figure Detail page, focusing on discovery and sentiment analysis.
+- **Visualized Evolution:** Added `SentimentTrendChart` to show how character portrayal shifts over time (Heroic vs Villainous).
+- **Connected Graph:** Added prominent "Explore Network" button to header, linking directly to graph explorer.
+- **Fixed Build:** Resolved all TypeScript errors and build warnings (duplicate keys, import issues).
+
+**Modified:**
+- `web-app/app/figure/[id]/page.tsx` - Added chart and button.
+- `web-app/components/SentimentTrendChart.tsx` - New Recharts component with deterministic jitter.
+- `web-app/app/api/wikidata/enrich/route.ts` - Fixed duplicate key error.
+- `web-app/lib/wikidata.ts` - Fixed double-metaphone import.
+
+**Updated:**
+- `docs/STATUS_BOARD.md` - Added this note.
+- `EXECUTION_SUMMARY_CHR-23.md` - Created full summary.
+
+**Next:** Phase 2: Data Quality & Provenance (Track CREATED_BY)
+
+**Questions:** Ready to move to backend data quality tasks?
+
+---
+
 ### Phase 1.3 Landing Page Refinement COMPLETE: 2026-01-29 22:00 UTC
 **Did:** Completed all three sessions of Landing Page Refinement. Verified that autocomplete functionality (Session 1.3.3) was already fully implemented via FigureSearchInput component.
 

@@ -75,14 +75,17 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Emphasizes Discovery */}
-      <div className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-stone-100">
+      {/* Hero Section - Case File Header */}
+      <div className="bg-white border-b-2 border-stone-300">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 text-center">
+          <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2 text-center">
+            Historical Network Analysis // Archive_001
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase text-center">
             Discover Historical Connections
           </h1>
-          <p className="text-center text-gray-600 mt-1">
+          <p className="text-center text-stone-600 mt-2 text-sm">
             Explore how historical figures connect through media portrayals
           </p>
         </div>
@@ -96,30 +99,30 @@ export default function LandingPage() {
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t-2 border-stone-300"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-gray-50 px-4 text-sm text-gray-500 font-medium">
+              <span className="bg-stone-100 px-4 text-[10px] font-black text-stone-500 uppercase tracking-[0.2em]">
                 Or explore starting from Henry VIII
               </span>
             </div>
           </div>
 
-          {/* Single-Node Graph - Progressive Disclosure */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          {/* Single-Node Graph - Dossier Sheet */}
+          <div className="bg-white border-t-4 border-amber-600 shadow-xl overflow-hidden">
             {/* Path Highlighting Indicator */}
             {highlightedPath && (
-              <div className="bg-blue-50 border-b border-blue-200 px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-blue-900">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                  <span className="font-medium">Path highlighted in graph below</span>
-                  <span className="text-blue-700">({highlightedPath.pathIds.length} nodes)</span>
+              <div className="bg-amber-50 border-b-2 border-amber-200 px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-amber-900 font-mono">
+                  <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
+                  <span className="font-bold uppercase tracking-wide">Path highlighted in graph below</span>
+                  <span className="text-amber-700 font-black">({highlightedPath.pathIds.length} nodes)</span>
                 </div>
                 <button
                   onClick={() => setHighlightedPath(undefined)}
-                  className="text-xs text-blue-700 hover:text-blue-900 font-medium underline"
+                  className="text-xs text-amber-700 hover:text-amber-900 font-black uppercase tracking-widest underline"
                 >
-                  Clear highlighting
+                  Clear
                 </button>
               </div>
             )}
@@ -127,8 +130,8 @@ export default function LandingPage() {
             <Suspense fallback={
               <div className="flex items-center justify-center" style={{ minHeight: '600px' }}>
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-500">Loading graph...</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+                  <p className="text-stone-500 font-mono text-sm uppercase tracking-widest">Loading graph...</p>
                 </div>
               </div>
             }>
