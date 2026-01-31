@@ -50,26 +50,29 @@ export default function SeriesBrowsePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+      <div className="min-h-screen bg-stone-100 text-foreground flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
-          <span className="text-xl text-gray-400">Loading series...</span>
+          <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+          <span className="text-xl text-stone-500 font-mono uppercase tracking-widest">Loading series...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-stone-100 text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <BookMarked className="w-8 h-8 text-blue-400" />
-              <h1 className="text-4xl font-bold text-white">Browse Series</h1>
+          {/* Header - Case File Style */}
+          <div className="mb-8 bg-white border-t-4 border-amber-600 shadow-xl p-8">
+            <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2">
+              Series Archive // Fictional Universes
             </div>
-            <p className="text-gray-400">
+            <div className="flex items-center gap-3 mb-2">
+              <BookMarked className="w-8 h-8 text-amber-600" />
+              <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase">Browse Series</h1>
+            </div>
+            <p className="text-stone-600">
               Explore all book, TV, film, and game series in ChronosGraph
             </p>
           </div>
@@ -77,21 +80,21 @@ export default function SeriesBrowsePage() {
           {/* Search Bar */}
           <div className="mb-8">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-500" />
+              <Search className="absolute left-3 top-3 w-5 h-5 text-stone-400" />
               <input
                 type="text"
-                placeholder="Search by series name or creator..."
+                placeholder="SEARCH BY SERIES NAME OR CREATOR..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border-2 border-stone-300 pl-10 pr-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-600 font-mono text-sm uppercase tracking-wide"
               />
             </div>
           </div>
 
           {/* Error State */}
           {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-8">
-              <p className="text-red-400">{error}</p>
+            <div className="bg-red-50 border-2 border-red-600 p-4 mb-8">
+              <p className="text-red-800 font-mono text-sm uppercase tracking-wide">{error}</p>
             </div>
           )}
 
@@ -102,50 +105,50 @@ export default function SeriesBrowsePage() {
                 <Link
                   key={s.wikidata_id}
                   href={`/series/${s.wikidata_id}`}
-                  className="group block bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-blue-500 transition-all"
+                  className="group block bg-white border border-stone-300 p-6 hover:border-amber-600 transition-all shadow-sm hover:shadow-md"
                 >
                   <div className="mb-4">
-                    <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-2">
+                    <div className="flex items-start justify-between mb-2">
+                      <BookMarked className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                      <span className="inline-flex items-center px-2 py-1 text-[10px] font-black uppercase tracking-[0.15em] border-2 bg-stone-100 border-stone-400 text-stone-700">
+                        {s.media_type}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-bold text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors line-clamp-2">
                       {s.title}
                     </h3>
                     {s.creator && (
-                      <p className="text-sm text-gray-400 mt-1">by {s.creator}</p>
+                      <p className="text-sm text-stone-600 mt-1">by {s.creator}</p>
                     )}
                   </div>
 
-                  <div className="space-y-2 mb-4">
-                    <p className="text-sm text-gray-400">
-                      <span className="text-gray-300 font-medium">{s.media_type}</span> Series
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-700">
+                  <div className="grid grid-cols-2 gap-3 pt-4 border-t-2 border-stone-200">
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider">Works</p>
-                      <p className="text-2xl font-bold text-blue-400">{s.work_count}</p>
+                      <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Works</p>
+                      <p className="text-2xl font-bold text-amber-600 font-mono">{s.work_count}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider">Characters</p>
-                      <p className="text-2xl font-bold text-blue-400">{s.character_count}</p>
+                      <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Characters</p>
+                      <p className="text-2xl font-bold text-amber-600 font-mono">{s.character_count}</p>
                     </div>
                   </div>
 
-                  <div className="mt-4 text-sm text-blue-400 group-hover:translate-x-1 transition-transform">
-                    View Series →
+                  <div className="mt-4 text-sm text-amber-600 font-bold uppercase group-hover:translate-x-1 transition-transform">
+                    View File →
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <BookMarked className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-xl text-gray-400 mb-2">
+            <div className="text-center py-16 bg-white border-2 border-stone-300 shadow-sm">
+              <BookMarked className="w-16 h-16 text-stone-400 mx-auto mb-4" />
+              <p className="text-xl text-stone-500 mb-2 font-mono uppercase tracking-wide">
                 {searchQuery ? 'No series found matching your search' : 'No series available'}
               </p>
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-blue-400 hover:text-blue-300 mt-4"
+                  className="text-amber-600 hover:text-amber-700 mt-4 font-black uppercase text-sm tracking-widest"
                 >
                   Clear search
                 </button>
@@ -155,8 +158,8 @@ export default function SeriesBrowsePage() {
 
           {/* Summary */}
           {!error && series.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-gray-700 text-center">
-              <p className="text-gray-400">
+            <div className="mt-12 pt-8 border-t-2 border-stone-300 text-center">
+              <p className="text-stone-500 font-mono uppercase tracking-wide text-sm">
                 Showing {filteredSeries.length} of {series.length} series
               </p>
             </div>

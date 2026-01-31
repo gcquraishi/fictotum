@@ -65,23 +65,26 @@ export default function BrowsePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+      <div className="min-h-screen bg-stone-100 text-foreground flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
-          <span className="text-xl text-gray-400">Loading discovery data...</span>
+          <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+          <span className="text-xl text-stone-500 font-mono uppercase tracking-widest">Loading discovery data...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-stone-100 text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white mb-3">Discover by Location & Era</h1>
-            <p className="text-gray-400 text-lg">
+          {/* Header - Case File Style */}
+          <div className="mb-8 bg-white border-t-4 border-amber-600 shadow-xl p-8">
+            <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2">
+              Discovery Archive // Locations & Temporal Periods
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase mb-3">Discover by Location & Era</h1>
+            <p className="text-stone-600 text-lg">
               Explore creative works through the places they're set and the times they depict
             </p>
           </div>
@@ -89,21 +92,21 @@ export default function BrowsePage() {
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="mb-8">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-500" />
+              <Search className="absolute left-3 top-3 w-5 h-5 text-stone-400" />
               <input
                 type="text"
-                placeholder="Search locations or eras..."
+                placeholder="SEARCH LOCATIONS OR ERAS..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border-2 border-stone-300 pl-10 pr-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-600 font-mono text-sm uppercase tracking-wide"
               />
             </div>
           </form>
 
           {/* Error State */}
           {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-8">
-              <p className="text-red-400">{error}</p>
+            <div className="bg-red-50 border-2 border-red-600 p-4 mb-8">
+              <p className="text-red-800 font-mono text-sm uppercase tracking-wide">{error}</p>
             </div>
           )}
 
@@ -111,10 +114,10 @@ export default function BrowsePage() {
           {searchResults && (
             <div className="mb-12">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white">Search Results</h2>
+                <h2 className="text-2xl font-bold text-stone-900 uppercase tracking-tight">Search Results</h2>
                 <button
                   onClick={clearSearch}
-                  className="text-sm text-blue-400 hover:text-blue-300"
+                  className="text-sm text-amber-600 hover:text-amber-700 font-black uppercase tracking-widest"
                 >
                   Clear Search
                 </button>
@@ -124,7 +127,7 @@ export default function BrowsePage() {
                 <div className="space-y-8">
                   {searchResults.locations.length > 0 && (
                     <div>
-                      <h3 className="text-xl font-semibold text-white mb-4">Locations</h3>
+                      <h3 className="text-xl font-semibold text-stone-900 uppercase tracking-tight mb-4">Locations</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {searchResults.locations.map((location) => (
                           <LocationCard key={location.location_id} location={location} />
@@ -135,7 +138,7 @@ export default function BrowsePage() {
 
                   {searchResults.eras.length > 0 && (
                     <div>
-                      <h3 className="text-xl font-semibold text-white mb-4">Eras</h3>
+                      <h3 className="text-xl font-semibold text-stone-900 uppercase tracking-tight mb-4">Eras</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {searchResults.eras.map((era) => (
                           <EraCard key={era.era_id} era={era} />
@@ -145,7 +148,7 @@ export default function BrowsePage() {
                   )}
                 </div>
               ) : (
-                <p className="text-gray-400 text-center py-8">No results found for "{searchQuery}"</p>
+                <p className="text-stone-500 text-center py-8 font-mono uppercase tracking-widest">No results found for "{searchQuery}"</p>
               )}
             </div>
           )}
@@ -156,15 +159,15 @@ export default function BrowsePage() {
               <div className="mb-12">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                      <MapPin className="w-6 h-6 text-blue-400" />
+                    <h2 className="text-2xl font-bold text-stone-900 flex items-center gap-2 uppercase tracking-tight">
+                      <MapPin className="w-6 h-6 text-amber-600" />
                       Featured Locations
                     </h2>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-sm text-stone-600 mt-1 font-mono">
                       {data.stats.total_locations} locations • Works set in {data.stats.most_works_location}
                     </p>
                   </div>
-                  <Link href="/browse/locations" className="text-blue-400 hover:text-blue-300">
+                  <Link href="/browse/locations" className="text-amber-600 hover:text-amber-700 font-black uppercase text-sm tracking-widest">
                     View All →
                   </Link>
                 </div>
@@ -180,15 +183,15 @@ export default function BrowsePage() {
               <div className="mb-12">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                      <Clock className="w-6 h-6 text-purple-400" />
+                    <h2 className="text-2xl font-bold text-stone-900 flex items-center gap-2 uppercase tracking-tight">
+                      <Clock className="w-6 h-6 text-amber-600" />
                       Featured Eras
                     </h2>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-sm text-stone-600 mt-1 font-mono">
                       {data.stats.total_eras} eras • Most works set in {data.stats.most_works_era}
                     </p>
                   </div>
-                  <Link href="/browse/eras" className="text-purple-400 hover:text-purple-300">
+                  <Link href="/browse/eras" className="text-amber-600 hover:text-amber-700 font-black uppercase text-sm tracking-widest">
                     View All →
                   </Link>
                 </div>
@@ -211,36 +214,36 @@ function LocationCard({ location }: { location: LocationWithStats }) {
   return (
     <Link
       href={`/browse/location/${location.location_id}`}
-      className="group block bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-blue-500 transition-all"
+      className="group block bg-white border border-stone-300 p-6 hover:border-amber-600 transition-all shadow-sm hover:shadow-md"
     >
       <div className="mb-4">
         <div className="flex items-start justify-between mb-2">
-          <MapPin className="w-5 h-5 text-blue-400 flex-shrink-0" />
-          <span className="text-xs text-gray-500 px-2 py-1 bg-gray-700 rounded">
+          <MapPin className="w-5 h-5 text-amber-600 flex-shrink-0" />
+          <span className="inline-flex items-center px-2 py-1 text-[10px] font-black uppercase tracking-[0.15em] border-2 bg-stone-100 border-stone-400 text-stone-700">
             {location.location_type}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">
+        <h3 className="text-lg font-bold text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors">
           {location.name}
         </h3>
         {location.description && (
-          <p className="text-sm text-gray-400 mt-2 line-clamp-2">{location.description}</p>
+          <p className="text-sm text-stone-600 mt-2 line-clamp-2">{location.description}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-700">
+      <div className="grid grid-cols-2 gap-3 pt-4 border-t-2 border-stone-200">
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Works</p>
-          <p className="text-2xl font-bold text-blue-400">{location.work_count}</p>
+          <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Works</p>
+          <p className="text-2xl font-bold text-amber-600 font-mono">{location.work_count}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Figures</p>
-          <p className="text-2xl font-bold text-blue-400">{location.figure_count}</p>
+          <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Figures</p>
+          <p className="text-2xl font-bold text-amber-600 font-mono">{location.figure_count}</p>
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-blue-400 group-hover:translate-x-1 transition-transform">
-        Explore →
+      <div className="mt-4 text-sm text-amber-600 font-bold uppercase group-hover:translate-x-1 transition-transform">
+        View File →
       </div>
     </Link>
   );
@@ -250,40 +253,40 @@ function EraCard({ era }: { era: EraWithStats }) {
   return (
     <Link
       href={`/browse/era/${era.era_id}`}
-      className="group block bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-purple-500 transition-all"
+      className="group block bg-white border border-stone-300 p-6 hover:border-amber-600 transition-all shadow-sm hover:shadow-md"
     >
       <div className="mb-4">
         <div className="flex items-start justify-between mb-2">
-          <Clock className="w-5 h-5 text-purple-400 flex-shrink-0" />
-          <span className="text-xs text-gray-500 px-2 py-1 bg-gray-700 rounded">
+          <Clock className="w-5 h-5 text-amber-600 flex-shrink-0" />
+          <span className="inline-flex items-center px-2 py-1 text-[10px] font-black uppercase tracking-[0.15em] border-2 bg-stone-100 border-stone-400 text-stone-700">
             {era.era_type.replace('_', ' ')}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">
+        <h3 className="text-lg font-bold text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors">
           {era.name}
         </h3>
-        <p className="text-sm text-gray-400 mt-2">
+        <p className="text-sm text-stone-600 mt-2 font-mono">
           {formatYear(era.start_year)} – {formatYear(era.end_year)}
         </p>
       </div>
 
       {era.description && (
-        <p className="text-sm text-gray-400 mb-4 line-clamp-2">{era.description}</p>
+        <p className="text-sm text-stone-600 mb-4 line-clamp-2">{era.description}</p>
       )}
 
-      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-700">
+      <div className="grid grid-cols-2 gap-3 pt-4 border-t-2 border-stone-200">
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Works</p>
-          <p className="text-2xl font-bold text-purple-400">{era.work_count}</p>
+          <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Works</p>
+          <p className="text-2xl font-bold text-amber-600 font-mono">{era.work_count}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Figures</p>
-          <p className="text-2xl font-bold text-purple-400">{era.figure_count}</p>
+          <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Figures</p>
+          <p className="text-2xl font-bold text-amber-600 font-mono">{era.figure_count}</p>
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-purple-400 group-hover:translate-x-1 transition-transform">
-        Explore →
+      <div className="mt-4 text-sm text-amber-600 font-bold uppercase group-hover:translate-x-1 transition-transform">
+        View File →
       </div>
     </Link>
   );

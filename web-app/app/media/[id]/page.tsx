@@ -28,35 +28,38 @@ export default async function MediaPage({
 
   const getIcon = (type: string) => {
     switch (type?.toUpperCase()) {
-      case 'FILM': return <Film className="w-10 h-10 text-blue-400" />;
-      case 'TV_SERIES': return <Tv className="w-10 h-10 text-blue-400" />;
-      case 'GAME': return <Gamepad2 className="w-10 h-10 text-blue-400" />;
-      default: return <BookOpen className="w-10 h-10 text-blue-400" />;
+      case 'FILM': return <Film className="w-10 h-10 text-amber-600" />;
+      case 'TV_SERIES': return <Tv className="w-10 h-10 text-amber-600" />;
+      case 'GAME': return <Gamepad2 className="w-10 h-10 text-amber-600" />;
+      default: return <BookOpen className="w-10 h-10 text-amber-600" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-stone-100 text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mb-6 inline-block">
+          <Link href="/" className="text-amber-600 hover:text-amber-700 mb-6 inline-block font-mono text-sm uppercase tracking-wide font-bold">
             ← Back to Dashboard
           </Link>
 
-          <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-lg p-8 mb-8">
+          <div className="bg-white border-t-4 border-amber-600 shadow-xl p-8 mb-8">
+            <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2">
+              Media Work Dossier // {media.wikidata_id}
+            </div>
             <div className="flex items-start gap-6">
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center border-2 border-blue-500/30">
+                <div className="w-20 h-20 bg-amber-50 border-2 border-amber-600 flex items-center justify-center">
                   {getIcon(media.media_type)}
                 </div>
               </div>
               <div className="flex-grow">
-                <h1 className="text-4xl font-bold text-white mb-2">{media.title}</h1>
-                <p className="text-lg text-gray-300 mb-2">
+                <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase mb-2">{media.title}</h1>
+                <p className="text-lg text-stone-600 mb-2 font-mono">
                   {media.media_type} {media.release_year ? `(${media.release_year})` : ''}
                 </p>
                 {media.creator && (
-                  <p className="text-gray-400">Created by <span className="text-white">{media.creator}</span></p>
+                  <p className="text-stone-600">Created by <span className="text-stone-900 font-bold">{media.creator}</span></p>
                 )}
               </div>
             </div>
@@ -64,15 +67,17 @@ export default async function MediaPage({
 
           {/* Location & Era Section */}
           {(locations.length > 0 || eras.length > 0) && (
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-              <h2 className="text-xl font-semibold text-white mb-4">Story Context</h2>
+            <div className="bg-stone-100 border-2 border-stone-200 p-6 mb-8">
+              <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="text-amber-600">■</span> Story Context
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Locations */}
                 {locations.length > 0 && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <MapPin className="w-5 h-5 text-blue-400" />
-                      <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider">
+                      <MapPin className="w-5 h-5 text-amber-600" />
+                      <h3 className="text-[10px] font-black text-amber-700 uppercase tracking-[0.2em]">
                         Locations
                       </h3>
                     </div>
@@ -81,10 +86,10 @@ export default async function MediaPage({
                         <Link
                           key={loc.location_id}
                           href={`/browse/location/${loc.location_id}`}
-                          className="block p-3 bg-gray-900 rounded-lg border border-gray-700 hover:border-blue-500 transition-all"
+                          className="block p-3 bg-white border-2 border-stone-300 hover:border-amber-600 transition-all"
                         >
-                          <p className="text-white font-medium hover:text-blue-400">{loc.name}</p>
-                          <p className="text-xs text-gray-500 capitalize">{loc.location_type}</p>
+                          <p className="text-stone-900 font-bold hover:text-amber-700 uppercase tracking-tight">{loc.name}</p>
+                          <p className="text-xs text-stone-500 capitalize font-mono">{loc.location_type}</p>
                         </Link>
                       ))}
                     </div>
@@ -95,8 +100,8 @@ export default async function MediaPage({
                 {eras.length > 0 && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <Clock className="w-5 h-5 text-purple-400" />
-                      <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider">
+                      <Clock className="w-5 h-5 text-amber-600" />
+                      <h3 className="text-[10px] font-black text-amber-700 uppercase tracking-[0.2em]">
                         Time Periods
                       </h3>
                     </div>
@@ -105,10 +110,10 @@ export default async function MediaPage({
                         <Link
                           key={era.era_id}
                           href={`/browse/era/${era.era_id}`}
-                          className="block p-3 bg-gray-900 rounded-lg border border-gray-700 hover:border-purple-500 transition-all"
+                          className="block p-3 bg-white border-2 border-stone-300 hover:border-amber-600 transition-all"
                         >
-                          <p className="text-white font-medium hover:text-purple-400">{era.name}</p>
-                          <p className="text-xs text-gray-500">{formatYear(era.start_year)} – {formatYear(era.end_year)}</p>
+                          <p className="text-stone-900 font-bold hover:text-amber-700 uppercase tracking-tight">{era.name}</p>
+                          <p className="text-xs text-stone-500 font-mono">{formatYear(era.start_year)} – {formatYear(era.end_year)}</p>
                         </Link>
                       ))}
                     </div>
@@ -120,31 +125,33 @@ export default async function MediaPage({
 
           {/* Media Details Section */}
           {(media.publisher || media.translator || media.channel || media.production_studio) && (
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-              <h2 className="text-xl font-semibold text-white mb-4">Media Details</h2>
+            <div className="bg-stone-100 border-2 border-stone-200 p-6 mb-8">
+              <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="text-amber-600">■</span> Media Details
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {media.publisher && (
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Publisher</p>
-                    <p className="text-white font-medium">{media.publisher}</p>
+                  <div className="bg-white border-2 border-stone-300 p-3">
+                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Publisher</p>
+                    <p className="text-stone-900 font-bold">{media.publisher}</p>
                   </div>
                 )}
                 {media.translator && (
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Translator</p>
-                    <p className="text-white font-medium">{media.translator}</p>
+                  <div className="bg-white border-2 border-stone-300 p-3">
+                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Translator</p>
+                    <p className="text-stone-900 font-bold">{media.translator}</p>
                   </div>
                 )}
                 {media.channel && (
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Channel</p>
-                    <p className="text-white font-medium">{media.channel}</p>
+                  <div className="bg-white border-2 border-stone-300 p-3">
+                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Channel</p>
+                    <p className="text-stone-900 font-bold">{media.channel}</p>
                   </div>
                 )}
                 {media.production_studio && (
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Production Studio</p>
-                    <p className="text-white font-medium">{media.production_studio}</p>
+                  <div className="bg-white border-2 border-stone-300 p-3">
+                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Production Studio</p>
+                    <p className="text-stone-900 font-bold">{media.production_studio}</p>
                   </div>
                 )}
               </div>

@@ -14,17 +14,17 @@ export default async function SearchPage({
   const results = query ? await searchFigures(query) : [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-stone-100 text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Back to Dashboard */}
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mb-6 inline-block">
+          <Link href="/" className="text-amber-600 hover:text-amber-700 mb-6 inline-block font-mono text-sm uppercase tracking-wide font-bold">
             ← Back to Dashboard
           </Link>
 
           {/* Search */}
           <div className="mb-8">
-            <Suspense fallback={<div className="h-14 bg-gray-800 rounded-lg animate-pulse" />}>
+            <Suspense fallback={<div className="h-14 bg-white border-2 border-stone-300 animate-pulse" />}>
               <SearchInput />
             </Suspense>
           </div>
@@ -32,8 +32,8 @@ export default async function SearchPage({
           {/* Results */}
           {query && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">
-                Search results for &quot;{query}&quot; ({results.length})
+              <h2 className="text-xl font-bold text-stone-900 mb-4 uppercase tracking-tight">
+                Search results for &quot;{query}&quot; <span className="text-amber-600 font-mono">({results.length})</span>
               </h2>
 
               {results.length > 0 ? (
@@ -42,13 +42,13 @@ export default async function SearchPage({
                     <Link
                       key={figure.canonical_id}
                       href={`/figure/${figure.canonical_id}`}
-                      className="block p-4 bg-gray-800 border border-gray-700 rounded-lg hover:border-blue-500 transition-all"
+                      className="block p-4 bg-white border border-stone-300 hover:border-amber-600 transition-all shadow-sm hover:shadow-md"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="text-lg font-semibold text-white">{figure.name}</h3>
+                          <h3 className="text-lg font-bold text-stone-900 uppercase tracking-tight">{figure.name}</h3>
                           {figure.era && (
-                            <p className="text-sm text-gray-400">{figure.era}</p>
+                            <p className="text-sm text-stone-600 font-mono">{figure.era}</p>
                           )}
                         </div>
                         <HistoricityBadge status={figure.historicity_status} isFictional={figure.is_fictional} />
@@ -57,9 +57,9 @@ export default async function SearchPage({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-400">
-                  <p>No figures found matching &quot;{query}&quot;</p>
-                  <p className="text-sm mt-2">Try a different search term</p>
+                <div className="text-center py-12 bg-white border-2 border-stone-300 shadow-sm">
+                  <p className="text-stone-500 font-mono uppercase tracking-wide">No figures found matching &quot;{query}&quot;</p>
+                  <p className="text-sm mt-2 text-stone-400">Try a different search term</p>
                 </div>
               )}
             </div>
