@@ -19,9 +19,9 @@ export default function MediaTimeline({ portrayals, groupBySeries = false }: Med
 
   if (portrayals.length === 0) {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+      <div className="bg-stone-100 border border-stone-200 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Media Appearances</h2>
-        <p className="text-gray-400 text-center py-8">No media appearances recorded</p>
+        <p className="text-stone-600 text-center py-8">No media appearances recorded</p>
       </div>
     );
   }
@@ -48,25 +48,25 @@ export default function MediaTimeline({ portrayals, groupBySeries = false }: Med
     return (
       <div
         key={index}
-        className="flex items-start gap-4 p-4 bg-gray-900 rounded-lg border border-gray-700"
+        className="flex items-start gap-4 p-4 bg-white rounded-lg border border-stone-200"
       >
         <div className="flex-shrink-0 mt-1">
-          <Film className="w-5 h-5 text-blue-400" />
+          <Film className="w-5 h-5 text-amber-600" />
         </div>
         <div className="flex-grow">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-grow">
               <h3 className="font-semibold text-white">{portrayal.media.title}</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-stone-600">
                 <span>{portrayal.media.release_year}</span>
                 {hasSequenceInfo && (
                   <>
                     <span>•</span>
                     {media.series_position?.sequence_number && (
-                      <span className="text-blue-400">#{media.series_position.sequence_number}</span>
+                      <span className="text-amber-600">#{media.series_position.sequence_number}</span>
                     )}
                     {media.series_position?.season_number && media.series_position?.episode_number && (
-                      <span className="text-blue-400">
+                      <span className="text-amber-600">
                         S{media.series_position.season_number}E{media.series_position.episode_number}
                       </span>
                     )}
@@ -88,7 +88,7 @@ export default function MediaTimeline({ portrayals, groupBySeries = false }: Med
   };
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+    <div className="bg-stone-100 border border-stone-200 rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-4">
         Media Appearances ({portrayals.length})
       </h2>
@@ -98,9 +98,9 @@ export default function MediaTimeline({ portrayals, groupBySeries = false }: Med
           {Object.entries(groupedPortrayals).map(([seriesTitle, seriesPortrayals]) => (
             <div key={seriesTitle}>
               <div className="flex items-center gap-2 mb-3">
-                <List className="w-4 h-4 text-blue-400" />
-                <h3 className="font-medium text-gray-300">{seriesTitle}</h3>
-                <span className="text-sm text-gray-500">({seriesPortrayals.length})</span>
+                <List className="w-4 h-4 text-amber-600" />
+                <h3 className="font-medium text-stone-900">{seriesTitle}</h3>
+                <span className="text-sm text-stone-500">({seriesPortrayals.length})</span>
               </div>
               <div className="space-y-3">
                 {seriesPortrayals.map((portrayal, index) => renderPortrayal(portrayal, index))}

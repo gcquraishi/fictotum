@@ -22,15 +22,15 @@ export default function ConflictRadar({ distribution }: ConflictRadarProps) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+      <div className="bg-stone-100 border border-stone-200 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Portrayal Distribution</h2>
-        <p className="text-gray-400 text-center py-8">No portrayals available</p>
+        <p className="text-stone-600 text-center py-8">No portrayals available</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+    <div className="bg-stone-100 border border-stone-200 rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Portrayal Distribution</h2>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -57,15 +57,15 @@ export default function ConflictRadar({ distribution }: ConflictRadarProps) {
       <div className="mt-4 grid grid-cols-3 gap-4 text-center">
         <div>
           <div className="text-2xl font-bold text-green-500">{distribution.Heroic}%</div>
-          <div className="text-sm text-gray-400">Heroic</div>
+          <div className="text-sm text-stone-600">Heroic</div>
         </div>
         <div>
           <div className="text-2xl font-bold text-red-500">{distribution.Villainous}%</div>
-          <div className="text-sm text-gray-400">Villainous</div>
+          <div className="text-sm text-stone-600">Villainous</div>
         </div>
         <div>
           <div className="text-2xl font-bold text-yellow-500">{distribution.Complex}%</div>
-          <div className="text-sm text-gray-400">Complex</div>
+          <div className="text-sm text-stone-600">Complex</div>
         </div>
       </div>
     </div>

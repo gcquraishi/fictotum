@@ -52,7 +52,7 @@ class ForceGraphErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="w-full h-full flex items-center justify-center bg-gray-50 border-2 border-red-300 rounded-lg">
+        <div className="w-full h-full flex items-center justify-center bg-stone-100 border-2 border-red-300 rounded-lg">
           <div className="text-center p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Graph Rendering Error</h3>
             <p className="text-sm text-gray-600 mb-4">
@@ -60,7 +60,7 @@ class ForceGraphErrorBoundary extends React.Component<
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm font-medium"
             >
               Refresh Page
             </button>
@@ -1115,12 +1115,12 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   // Loading skeleton - show until both data AND dimensions are ready
   if (isLoading || isPending || !dimensionsReady) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+      <div className="bg-stone-100 border border-stone-300 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>
         <div className="mb-4 flex gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-gray-300 animate-pulse"></div>
-            <span className="text-gray-500">
+            <span className="text-stone-500">
               {!dimensionsReady ? 'Initializing canvas...' : 'Loading graph data...'}
             </span>
           </div>
@@ -1128,7 +1128,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         <div className="bg-white rounded-lg overflow-hidden" style={{ height: 600 }}>
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
               <p className="text-gray-400">
                 {!dimensionsReady ? 'Preparing visualization...' : 'Loading graph data...'}
               </p>
@@ -1142,7 +1142,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   // Error state
   if (error) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+      <div className="bg-stone-100 border border-stone-300 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-600">Error: {error}</p>
@@ -1154,9 +1154,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   // Empty state
   if (nodes.length === 0) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+      <div className="bg-stone-100 border border-stone-300 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Graph Explorer</h2>
-        <p className="text-gray-500 text-center py-8">No graph data available</p>
+        <p className="text-stone-500 text-center py-8">No graph data available</p>
       </div>
     );
   }
@@ -1195,7 +1195,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             className={`px-3 py-2 rounded-lg text-sm font-medium shadow-lg transition-all flex items-center gap-2 ${
               historyIndex === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 hover:border-gray-300'
             }`}
             title={historyIndex === 0 ? 'At beginning of exploration' : 'Go back to previous node'}
             aria-label="Navigate back"
@@ -1207,7 +1207,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           </button>
           <button
             onClick={resetView}
-            className="px-3 py-2 rounded-lg text-sm font-medium shadow-lg transition-all flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300"
+            className="px-3 py-2 rounded-lg text-sm font-medium shadow-lg transition-all flex items-center gap-2 bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 hover:border-gray-300"
             title="Reset to starting view"
             aria-label="Reset view"
           >
@@ -1220,25 +1220,25 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       )}
 
       {/* Inline Legend - Bottom Left */}
-      <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200 shadow-lg p-4">
+      <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4">
         <div className="flex flex-col gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-            <span className="text-gray-700">Historical Figure</span>
+            <div className="w-3 h-3 rounded-full bg-amber-600"></div>
+            <span className="text-stone-700">Historical Figure</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-            <span className="text-gray-700">Media Work</span>
+            <span className="text-stone-700">Media Work</span>
           </div>
         </div>
-        <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500 italic">
+        <div className="mt-2 pt-2 border-t border-stone-300 text-xs text-stone-500 italic">
           Drag to pan • Scroll to zoom • Click nodes
         </div>
       </div>
 
       {/* Full-Bleed Graph */}
       <ForceGraphErrorBoundary>
-        <div ref={containerRef} className="bg-gray-50 rounded-lg border border-gray-200 w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab' }}>
+        <div ref={containerRef} className="bg-stone-100 rounded-lg border border-stone-300 w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab' }}>
           {mounted && ForceGraph2D && (
           <div style={{ width: '100%', height: '100%' }}>
           <ForceGraph2D
