@@ -90,16 +90,18 @@ Track which agent/user created each node for audit trail.
 | 2.1.3 | ✅ | Update contribution APIs to set CREATED_BY on new nodes | New data tracked |
 | 2.1.4 | ✅ | Weekly health check automation via GitHub Actions | Automated monitoring |
 
-### 2.2 Duplicate Detection Dashboard
-**Priority:** LOW | **Status:** Not started
+### 2.2 Duplicate Detection Dashboard ✅
+**Priority:** LOW | **Status:** Complete (2026-02-01, refactored 2026-02-02)
 
 Surface potential duplicate figures for manual review.
 
-| Session | Scope | Deliverable |
-|---------|-------|-------------|
-| 2.2.1 | Create API endpoint finding high-similarity figure pairs | Duplicates identified |
-| 2.2.2 | Build simple review UI listing potential duplicates | Review queue visible |
-| 2.2.3 | Add merge action to consolidate duplicates | Manual merge works |
+| Session | Status | Scope | Deliverable |
+|---------|--------|-------|-------------|
+| 2.2.1 | ✅ | Create API endpoint finding high-similarity figure pairs | `/api/audit/duplicates` with phonetic matching |
+| 2.2.2 | ✅ | Build review UI listing potential duplicates | `/admin/duplicates` with filters |
+| 2.2.3 | ✅ | Add merge + dismiss actions to consolidate duplicates | `/api/audit/duplicates/merge` with audit trail |
+
+**Note:** Refactored Feb 2 to use shared `name-matching.ts` utility for consistency.
 
 ---
 

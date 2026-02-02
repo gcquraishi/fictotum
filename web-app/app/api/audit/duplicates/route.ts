@@ -3,7 +3,12 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
 import { isInt } from 'neo4j-driver';
-import { doubleMetaphone } from 'double-metaphone';
+import {
+  calculateSimilarity,
+  calculatePhoneticSimilarity,
+  enhancedNameSimilarity as calculateEnhancedSimilarity,
+  getConfidenceLevel,
+} from '@/lib/name-matching';
 
 function toNumber(value: any): number {
   if (isInt(value)) {
@@ -13,89 +18,8 @@ function toNumber(value: any): number {
 }
 
 /**
- * Levenshtein distance algorithm
- */
-function levenshteinDistance(str1: string, str2: string): number {
-  const matrix: number[][] = [];
-
-  for (let i = 0; i <= str2.length; i++) {
-    matrix[i] = [i];
-  }
-
-  for (let j = 0; j <= str1.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  for (let i = 1; i <= str2.length; i++) {
-    for (let j = 1; j <= str1.length; j++) {
-      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
-      }
-    }
-  }
-
-  return matrix[str2.length][str1.length];
-}
-
-/**
- * Calculate similarity ratio between two strings (0-1)
- */
-function calculateSimilarity(str1: string, str2: string): number {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
-
-  const longer = s1.length > s2.length ? s1 : s2;
-  const shorter = s1.length > s2.length ? s2 : s1;
-
-  if (longer.length === 0) return 1.0;
-
-  const editDistance = levenshteinDistance(longer, shorter);
-  return (longer.length - editDistance) / longer.length;
-}
-
-/**
- * Calculate phonetic similarity between two strings using Double Metaphone
- * Returns 1.0 for primary phonetic match, 0.5 for secondary match, 0.0 for no match
- */
-function calculatePhoneticSimilarity(str1: string, str2: string): number {
-  if (!str1 || !str2) return 0.0;
-
-  const tokens1 = str1.toLowerCase().trim().split(/\s+/).filter(t => t.length > 0);
-  const tokens2 = str2.toLowerCase().trim().split(/\s+/).filter(t => t.length > 0);
-
-  if (tokens1.length === 0 || tokens2.length === 0) return 0.0;
-
-  const phonetics1 = tokens1.map(token => doubleMetaphone(token));
-  const phonetics2 = tokens2.map(token => doubleMetaphone(token));
-
-  let bestMatch = 0.0;
-
-  for (const [primary1, secondary1] of phonetics1) {
-    for (const [primary2, secondary2] of phonetics2) {
-      if (primary1 && primary2 && primary1 === primary2) {
-        bestMatch = Math.max(bestMatch, 1.0);
-      } else if (
-        (primary1 && secondary2 && primary1 === secondary2) ||
-        (secondary1 && primary2 && secondary1 === primary2) ||
-        (secondary1 && secondary2 && secondary1 === secondary2)
-      ) {
-        bestMatch = Math.max(bestMatch, 0.5);
-      }
-    }
-  }
-
-  return bestMatch;
-}
-
-/**
- * Enhanced name similarity combining lexical (Levenshtein) and phonetic (Double Metaphone) matching
- * Weight distribution: 70% lexical, 30% phonetic
+ * Enhanced name similarity wrapper for backwards compatibility
+ * Returns structured object with combined, lexical, and phonetic scores
  */
 function enhancedNameSimilarity(name1: string, name2: string): {
   combined: number;
@@ -104,18 +28,9 @@ function enhancedNameSimilarity(name1: string, name2: string): {
 } {
   const lexical = calculateSimilarity(name1, name2);
   const phonetic = calculatePhoneticSimilarity(name1, name2);
-  const combined = (lexical * 0.7) + (phonetic * 0.3);
+  const combined = calculateEnhancedSimilarity(name1, name2);
 
   return { combined, lexical, phonetic };
-}
-
-/**
- * Determine confidence level based on combined similarity score
- */
-function getConfidenceLevel(score: number): 'high' | 'medium' | 'low' {
-  if (score >= 0.9) return 'high';
-  if (score >= 0.7) return 'medium';
-  return 'low';
 }
 
 interface DuplicatePair {
