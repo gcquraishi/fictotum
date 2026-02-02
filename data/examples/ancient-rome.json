@@ -1,0 +1,205 @@
+{
+  "metadata": {
+    "source": "Ancient Rome Historical Dataset",
+    "author": "ChronosGraph Research Team",
+    "created_at": "2026-02-02T18:00:00Z",
+    "version": "1.0.0"
+  },
+  "figures": [
+    {
+      "name": "Marcus Aurelius",
+      "wikidata_id": "Q1430",
+      "birth_year": 121,
+      "death_year": 180,
+      "era": "Ancient Rome",
+      "title": "Roman Emperor",
+      "occupation": "Philosopher",
+      "description": "Roman emperor from 161 to 180 and a Stoic philosopher. He was the last of the rulers known as the Five Good Emperors."
+    },
+    {
+      "name": "Commodus",
+      "wikidata_id": "Q1446",
+      "birth_year": 161,
+      "death_year": 192,
+      "era": "Ancient Rome",
+      "title": "Roman Emperor",
+      "occupation": "Gladiator",
+      "description": "Roman emperor from 177 to 192. He was the son of Marcus Aurelius and is portrayed as corrupt and tyrannical in popular media."
+    },
+    {
+      "name": "Lucilla",
+      "wikidata_id": "Q229246",
+      "birth_year": 148,
+      "death_year": 182,
+      "era": "Ancient Rome",
+      "title": "Roman Empress",
+      "occupation": "Noblewoman",
+      "description": "Daughter of Marcus Aurelius and sister of Commodus. She was briefly empress as wife of Lucius Verus."
+    },
+    {
+      "name": "Maximus Decimus Meridius",
+      "birth_year": 152,
+      "death_year": 192,
+      "era": "Ancient Rome",
+      "title": "Roman General",
+      "occupation": "Gladiator",
+      "description": "Fictional character from the film Gladiator, but based on real historical generals and gladiators of the era."
+    },
+    {
+      "name": "Gaius Julius Caesar",
+      "wikidata_id": "Q1048",
+      "birth_year": -100,
+      "death_year": -44,
+      "era": "Ancient Rome",
+      "title": "Roman Dictator",
+      "occupation": "General",
+      "description": "Roman general and statesman who played a critical role in the events that led to the demise of the Roman Republic and the rise of the Roman Empire."
+    },
+    {
+      "name": "Cleopatra VII",
+      "wikidata_id": "Q635",
+      "birth_year": -69,
+      "death_year": -30,
+      "era": "Ancient Rome",
+      "title": "Pharaoh of Egypt",
+      "occupation": "Queen",
+      "description": "Last active ruler of the Ptolemaic Kingdom of Egypt. She was known for her intelligence, political acumen, and romantic liaisons with Julius Caesar and Mark Antony."
+    },
+    {
+      "name": "Marcus Antonius",
+      "wikidata_id": "Q51673",
+      "birth_year": -83,
+      "death_year": -30,
+      "era": "Ancient Rome",
+      "title": "Roman Politician",
+      "occupation": "General",
+      "description": "Roman politician and general who played a critical role in the transformation of the Roman Republic from a republic to the autocratic Roman Empire."
+    },
+    {
+      "name": "Augustus",
+      "wikidata_id": "Q1405",
+      "birth_year": -63,
+      "death_year": 14,
+      "era": "Ancient Rome",
+      "title": "First Roman Emperor",
+      "occupation": "Statesman",
+      "description": "Founder of the Roman Empire and its first Emperor, ruling from 27 BC until his death in AD 14."
+    }
+  ],
+  "media_works": [
+    {
+      "title": "Gladiator",
+      "wikidata_id": "Q174583",
+      "media_type": "Film",
+      "release_year": 2000,
+      "creator": "Ridley Scott",
+      "genre": "Historical Epic",
+      "runtime_minutes": 155,
+      "description": "A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.",
+      "portrayals": [
+        {
+          "figure_identifier": "Q1430",
+          "actor_name": "Richard Harris",
+          "character_name": "Marcus Aurelius",
+          "is_protagonist": false,
+          "sentiment": "heroic"
+        },
+        {
+          "figure_identifier": "Q1446",
+          "actor_name": "Joaquin Phoenix",
+          "character_name": "Commodus",
+          "is_protagonist": false,
+          "sentiment": "villainous"
+        },
+        {
+          "figure_identifier": "Q229246",
+          "actor_name": "Connie Nielsen",
+          "character_name": "Lucilla",
+          "is_protagonist": false,
+          "sentiment": "heroic"
+        },
+        {
+          "figure_identifier": "Maximus Decimus Meridius",
+          "actor_name": "Russell Crowe",
+          "character_name": "Maximus",
+          "is_protagonist": true,
+          "sentiment": "heroic",
+          "screen_time_minutes": 120
+        }
+      ]
+    },
+    {
+      "title": "Rome",
+      "wikidata_id": "Q23633",
+      "media_type": "TVSeries",
+      "release_year": 2005,
+      "creator": "John Milius",
+      "genre": "Historical Drama",
+      "description": "A down-to-earth account of the lives of both illustrious and ordinary Romans set in the last days of the Roman Republic.",
+      "portrayals": [
+        {
+          "figure_identifier": "Q1048",
+          "actor_name": "Ciarán Hinds",
+          "character_name": "Julius Caesar",
+          "is_protagonist": true,
+          "sentiment": "complex"
+        },
+        {
+          "figure_identifier": "Q51673",
+          "actor_name": "James Purefoy",
+          "character_name": "Mark Antony",
+          "is_protagonist": true,
+          "sentiment": "complex"
+        },
+        {
+          "figure_identifier": "Q635",
+          "actor_name": "Lyndsey Marshal",
+          "character_name": "Cleopatra",
+          "is_protagonist": false,
+          "sentiment": "complex"
+        },
+        {
+          "figure_identifier": "Q1405",
+          "actor_name": "Max Pirkis",
+          "character_name": "Octavian",
+          "is_protagonist": true,
+          "sentiment": "complex"
+        }
+      ]
+    },
+    {
+      "title": "Cleopatra",
+      "wikidata_id": "Q229284",
+      "media_type": "Film",
+      "release_year": 1963,
+      "creator": "Joseph L. Mankiewicz",
+      "genre": "Historical Epic",
+      "runtime_minutes": 248,
+      "description": "Historical epic about the romance between Cleopatra and Julius Caesar, and later Mark Antony.",
+      "portrayals": [
+        {
+          "figure_identifier": "Q635",
+          "actor_name": "Elizabeth Taylor",
+          "character_name": "Cleopatra",
+          "is_protagonist": true,
+          "sentiment": "heroic",
+          "screen_time_minutes": 200
+        },
+        {
+          "figure_identifier": "Q1048",
+          "actor_name": "Rex Harrison",
+          "character_name": "Julius Caesar",
+          "is_protagonist": false,
+          "sentiment": "heroic"
+        },
+        {
+          "figure_identifier": "Q51673",
+          "actor_name": "Richard Burton",
+          "character_name": "Mark Antony",
+          "is_protagonist": false,
+          "sentiment": "heroic"
+        }
+      ]
+    }
+  ]
+}

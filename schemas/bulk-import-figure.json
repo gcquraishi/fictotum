@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://chronosgraph.com/schemas/bulk-import-figure.json",
+  "title": "ChronosGraph Bulk Figure Import Schema",
+  "description": "JSON schema for importing historical figures in bulk",
+  "type": "object",
+  "required": ["figures"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Data source name (e.g., 'Ancient Rome Dataset', 'French Revolution Research')"
+        },
+        "author": {
+          "type": "string",
+          "description": "Person or organization who prepared this import"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this import file was created"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of this import (e.g., '1.0.0')"
+        }
+      }
+    },
+    "figures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Full name of the historical figure"
+          },
+          "wikidata_id": {
+            "type": "string",
+            "pattern": "^Q\\d+$",
+            "description": "Wikidata Q-ID (e.g., 'Q1430' for Marcus Aurelius). Optional but recommended."
+          },
+          "canonical_id": {
+            "type": "string",
+            "pattern": "^(Q\\d+|PROV:[a-z0-9_-]+)$",
+            "description": "Canonical identifier. If omitted, will use wikidata_id or generate PROV: ID."
+          },
+          "birth_year": {
+            "type": "integer",
+            "minimum": -3000,
+            "maximum": 2100,
+            "description": "Year of birth (negative for BCE, e.g., -100 for 100 BCE)"
+          },
+          "death_year": {
+            "type": "integer",
+            "minimum": -3000,
+            "maximum": 2100,
+            "description": "Year of death (negative for BCE)"
+          },
+          "era": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Historical era (e.g., 'Ancient Rome', 'French Revolution')",
+            "examples": [
+              "Ancient Rome",
+              "Medieval Europe",
+              "Renaissance",
+              "Age of Enlightenment",
+              "French Revolution",
+              "Victorian Era",
+              "American Revolution",
+              "World War II"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Primary title or role (e.g., 'Roman Emperor', 'Queen of France')"
+          },
+          "occupation": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Primary occupation (e.g., 'Philosopher', 'General', 'Statesman')"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Brief biographical description (optional)"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to portrait or image (optional)"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional custom metadata (optional)",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
