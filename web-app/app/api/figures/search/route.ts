@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchFigures } from '@/lib/db';
+import { withCache } from '@/lib/cache';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +11,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ figures: [] });
     }
 
-    const figures = await searchFigures(query);
+    // Cache search results for 5 minutes
+    const figures = await withCache(
+      `search:figures:${query.toLowerCase()}`,
+      () => searchFigures(query),
+      { ttl: 1000 * 60 * 5, cacheType: 'search' }
+    );
 
     return NextResponse.json({ figures });
   } catch (error) {

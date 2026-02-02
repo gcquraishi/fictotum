@@ -2,6 +2,7 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
+import { withCache } from '@/lib/cache';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -12,7 +13,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const session = await getSession();
+    // Cache universal search results for 5 minutes
+    const searchResults = await withCache(
+      `search:universal:${query.toLowerCase()}`,
+      async () => {
+        const session = await getSession();
 
     // Universal search across 7 categories (added Location and Era)
     const cypher = `
@@ -141,11 +146,16 @@ export async function GET(request: NextRequest) {
       return acc;
     }, {});
 
-    return NextResponse.json({
+    return {
       results: deduplicatedResults,
       total: deduplicatedResults.length,
       categories,
-    });
+    };
+      },
+      { ttl: 1000 * 60 * 5, cacheType: 'search' }
+    );
+
+    return NextResponse.json(searchResults);
   } catch (error) {
     console.error('Universal search error:', error);
     return NextResponse.json({ error: 'Search failed' }, { status: 500 });

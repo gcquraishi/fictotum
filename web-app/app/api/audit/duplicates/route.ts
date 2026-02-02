@@ -9,6 +9,7 @@ import {
   enhancedNameSimilarity as calculateEnhancedSimilarity,
   getConfidenceLevel,
 } from '@/lib/name-matching';
+import { withCache } from '@/lib/cache';
 
 function toNumber(value: any): number {
   if (isInt(value)) {
@@ -96,8 +97,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch all HistoricalFigure nodes from database (exclude soft-deleted)
-    const dbSession = await getSession();
+    // Cache duplicate detection results for 30 minutes (expensive operation)
+    const cacheKey = `duplicates:t${threshold}_l${limit}_c${minConfidence}`;
+    const duplicateData = await withCache(
+      cacheKey,
+      async () => {
+        // Fetch all HistoricalFigure nodes from database (exclude soft-deleted)
+        const dbSession = await getSession();
 
     const query = `
       MATCH (f:HistoricalFigure)
@@ -238,13 +244,18 @@ export async function GET(request: NextRequest) {
     // Limit results
     const limitedPairs = duplicatePairs.slice(0, limit);
 
-    return NextResponse.json({
+    return {
       count: limitedPairs.length,
       total_scanned: figures.length,
       threshold,
       min_confidence: minConfidence,
       duplicates: limitedPairs,
-    });
+    };
+      },
+      { ttl: 1000 * 60 * 30, cacheType: 'duplicates' }
+    );
+
+    return NextResponse.json(duplicateData);
   } catch (error) {
     console.error('Duplicate detection error:', error);
     return NextResponse.json(

@@ -12,6 +12,7 @@
     "@auth/neo4j-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "double-metaphone": "^2.0.1",
+    "lru-cache": "^11.2.5",
     "lucide-react": "^0.562.0",
     "neo4j-driver": "^5.27.0",
     "next": "14.2.5",
