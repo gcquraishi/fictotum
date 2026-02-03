@@ -1,0 +1,22 @@
+{
+  "batch_id": "test-batch-001",
+  "timestamp": "2026-02-02T19:23:13.858045",
+  "success": true,
+  "duration_seconds": 1.6598398685455322,
+  "statistics": {
+    "figures_created": 1,
+    "figures_linked": 0,
+    "figures_skipped": 0,
+    "media_created": 0,
+    "media_linked": 0,
+    "relationships_created": 0,
+    "errors": []
+  },
+  "metadata": {
+    "source": "Minimal Import Test",
+    "author": "ChronosGraph",
+    "created_at": "2026-02-02T19:30:00Z",
+    "version": "1.0.0"
+  },
+  "error": null
+}

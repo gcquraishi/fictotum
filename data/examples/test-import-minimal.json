@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "source": "Minimal Import Test",
+    "author": "ChronosGraph",
+    "created_at": "2026-02-02T19:30:00Z",
+    "version": "1.0.0"
+  },
+  "figures": [
+    {
+      "name": "Test Figure Batch Import",
+      "birth_year": 100,
+      "death_year": 150,
+      "era": "Ancient Rome",
+      "title": "Test Emperor",
+      "description": "Test figure created by batch import system"
+    }
+  ]
+}
