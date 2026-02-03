@@ -17,6 +17,7 @@ interface GraphExplorerProps {
   nodes?: GraphNode[];
   links?: GraphLink[];
   highlightedPath?: PathVisualization;
+  shouldExpandCenter?: boolean;
 }
 
 interface ExtendedGraphLink extends GraphLink {
@@ -103,7 +104,7 @@ const isBaconNode = (nodeId: string): boolean => {
   return (nodeId.includes('bacon') && !nodeId.startsWith('media-'));
 };
 
-export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks, highlightedPath }: GraphExplorerProps) {
+export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks, highlightedPath, shouldExpandCenter }: GraphExplorerProps) {
   const router = useRouter();
   // CHR-22: Track client-side mount to avoid SSR issues with ForceGraph2D
   const [mounted, setMounted] = useState(false);
@@ -991,6 +992,18 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     };
   }, []);
 
+  // Handle external expansion trigger (e.g., from landing page)
+  useEffect(() => {
+    if (shouldExpandCenter && centerNodeId && !expandedNodes.has(centerNodeId) && mounted) {
+      devLog('📍 External trigger: expanding center node', centerNodeId);
+      // Find the center node and simulate a click
+      const centerNode = nodes.find(n => n.id === centerNodeId);
+      if (centerNode) {
+        handleNodeClick(centerNode);
+      }
+    }
+  }, [shouldExpandCenter, centerNodeId, mounted]);
+
   // Filter nodes based on media category
   const visibleNodes = nodes.filter((node: GraphNode) => {
     // Always show figure nodes
@@ -1782,7 +1795,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           graphData={{ nodes: visibleNodes, links: graphLinks }}
           width={dimensions.width}
           height={dimensions.height}
-          nodeLabel="name"
+          nodeLabel={(node: any) => {
+            if (node.type === 'media' && node.seriesMetadata?.isPartOfSeries) {
+              const workCountText = node.seriesMetadata.workCount
+                ? ` (${node.seriesMetadata.workCount} works)`
+                : '';
+              return `${node.name}\n\nPart of: ${node.seriesMetadata.seriesTitle}${workCountText}`;
+            }
+            return node.name || '';
+          }}
           nodeColor={(node: any) => {
             if (isBaconNode(node.id)) return BACON_COLOR;
             if (node.type === 'figure') return '#3b82f6'; // Blue for figures
@@ -1891,6 +1912,43 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               ctx.fillStyle = '#1f2937';
               ctx.font = `bold ${fontSize}px Sans-Serif`;
               ctx.fillText(label, node.x, node.y + nodeSize + 12);
+
+              // Draw series badge for media nodes that are part of a series
+              if (node.type === 'media' && node.seriesMetadata?.isPartOfSeries) {
+                const badgeSize = 8 / globalScale;
+                const badgeX = node.x + nodeSize - badgeSize / 2;
+                const badgeY = node.y - nodeSize + badgeSize / 2;
+
+                // Badge background (dark with amber border)
+                ctx.fillStyle = '#292524'; // stone-800
+                ctx.strokeStyle = '#f59e0b'; // amber-500
+                ctx.lineWidth = 1.5 / globalScale;
+                ctx.beginPath();
+                ctx.arc(badgeX, badgeY, badgeSize, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.stroke();
+
+                // Chain link icon (simplified)
+                ctx.strokeStyle = '#fbbf24'; // amber-400
+                ctx.lineWidth = 1.2 / globalScale;
+                ctx.lineCap = 'round';
+
+                // Draw two small circles connected (chain link representation)
+                const linkSize = badgeSize * 0.3;
+                ctx.beginPath();
+                ctx.arc(badgeX - linkSize, badgeY, linkSize, 0, 2 * Math.PI, false);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(badgeX + linkSize, badgeY, linkSize, 0, 2 * Math.PI, false);
+                ctx.stroke();
+
+                // Connection line between circles
+                ctx.beginPath();
+                ctx.moveTo(badgeX - linkSize, badgeY);
+                ctx.lineTo(badgeX + linkSize, badgeY);
+                ctx.stroke();
+              }
             } catch (e) {
               // Silently fail if canvas rendering has issues (only log in development)
               if (process.env.NODE_ENV === 'development') {

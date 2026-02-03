@@ -80,6 +80,12 @@ export interface GraphNode {
   type: 'figure' | 'media';
   sentiment?: 'Heroic' | 'Villainous' | 'Complex';
   mediaCategory?: MediaCategory; // Only applicable to media nodes
+  seriesMetadata?: {
+    seriesId: string;
+    seriesTitle: string;
+    isPartOfSeries: boolean;
+    workCount?: number; // Total works in the series
+  };
 }
 
 export interface GraphLink {

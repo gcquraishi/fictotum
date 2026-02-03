@@ -57,6 +57,7 @@ function convertPathToVisualization(path: PathResult): PathVisualization {
 
 export default function LandingPage() {
   const [highlightedPath, setHighlightedPath] = useState<PathVisualization | undefined>(undefined);
+  const [shouldExpandHenry, setShouldExpandHenry] = useState(false);
 
   // Single-node initial state for progressive disclosure onboarding
   // User sees only Henry VIII on first load, clicks to bloom connections
@@ -72,6 +73,10 @@ export default function LandingPage() {
     } else {
       setHighlightedPath(undefined);
     }
+  };
+
+  const handleHenryNameClick = () => {
+    setShouldExpandHenry(true);
   };
 
   return (
@@ -102,9 +107,16 @@ export default function LandingPage() {
               <div className="w-full border-t-2 border-stone-300"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-stone-100 px-4 text-[10px] font-black text-stone-500 uppercase tracking-[0.2em]">
-                Or explore starting from Henry VIII
-              </span>
+              <button
+                onClick={handleHenryNameClick}
+                className="group bg-stone-100 px-4 text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] hover:text-amber-600 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 rounded"
+                aria-label="Expand Henry VIII connections in graph below"
+              >
+                Or explore starting from{' '}
+                <span className="underline decoration-amber-600/30 group-hover:decoration-amber-600 transition-all duration-200">
+                  Henry VIII
+                </span>
+              </button>
             </div>
           </div>
 
@@ -140,6 +152,7 @@ export default function LandingPage() {
                 nodes={initialNodes}
                 links={[]}
                 highlightedPath={highlightedPath}
+                shouldExpandCenter={shouldExpandHenry}
               />
             </Suspense>
           </div>

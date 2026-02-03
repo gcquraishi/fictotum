@@ -627,6 +627,9 @@ export async function getNodeNeighbors(
         { nodeId }
       );
 
+      // Collect media node IDs for batch series lookup
+      const mediaNodeIds: string[] = [];
+
       mediaResult.records.forEach(record => {
         const mediaNode = record.get('m');
         const relationship = record.get('r');
@@ -641,6 +644,7 @@ export async function getNodeNeighbors(
             sentiment: relationship.properties.sentiment || 'Complex',
           });
           nodeIds.add(mediaId);
+          mediaNodeIds.push(wikidataId);
         }
 
         links.push({
@@ -650,6 +654,35 @@ export async function getNodeNeighbors(
           relationshipType: 'APPEARS_IN',
         });
       });
+
+      // Batch lookup series relationships for all media nodes
+      if (mediaNodeIds.length > 0) {
+        const seriesResult = await session.run(
+          `UNWIND $mediaIds AS mediaId
+           MATCH (m:MediaWork {wikidata_id: mediaId})-[:PART_OF]->(series:MediaWork)
+           RETURN mediaId, series.wikidata_id AS seriesId, series.title AS seriesTitle,
+                  COUNT { (series)<-[:PART_OF]-() } AS workCount`,
+          { mediaIds: mediaNodeIds }
+        );
+
+        // Apply series metadata to nodes
+        seriesResult.records.forEach(record => {
+          const mediaId = `media-${record.get('mediaId')}`;
+          const seriesId = record.get('seriesId');
+          const seriesTitle = record.get('seriesTitle');
+          const workCount = record.get('workCount')?.toNumber?.() || record.get('workCount');
+
+          const node = nodes.find(n => n.id === mediaId);
+          if (node) {
+            node.seriesMetadata = {
+              seriesId,
+              seriesTitle,
+              isPartOfSeries: true,
+              workCount,
+            };
+          }
+        });
+      }
 
       // Also fetch social interactions
       const socialResult = await session.run(
