@@ -30,7 +30,7 @@ export default function UniverseMockup() {
       {/* Background Graph (Simulated Immersive) */}
       <div className="absolute inset-0 z-0 opacity-60">
         <Suspense>
-           <GraphExplorer canonicalId="Q38370" /> 
+           <GraphExplorer canonicalId="Q38358" />
            {/* In a real implementation, we'd pass 'nodes' and 'links' to force a specific large cluster */}
         </Suspense>
       </div>

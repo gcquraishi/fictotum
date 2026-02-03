@@ -12,7 +12,7 @@ import { PathVisualization } from '@/lib/types';
 // - Extensive media portrayals (films, TV series, documentaries, books, plays)
 // - Strong cultural recognition across demographics
 // - Visually distinctive (iconic Tudor-era appearance)
-const HENRY_VIII_CANONICAL_ID = 'Q38370'; // Wikidata Q-ID from Neo4j
+const HENRY_VIII_CANONICAL_ID = 'Q38358'; // Wikidata Q-ID from Neo4j
 
 interface PathNode {
   node_id: string;
