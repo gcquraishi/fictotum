@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "validate:entities": "tsx ../scripts/qa/validate_hardcoded_ids.ts"
   },
   "dependencies": {
     "@auth/neo4j-adapter": "^2.11.1",
@@ -30,6 +31,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

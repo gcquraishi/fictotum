@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import GraphExplorer from '@/components/GraphExplorer';
 import LandingPathQuery from '@/components/LandingPathQuery';
 import { PathVisualization } from '@/lib/types';
+import { CRITICAL_ENTITIES } from '@/lib/constants/entities';
 
 // CHR-6: Single Henry VIII node as landing page entry point
 // Henry VIII chosen as starting node because:
@@ -12,7 +13,7 @@ import { PathVisualization } from '@/lib/types';
 // - Extensive media portrayals (films, TV series, documentaries, books, plays)
 // - Strong cultural recognition across demographics
 // - Visually distinctive (iconic Tudor-era appearance)
-const HENRY_VIII_CANONICAL_ID = 'Q38358'; // Wikidata Q-ID from Neo4j
+const HENRY_VIII_CANONICAL_ID = CRITICAL_ENTITIES.HENRY_VIII;
 
 interface PathNode {
   node_id: string;

@@ -992,6 +992,57 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     };
   }, []);
 
+  // Development-only: Validate canonicalId exists in database
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development' || !canonicalId || !mounted) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function validateEntity() {
+      try {
+        const response = await fetch(`/api/entities/validate?id=${canonicalId}`);
+
+        if (cancelled) return;
+
+        if (!response.ok) {
+          devError(`❌ Entity validation API error for ${canonicalId}: ${response.status}`);
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.exists) {
+          const errorMsg = `Invalid canonicalId: "${canonicalId}" not found in database. Check lib/constants/entities.ts or docs/seed-entities.md for correct IDs.`;
+          devError(`❌ ${errorMsg}`);
+          console.error('\n🔍 Entity Validation Failed\n');
+          console.error(`  Canonical ID: ${canonicalId}`);
+          console.error(`  Entity Type: Unknown (not found)`);
+          console.error('\n💡 Troubleshooting:\n');
+          console.error('  1. Check if entity exists in Neo4j database');
+          console.error('  2. Verify canonical_id is correct in CRITICAL_ENTITIES');
+          console.error('  3. Run: npm run validate:entities');
+          console.error('  4. See docs/seed-entities.md for registry\n');
+
+          throw new Error(errorMsg);
+        }
+
+        devLog(`✅ Entity validated: ${data.name} (${data.entityType})`);
+      } catch (error) {
+        if (!cancelled) {
+          devError('Entity validation error:', error);
+        }
+      }
+    }
+
+    validateEntity();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canonicalId, mounted]);
+
   // Handle external expansion trigger (e.g., from landing page)
   useEffect(() => {
     if (shouldExpandCenter && centerNodeId && !expandedNodes.has(centerNodeId) && mounted) {

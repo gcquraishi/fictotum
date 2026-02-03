@@ -4,9 +4,10 @@ import { Suspense, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Search, Mic, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { CRITICAL_ENTITIES } from '@/lib/constants/entities';
 
 // Use a mocked graph for the visual, but keep it interactive-looking
-const GraphExplorer = dynamic(() => import('@/components/GraphExplorer'), { 
+const GraphExplorer = dynamic(() => import('@/components/GraphExplorer'), {
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-black flex items-center justify-center text-blue-400 font-mono">INITIALIZING NEURAL LINK...</div>
 });
@@ -30,7 +31,7 @@ export default function UniverseMockup() {
       {/* Background Graph (Simulated Immersive) */}
       <div className="absolute inset-0 z-0 opacity-60">
         <Suspense>
-           <GraphExplorer canonicalId="Q38358" />
+           <GraphExplorer canonicalId={CRITICAL_ENTITIES.HENRY_VIII} />
            {/* In a real implementation, we'd pass 'nodes' and 'links' to force a specific large cluster */}
         </Suspense>
       </div>
