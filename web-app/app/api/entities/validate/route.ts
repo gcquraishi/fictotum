@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/db';
+import { getSession } from '@/lib/neo4j';
 
 /**
  * GET /api/entities/validate?id={canonicalId}

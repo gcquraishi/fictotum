@@ -146,8 +146,9 @@ function extractHardcodedIds(filePath: string): HardcodedId[] {
  * Validate ID against Neo4j database via API
  */
 async function validateId(id: string): Promise<ValidationResult> {
+  const port = process.env.PORT || '3001';
   try {
-    const response = await fetch(`http://localhost:3000/api/entities/validate?id=${id}`);
+    const response = await fetch(`http://localhost:${port}/api/entities/validate?id=${id}`);
 
     if (!response.ok) {
       return {

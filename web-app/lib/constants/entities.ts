@@ -55,7 +55,8 @@ export async function validateCriticalEntities(): Promise<void> {
   for (const [key, canonicalId] of entities) {
     try {
       // Call validation API endpoint
-      const response = await fetch(`http://localhost:3000/api/entities/validate?id=${canonicalId}`, {
+      const port = process.env.NEXT_PUBLIC_PORT || '3001';
+      const response = await fetch(`http://localhost:${port}/api/entities/validate?id=${canonicalId}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
