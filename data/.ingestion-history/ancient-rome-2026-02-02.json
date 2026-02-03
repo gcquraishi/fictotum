@@ -1,0 +1,47 @@
+{
+  "batch_id": "ancient-rome-2026-02-02",
+  "timestamp": "2026-02-02T20:30:00.000000",
+  "success": true,
+  "duration_seconds": 180,
+  "method": "manual_neo4j_mcp",
+  "statistics": {
+    "figures_created": 0,
+    "figures_linked": 8,
+    "figures_skipped": 0,
+    "media_created": 3,
+    "media_linked": 0,
+    "relationships_created": 10,
+    "errors": []
+  },
+  "metadata": {
+    "source": "Ancient Rome Historical Dataset",
+    "author": "ChronosGraph Research Team",
+    "created_at": "2026-02-02T18:00:00Z",
+    "version": "1.0.0"
+  },
+  "media_works_created": [
+    {
+      "title": "Gladiator",
+      "wikidata_id": "Q174583",
+      "media_id": "Q174583",
+      "year": 2000,
+      "portrayals": 3
+    },
+    {
+      "title": "Rome",
+      "wikidata_id": "Q23633",
+      "media_id": "Q23633",
+      "year": 2005,
+      "portrayals": 4
+    },
+    {
+      "title": "Cleopatra",
+      "wikidata_id": "Q229284",
+      "media_id": "Q229284",
+      "year": 1963,
+      "portrayals": 3
+    }
+  ],
+  "notes": "Import executed manually via Neo4j MCP tool due to bash environment issues. All media works created with full CREATED_BY provenance. All figures existed in database (linked via Wikidata IDs).",
+  "error": null
+}
