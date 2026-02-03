@@ -155,6 +155,11 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   // Phase 3.1.3: Keyboard shortcuts help panel
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
+  // Node hover action buttons state
+  const [hoveredNode, setHoveredNode] = useState<{ node: GraphNode; x: number; y: number } | null>(null);
+  const [actionButtonsVisible, setActionButtonsVisible] = useState(false);
+  const actionButtonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Visual feedback for keyboard shortcuts
   const [activeShortcut, setActiveShortcut] = useState<string | null>(null);
 
@@ -1043,6 +1048,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     };
   }, [canonicalId, mounted]);
 
+  // Cleanup action button timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (actionButtonTimeoutRef.current) {
+        clearTimeout(actionButtonTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Handle external expansion trigger (e.g., from landing page)
   useEffect(() => {
     if (shouldExpandCenter && centerNodeId && !expandedNodes.has(centerNodeId) && mounted) {
@@ -1143,6 +1157,47 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       relationshipType: link.relationshipType,
     };
   });
+
+  // Handle node hover - show action buttons
+  const handleNodeHover = (node: GraphNode & { x?: number; y?: number } | null) => {
+    if (actionButtonTimeoutRef.current) {
+      clearTimeout(actionButtonTimeoutRef.current);
+      actionButtonTimeoutRef.current = null;
+    }
+
+    if (node && node.x !== undefined && node.y !== undefined) {
+      // Convert canvas coordinates to screen coordinates
+      const canvas = forceGraphRef.current;
+      if (canvas) {
+        const screenCoords = canvas.graph2ScreenCoords(node.x, node.y);
+        setHoveredNode({
+          node,
+          x: screenCoords.x,
+          y: screenCoords.y,
+        });
+        setActionButtonsVisible(true);
+      }
+    } else {
+      // Delay hiding to allow moving cursor to buttons
+      actionButtonTimeoutRef.current = setTimeout(() => {
+        setActionButtonsVisible(false);
+        setHoveredNode(null);
+      }, 150);
+    }
+  };
+
+  // Navigate to node detail page
+  const handleViewDetails = (node: GraphNode) => {
+    if (node.type === 'figure') {
+      // Extract canonical_id from node.id (format: "figure-Q12345")
+      const canonicalId = node.id.replace('figure-', '');
+      router.push(`/figures/${canonicalId}`);
+    } else if (node.type === 'media') {
+      // Extract wikidata_id from node.id (format: "media-Q12345")
+      const wikidataId = node.id.replace('media-', '');
+      router.push(`/media/${wikidataId}`);
+    }
+  };
 
   // Handle node click
   const handleNodeClick = async (node: GraphNode & { x?: number; y?: number }) => {
@@ -1869,6 +1924,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           }}
           backgroundColor="#f9fafb"
           onNodeClick={handleNodeClick as any}
+          onNodeHover={handleNodeHover as any}
           // CHR-22: Tighter force simulation for compact initial view (user can zoom out to explore)
           d3AlphaDecay={0.01}
           d3VelocityDecay={0.3}
@@ -2009,6 +2065,74 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           }}
         />
           </div>
+          )}
+
+          {/* Hover Action Buttons Overlay */}
+          {actionButtonsVisible && hoveredNode && (
+            <div
+              className="absolute z-20 pointer-events-none"
+              style={{
+                left: `${hoveredNode.x}px`,
+                top: `${hoveredNode.y}px`,
+                transform: 'translate(-50%, -120%)', // Center horizontally, position above node
+              }}
+              onMouseEnter={() => {
+                // Keep buttons visible when hovering over them
+                if (actionButtonTimeoutRef.current) {
+                  clearTimeout(actionButtonTimeoutRef.current);
+                  actionButtonTimeoutRef.current = null;
+                }
+              }}
+              onMouseLeave={() => {
+                // Hide buttons when mouse leaves
+                handleNodeHover(null);
+              }}
+            >
+              <div className="flex gap-2 pointer-events-auto">
+                {/* View Details Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails(hoveredNode.node);
+                  }}
+                  className="px-3 py-1.5 bg-stone-900 text-white text-xs font-bold uppercase tracking-wider rounded border-2 border-amber-600 hover:bg-amber-600 hover:border-amber-700 transition-all duration-200 shadow-lg flex items-center gap-1.5"
+                  title="View full details page"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View
+                </button>
+
+                {/* Expand Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNodeClick(hoveredNode.node);
+                    setActionButtonsVisible(false);
+                  }}
+                  className="px-3 py-1.5 bg-stone-900 text-white text-xs font-bold uppercase tracking-wider rounded border-2 border-stone-600 hover:bg-stone-700 hover:border-stone-500 transition-all duration-200 shadow-lg flex items-center gap-1.5"
+                  title={expandedNodes.has(hoveredNode.node.id) ? 'Collapse connections' : 'Expand connections'}
+                >
+                  {expandedNodes.has(hoveredNode.node.id) ? (
+                    <>
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                      Collapse
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Expand
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </ForceGraphErrorBoundary>
