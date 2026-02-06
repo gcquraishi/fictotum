@@ -209,6 +209,8 @@ export async function getMediaById(wikidataId: string) {
       translator: mediaNode.properties.translator,
       channel: mediaNode.properties.channel,
       production_studio: mediaNode.properties.production_studio,
+      setting_year: mediaNode.properties.setting_year?.toNumber?.() ?? (mediaNode.properties.setting_year ? Number(mediaNode.properties.setting_year) : undefined),
+      setting_year_end: mediaNode.properties.setting_year_end?.toNumber?.() ?? (mediaNode.properties.setting_year_end ? Number(mediaNode.properties.setting_year_end) : undefined),
       portrayals: portrayals.map((p: any) => ({
         figure: {
           canonical_id: p.figure.properties.canonical_id,

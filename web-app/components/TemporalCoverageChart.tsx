@@ -108,7 +108,7 @@ export default function TemporalCoverageChart({
         <BarChart
           data={timeBuckets}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-          onClick={(data) => {
+          onClick={(data: any) => {
             if (data && data.activePayload && data.activePayload[0]) {
               onPeriodClick(data.activePayload[0].payload);
             }

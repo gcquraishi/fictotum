@@ -138,7 +138,7 @@ export default async function FigurePage({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-stone-50 border-2 border-amber-600 border-t-0 p-6">
               <CulturalImpactScore
                 portrayalCount={figure.portrayals.length}
-                mediaTypes={figure.portrayals.length > 0 ? Array.from(new Set(figure.portrayals.map(p => p.media.media_type).filter(Boolean))) : []}
+                mediaTypes={figure.portrayals.length > 0 ? Array.from(new Set(figure.portrayals.map(p => p.media.media_type).filter(Boolean))) as string[] : []}
                 firstAppearance={figure.portrayals.length > 0 ? Math.min(...figure.portrayals.map(p => Number(p.media.release_year))) : new Date().getFullYear()}
                 mostRecentAppearance={figure.portrayals.length > 0 ? Math.max(...figure.portrayals.map(p => Number(p.media.release_year))) : new Date().getFullYear()}
               />

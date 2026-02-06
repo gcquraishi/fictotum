@@ -98,7 +98,7 @@ export async function GET(request: Request) {
         { threshold: threshold.toISOString() }
       );
 
-      const top_pages = topPagesResult.records.map(record => ({
+      const top_pages = topPagesResult.records.map((record: any) => ({
         path: record.get('path'),
         views: record.get('views').toNumber(),
       }));
@@ -121,7 +121,7 @@ export async function GET(request: Request) {
         { threshold: threshold.toISOString() }
       );
 
-      const top_searches = topSearchesResult.records.map(record => ({
+      const top_searches = topSearchesResult.records.map((record: any) => ({
         query: record.get('query'),
         count: record.get('count').toNumber(),
         avg_results: record.get('avg_results') ? Math.round(record.get('avg_results')) : 0,
@@ -190,7 +190,7 @@ export async function GET(request: Request) {
         { threshold: threshold.toISOString() }
       );
 
-      const popular_eras = popularErasResult.records.map(record => ({
+      const popular_eras = popularErasResult.records.map((record: any) => ({
         era: record.get('era'),
         count: record.get('count').toNumber(),
       }));
@@ -213,7 +213,7 @@ export async function GET(request: Request) {
         { threshold: threshold.toISOString() }
       );
 
-      const popular_media_types = popularMediaResult.records.map(record => ({
+      const popular_media_types = popularMediaResult.records.map((record: any) => ({
         media_type: record.get('media_type'),
         count: record.get('count').toNumber(),
       }));
