@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Search Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-family: var(--font-mono); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; color: inherit; }
+        nav a { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; text-decoration: none; color: var(--color-text); margin-left: 20px; }
+
+        .search-hero {
+            padding: 60px 40px;
+            border-bottom: 1px solid var(--color-border-bold);
+            text-align: center;
+            background: #f9f9f9;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 24px;
+            font-family: var(--font-serif);
+            font-size: 32px;
+            border: 2px solid var(--color-border-bold);
+            outline: none;
+            text-align: center;
+        }
+
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 32px;
+            gap: 40px;
+        }
+        .tab-link {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            color: var(--color-gray);
+            padding-bottom: 6px;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-link.active {
+            color: var(--color-text);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 280px;
+            border-right: 1px solid var(--color-border);
+            padding: 40px;
+        }
+
+        .filter-group { margin-bottom: 40px; }
+        .filter-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: block;
+            color: var(--color-gray);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 4px;
+        }
+
+        .filter-option {
+            display: block;
+            margin-bottom: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--color-text);
+            cursor: pointer;
+        }
+        .filter-option input { margin-right: 10px; }
+
+        .results-area {
+            flex: 1;
+            padding: 40px 60px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--color-gray);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 12px;
+        }
+
+        .result-item {
+            display: grid;
+            grid-template-columns: 100px 1fr 120px;
+            padding: 32px 0;
+            border-bottom: 1px solid var(--color-border);
+            align-items: baseline;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.1s;
+        }
+        .result-item:hover { background: #fafafa; }
+
+        .result-year {
+            font-family: var(--font-mono);
+            color: var(--color-accent);
+            font-size: 16px;
+        }
+
+        .result-info h3 { font-size: 28px; font-weight: 400; margin-bottom: 8px; }
+        .result-bio { font-size: 16px; color: var(--color-gray); font-style: italic; line-height: 1.5; }
+
+        .result-meta {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-gray);
+            letter-spacing: 1px;
+        }
+
+        footer {
+            border-top: 1px solid var(--color-border-bold);
+            padding: 40px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-gray);
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="landing_refined.html" class="logo">Fictotum</a>
+        <nav>
+            <a href="landing_refined.html">Home</a>
+            <a href="#">About</a>
+        </nav>
+    </header>
+
+    <div class="search-hero">
+        <div class="search-container">
+            <input type="text" class="search-input" value="Tudor">
+        </div>
+        <div class="tab-nav">
+            <a href="#" class="tab-link active">Figures (8)</a>
+            <a href="#" class="tab-link">Works (14)</a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <aside class="sidebar">
+            <div class="filter-group">
+                <span class="filter-title">Era</span>
+                <label class="filter-option"><input type="checkbox"> Ancient</label>
+                <label class="filter-option"><input type="checkbox"> Medieval</label>
+                <label class="filter-option"><input type="checkbox" checked> Renaissance</label>
+                <label class="filter-option"><input type="checkbox"> Modern</label>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-title">Medium</span>
+                <label class="filter-option"><input type="checkbox"> Novel</label>
+                <label class="filter-option"><input type="checkbox"> Film</label>
+                <label class="filter-option"><input type="checkbox"> Television</label>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-title">Sentiment</span>
+                <label class="filter-option"><input type="checkbox"> Heroic</label>
+                <label class="filter-option"><input type="checkbox"> Neutral</label>
+                <label class="filter-option"><input type="checkbox"> Villainous</label>
+            </div>
+        </aside>
+
+        <main class="results-area">
+            <div class="results-header">
+                <span>Showing 1-8 of 8 Results for "Tudor"</span>
+                <span>Sorted by: Relevance</span>
+            </div>
+
+            <a href="figure_refined.html" class="result-item">
+                <span class="result-year">1491</span>
+                <div class="result-info">
+                    <h3>Henry VIII</h3>
+                    <p class="result-bio">King of England, best known for his six marriages and the English Reformation.</p>
+                </div>
+                <div class="result-meta">12 PORTRAYALS</div>
+            </a>
+
+            <a href="#" class="result-item">
+                <span class="result-year">1501</span>
+                <div class="result-info">
+                    <h3>Anne Boleyn</h3>
+                    <p class="result-bio">Queen of England, second wife of Henry VIII and mother of Elizabeth I.</p>
+                </div>
+                <div class="result-meta">42 PORTRAYALS</div>
+            </a>
+
+            <a href="#" class="result-item">
+                <span class="result-year">1533</span>
+                <div class="result-info">
+                    <h3>Elizabeth I</h3>
+                    <p class="result-bio">The "Virgin Queen," last monarch of the Tudor dynasty.</p>
+                </div>
+                <div class="result-meta">38 PORTRAYALS</div>
+            </a>
+
+            <a href="#" class="result-item">
+                <span class="result-year">1485</span>
+                <div class="result-info">
+                    <h3>Henry VII</h3>
+                    <p class="result-bio">First Tudor king, winner of the Wars of the Roses.</p>
+                </div>
+                <div class="result-meta">5 PORTRAYALS</div>
+            </a>
+
+            <a href="#" class="result-item">
+                <span class="result-year">1537</span>
+                <div class="result-info">
+                    <h3>Edward VI</h3>
+                    <p class="result-bio">The boy king, Henry VIII's only surviving legitimate son.</p>
+                </div>
+                <div class="result-meta">3 PORTRAYALS</div>
+            </a>
+
+        </main>
+    </div>
+
+    <footer>
+        &copy; 2026 Fictotum Archive &mdash; Refined Search Interface
+    </footer>
+
+</body>
+</html>

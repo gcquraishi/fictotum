@@ -1,98 +1,119 @@
 @import "tailwindcss";
 
 :root {
-  /* Evidence Locker (Light) - Data Noir in Daylight */
-  --background: #F5F5F4;           /* stone-100 - paper background */
-  --foreground: #1C1917;           /* stone-900 - ink black */
-  --brand-primary: #57534E;        /* stone-600 - stamped text */
-  --brand-accent: #D97706;         /* amber-600 - highlighted evidence */
-  --folder-manila: #F3E5AB;        /* manila folder yellow */
-  --border-standard: #D6D3D1;      /* stone-300 - document borders */
+  /* FSG Literary Minimalism - Design System */
+  --font-serif: 'Crimson Pro', serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Colors */
+  --color-bg: #FEFEFE;
+  --color-text: #1A1A1A;
+  --color-accent: #8B2635;
+  --color-gray: #666666;
+  --color-border: #E0E0E0;
+  --color-border-bold: #1A1A1A;
+  --color-section-bg: #F0F0F0;
+  --color-hero-bg: #F9F9F9;
+  --color-dept-bg: #FAFAFA;
 }
 
 @theme inline {
   /* Base Colors */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
 
   /* Brand Colors */
-  --color-brand-primary: var(--brand-primary);
-  --color-brand-accent: var(--brand-accent);
-  --color-brand-bg: var(--background);
-  --color-brand-text: var(--foreground);
+  --color-brand-primary: var(--color-text);
+  --color-brand-accent: var(--color-accent);
+  --color-brand-bg: var(--color-bg);
+  --color-brand-text: var(--color-text);
 
-  /* Typography - Selective Monospace */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
-  --font-heading: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+  /* Typography */
+  --font-sans: 'Crimson Pro', serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-heading: 'Crimson Pro', serif;
 }
 
 @layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    -webkit-font-smoothing: antialiased;
   }
 
+  /* FSG Typography: serif headings, light weight, no uppercase by default */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: -0.025em;
+    font-family: var(--font-serif);
+    font-weight: 300;
+    text-transform: none;
+    letter-spacing: normal;
   }
 
-  /* Selection highlighting - amber evidence marker */
+  /* Selection highlighting */
   ::selection {
-    background-color: #FEF3C7;  /* amber-100 */
-    color: #78350F;             /* amber-900 */
+    background-color: #E8C8CC;
+    color: var(--color-text);
   }
 
   ::-moz-selection {
-    background-color: #FEF3C7;
-    color: #78350F;
+    background-color: #E8C8CC;
+    color: var(--color-text);
   }
 }
 
 @layer utilities {
-  /* Paper texture overlay for backgrounds */
-  .bg-paper-texture {
-    position: relative;
-  }
-
-  .bg-paper-texture::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(#d1d5db 0.5px, transparent 0.5px);
-    background-size: 24px 24px;
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
-  /* Stamp text style utility */
-  .text-stamp {
+  /* FSG Monospace Labels */
+  .fsg-label {
     font-family: var(--font-mono);
-    font-weight: 700;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 2px;
+    color: var(--color-gray);
   }
 
-  /* Evidence marker utilities */
-  .border-evidence {
-    border-color: var(--brand-accent);
+  .fsg-label-sm {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-gray);
   }
 
-  .bg-manila {
-    background-color: var(--folder-manila);
+  /* FSG Section Header (Dossier style) */
+  .fsg-section-header {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--color-section-bg);
+    padding: 8px;
+    border-left: 4px solid var(--color-border-bold);
+    display: flex;
+    justify-content: space-between;
   }
 
-  /* Sentiment chart animations */
-  .recharts-bar-rectangle {
-    transition: opacity 0.2s ease;
+  /* FSG Accent Year */
+  .fsg-year {
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+    font-size: 14px;
   }
 
-  .recharts-bar-rectangle:hover {
-    opacity: 0.8;
+  /* FSG Meta Grid Row */
+  .fsg-meta-row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted var(--color-border);
+    padding-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
   }
 
   /* Smooth transitions for interactive elements */
@@ -100,5 +121,14 @@
     transition-property: color, background-color, border-color;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 200ms;
+  }
+
+  /* Recharts bar animations */
+  .recharts-bar-rectangle {
+    transition: opacity 0.2s ease;
+  }
+
+  .recharts-bar-rectangle:hover {
+    opacity: 0.8;
   }
 }

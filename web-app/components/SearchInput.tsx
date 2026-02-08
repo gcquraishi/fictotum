@@ -1,6 +1,5 @@
 'use client';
 
-import { Search, User, Film, Layers, UserCircle, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 
@@ -12,12 +11,12 @@ interface SearchResult {
   url: string;
 }
 
-const categoryConfig = {
-  figure: { label: 'Historical Figures', icon: User, color: 'text-amber-600' },
-  media: { label: 'Media Works', icon: Film, color: 'text-amber-600' },
-  series: { label: 'Series', icon: Layers, color: 'text-amber-600' },
-  creator: { label: 'Creators', icon: UserCircle, color: 'text-amber-600' },
-  actor: { label: 'Actors', icon: Users, color: 'text-amber-600' },
+const categoryLabels: Record<string, string> = {
+  figure: 'Historical Figures',
+  media: 'Media Works',
+  series: 'Series',
+  creator: 'Creators',
+  actor: 'Actors',
 };
 
 export default function SearchInput() {
@@ -82,57 +81,128 @@ export default function SearchInput() {
   }, {} as Record<string, SearchResult[]>);
 
   return (
-    <div className="relative">
-      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400 w-5 h-5" />
+    <div style={{ position: 'relative' }}>
       <input
         ref={inputRef}
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onFocus={() => searchTerm.length >= 2 && setShowResults(true)}
-        placeholder="SEARCH FIGURES, MEDIA, SERIES, CREATORS, ACTORS..."
-        className="w-full pl-12 pr-4 py-4 bg-white border-2 border-stone-300 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-600 shadow-sm font-mono text-sm uppercase tracking-wide"
+        placeholder="Search figures, works, creators..."
         autoFocus
+        style={{
+          width: '100%',
+          padding: '24px',
+          fontFamily: 'var(--font-serif)',
+          fontSize: '32px',
+          border: '2px solid var(--color-border-bold)',
+          outline: 'none',
+          textAlign: 'center',
+          background: '#fff',
+        }}
       />
 
       {showResults && (
         <div
           ref={resultsRef}
-          className="absolute z-50 w-full mt-2 bg-white border-2 border-stone-300 shadow-xl max-h-96 overflow-y-auto"
+          style={{
+            position: 'absolute',
+            zIndex: 50,
+            width: '100%',
+            marginTop: '4px',
+            background: '#fff',
+            border: '1px solid var(--color-border)',
+            maxHeight: '400px',
+            overflowY: 'auto',
+          }}
         >
           {loading ? (
-            <div className="p-4 text-center text-stone-500 font-mono text-sm uppercase tracking-widest">
-              <Search className="w-5 h-5 animate-pulse mx-auto" />
+            <div
+              style={{
+                padding: '16px',
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-gray)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}
+            >
+              Searching...
             </div>
           ) : results.length === 0 ? (
-            <div className="p-4 text-center text-stone-500 font-mono text-sm uppercase tracking-widest">No results found</div>
+            <div
+              style={{
+                padding: '16px',
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-gray)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}
+            >
+              No results found
+            </div>
           ) : (
-            <div className="py-2">
-              {Object.entries(groupedResults).map(([type, items]) => {
-                const config = categoryConfig[type as keyof typeof categoryConfig];
-                const Icon = config.icon;
-
-                return (
-                  <div key={type} className="mb-2">
-                    <div className="px-4 py-2 text-[10px] font-black text-amber-700 uppercase tracking-[0.2em] flex items-center gap-2">
-                      <Icon className={`w-4 h-4 ${config.color}`} />
-                      {config.label}
-                    </div>
-                    {items.map((result) => (
-                      <button
-                        key={`${result.type}-${result.id}`}
-                        onClick={() => handleResultClick(result)}
-                        className="w-full px-4 py-3 text-left hover:bg-amber-50 transition-colors border-l-2 border-transparent hover:border-amber-600"
-                      >
-                        <div className="font-bold text-stone-900 font-mono uppercase tracking-wide text-sm">{result.label}</div>
-                        {result.meta && (
-                          <div className="text-xs text-stone-600 mt-1">{result.meta}</div>
-                        )}
-                      </button>
-                    ))}
+            <div style={{ padding: '8px 0' }}>
+              {Object.entries(groupedResults).map(([type, items]) => (
+                <div key={type} style={{ marginBottom: '8px' }}>
+                  <div
+                    style={{
+                      padding: '8px 16px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '2px',
+                      color: 'var(--color-gray)',
+                      borderBottom: '1px solid var(--color-border)',
+                    }}
+                  >
+                    {categoryLabels[type] || type}
                   </div>
-                );
-              })}
+                  {items.map((result) => (
+                    <button
+                      key={`${result.type}-${result.id}`}
+                      onClick={() => handleResultClick(result)}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        borderBottom: '1px solid #f0f0f0',
+                        cursor: 'pointer',
+                        transition: 'background 0.1s',
+                      }}
+                      className="hover:bg-[#fafafa]"
+                    >
+                      <div
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          fontSize: '18px',
+                          fontWeight: 400,
+                          color: 'var(--color-text)',
+                        }}
+                      >
+                        {result.label}
+                      </div>
+                      {result.meta && (
+                        <div
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '11px',
+                            color: 'var(--color-gray)',
+                            marginTop: '2px',
+                          }}
+                        >
+                          {result.meta}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              ))}
             </div>
           )}
         </div>

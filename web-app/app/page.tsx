@@ -1,311 +1,644 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import GraphExplorer from '@/components/GraphExplorer';
-import LandingPathQuery from '@/components/LandingPathQuery';
-import ReputationTimeline from '@/components/ReputationTimeline';
-import VolatilityLeaderboard from '@/components/VolatilityLeaderboard';
-import RivalrySpotlight from '@/components/RivalrySpotlight';
-import ThemePicker from '@/components/ThemePicker';
-import { PathVisualization } from '@/lib/types';
-import { CRITICAL_ENTITIES } from '@/lib/constants/entities';
-import { BarChart3, Map, Clock, ChevronDown } from 'lucide-react';
 
-// CHR-6: Single Henry VIII node as landing page entry point
-// Henry VIII chosen as starting node because:
-// - Extremely well-known historical figure (immediately recognizable)
-// - Rich and dramatic life story (six wives, English Reformation, etc.)
-// - Extensive media portrayals (films, TV series, documentaries, books, plays)
-// - Strong cultural recognition across demographics
-// - Visually distinctive (iconic Tudor-era appearance)
-const HENRY_VIII_CANONICAL_ID = CRITICAL_ENTITIES.HENRY_VIII;
-
-interface PathNode {
-  node_id: string;
-  node_type: string;
+interface GraphNode {
+  id: string;
   name: string;
+  type: 'figure' | 'media';
+  x?: number;
+  y?: number;
+  fx?: number | null;
+  fy?: number | null;
 }
 
-interface PathRelationship {
-  from_node: string;
-  to_node: string;
-  rel_type: string;
-  context: string;
+interface GraphLink {
+  source: string | GraphNode;
+  target: string | GraphNode;
+  sentiment?: string;
 }
 
-interface PathResult {
-  start_node: string;
-  end_node: string;
-  path_length: number;
-  nodes: PathNode[];
-  relationships: PathRelationship[];
-}
-
-// Helper function to convert path result to PathVisualization format
-function convertPathToVisualization(path: PathResult): PathVisualization {
-  // Extract node IDs (use full node ID format: figure-Q12345 or media-Q67890)
-  const pathIds = path.nodes.map(node => {
-    const prefix = node.node_type === 'HistoricalFigure' ? 'figure-' : 'media-';
-    return prefix + node.node_id;
-  });
-
-  // Create path links from consecutive nodes
-  const pathLinks: { source: string; target: string }[] = [];
-  for (let i = 0; i < pathIds.length - 1; i++) {
-    pathLinks.push({
-      source: pathIds[i],
-      target: pathIds[i + 1],
-    });
-  }
-
-  return { pathIds, pathLinks };
+interface Stats {
+  figures: number;
+  works: number;
+  portrayals: number;
+  topPortrayed: { name: string; canonical_id: string; count: number }[];
+  latestAdditions: { name: string; canonical_id: string; date: string }[];
 }
 
 export default function LandingPage() {
-  const [highlightedPath, setHighlightedPath] = useState<PathVisualization | undefined>(undefined);
-  const [shouldExpandHenry, setShouldExpandHenry] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [graphLoaded, setGraphLoaded] = useState(false);
+  const simulationRef = useRef<any>(null);
 
-  // Single-node initial state for progressive disclosure onboarding
-  // User sees only Henry VIII on first load, clicks to bloom connections
-  const initialNodes = [{
-    id: `figure-${HENRY_VIII_CANONICAL_ID}`,
-    name: 'Henry VIII',
-    type: 'figure' as const,
-  }];
+  // Fetch stats
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(() => setStats({ figures: 0, works: 0, portrayals: 0, topPortrayed: [], latestAdditions: [] }));
+  }, []);
 
-  const handlePathFound = (path: PathResult | null) => {
-    if (path) {
-      setHighlightedPath(convertPathToVisualization(path));
-    } else {
-      setHighlightedPath(undefined);
-    }
-  };
+  // D3.js Force-Directed Graph
+  useEffect(() => {
+    if (graphLoaded) return;
 
-  const handleHenryNameClick = () => {
-    setShouldExpandHenry(true);
-  };
+    let d3Module: any;
+    let cleanup = false;
 
-  const scrollToExplorer = () => {
-    document.getElementById('graph-explorer')?.scrollIntoView({ behavior: 'smooth' });
-  };
+    const initGraph = async () => {
+      d3Module = await import('d3');
+      if (cleanup) return;
+
+      // Fetch real graph data, fallback to generated data
+      let nodes: GraphNode[] = [];
+      let links: GraphLink[] = [];
+
+      try {
+        const res = await fetch('/api/graph/landing');
+        if (res.ok) {
+          const data = await res.json();
+          nodes = data.nodes || [];
+          links = data.links || [];
+        }
+      } catch {
+        // Fallback: generate demo nodes
+      }
+
+      // If no real data, generate placeholder nodes
+      if (nodes.length === 0) {
+        nodes = Array.from({ length: 60 }, (_, i) => ({
+          id: `node-${i}`,
+          name: `Entity ${i}`,
+          type: i % 3 === 0 ? 'figure' as const : 'media' as const,
+        }));
+        for (let i = 0; i < 50; i++) {
+          links.push({
+            source: `node-${Math.floor(Math.random() * 60)}`,
+            target: `node-${Math.floor(Math.random() * 60)}`,
+          });
+        }
+      }
+
+      if (cleanup || !containerRef.current || !svgRef.current) return;
+
+      const width = containerRef.current.clientWidth;
+      const height = containerRef.current.clientHeight;
+
+      const svg = d3Module.select(svgRef.current)
+        .attr('width', width)
+        .attr('height', height)
+        .attr('viewBox', [0, 0, width, height]);
+
+      // Clear previous content
+      svg.selectAll('*').remove();
+
+      // Assign radius based on node characteristics
+      const nodesWithRadius = nodes.map((n: any, i: number) => ({
+        ...n,
+        r: n.type === 'figure' ? (i % 5 === 0 ? 12 : 8) : 4,
+      }));
+
+      const simulation = d3Module.forceSimulation(nodesWithRadius)
+        .force('link', d3Module.forceLink(links).id((d: any) => d.id).distance(100))
+        .force('charge', d3Module.forceManyBody().strength(-150))
+        .force('center', d3Module.forceCenter(width / 2, height / 2))
+        .force('collide', d3Module.forceCollide().radius((d: any) => d.r + 5));
+
+      simulationRef.current = simulation;
+
+      const linkGroup = svg.append('g')
+        .attr('stroke', '#E0E0E0')
+        .attr('stroke-opacity', 0.6);
+
+      const linkElements = linkGroup.selectAll('line')
+        .data(links)
+        .join('line')
+        .attr('stroke-width', 1);
+
+      const nodeGroup = svg.append('g');
+
+      const nodeElements = nodeGroup.selectAll('circle')
+        .data(nodesWithRadius)
+        .join('circle')
+        .attr('r', (d: any) => d.r)
+        .attr('fill', (d: any) => d.type === 'figure' ? '#1A1A1A' : '#8B2635')
+        .attr('opacity', 0.3)
+        .style('cursor', 'grab')
+        .call(drag(d3Module, simulation) as any);
+
+      // Hover interactions
+      nodeElements.on('mouseover', function (this: SVGCircleElement) {
+        d3Module.select(this)
+          .transition()
+          .duration(200)
+          .attr('opacity', 1)
+          .attr('r', (d: any) => d.r * 1.5);
+      }).on('mouseout', function (this: SVGCircleElement) {
+        d3Module.select(this)
+          .transition()
+          .duration(200)
+          .attr('opacity', 0.3)
+          .attr('r', (d: any) => d.r);
+      });
+
+      simulation.on('tick', () => {
+        linkElements
+          .attr('x1', (d: any) => d.source.x)
+          .attr('y1', (d: any) => d.source.y)
+          .attr('x2', (d: any) => d.target.x)
+          .attr('y2', (d: any) => d.target.y);
+
+        nodeElements
+          .attr('cx', (d: any) => d.x)
+          .attr('cy', (d: any) => d.y);
+      });
+
+      // Resize handler
+      const handleResize = () => {
+        if (!containerRef.current) return;
+        const newWidth = containerRef.current.clientWidth;
+        const newHeight = containerRef.current.clientHeight;
+        svg.attr('width', newWidth).attr('height', newHeight)
+          .attr('viewBox', [0, 0, newWidth, newHeight]);
+        simulation.force('center', d3Module.forceCenter(newWidth / 2, newHeight / 2));
+        simulation.alpha(0.3).restart();
+      };
+
+      window.addEventListener('resize', handleResize);
+      setGraphLoaded(true);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        simulation.stop();
+      };
+    };
+
+    initGraph();
+
+    return () => {
+      cleanup = true;
+      if (simulationRef.current) {
+        simulationRef.current.stop();
+      }
+    };
+  }, [graphLoaded]);
 
   return (
-    <div className="min-h-screen bg-stone-100">
-      {/* Hero Section - Case File Header */}
-      <div className="bg-white border-b-2 border-stone-300">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2 text-center">
-            Historical Network Analysis // Archive_001
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase text-center">
-            Fictotum
+    <div>
+      {/* Hero Graph Section - Full Viewport */}
+      <div
+        style={{
+          height: '85vh',
+          width: '100%',
+          backgroundColor: '#f9f9f9',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          borderBottom: '2px solid var(--color-border-bold)',
+        }}
+      >
+        {/* Interactive Graph Container */}
+        <div
+          ref={containerRef}
+          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+        >
+          <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+        </div>
+
+        {/* Hero Overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            textAlign: 'center',
+            zIndex: 10,
+            pointerEvents: 'none',
+            maxWidth: '800px',
+          }}
+        >
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '84px',
+              fontWeight: 300,
+              letterSpacing: '-3px',
+              lineHeight: 1,
+              color: 'var(--color-text)',
+              background: 'rgba(254,254,254,0.9)',
+              padding: '30px 40px',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            The Intersection of History & Fiction
           </h1>
-          <p className="text-center text-stone-600 mt-2 text-sm">
-            Explore how history judges its figures through media portrayals
-          </p>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              letterSpacing: '3px',
+              marginTop: '24px',
+              color: 'var(--color-accent)',
+              background: '#fff',
+              padding: '8px 16px',
+              display: 'inline-block',
+            }}
+          >
+            Exploring {stats ? stats.portrayals.toLocaleString() : '...'} Portrayals Across Time
+          </span>
+        </div>
+
+        {/* Bottom hint */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            letterSpacing: '2px',
+          }}
+        >
+          [ INTERACTIVE FORCE-DIRECTED GRAPH &mdash; DRAG TO EXPLORE ]
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* HERO: Featured Reputation Timeline (Henry VIII) */}
-          <div className="mb-8">
-            <div className="mb-4 text-center">
-              <h2 className="text-2xl md:text-3xl font-black text-stone-900 uppercase tracking-tight mb-2">
-                Watch How History Judges Its Figures
-              </h2>
-              <p className="text-sm text-stone-600 font-mono">
-                Sentiment analysis across decades of media portrayals
-              </p>
-            </div>
-            <ReputationTimeline canonicalId={HENRY_VIII_CANONICAL_ID} figureName="Henry VIII" />
-            <div className="flex justify-center gap-4 mt-4">
-              <Link
-                href={`/figure/${HENRY_VIII_CANONICAL_ID}`}
-                className="bg-amber-600 text-white px-6 py-3 font-black text-sm uppercase tracking-wider hover:bg-amber-700 transition-colors"
+      {/* Stats Grid */}
+      <section
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          maxWidth: '1200px',
+          margin: '60px auto',
+          gap: '40px',
+          padding: '0 40px',
+          textAlign: 'center',
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '56px',
+              fontWeight: 300,
+              marginBottom: '12px',
+              fontFeatureSettings: '"onum"',
+            }}
+          >
+            {stats ? stats.portrayals.toLocaleString() : '...'}
+          </h2>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: 'var(--color-gray)',
+            }}
+          >
+            Total Entities
+          </span>
+        </div>
+        <div>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '56px',
+              fontWeight: 300,
+              marginBottom: '12px',
+              fontFeatureSettings: '"onum"',
+            }}
+          >
+            {stats ? stats.figures.toLocaleString() : '...'}
+          </h2>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: 'var(--color-gray)',
+            }}
+          >
+            Historical Figures
+          </span>
+        </div>
+        <div>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '56px',
+              fontWeight: 300,
+              marginBottom: '12px',
+              fontFeatureSettings: '"onum"',
+            }}
+          >
+            {stats ? stats.works.toLocaleString() : '...'}
+          </h2>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: 'var(--color-gray)',
+            }}
+          >
+            Media Works
+          </span>
+        </div>
+      </section>
+
+      {/* Explore Buttons */}
+      <div
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto 80px',
+          padding: '0 40px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '24px',
+        }}
+      >
+        {[
+          { label: 'By Era', sub: 'Ancient to Modern', href: '/browse/eras' },
+          { label: 'By Medium', sub: 'Film, TV, Novels', href: '/search' },
+          { label: 'By Sentiment', sub: 'Heroic vs Villainous', href: '/search' },
+          { label: 'Network View', sub: 'Visual Connections', href: '/explore/graph' },
+        ].map((btn) => (
+          <Link
+            key={btn.label}
+            href={btn.href}
+            style={{
+              padding: '32px',
+              border: '1px solid var(--color-border)',
+              textAlign: 'center',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              color: 'var(--color-text)',
+              transition: 'all 0.2s',
+              display: 'block',
+            }}
+            className="hover:bg-[#1A1A1A] hover:text-white hover:border-[#1A1A1A]"
+          >
+            {btn.label}
+            <span
+              style={{
+                display: 'block',
+                marginTop: '8px',
+                fontFamily: 'var(--font-serif)',
+                fontSize: '14px',
+                color: 'var(--color-gray)',
+                textTransform: 'none',
+                fontStyle: 'italic',
+              }}
+            >
+              {btn.sub}
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Lists Section */}
+      <section
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto 60px',
+          padding: '0 40px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '80px',
+          borderTop: '1px solid var(--color-border)',
+          paddingTop: '60px',
+        }}
+      >
+        {/* Top Portrayed Figures */}
+        <div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: 'var(--color-gray)',
+              marginBottom: '24px',
+              borderBottom: '1px solid var(--color-text)',
+              paddingBottom: '8px',
+            }}
+          >
+            Top Portrayed Figures
+          </h3>
+          <ul style={{ listStyle: 'none' }}>
+            {(stats?.topPortrayed ?? []).map((figure) => (
+              <li
+                key={figure.canonical_id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '16px 0',
+                  borderBottom: '1px solid #f0f0f0',
+                  alignItems: 'baseline',
+                }}
               >
-                Explore Henry VIII
-              </Link>
-              <button
-                onClick={scrollToExplorer}
-                className="bg-stone-200 text-stone-900 px-6 py-3 font-black text-sm uppercase tracking-wider hover:bg-stone-300 transition-colors flex items-center gap-2"
-              >
-                <span>Pick Another Figure</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* TWO-COLUMN LAYOUT: Volatility Leaderboard + Rivalry Spotlight */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Left: Volatility Leaderboard */}
-            <div>
-              <VolatilityLeaderboard />
-            </div>
-
-            {/* Right: Rivalry Spotlight */}
-            <div>
-              <RivalrySpotlight />
-            </div>
-          </div>
-
-          {/* THEME PICKER: Cold-open discovery */}
-          <div className="mb-8">
-            <ThemePicker />
-          </div>
-
-          {/* Divider */}
-          <div className="relative" id="graph-explorer">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t-2 border-stone-300"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <div className="bg-stone-100 px-6 py-2 border-2 border-stone-300">
-                <h2 className="text-[10px] font-black text-stone-600 uppercase tracking-[0.3em]">
-                  Interactive Graph Explorer
-                </h2>
-              </div>
-            </div>
-          </div>
-
-          {/* PATH FINDER: Connect two figures */}
-          <div className="mb-8">
-            <LandingPathQuery onPathFound={handlePathFound} />
-          </div>
-
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t-2 border-stone-300"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <button
-                onClick={handleHenryNameClick}
-                className="group bg-stone-100 px-4 text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] hover:text-amber-600 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 rounded"
-                aria-label="Expand Henry VIII connections in graph below"
-              >
-                Or explore starting from{' '}
-                <span className="underline decoration-amber-600/30 group-hover:decoration-amber-600 transition-all duration-200">
-                  Henry VIII
+                <Link
+                  href={`/figure/${figure.canonical_id}`}
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '20px',
+                    fontWeight: 400,
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                  className="hover:text-[#8B2635]"
+                >
+                  {figure.name}
+                </Link>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '14px',
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  {figure.count}
                 </span>
-              </button>
-            </div>
-          </div>
-
-          {/* GRAPH EXPLORER: Single-Node Graph - Dossier Sheet */}
-          <div className="bg-white border-t-4 border-amber-600 shadow-xl overflow-hidden">
-            {/* Path Highlighting Indicator */}
-            {highlightedPath && (
-              <div className="bg-amber-50 border-b-2 border-amber-200 px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-amber-900 font-mono">
-                  <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
-                  <span className="font-bold uppercase tracking-wide">Path highlighted in graph below</span>
-                  <span className="text-amber-700 font-black">({highlightedPath.pathIds.length} nodes)</span>
-                </div>
-                <button
-                  onClick={() => setHighlightedPath(undefined)}
-                  className="text-xs text-amber-700 hover:text-amber-900 font-black uppercase tracking-widest underline"
-                >
-                  Clear
-                </button>
-              </div>
-            )}
-
-            <Suspense fallback={
-              <div className="flex items-center justify-center" style={{ minHeight: '600px' }}>
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-                  <p className="text-stone-500 font-mono text-sm uppercase tracking-widest">Loading graph...</p>
-                </div>
-              </div>
-            }>
-              <GraphExplorer
-                canonicalId={HENRY_VIII_CANONICAL_ID}
-                nodes={initialNodes}
-                links={[]}
-                highlightedPath={highlightedPath}
-                shouldExpandCenter={shouldExpandHenry}
-              />
-            </Suspense>
-          </div>
-
-          {/* Discovery Section (Below Fold) */}
-          <div className="mt-8">
-            <div className="bg-amber-600 text-white px-4 py-2 mb-0">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2">
-                <span>■</span> Discovery & Exploration
-              </h2>
-            </div>
-            <div className="bg-stone-200 border-2 border-amber-600 border-t-0 p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Temporal Coverage Explorer */}
-                <Link
-                  href="/explore/coverage"
-                  className="block bg-white border-2 border-stone-300 hover:border-amber-600 transition-all p-6 group"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-amber-50 border-2 border-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
-                      <BarChart3 className="w-6 h-6 text-amber-600" />
-                    </div>
-                    <h3 className="text-lg font-black text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors">
-                      Historical Coverage
-                    </h3>
-                  </div>
-                  <p className="text-sm text-stone-600 leading-relaxed">
-                    Visualize Fictotum's temporal distribution across all historical periods. Explore coverage density, identify gaps, and discover content-rich eras.
-                  </p>
-                  <div className="mt-4 text-xs font-black text-amber-600 uppercase tracking-wider group-hover:text-amber-700">
-                    Explore Timeline →
-                  </div>
-                </Link>
-
-                {/* Search by Keywords */}
-                <Link
-                  href="/search"
-                  className="block bg-white border-2 border-stone-300 hover:border-amber-600 transition-all p-6 group"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-amber-50 border-2 border-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
-                      <Map className="w-6 h-6 text-amber-600" />
-                    </div>
-                    <h3 className="text-lg font-black text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors">
-                      Search Figures
-                    </h3>
-                  </div>
-                  <p className="text-sm text-stone-600 leading-relaxed">
-                    Search for historical figures by name, era, or keyword. Discover connections and explore media portrayals.
-                  </p>
-                  <div className="mt-4 text-xs font-black text-amber-600 uppercase tracking-wider group-hover:text-amber-700">
-                    Search Now →
-                  </div>
-                </Link>
-
-                {/* Browse Network Graph */}
-                <Link
-                  href="/explore/graph"
-                  className="block bg-white border-2 border-stone-300 hover:border-amber-600 transition-all p-6 group"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-amber-50 border-2 border-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
-                      <Clock className="w-6 h-6 text-amber-600" />
-                    </div>
-                    <h3 className="text-lg font-black text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors">
-                      Interactive Network
-                    </h3>
-                  </div>
-                  <p className="text-sm text-stone-600 leading-relaxed">
-                    Explore the full network graph of historical figures and media works. Navigate complex relationships visually.
-                  </p>
-                  <div className="mt-4 text-xs font-black text-amber-600 uppercase tracking-wider group-hover:text-amber-700">
-                    Explore Graph →
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
+
+        {/* Latest Additions */}
+        <div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: 'var(--color-gray)',
+              marginBottom: '24px',
+              borderBottom: '1px solid var(--color-text)',
+              paddingBottom: '8px',
+            }}
+          >
+            Latest Additions
+          </h3>
+          <ul style={{ listStyle: 'none' }}>
+            {(stats?.latestAdditions ?? []).map((figure) => (
+              <li
+                key={figure.canonical_id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '16px 0',
+                  borderBottom: '1px solid #f0f0f0',
+                  alignItems: 'baseline',
+                }}
+              >
+                <Link
+                  href={`/figure/${figure.canonical_id}`}
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '20px',
+                    fontWeight: 400,
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                  className="hover:text-[#8B2635]"
+                >
+                  {figure.name}
+                </Link>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '14px',
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  {figure.date}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Departments Section */}
+      <section
+        style={{
+          padding: '80px 40px',
+          background: 'var(--color-dept-bg)',
+          borderTop: '1px solid var(--color-border)',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '40px',
+          }}
+        >
+          {[
+            { title: 'Contribute', desc: 'Submit new portrayals or historical data to the archive for verification.', href: '/contribute' },
+            { title: 'Methodology', desc: 'How we define historical fiction and classify portrayals within the graph.', href: '#' },
+            { title: 'API Access', desc: 'Documentation for researchers and data scientists to query our Neo4j database.', href: '#' },
+            { title: 'About Fictotum', desc: 'The mission and vision of the curated archive of historical intersections.', href: '#' },
+          ].map((dept) => (
+            <Link
+              key={dept.title}
+              href={dept.href}
+              style={{
+                padding: '32px',
+                border: '1px solid var(--color-border)',
+                background: '#fff',
+                textDecoration: 'none',
+                color: 'inherit',
+                display: 'block',
+              }}
+              className="hover:border-[#1A1A1A] transition-colors"
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  marginBottom: '16px',
+                  display: 'block',
+                  borderBottom: '1px solid var(--color-border)',
+                  paddingBottom: '8px',
+                }}
+              >
+                {dept.title}
+              </span>
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '18px',
+                  color: 'var(--color-gray)',
+                  fontStyle: 'italic',
+                  lineHeight: 1.5,
+                }}
+              >
+                {dept.desc}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        style={{
+          borderTop: '1px solid var(--color-border-bold)',
+          padding: '40px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px',
+          textTransform: 'uppercase',
+          color: 'var(--color-gray)',
+        }}
+      >
+        <div>&copy; 2026 Fictotum Archive</div>
+        <div>A Project Mapping History & Fiction</div>
+      </footer>
     </div>
   );
+}
+
+// D3 Drag behavior
+function drag(d3: any, simulation: any) {
+  function dragstarted(event: any) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    event.subject.fx = event.subject.x;
+    event.subject.fy = event.subject.y;
+  }
+
+  function dragged(event: any) {
+    event.subject.fx = event.x;
+    event.subject.fy = event.y;
+  }
+
+  function dragended(event: any) {
+    if (!event.active) simulation.alphaTarget(0);
+    event.subject.fx = null;
+    event.subject.fy = null;
+  }
+
+  return d3.drag()
+    .on('start', dragstarted)
+    .on('drag', dragged)
+    .on('end', dragended);
 }

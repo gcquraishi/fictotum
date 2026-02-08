@@ -12,6 +12,7 @@
   "dependencies": {
     "@auth/neo4j-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
+    "d3": "^7.9.0",
     "double-metaphone": "^2.0.1",
     "lru-cache": "^11.2.5",
     "lucide-react": "^0.562.0",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/d3": "^7.4.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

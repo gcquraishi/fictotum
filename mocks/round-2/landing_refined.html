@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Graph Discovery (Refined)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--color-border);
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .search-trigger {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            border: 1px solid var(--color-border);
+            padding: 8px 16px;
+            color: var(--color-gray);
+            text-decoration: none;
+        }
+
+        nav a {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--color-text);
+            margin-left: 24px;
+            letter-spacing: 1px;
+        }
+
+        /* Hero Graph Section - FULL VIEWPORT FOCUS */
+        .hero-graph {
+            height: 85vh;
+            width: 100%;
+            background-color: #f9f9f9;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 2px solid var(--color-border-bold);
+        }
+
+        #graph-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 84px;
+            font-weight: 300;
+            letter-spacing: -3px;
+            line-height: 1;
+            color: var(--color-text);
+            background: rgba(254,254,254, 0.9);
+            padding: 30px 40px;
+            border: 1px solid var(--color-border);
+            box-shadow: 20px 20px 0 rgba(0,0,0,0.02);
+        }
+        
+        .hero-sub {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 24px;
+            color: var(--color-accent);
+            background: #fff;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            max-width: 1200px;
+            margin: 60px auto;
+            gap: 40px;
+            padding: 0 40px;
+            text-align: center;
+        }
+
+        .stat-item h2 {
+            font-size: 56px;
+            font-weight: 300;
+            margin-bottom: 12px;
+            font-feature-settings: "onum";
+        }
+
+        .stat-item span {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--color-gray);
+        }
+
+        /* Lists Section */
+        .lists-section {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            border-top: 1px solid var(--color-border);
+            padding-top: 60px;
+        }
+
+        .list-col h3 {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-gray);
+            margin-bottom: 24px;
+            display: block;
+            border-bottom: 1px solid var(--color-text);
+            padding-bottom: 8px;
+        }
+
+        .mini-list {
+            list-style: none;
+        }
+        .mini-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: baseline;
+        }
+        .mini-list li:last-child { border-bottom: none; }
+        .mini-list .name { font-size: 20px; font-weight: 400; text-decoration: none; color: inherit; }
+        .mini-list .name:hover { color: var(--color-accent); }
+        .mini-list .count { font-family: var(--font-mono); font-size: 14px; color: var(--color-accent); }
+
+        /* Explore Buttons */
+        .explore-bar {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 24px;
+        }
+        .explore-btn {
+            padding: 32px;
+            border: 1px solid var(--color-border);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--color-text);
+            transition: all 0.2s;
+            display: block;
+        }
+        .explore-btn:hover {
+            background: var(--color-text);
+            color: #fff;
+            border-color: var(--color-text);
+        }
+        .explore-btn span {
+            display: block;
+            margin-top: 8px;
+            font-family: var(--font-serif);
+            font-size: 14px;
+            color: var(--color-gray);
+            text-transform: none;
+            font-style: italic;
+        }
+        .explore-btn:hover span { color: #ccc; }
+
+        /* Departments Section */
+        .dept-section {
+            padding: 80px 40px;
+            background: #fafafa;
+            border-top: 1px solid var(--color-border);
+        }
+        .dept-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .dept-item {
+            padding: 32px;
+            border: 1px solid var(--color-border);
+            background: #fff;
+        }
+        .dept-title {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: block;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 8px;
+        }
+        .dept-desc {
+            font-size: 18px;
+            color: var(--color-gray);
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        footer {
+            border-top: 1px solid var(--color-border-bold);
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--color-gray);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Fictotum</div>
+        <a href="search_results.html" class="search-trigger">Search 847 Figures or 612 Works...</a>
+        <nav>
+            <a href="#">About</a>
+            <a href="#">Contribute</a>
+        </nav>
+    </header>
+
+    <div class="hero-graph">
+        <!-- Interactive Graph Container -->
+        <div id="graph-container"></div>
+        
+        <div class="hero-overlay">
+            <h1>The Intersection of History & Fiction</h1>
+            <span class="hero-sub">Exploring 1,594 Portrayals Across Time</span>
+        </div>
+        
+        <div style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10px; color: var(--color-gray); letter-spacing: 2px;">
+            [ INTERACTIVE FORCE-DIRECTED GRAPH &mdash; DRAG TO EXPLORE ]
+        </div>
+    </div>
+
+    <section class="stats-grid">
+        <div class="stat-item">
+            <h2>1,594</h2>
+            <span>Total Entities</span>
+        </div>
+        <div class="stat-item">
+            <h2>847</h2>
+            <span>Historical Figures</span>
+        </div>
+        <div class="stat-item">
+            <h2>612</h2>
+            <span>Media Works</span>
+        </div>
+    </section>
+
+    <div class="explore-bar">
+        <a href="#" class="explore-btn">
+            By Era
+            <span>Ancient to Modern</span>
+        </a>
+        <a href="#" class="explore-btn">
+            By Medium
+            <span>Film, TV, Novels</span>
+        </a>
+        <a href="#" class="explore-btn">
+            By Sentiment
+            <span>Heroic vs Villainous</span>
+        </a>
+        <a href="#" class="explore-btn">
+            Network View
+            <span>Visual Connections</span>
+        </a>
+    </div>
+
+    <section class="lists-section">
+        <div class="list-col">
+            <h3>Top Portrayed Figures</h3>
+            <ul class="mini-list">
+                <li><a href="figure_refined.html" class="name">Napoleon Bonaparte</a> <span class="count">84</span></li>
+                <li><a href="figure_refined.html" class="name">Henry VIII</a> <span class="count">78</span></li>
+                <li><a href="figure_refined.html" class="name">Cleopatra VII</a> <span class="count">62</span></li>
+                <li><a href="figure_refined.html" class="name">Abraham Lincoln</a> <span class="count">59</span></li>
+            </ul>
+        </div>
+        <div class="list-col">
+            <h3>Latest Additions</h3>
+            <ul class="mini-list">
+                <li><span class="name">Q. Fabius Maximus</span> <span class="count">FEB 08</span></li>
+                <li><span class="name">Scipio Africanus</span> <span class="count">FEB 08</span></li>
+                <li><span class="name">Hannibal Barca</span> <span class="count">FEB 07</span></li>
+                <li><span class="name">Hasdrubal Barca</span> <span class="count">FEB 07</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="dept-section">
+        <div class="dept-grid">
+            <div class="dept-item">
+                <span class="dept-title">Contribute</span>
+                <p class="dept-desc">Submit new portrayals or historical data to the archive for verification.</p>
+            </div>
+            <div class="dept-item">
+                <span class="dept-title">Methodology</span>
+                <p class="dept-desc">How we define historical fiction and classify portrayals within the graph.</p>
+            </div>
+            <div class="dept-item">
+                <span class="dept-title">API Access</span>
+                <p class="dept-desc">Documentation for researchers and data scientists to query our Neo4j database.</p>
+            </div>
+            <div class="dept-item">
+                <span class="dept-title">About Fictotum</span>
+                <p class="dept-desc">The mission and vision of the curated archive of historical intersections.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div>&copy; 2026 Fictotum Archive</div>
+        <div>A Project Mapping History & Fiction</div>
+    </footer>
+
+    <script>
+        // D3.js Force Directed Graph Simulation
+        // This simulates the behavior of the final application
+        const width = window.innerWidth;
+        const height = window.innerHeight * 0.85;
+
+        // Mock Data: 50 nodes, random links
+        const nodes = Array.from({length: 60}, (_, i) => ({
+            id: i, 
+            group: i % 3 === 0 ? 'figure' : 'work',
+            r: i % 5 === 0 ? 12 : (i % 3 === 0 ? 8 : 4) // Varied sizes
+        }));
+        
+        const links = [];
+        for (let i = 0; i < 50; i++) {
+            links.push({
+                source: Math.floor(Math.random() * 60),
+                target: Math.floor(Math.random() * 60)
+            });
+        }
+
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-150))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collide", d3.forceCollide().radius(d => d.r + 5));
+
+        const svg = d3.select("#graph-container").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, width, height]);
+
+        const link = svg.append("g")
+            .attr("stroke", "#E0E0E0")
+            .attr("stroke-opacity", 0.6)
+            .selectAll("line")
+            .data(links)
+            .join("line")
+            .attr("stroke-width", 1);
+
+        const node = svg.append("g")
+            .selectAll("circle")
+            .data(nodes)
+            .join("circle")
+            .attr("r", d => d.r)
+            .attr("fill", d => d.group === 'figure' ? '#1A1A1A' : '#8B2635')
+            .attr("opacity", 0.3)
+            .call(drag(simulation));
+
+        node.on("mouseover", function() {
+            d3.select(this).transition().duration(200).attr("opacity", 1).attr("r", d => d.r * 1.5);
+        }).on("mouseout", function() {
+            d3.select(this).transition().duration(200).attr("opacity", 0.3).attr("r", d => d.r);
+        });
+
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+        });
+
+        function drag(simulation) {
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+            
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+            
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+            
+            return d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended);
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            const newWidth = window.innerWidth;
+            const newHeight = window.innerHeight * 0.85;
+            svg.attr("width", newWidth).attr("height", newHeight);
+            simulation.force("center", d3.forceCenter(newWidth / 2, newHeight / 2));
+            simulation.alpha(0.3).restart();
+        });
+    </script>
+
+</body>
+</html>
