@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { X, BookOpen, User, TrendingUp } from 'lucide-react';
 import { PeriodDetail } from '@/lib/types';
 
 interface PeriodDetailPanelProps {
-  period: string; // Format: "1400-1500"
+  period: string;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -20,13 +19,7 @@ export default function PeriodDetailPanel({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && period) {
-      fetchPeriodDetails();
-    }
-  }, [isOpen, period]);
-
-  const fetchPeriodDetails = async () => {
+  const fetchPeriodDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -41,7 +34,13 @@ export default function PeriodDetailPanel({
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
+
+  useEffect(() => {
+    if (isOpen && period) {
+      fetchPeriodDetails();
+    }
+  }, [isOpen, period, fetchPeriodDetails]);
 
   if (!isOpen) return null;
 
@@ -49,74 +48,156 @@ export default function PeriodDetailPanel({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(26, 26, 26, 0.4)',
+          zIndex: 40,
+        }}
         onClick={onClose}
       />
 
       {/* Panel */}
-      <div className="fixed right-0 top-0 bottom-0 w-full md:w-2/3 lg:w-1/2 bg-stone-100 shadow-2xl z-50 overflow-y-auto">
+      <div
+        style={{
+          position: 'fixed',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: '50%',
+          minWidth: '400px',
+          maxWidth: '700px',
+          background: 'var(--color-bg)',
+          borderLeft: '1px solid var(--color-border-bold)',
+          zIndex: 50,
+          overflowY: 'auto',
+        }}
+      >
         {/* Header */}
-        <div className="bg-amber-600 text-white p-6 sticky top-0 z-10">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-black uppercase tracking-tight">
-              Period Analysis
-            </h2>
+        <div
+          style={{
+            background: 'var(--color-text)',
+            color: 'var(--color-bg)',
+            padding: '24px',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '28px',
+                  fontWeight: 300,
+                  marginBottom: '4px',
+                }}
+              >
+                Period Analysis
+              </h2>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  letterSpacing: '2px',
+                  opacity: 0.7,
+                }}
+              >
+                Temporal Range: {period}
+              </div>
+            </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-amber-700 transition-colors rounded"
+              className="hover:opacity-70 transition-opacity"
               aria-label="Close panel"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                color: 'var(--color-bg)',
+                background: 'none',
+                border: '1px solid rgba(254, 254, 254, 0.3)',
+                padding: '6px 16px',
+                cursor: 'pointer',
+              }}
             >
-              <X className="w-6 h-6" />
+              Close
             </button>
-          </div>
-          <div className="text-sm font-mono tracking-wider">
-            Temporal Range: {period}
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div style={{ padding: '24px' }}>
           {loading && (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="inline-block w-12 h-12 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-sm font-black text-stone-600 uppercase tracking-widest">
-                  Loading Period Data...
-                </p>
-              </div>
+            <div style={{ padding: '48px 0', textAlign: 'center' }}>
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  color: 'var(--color-gray)',
+                }}
+              >
+                Loading period data...
+              </p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border-2 border-red-600 p-4 mb-6">
-              <p className="text-sm font-bold text-red-900">Error: {error}</p>
+            <div
+              style={{
+                marginBottom: '24px',
+                padding: '12px 16px',
+                background: 'var(--color-section-bg)',
+                borderLeft: '4px solid var(--color-accent)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-accent)',
+              }}
+            >
+              Error: {error}
             </div>
           )}
 
           {data && !loading && (
             <>
-              {/* Statistics Cards */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-white border-2 border-stone-300 p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BookOpen className="w-5 h-5 text-amber-600" />
-                    <p className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-                      Total Works
-                    </p>
-                  </div>
-                  <p className="text-3xl font-black text-amber-600">
+              {/* Statistics */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1px',
+                  background: 'var(--color-border)',
+                  border: '1px solid var(--color-border)',
+                  marginBottom: '24px',
+                }}
+              >
+                <div style={{ background: 'var(--color-bg)', padding: '16px' }}>
+                  <p className="fsg-label-sm" style={{ marginBottom: '4px' }}>Total Works</p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '28px',
+                      fontWeight: 500,
+                      color: 'var(--color-accent)',
+                    }}
+                  >
                     {data.statistics.workCount}
                   </p>
                 </div>
-
-                <div className="bg-white border-2 border-stone-300 p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <User className="w-5 h-5 text-green-600" />
-                    <p className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-                      Historical Figures
-                    </p>
-                  </div>
-                  <p className="text-3xl font-black text-green-600">
+                <div style={{ background: 'var(--color-bg)', padding: '16px' }}>
+                  <p className="fsg-label-sm" style={{ marginBottom: '4px' }}>Historical Figures</p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '28px',
+                      fontWeight: 500,
+                      color: 'var(--color-text)',
+                    }}
+                  >
                     {data.statistics.figureCount}
                   </p>
                 </div>
@@ -124,20 +205,27 @@ export default function PeriodDetailPanel({
 
               {/* Media Type Breakdown */}
               {Object.keys(data.statistics.mediaTypeBreakdown).length > 0 && (
-                <div className="bg-stone-200 border-2 border-stone-300 p-4 mb-6">
-                  <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-amber-600" />
-                    Media Type Distribution
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3">
+                <div style={{ marginBottom: '24px' }}>
+                  <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+                    <span>Media Type Distribution</span>
+                  </div>
+                  <div
+                    style={{
+                      border: '1px solid var(--color-border)',
+                      borderTop: 'none',
+                    }}
+                  >
                     {Object.entries(data.statistics.mediaTypeBreakdown).map(([type, count]) => (
-                      <div key={type} className="bg-white border border-stone-300 p-2 flex justify-between items-center">
-                        <span className="text-xs font-bold text-stone-700 uppercase">
-                          {type}
-                        </span>
-                        <span className="text-lg font-black text-amber-600">
-                          {count}
-                        </span>
+                      <div
+                        key={type}
+                        className="fsg-meta-row"
+                        style={{
+                          padding: '10px 16px',
+                          borderBottom: '1px dotted var(--color-border)',
+                        }}
+                      >
+                        <span style={{ textTransform: 'uppercase' }}>{type}</span>
+                        <span style={{ color: 'var(--color-accent)' }}>{count}</span>
                       </div>
                     ))}
                   </div>
@@ -146,17 +234,43 @@ export default function PeriodDetailPanel({
 
               {/* Top Creators */}
               {data.statistics.topCreators.length > 0 && (
-                <div className="bg-blue-50 border-2 border-blue-300 p-4 mb-6">
-                  <h3 className="text-sm font-black text-blue-900 uppercase tracking-widest mb-3">
-                    Top Creators in Period
-                  </h3>
-                  <div className="space-y-2">
+                <div style={{ marginBottom: '24px' }}>
+                  <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+                    <span>Top Creators in Period</span>
+                  </div>
+                  <div
+                    style={{
+                      border: '1px solid var(--color-border)',
+                      borderTop: 'none',
+                    }}
+                  >
                     {data.statistics.topCreators.map((creator) => (
-                      <div key={creator.name} className="bg-white border border-blue-300 p-2 flex justify-between items-center">
-                        <span className="text-sm font-bold text-stone-900">
+                      <div
+                        key={creator.name}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '10px 16px',
+                          borderBottom: '1px dotted var(--color-border)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '14px',
+                            color: 'var(--color-text)',
+                          }}
+                        >
                           {creator.name}
                         </span>
-                        <span className="text-xs font-black text-blue-600 uppercase tracking-wider">
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '11px',
+                            color: 'var(--color-gray)',
+                          }}
+                        >
                           {creator.workCount} work{creator.workCount !== 1 ? 's' : ''}
                         </span>
                       </div>
@@ -166,33 +280,52 @@ export default function PeriodDetailPanel({
               )}
 
               {/* Works List */}
-              <div className="mb-6">
-                <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-amber-600" />
-                  Works from this Period ({data.works.length})
-                </h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
+              <div style={{ marginBottom: '24px' }}>
+                <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+                  <span>Works from this Period ({data.works.length})</span>
+                </div>
+                <div
+                  style={{
+                    border: '1px solid var(--color-border)',
+                    borderTop: 'none',
+                    maxHeight: '384px',
+                    overflowY: 'auto',
+                  }}
+                >
                   {data.works.map((work) => (
                     <Link
                       key={work.media_id}
                       href={`/media/${work.media_id}`}
-                      className="block bg-white border-2 border-stone-300 hover:border-amber-600 transition-all p-3"
+                      className="hover:opacity-70 transition-opacity"
+                      style={{
+                        display: 'block',
+                        padding: '12px 16px',
+                        borderBottom: '1px solid var(--color-border)',
+                        textDecoration: 'none',
+                        color: 'var(--color-text)',
+                      }}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-grow min-w-0">
-                          <p className="font-bold text-stone-900 uppercase text-sm leading-tight truncate">
-                            {work.title}
-                          </p>
-                          <p className="text-xs text-stone-500 font-mono mt-1">
-                            {work.release_year} • {work.media_type}
-                          </p>
-                          {work.creator && (
-                            <p className="text-xs text-stone-600 mt-1">
-                              by {work.creator}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          fontSize: '15px',
+                          fontStyle: 'italic',
+                          color: 'var(--color-text)',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        {work.title}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '11px',
+                          color: 'var(--color-gray)',
+                        }}
+                      >
+                        {work.release_year} &middot; {work.media_type}
+                        {work.creator && ` &middot; ${work.creator}`}
+                      </p>
                     </Link>
                   ))}
                 </div>
@@ -201,22 +334,48 @@ export default function PeriodDetailPanel({
               {/* Figures List */}
               {data.figures.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <User className="w-4 h-4 text-green-600" />
-                    Historical Figures ({data.figures.length})
-                  </h3>
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                  <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+                    <span>Historical Figures ({data.figures.length})</span>
+                  </div>
+                  <div
+                    style={{
+                      border: '1px solid var(--color-border)',
+                      borderTop: 'none',
+                      maxHeight: '384px',
+                      overflowY: 'auto',
+                    }}
+                  >
                     {data.figures.map((figure) => (
                       <Link
                         key={figure.canonical_id}
                         href={`/figure/${figure.canonical_id}`}
-                        className="block bg-white border-2 border-stone-300 hover:border-green-600 transition-all p-3"
+                        className="hover:opacity-70 transition-opacity"
+                        style={{
+                          display: 'block',
+                          padding: '12px 16px',
+                          borderBottom: '1px solid var(--color-border)',
+                          textDecoration: 'none',
+                          color: 'var(--color-text)',
+                        }}
                       >
-                        <p className="font-bold text-stone-900 uppercase text-sm">
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '15px',
+                            color: 'var(--color-text)',
+                          }}
+                        >
                           {figure.name}
                         </p>
                         {figure.era && (
-                          <p className="text-xs text-stone-500 font-mono mt-1">
+                          <p
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '11px',
+                              color: 'var(--color-gray)',
+                              marginTop: '2px',
+                            }}
+                          >
                             {figure.era}
                           </p>
                         )}

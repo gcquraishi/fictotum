@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Data Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--color-border);
+            gap: 40px;
+        }
+
+        .logo { font-family: var(--font-mono); font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .search-bar {
+            width: 100%;
+            max-width: 600px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            border: 1px solid var(--color-border);
+            background: transparent;
+            outline: none;
+        }
+
+        nav a { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--color-text); margin-left: 24px; letter-spacing: 1px; }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--color-border-bold);
+            padding-bottom: 24px;
+        }
+        .page-title {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-gray);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 300px 300px;
+            border-top: 1px solid var(--color-border);
+            border-left: 1px solid var(--color-border);
+        }
+
+        .dash-item {
+            border-right: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dash-number {
+            font-size: 80px;
+            font-weight: 300;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+        .dash-label {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-text);
+            display: block;
+        }
+        .dash-sub {
+            font-family: var(--font-serif);
+            font-size: 16px;
+            color: var(--color-gray);
+            font-style: italic;
+        }
+
+        .list-header {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--color-gray);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .mini-list {
+            list-style: none;
+        }
+        .mini-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: baseline;
+        }
+        .mini-list li:last-child { border-bottom: none; }
+        .mini-list .name { font-size: 20px; font-weight: 400; }
+        .mini-list .count { font-family: var(--font-mono); font-size: 14px; color: var(--color-accent); }
+
+        .explore-bar {
+            margin-top: 60px;
+            display: flex;
+            gap: 24px;
+        }
+        .explore-btn {
+            flex: 1;
+            padding: 24px;
+            border: 1px solid var(--color-border);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--color-text);
+            transition: all 0.2s;
+        }
+        .explore-btn:hover {
+            background: var(--color-text);
+            color: #fff;
+            border-color: var(--color-text);
+        }
+
+        footer {
+            border-top: 1px solid var(--color-border);
+            padding: 24px 40px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-gray);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Fictotum</div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="SEARCH DATABASE...">
+        </div>
+        <nav>
+            <a href="#">Index</a>
+            <a href="#">Api</a>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Fictotum: A Curated Archive</h1>
+            <span class="page-subtitle">Mapping 1,594 intersections between history and fiction</span>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Quad 1 -->
+            <div class="dash-item">
+                <div>
+                    <span class="dash-number">847</span>
+                    <span class="dash-label">Historical Figures</span>
+                </div>
+                <span class="dash-sub">Spanning 3000 BCE &mdash; 2023 CE</span>
+            </div>
+
+            <!-- Quad 2 -->
+            <div class="dash-item">
+                <div>
+                    <span class="dash-number">612</span>
+                    <span class="dash-label">Media Works</span>
+                </div>
+                <span class="dash-sub">Novels, Films, Television Series</span>
+            </div>
+
+            <!-- Quad 3 -->
+            <div class="dash-item">
+                <span class="list-header">Top Portrayed Figures</span>
+                <ul class="mini-list">
+                    <li><span class="name">Napoleon Bonaparte</span> <span class="count">84</span></li>
+                    <li><span class="name">Henry VIII</span> <span class="count">78</span></li>
+                    <li><span class="name">Cleopatra VII</span> <span class="count">62</span></li>
+                    <li><span class="name">Abraham Lincoln</span> <span class="count">59</span></li>
+                </ul>
+            </div>
+
+            <!-- Quad 4 -->
+            <div class="dash-item">
+                <span class="list-header">Latest Additions</span>
+                <ul class="mini-list">
+                    <li><span class="name">Q. Fabius Maximus</span> <span class="count">Feb 08</span></li>
+                    <li><span class="name">Scipio Africanus</span> <span class="count">Feb 08</span></li>
+                    <li><span class="name">Hannibal Barca</span> <span class="count">Feb 07</span></li>
+                    <li><span class="name">Hasdrubal Barca</span> <span class="count">Feb 07</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="explore-bar">
+            <a href="#" class="explore-btn">By Era</a>
+            <a href="#" class="explore-btn">By Medium</a>
+            <a href="#" class="explore-btn">By Sentiment</a>
+            <a href="#" class="explore-btn">Network View</a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Fictotum Project. Data version 2.4.1
+    </footer>
+
+</body>
+</html>

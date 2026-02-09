@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, Calendar, AlertTriangle, Loader2, AlertCircle, Info, Plus } from 'lucide-react';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -290,25 +289,26 @@ export default function EraTagPicker({
   // ============================================================================
 
   const renderPresetEras = () => (
-    <div className="px-6 py-4 border-t border-brand-primary/20 bg-brand-primary/5">
-      <h4 className="text-sm font-semibold text-brand-text mb-3">Quick Select Common Eras</h4>
+    <div className="px-6 py-4" style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-section-bg)' }}>
+      <h4 className="mb-3" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>Quick Select Common Eras</h4>
       <div className="grid grid-cols-2 gap-2">
         {PRESET_ERAS.map((preset) => (
           <button
             key={preset.name}
             onClick={() => handleSelectPreset(preset)}
             disabled={excludeTags?.includes(preset.name)}
-            className="px-3 py-2 bg-white hover:bg-brand-primary/10 border border-brand-primary/20 rounded-md text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: 'white', border: '1px solid var(--color-border)', cursor: 'pointer' }}
           >
-            <div className="font-medium text-sm text-brand-text">{preset.name}</div>
-            <div className="text-xs text-brand-text/60 mt-0.5">
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', fontWeight: 500, color: 'var(--color-text)' }}>{preset.name}</div>
+            <div className="mt-0.5" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
               {preset.start_year}–{preset.end_year}
               {preset.is_approximate && ' (approx)'}
             </div>
           </button>
         ))}
       </div>
-      <p className="text-xs text-brand-text/50 mt-3">
+      <p className="mt-3" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
         Click a preset to edit its dates, or create your own below
       </p>
     </div>
@@ -319,32 +319,32 @@ export default function EraTagPicker({
   // ============================================================================
 
   const renderCustomEraForm = () => (
-    <div className="p-6 border-t border-brand-primary/20">
+    <div className="p-6" style={{ borderTop: '1px solid var(--color-border)' }}>
       <div className="mb-4">
-        <h4 className="text-lg font-semibold text-brand-primary mb-2">Create Custom Era Tag</h4>
-        <p className="text-sm text-brand-text/60">
+        <h4 className="mb-2" style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '18px', color: 'var(--color-text)' }}>Create Custom Era Tag</h4>
+        <p style={{ fontSize: '14px', color: 'var(--color-gray)' }}>
           Add a new historical period or literary era to the database.
         </p>
       </div>
 
       {customFormError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-800">{customFormError}</p>
+        <div className="mb-4 p-3 flex items-start gap-2" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-accent)' }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-accent)' }}>{customFormError}</p>
         </div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-brand-text mb-1">
-            Era Name <span className="text-red-500">*</span>
+          <label className="block mb-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+            Era Name <span style={{ color: 'var(--color-accent)' }}>*</span>
           </label>
           <input
             type="text"
             value={customEra.name}
             onChange={(e) => setCustomEra(prev => ({ ...prev, name: e.target.value }))}
             placeholder="e.g., Tudor Period, Victorian Era"
-            className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            className="w-full"
+            style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
           />
         </div>
 
@@ -363,11 +363,12 @@ export default function EraTagPicker({
                 setCustomEra(prev => ({ ...prev, is_approximate: false }));
               }
             }}
-            className="mt-1 h-4 w-4 rounded border-brand-primary/30 text-brand-accent focus:ring-brand-accent"
+            className="mt-1 h-4 w-4"
+            style={{ cursor: 'pointer' }}
           />
-          <label htmlFor="dateRangeUncertain" className="text-sm text-brand-text cursor-pointer">
-            <span className="font-medium">Date range uncertain</span>
-            <p className="text-xs text-brand-text/60 mt-0.5">
+          <label htmlFor="dateRangeUncertain" className="cursor-pointer" style={{ fontSize: '14px', color: 'var(--color-text)' }}>
+            <span style={{ fontWeight: 500 }}>Date range uncertain</span>
+            <p className="mt-0.5" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
               Check this if the era's boundaries are contested or not precisely defined by historians
             </p>
           </label>
@@ -375,8 +376,8 @@ export default function EraTagPicker({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-1">
-              Start Year {!dateRangeUncertain && <span className="text-brand-text/40">(Optional)</span>}
+            <label className="block mb-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+              Start Year {!dateRangeUncertain && <span style={{ color: 'var(--color-gray)', opacity: 0.6 }}>(Optional)</span>}
             </label>
             <input
               type="number"
@@ -384,13 +385,23 @@ export default function EraTagPicker({
               onChange={(e) => setCustomEra(prev => ({ ...prev, start_year: e.target.value }))}
               placeholder="1485"
               disabled={dateRangeUncertain}
-              className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent disabled:bg-brand-primary/5 disabled:cursor-not-allowed"
+              className="w-full"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '16px',
+                padding: '10px 12px',
+                border: '1px solid var(--color-border)',
+                background: dateRangeUncertain ? 'var(--color-section-bg)' : 'white',
+                color: 'var(--color-text)',
+                outline: 'none',
+                cursor: dateRangeUncertain ? 'not-allowed' : 'text'
+              }}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-1">
-              End Year {!dateRangeUncertain && <span className="text-brand-text/40">(Optional)</span>}
+            <label className="block mb-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+              End Year {!dateRangeUncertain && <span style={{ color: 'var(--color-gray)', opacity: 0.6 }}>(Optional)</span>}
             </label>
             <input
               type="number"
@@ -398,13 +409,23 @@ export default function EraTagPicker({
               onChange={(e) => setCustomEra(prev => ({ ...prev, end_year: e.target.value }))}
               placeholder="1603"
               disabled={dateRangeUncertain}
-              className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent disabled:bg-brand-primary/5 disabled:cursor-not-allowed"
+              className="w-full"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '16px',
+                padding: '10px 12px',
+                border: '1px solid var(--color-border)',
+                background: dateRangeUncertain ? 'var(--color-section-bg)' : 'white',
+                color: 'var(--color-text)',
+                outline: 'none',
+                cursor: dateRangeUncertain ? 'not-allowed' : 'text'
+              }}
             />
           </div>
         </div>
 
         {!dateRangeUncertain && (
-          <p className="text-xs text-brand-text/60 -mt-2">
+          <p className="-mt-2" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
             Date ranges are now optional. Many eras have contested boundaries.
           </p>
         )}
@@ -412,13 +433,15 @@ export default function EraTagPicker({
         <div className="flex gap-3 pt-2">
           <button
             onClick={handleCreateCustomEra}
-            className="flex-1 px-4 py-2 bg-brand-accent hover:bg-brand-accent/90 text-white rounded-md text-sm font-medium transition-colors"
+            className="flex-1 transition-colors"
+            style={{ background: 'var(--color-text)', color: 'var(--color-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', padding: '14px', border: 'none', cursor: 'pointer' }}
           >
             Create Era Tag
           </button>
           <button
             onClick={handleCancelCustomForm}
-            className="px-4 py-2 bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-text rounded-md text-sm font-medium transition-colors"
+            className="transition-colors"
+            style={{ border: '1px solid var(--color-border)', background: 'none', fontFamily: 'var(--font-mono)', fontSize: '12px', padding: '14px', cursor: 'pointer', color: 'var(--color-text)' }}
           >
             Cancel
           </button>
@@ -441,29 +464,31 @@ export default function EraTagPicker({
         data-index={index}
         onClick={() => onSelect(era.name, 1.0)}
         onMouseEnter={() => setSelectedIndex(index)}
-        className={`w-full px-4 py-3 text-left border-b border-brand-primary/10 hover:bg-brand-primary/10 transition-colors ${
-          isSelected ? 'bg-brand-primary/10' : 'bg-white'
-        } ${isAnachronism ? 'border-l-4 border-l-red-500' : ''}`}
+        className="w-full px-4 py-3 text-left transition-colors"
+        style={{
+          borderBottom: '1px solid var(--color-border)',
+          borderLeft: isAnachronism ? '4px solid var(--color-accent)' : 'none',
+          background: isSelected ? 'var(--color-section-bg)' : 'var(--color-bg)',
+          cursor: 'pointer'
+        }}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-brand-primary flex-shrink-0" />
-              <p className="font-medium text-brand-text">{era.name}</p>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 500, color: 'var(--color-text)' }}>{era.name}</p>
             </div>
 
-            <p className="text-xs text-brand-text/60 mt-1 ml-6">
+            <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
               {era.start_year} - {era.end_year}
             </p>
 
             {isAnachronism && (
-              <div className="ml-6 mt-2 p-2 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
-                <AlertTriangle className="w-3 h-3 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="mt-2 p-2 flex items-start gap-2" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-accent)' }}>
                 <div className="flex-1">
-                  <p className="text-xs text-red-800 font-medium">
+                  <p style={{ fontSize: '12px', color: 'var(--color-accent)', fontWeight: 500 }}>
                     Potentially anachronistic
                   </p>
-                  <p className="text-xs text-red-700 mt-1">
+                  <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-accent)' }}>
                     This work is set in {settingYear}, which falls outside this era's time range ({era.start_year}-{era.end_year}). You can still select it if the work addresses this historical period.
                   </p>
                 </div>
@@ -472,7 +497,7 @@ export default function EraTagPicker({
           </div>
 
           {isAnachronism && (
-            <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <span style={{ fontSize: '16px', color: 'var(--color-accent)' }}>⚠</span>
           )}
         </div>
       </button>
@@ -484,39 +509,39 @@ export default function EraTagPicker({
   // ============================================================================
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+      <div className="w-full max-w-2xl max-h-[80vh] flex flex-col" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
         {/* Header */}
-        <div className="px-6 py-4 border-b border-brand-primary/20">
+        <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-brand-primary">Add Era Tag</h3>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '24px', color: 'var(--color-text)' }}>Add Era Tag</h3>
             <button
               onClick={onCancel}
-              className="p-1 hover:bg-brand-primary/10 rounded transition-colors"
+              className="p-1 transition-colors"
               aria-label="Close"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)' }}
             >
-              <X className="w-5 h-5 text-brand-text" />
+              ✕
             </button>
           </div>
 
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-brand-text/40" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search era tags by name..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+              className="w-full"
+              style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
             />
           </div>
 
           {/* Setting Year Info */}
           {settingYear && (
-            <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-md flex items-start gap-2">
-              <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-800">
+            <div className="mt-3 p-2 flex items-start gap-2" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }}>
+              <p style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
                 This work is set in year {settingYear}. Era tags that don't overlap with this year will be highlighted as potentially anachronistic.
               </p>
             </div>
@@ -527,8 +552,7 @@ export default function EraTagPicker({
         {loading && (
           <div className="flex-1 flex items-center justify-center py-12">
             <div className="text-center">
-              <Loader2 className="w-8 h-8 text-brand-primary animate-spin mx-auto mb-2" />
-              <p className="text-sm text-brand-text/60">Loading era tags...</p>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>Loading era tags...</p>
             </div>
           </div>
         )}
@@ -537,11 +561,11 @@ export default function EraTagPicker({
         {error && (
           <div className="flex-1 flex items-center justify-center py-12 px-6">
             <div className="text-center">
-              <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-              <p className="text-sm text-red-800 mb-3">{error}</p>
+              <p className="mb-3" style={{ fontSize: '14px', color: 'var(--color-accent)' }}>{error}</p>
               <button
                 onClick={fetchEras}
-                className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/90 text-white rounded-md text-sm font-medium transition-colors"
+                className="transition-colors"
+                style={{ background: 'var(--color-text)', color: 'var(--color-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', padding: '14px', border: 'none', cursor: 'pointer' }}
               >
                 Retry
               </button>
@@ -570,17 +594,16 @@ export default function EraTagPicker({
               </div>
             ) : (
               <div className="text-center py-12 px-6">
-                <Calendar className="w-12 h-12 text-brand-text/20 mx-auto mb-4" />
-                <p className="text-brand-text/60 mb-4">
+                <p className="mb-4" style={{ fontSize: '14px', color: 'var(--color-gray)' }}>
                   {searchQuery
                     ? `No era tags found matching "${searchQuery}"`
                     : 'No era tags available'}
                 </p>
                 <button
                   onClick={() => setShowCustomForm(true)}
-                  className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/90 text-white rounded-md text-sm font-medium transition-colors inline-flex items-center gap-2"
+                  className="inline-flex items-center gap-2 transition-colors"
+                  style={{ background: 'var(--color-text)', color: 'var(--color-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', padding: '14px', border: 'none', cursor: 'pointer' }}
                 >
-                  <Plus className="w-4 h-4" />
                   Create Custom Era Tag
                 </button>
               </div>
@@ -592,8 +615,8 @@ export default function EraTagPicker({
         {!loading && !error && showCustomForm && renderCustomEraForm()}
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-brand-primary/20 bg-brand-primary/5">
-          <p className="text-xs text-brand-text/60 text-center">
+        <div className="px-6 py-3" style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-section-bg)' }}>
+          <p className="text-center" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
             Use arrow keys to navigate, Enter to select, Escape to close
           </p>
         </div>

@@ -4,29 +4,27 @@ import { getSession } from '@/lib/neo4j';
 export async function GET() {
   const session = await getSession();
   try {
-    // Fetch stats, top portrayed figures, and latest additions in parallel
-    const [statsResult, topResult, latestResult] = await Promise.all([
-      session.run(`
-        MATCH (f:HistoricalFigure) WITH count(f) as figureCount
-        MATCH (m:MediaWork) WITH figureCount, count(m) as mediaCount
-        MATCH ()-[r:APPEARS_IN]->() WITH figureCount, mediaCount, count(r) as portrayalCount
-        RETURN figureCount, mediaCount, portrayalCount
-      `),
-      session.run(`
-        MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m:MediaWork)
-        WITH f, count(r) as portrayalCount
-        ORDER BY portrayalCount DESC
-        LIMIT 5
-        RETURN f.name as name, f.canonical_id as canonical_id, portrayalCount
-      `),
-      session.run(`
-        MATCH (f:HistoricalFigure)-[c:CREATED_BY]->(a:Agent)
-        WITH f, c.timestamp as created_at
-        ORDER BY created_at DESC
-        LIMIT 5
-        RETURN f.name as name, f.canonical_id as canonical_id, created_at
-      `),
-    ]);
+    // Run queries sequentially — a Neo4j session only supports one open transaction at a time
+    const statsResult = await session.run(`
+      MATCH (f:HistoricalFigure) WITH count(f) as figureCount
+      MATCH (m:MediaWork) WITH figureCount, count(m) as mediaCount
+      MATCH ()-[r:APPEARS_IN]->() WITH figureCount, mediaCount, count(r) as portrayalCount
+      RETURN figureCount, mediaCount, portrayalCount
+    `);
+    const topResult = await session.run(`
+      MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m:MediaWork)
+      WITH f, count(r) as portrayalCount
+      ORDER BY portrayalCount DESC
+      LIMIT 5
+      RETURN f.name as name, f.canonical_id as canonical_id, portrayalCount
+    `);
+    const latestResult = await session.run(`
+      MATCH (f:HistoricalFigure)-[c:CREATED_BY]->(a:Agent)
+      WITH f, c.timestamp as created_at
+      ORDER BY created_at DESC
+      LIMIT 5
+      RETURN f.name as name, f.canonical_id as canonical_id, created_at
+    `);
 
     const statsRecord = statsResult.records[0];
     const figureCount = statsRecord.get('figureCount');

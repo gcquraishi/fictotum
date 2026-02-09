@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Henry VIII (Dossier)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #F8F8F8; /* Slightly off-white for document feel */
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #eee;
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            padding: 40px;
+        }
+
+        .document-page {
+            background: #fff;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            min-height: 100vh;
+            border: 1px solid #ddd;
+        }
+
+        .doc-header {
+            border: 2px solid var(--color-border-bold);
+            padding: 24px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-title {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .doc-class {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            letter-spacing: 1px;
+            border: 1px solid var(--color-accent);
+            padding: 4px 8px;
+        }
+
+        .subject-section {
+            margin-bottom: 40px;
+        }
+
+        .subject-line {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--color-border-bold);
+            padding-bottom: 8px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 40px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dotted var(--color-gray);
+            padding-bottom: 4px;
+        }
+        .meta-label { color: var(--color-gray); text-transform: uppercase; }
+        .meta-val { font-weight: 600; }
+
+        .section-header {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #f0f0f0;
+            padding: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--color-border-bold);
+        }
+
+        .bio-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            text-align: justify;
+        }
+
+        .record-list {
+            list-style: none;
+            border-top: 2px solid var(--color-border-bold);
+        }
+
+        .record-item {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 14px;
+        }
+
+        .rec-id {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-gray);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .rec-year {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        .rec-title {
+            font-family: var(--font-serif);
+            font-size: 16px;
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        .rec-meta {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-left: 8px;
+            color: var(--color-gray);
+        }
+
+        .rec-note {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #555;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .footer-stamp {
+            margin-top: 60px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--color-gray);
+            border-top: 1px solid var(--color-border);
+            padding-top: 24px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="document-page">
+        
+        <div class="doc-header">
+            <span class="doc-title">Fictotum Archive // Central Records</span>
+            <span class="doc-class">Classified Dossier</span>
+        </div>
+
+        <div class="subject-section">
+            <span class="subject-line">Subject: Henry VIII</span>
+            
+            <div class="meta-grid">
+                <div class="meta-row">
+                    <span class="meta-label">Canonical ID:</span>
+                    <span class="meta-val">Q38370</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Designation:</span>
+                    <span class="meta-val">King of England</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Temporal Range:</span>
+                    <span class="meta-val">1491&mdash;1547</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Historicity:</span>
+                    <span class="meta-val">Verified [100%]</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Cultural Footprint:</span>
+                    <span class="meta-val">High (12 Records)</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Observation Period:</span>
+                    <span class="meta-val">1933&mdash;2015</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">Biographical Summary</div>
+        <p class="bio-text">
+            Henry VIII (28 June 1491 – 28 January 1547) was King of England from 1509 until his death. Henry is best known for his six marriages and, in particular, his efforts to have his first marriage (to Catherine of Aragon) annulled. His disagreement with Pope Clement VII on the question of such an annulment led Henry to initiate the English Reformation, separating the Church of England from papal authority.
+        </p>
+
+        <div class="section-header">Source Verification Data</div>
+        <div class="meta-grid">
+            <div class="meta-row"><span class="meta-label">Total Portrayals:</span> <span class="meta-val">12</span></div>
+            <div class="meta-row"><span class="meta-label">Earliest Appearance:</span> <span class="meta-val">1933</span></div>
+            <div class="meta-row"><span class="meta-label">Most Recent:</span> <span class="meta-val">2015</span></div>
+            <div class="meta-row"><span class="meta-label">Span:</span> <span class="meta-val">82 Years</span></div>
+        </div>
+
+        <div class="section-header">Documented Appearances</div>
+        <ul class="record-list">
+            
+            <li class="record-item">
+                <div>
+                    <span class="rec-id">RECORD #01</span>
+                    <span class="rec-year">1933</span>
+                </div>
+                <div>
+                    <span class="rec-title">The Private Life of Henry VIII</span> <span class="rec-meta">FILM</span>
+                    <span class="rec-note">Classification: Humanizing. Notes: Established the "buffoon king" archetype.</span>
+                </div>
+            </li>
+
+            <li class="record-item">
+                <div>
+                    <span class="rec-id">RECORD #02</span>
+                    <span class="rec-year">1966</span>
+                </div>
+                <div>
+                    <span class="rec-title">A Man for All Seasons</span> <span class="rec-meta">FILM</span>
+                    <span class="rec-note">Classification: Villainous. Notes: Depicted as a dangerous, capricious tyrant.</span>
+                </div>
+            </li>
+
+            <li class="record-item">
+                <div>
+                    <span class="rec-id">RECORD #03</span>
+                    <span class="rec-year">1971</span>
+                </div>
+                <div>
+                    <span class="rec-title">The Six Wives of Henry VIII</span> <span class="rec-meta">TELEVISION</span>
+                    <span class="rec-note">Classification: Balanced. Notes: Highly accurate, chronological depiction.</span>
+                </div>
+            </li>
+
+             <li class="record-item">
+                <div>
+                    <span class="rec-id">RECORD #04</span>
+                    <span class="rec-year">2007</span>
+                </div>
+                <div>
+                    <span class="rec-title">The Tudors</span> <span class="rec-meta">TELEVISION</span>
+                    <span class="rec-note">Classification: Romantic. Notes: Significant deviation from historical physical description.</span>
+                </div>
+            </li>
+
+        </ul>
+
+        <div class="footer-stamp">
+            End of Dossier &mdash; Return to Index
+        </div>
+
+    </div>
+
+</body>
+</html>

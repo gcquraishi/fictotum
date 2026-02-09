@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Editorial Featured</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .logo { font-family: var(--font-mono); font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
+        nav a { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--color-text); margin-left: 24px; letter-spacing: 1px; }
+
+        .hero-section {
+            padding: 80px 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .hero-title {
+            font-size: 96px;
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+        }
+
+        .hero-dates {
+            font-family: var(--font-mono);
+            color: var(--color-accent);
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-bottom: 48px;
+            display: block;
+        }
+
+        .portrait-frame {
+            width: 300px;
+            height: 400px;
+            border: 1px solid var(--color-text);
+            margin: 0 auto 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+        }
+        
+        .portrait-placeholder {
+            font-family: var(--font-mono);
+            color: var(--color-gray);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .pull-quote {
+            font-size: 28px;
+            font-style: italic;
+            color: var(--color-text);
+            max-width: 680px;
+            margin: 0 auto 32px;
+            line-height: 1.4;
+        }
+
+        .hero-bio {
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 720px;
+            margin: 0 auto 40px;
+            color: var(--color-gray);
+        }
+
+        .btn-accent {
+            color: var(--color-accent);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-bottom: 1px solid var(--color-accent);
+            padding-bottom: 4px;
+            transition: all 0.2s;
+        }
+        .btn-accent:hover { color: var(--color-text); border-color: var(--color-text); }
+
+        .recent-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 40px;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 32px;
+            display: block;
+            border-bottom: 1px solid var(--color-text);
+            padding-bottom: 8px;
+        }
+
+        .recent-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .recent-item h3 { font-size: 24px; font-weight: 400; margin-bottom: 4px; }
+        .recent-item .meta { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent); margin-bottom: 12px; display: block;}
+        .recent-item p { font-size: 16px; line-height: 1.5; color: var(--color-gray); }
+
+        footer {
+            border-top: 1px solid var(--color-border-bold);
+            padding: 40px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .footer-link { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; color: var(--color-text); text-decoration: none; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Fictotum</div>
+        <nav>
+            <a href="#">Explore</a>
+            <a href="#">About</a>
+        </nav>
+    </header>
+
+    <div class="hero-section">
+        <h1 class="hero-title">Henry VIII</h1>
+        <span class="hero-dates">1491&mdash;1547</span>
+
+        <div class="portrait-frame">
+            <span class="portrait-placeholder">Portrait Placeholder</span>
+        </div>
+
+        <p class="pull-quote">"12 portrayals across 82 years of cinema and television, shifting from tyrant to romantic hero."</p>
+        
+        <p class="hero-bio">
+            From the gluttonous caricature of Charles Laughton to the athletic renaissance prince of Jonathan Rhys Meyers, Henry VIII remains one of fiction's most mutable historical figures. Our archive traces this evolution through a century of screen adaptations.
+        </p>
+
+        <a href="#" class="btn-accent">Explore This Figure</a>
+    </div>
+
+    <section class="recent-section">
+        <span class="section-label">Recently Added</span>
+        <div class="recent-grid">
+            <div class="recent-item">
+                <h3>Anne Boleyn</h3>
+                <span class="meta">1501&mdash;1536</span>
+                <p>The most portrayed of Henry's wives, appearing in 42 distinct works.</p>
+            </div>
+            <div class="recent-item">
+                <h3>Thomas Cromwell</h3>
+                <span class="meta">1485&mdash;1540</span>
+                <p>Recently re-evaluated in fiction thanks to Hilary Mantel's Wolf Hall trilogy.</p>
+            </div>
+            <div class="recent-item">
+                <h3>Catherine of Aragon</h3>
+                <span class="meta">1485&mdash;1536</span>
+                <p>Often depicted as the pious victim, recent portrayals offer more agency.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <a href="#" class="footer-link">Browse All 847 Historical Figures</a>
+    </footer>
+
+</body>
+</html>

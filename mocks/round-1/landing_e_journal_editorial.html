@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Journal Layout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            max-width: 1440px;
+            margin: 0 auto;
+            border-left: 1px solid #f5f5f5;
+            border-right: 1px solid #f5f5f5;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: baseline;
+            border-bottom: 2px solid var(--color-border-bold);
+            margin-bottom: 2px;
+        }
+
+        .logo { font-size: 36px; font-weight: 400; letter-spacing: -1px; }
+        .issue-meta { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-gray); }
+        nav { text-align: right; }
+        nav a { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; text-decoration: none; color: var(--color-text); margin-left: 16px; }
+
+        .hero-essay {
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 300;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+        .hero-excerpt {
+            font-size: 20px;
+            line-height: 1.6;
+            max-width: 680px;
+            margin: 0 auto 32px;
+            color: #333;
+        }
+        .read-more {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            text-decoration: none;
+            border-bottom: 1px solid var(--color-accent);
+        }
+
+        .divider {
+            height: 2px;
+            background: var(--color-border-bold);
+            margin: 0 40px;
+        }
+
+        .toc-section {
+            padding: 60px 40px;
+        }
+        .toc-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 8px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 60px;
+        }
+
+        .toc-col h3 {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-gray);
+            margin-bottom: 24px;
+        }
+
+        .toc-list { list-style: none; }
+        .toc-list li { margin-bottom: 20px; border-bottom: 1px solid #f9f9f9; padding-bottom: 8px; }
+        .toc-number { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent); margin-right: 8px; }
+        .toc-item-title { font-size: 18px; display: inline; }
+        .toc-meta { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--color-gray); margin-top: 4px; }
+
+        .departments-section {
+            padding: 60px 40px;
+            background: #fafafa;
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .dept-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .dept-item {
+            padding: 24px;
+            border: 1px solid var(--color-border);
+            background: #fff;
+        }
+        .dept-title { font-family: var(--font-mono); font-size: 12px; uppercase; letter-spacing: 1px; margin-bottom: 12px; display: block; }
+        .dept-desc { font-size: 16px; color: var(--color-gray); font-style: italic; }
+
+        footer {
+            padding: 40px;
+            border-top: 2px solid var(--color-border-bold);
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FICTOTUM</div>
+        <div class="issue-meta">Issue 01 / February 2026</div>
+        <nav>
+            <a href="#">About</a>
+            <a href="#">Subscribe</a>
+        </nav>
+    </header>
+    
+    <!-- double border effect -->
+    <div style="height: 2px; background: var(--color-border-bold); margin: 0 40px;"></div>
+
+    <section class="hero-essay">
+        <h1 class="hero-title">Featured: The Many Faces of Henry VIII</h1>
+        <p class="hero-excerpt">
+            In the century since the birth of cinema, few monarchs have been resurrected with such frequency—and such variance—as the second Tudor king. We trace the lineage from Laughton's glutton to the modern anti-hero.
+        </p>
+        <a href="#" class="read-more">Read the Analysis</a>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="toc-section">
+        <span class="toc-label">In This Issue</span>
+        
+        <div class="toc-grid">
+            <div class="toc-col">
+                <h3>Most Portrayed Figures</h3>
+                <ul class="toc-list">
+                    <li><span class="toc-number">01</span> <span class="toc-item-title">Napoleon</span> <span class="toc-meta">84 Portrayals</span></li>
+                    <li><span class="toc-number">02</span> <span class="toc-item-title">Henry VIII</span> <span class="toc-meta">78 Portrayals</span></li>
+                    <li><span class="toc-number">03</span> <span class="toc-item-title">Cleopatra</span> <span class="toc-meta">62 Portrayals</span></li>
+                    <li><span class="toc-number">04</span> <span class="toc-item-title">Lincoln</span> <span class="toc-meta">59 Portrayals</span></li>
+                </ul>
+            </div>
+
+            <div class="toc-col">
+                <h3>Recent Additions</h3>
+                <ul class="toc-list">
+                    <li><span class="toc-item-title">Scipio Africanus</span> <span class="toc-meta">Roman General / 236-183 BC</span></li>
+                    <li><span class="toc-item-title">Hannibal Barca</span> <span class="toc-meta">Carthaginian General / 247-181 BC</span></li>
+                    <li><span class="toc-item-title">Mary Boleyn</span> <span class="toc-meta">English Courtier / 1499-1543</span></li>
+                </ul>
+            </div>
+
+            <div class="toc-col">
+                <h3>Spotlight</h3>
+                <p style="font-size: 18px; line-height: 1.5;">
+                    <span style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--color-accent); display: block; margin-bottom: 8px;">The Tudors</span>
+                    Why does this specific dynasty command such disproportionate screen time? Our data suggests a correlation between costume drama budgets and Tudor adaptations.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="departments-section">
+        <div class="dept-grid">
+            <div class="dept-item">
+                <span class="dept-title">EXPLORE THE NETWORK</span>
+                <p class="dept-desc">Visualize the connections between 847 historical figures.</p>
+            </div>
+            <div class="dept-item">
+                <span class="dept-title">SEARCH THE ARCHIVE</span>
+                <p class="dept-desc">Access the full bibliography of 612 media works.</p>
+            </div>
+            <div class="dept-item">
+                <span class="dept-title">CONTRIBUTE</span>
+                <p class="dept-desc">Submit new portrayals to the database.</p>
+            </div>
+            <div class="dept-item">
+                <span class="dept-title">METHODOLOGY</span>
+                <p class="dept-desc">How we define "historical fiction" vs "fantasy".</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div>Enter email for updates...</div>
+        <div>&copy; 2026 Fictotum</div>
+    </footer>
+
+</body>
+</html>

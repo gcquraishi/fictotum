@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Check, Plus, Loader2, AlertCircle, Film, User, ExternalLink } from 'lucide-react';
 import type { CreatorWorksViewProps, CreatorWork, BulkAddResults } from '@/types/contribute';
 
 // ============================================================================
@@ -313,11 +312,13 @@ export default function CreatorWorksView({
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8">
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+        <div className="max-w-2xl w-full p-8" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
           <div className="flex items-center justify-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin text-brand-accent" />
-            <p className="text-lg text-brand-text">Loading works by {creatorName}...</p>
+            <div className="w-6 h-6 border-2 border-current border-t-transparent animate-spin" style={{ color: 'var(--color-accent)', borderRadius: '50%' }} />
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--color-text)' }}>
+              Loading works by {creatorName}...
+            </p>
           </div>
         </div>
       </div>
@@ -332,30 +333,32 @@ export default function CreatorWorksView({
     const percentage = Math.round((progress.current / progress.total) * 100);
 
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8">
-          <h3 className="text-xl font-semibold text-brand-primary mb-4">
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+        <div className="max-w-2xl w-full p-8" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
+          <h3 className="mb-4" style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '28px', color: 'var(--color-text)' }}>
             Adding works...
           </h3>
 
           {/* Progress Bar */}
           <div className="mb-6">
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+            <div className="w-full h-3 mb-2" style={{ background: 'var(--color-section-bg)' }}>
               <div
-                className="bg-brand-accent h-3 rounded-full transition-all duration-300"
-                style={{ width: `${percentage}%` }}
+                className="h-3 transition-all duration-300"
+                style={{ width: `${percentage}%`, background: 'var(--color-accent)' }}
               />
             </div>
-            <p className="text-sm text-brand-text/70 text-center">
+            <p className="text-center" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)' }}>
               {percentage}% ({progress.current} of {progress.total})
             </p>
           </div>
 
           {/* Current Work */}
           {progress.currentWorkTitle && (
-            <div className="flex items-center gap-2 text-brand-text">
-              <Loader2 className="w-4 h-4 animate-spin text-brand-accent" />
-              <p className="text-sm">{progress.currentWorkTitle}</p>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-current border-t-transparent animate-spin" style={{ color: 'var(--color-accent)', borderRadius: '50%' }} />
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-text)' }}>
+                {progress.currentWorkTitle}
+              </p>
             </div>
           )}
 
@@ -363,7 +366,8 @@ export default function CreatorWorksView({
           <div className="mt-6 flex justify-center">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-brand-text/60 hover:text-brand-text transition-colors"
+              className="px-4 py-2 transition-colors"
+              style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Close
             </button>
@@ -379,44 +383,43 @@ export default function CreatorWorksView({
 
   if (results) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8">
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+        <div className="max-w-2xl w-full p-8" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-brand-primary">
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '28px', color: 'var(--color-text)' }}>
               Bulk Add Complete
             </h3>
             <button
               onClick={onClose}
-              className="text-brand-text/60 hover:text-brand-text transition-colors"
+              className="transition-colors"
+              style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
-              <X className="w-5 h-5" />
+              Close
             </button>
           </div>
 
           {/* Success Summary */}
           <div className="space-y-3 mb-6">
-            <div className="flex items-center gap-3 text-green-700 bg-green-50 p-4 rounded-lg">
-              <Check className="w-5 h-5" />
-              <p className="font-medium">
+            <div className="flex items-center gap-3 p-4" style={{ borderLeft: '4px solid var(--color-text)', background: 'var(--color-section-bg)' }}>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-text)' }}>
                 {results.succeeded} of {results.totalAttempted} works added successfully
               </p>
             </div>
 
             {results.failed > 0 && (
-              <div className="flex items-start gap-3 text-red-700 bg-red-50 p-4 rounded-lg">
-                <AlertCircle className="w-5 h-5 mt-0.5" />
+              <div className="flex items-start gap-3 p-4" style={{ borderLeft: '4px solid var(--color-accent)', background: 'var(--color-section-bg)' }}>
                 <div className="flex-1">
-                  <p className="font-medium mb-2">
+                  <p className="mb-2" style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-text)' }}>
                     {results.failed} works failed
                   </p>
-                  <ul className="text-sm space-y-1">
+                  <ul className="space-y-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)' }}>
                     {results.errors.slice(0, 5).map((err, idx) => (
                       <li key={idx}>
                         {err.workTitle}: {err.error}
                       </li>
                     ))}
                     {results.errors.length > 5 && (
-                      <li className="text-red-600/70">
+                      <li style={{ color: 'var(--color-gray)' }}>
                         ...and {results.errors.length - 5} more
                       </li>
                     )}
@@ -426,9 +429,8 @@ export default function CreatorWorksView({
             )}
 
             {results.createdCreatorId && (
-              <div className="flex items-center gap-3 text-blue-700 bg-blue-50 p-4 rounded-lg">
-                <User className="w-5 h-5" />
-                <p className="text-sm">
+              <div className="flex items-center gap-3 p-4" style={{ borderLeft: '4px solid var(--color-text)', background: 'var(--color-section-bg)' }}>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-text)' }}>
                   {creatorName} was added as a Historical Figure
                 </p>
               </div>
@@ -439,7 +441,8 @@ export default function CreatorWorksView({
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
+              className="px-6 py-2 transition-colors"
+              style={{ background: 'var(--color-text)', color: 'var(--color-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', padding: '14px', border: 'none', cursor: 'pointer' }}
             >
               Done
             </button>
@@ -457,26 +460,27 @@ export default function CreatorWorksView({
   const existingWorks = works.filter(w => w.inDatabase);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full my-8">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4 overflow-y-auto" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+      <div className="max-w-4xl w-full my-8" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-brand-primary/10">
+        <div className="flex items-center justify-between p-6" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-2xl font-bold text-brand-primary">
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '28px', color: 'var(--color-text)' }}>
                 Works by {creatorName}
               </h2>
               <a
                 href={`https://www.wikidata.org/wiki/${creatorQid}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-accent hover:text-brand-accent/80 transition-colors"
+                className="transition-colors"
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-accent)', textDecoration: 'none' }}
               >
-                <ExternalLink className="w-4 h-4" />
+                [View]
               </a>
             </div>
-            <p className="text-sm text-brand-text/60">
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)' }}>
               {creatorBirthYear && creatorDeathYear
                 ? `${creatorBirthYear} - ${creatorDeathYear}`
                 : creatorBirthYear
@@ -486,34 +490,35 @@ export default function CreatorWorksView({
           </div>
           <button
             onClick={onClose}
-            className="text-brand-text/60 hover:text-brand-text transition-colors"
+            className="transition-colors"
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', background: 'transparent', border: 'none', cursor: 'pointer' }}
           >
-            <X className="w-6 h-6" />
+            Close
           </button>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-            <p className="text-sm text-red-800">{error}</p>
+          <div className="mx-6 mt-4 p-4 flex items-start gap-3" style={{ borderLeft: '4px solid var(--color-accent)', background: 'var(--color-section-bg)' }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-text)' }}>{error}</p>
           </div>
         )}
 
         {/* Add Creator Checkbox */}
         <div className="px-6 pt-4">
-          <label className="flex items-start gap-3 cursor-pointer p-4 bg-brand-primary/5 border border-brand-primary/20 rounded-lg hover:bg-brand-primary/10 transition-colors">
+          <label className="flex items-start gap-3 cursor-pointer p-4 transition-colors" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }}>
             <input
               type="checkbox"
               checked={addCreatorAsFigure}
               onChange={(e) => setAddCreatorAsFigure(e.target.checked)}
-              className="mt-1 w-4 h-4 text-brand-accent focus:ring-brand-accent border-brand-primary/30 rounded"
+              className="mt-1 w-4 h-4"
+              style={{ accentColor: 'var(--color-accent)' }}
             />
             <div>
-              <p className="font-medium text-brand-text">
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-text)' }}>
                 Also add {creatorName} as a Historical Figure
               </p>
-              <p className="text-sm text-brand-text/60 mt-1">
+              <p className="mt-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)' }}>
                 This will create a figure entry linked to all their works
               </p>
             </div>
@@ -526,36 +531,37 @@ export default function CreatorWorksView({
           {/* Available Works */}
           {availableWorks.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-brand-text/70 uppercase tracking-wide mb-3">
+              <h3 className="mb-3" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
                 Available to Add ({availableWorks.length})
               </h3>
               <div className="space-y-2">
                 {availableWorks.map((work) => (
                   <label
                     key={work.qid}
-                    className="flex items-center gap-3 p-3 border border-brand-primary/20 rounded-lg hover:border-brand-accent hover:bg-brand-accent/5 transition-all cursor-pointer"
+                    className="flex items-center gap-3 p-3 transition-all cursor-pointer"
+                    style={{ border: '1px solid var(--color-border)' }}
                   >
                     <input
                       type="checkbox"
                       checked={selectedWorks.has(work.qid)}
                       onChange={() => toggleWork(work.qid)}
-                      className="w-4 h-4 text-brand-accent focus:ring-brand-accent border-brand-primary/30 rounded"
+                      className="w-4 h-4"
+                      style={{ accentColor: 'var(--color-accent)' }}
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-brand-text">
+                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-text)' }}>
                         {work.title}
                         {work.year && (
-                          <span className="text-sm text-brand-text/60 ml-2">
+                          <span className="ml-2" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)' }}>
                             ({work.year})
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-brand-text/50 mt-0.5">
+                      <p className="mt-0.5" style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)' }}>
                         {work.type}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 text-brand-accent text-xs px-2 py-1 bg-brand-accent/10 rounded">
-                      <Plus className="w-3 h-3" />
+                    <div className="flex items-center gap-1 px-2 py-1" style={{ border: '1px solid var(--color-accent)', fontFamily: 'var(--font-mono)', fontSize: '10px', padding: '4px 8px', color: 'var(--color-accent)' }}>
                       Add
                     </div>
                   </label>
@@ -567,30 +573,30 @@ export default function CreatorWorksView({
           {/* Existing Works */}
           {existingWorks.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-brand-text/70 uppercase tracking-wide mb-3">
+              <h3 className="mb-3" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
                 Already in Database ({existingWorks.length})
               </h3>
               <div className="space-y-2">
                 {existingWorks.map((work) => (
                   <div
                     key={work.qid}
-                    className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg opacity-60"
+                    className="flex items-center gap-3 p-3 opacity-60"
+                    style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }}
                   >
                     <div className="flex-1">
-                      <p className="font-medium text-brand-text">
+                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-text)' }}>
                         {work.title}
                         {work.year && (
-                          <span className="text-sm text-brand-text/60 ml-2">
+                          <span className="ml-2" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)' }}>
                             ({work.year})
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-brand-text/50 mt-0.5">
+                      <p className="mt-0.5" style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)' }}>
                         {work.type}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 text-green-700 text-xs px-2 py-1 bg-green-100 rounded">
-                      <Check className="w-3 h-3" />
+                    <div className="flex items-center gap-1 px-2 py-1" style={{ border: '1px solid var(--color-text)', fontFamily: 'var(--font-mono)', fontSize: '10px', padding: '4px 8px', color: 'var(--color-text)' }}>
                       In DB
                     </div>
                   </div>
@@ -602,8 +608,7 @@ export default function CreatorWorksView({
           {/* Empty State */}
           {works.length === 0 && (
             <div className="text-center py-12">
-              <Film className="w-12 h-12 text-brand-text/20 mx-auto mb-4" />
-              <p className="text-brand-text/60">
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-gray)' }}>
                 No works found for this creator on Wikidata
               </p>
             </div>
@@ -611,19 +616,30 @@ export default function CreatorWorksView({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between p-6 border-t border-brand-primary/10 bg-gray-50">
+        <div className="flex items-center justify-between p-6" style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-section-bg)' }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-brand-text/60 hover:text-brand-text transition-colors"
+            className="px-4 py-2 transition-colors"
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', background: 'transparent', border: 'none', cursor: 'pointer' }}
           >
             Cancel
           </button>
           <button
             onClick={handleBulkAdd}
             disabled={selectedWorks.size === 0 || isProcessing}
-            className="px-6 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/90 disabled:bg-brand-accent/30 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
+            className="px-6 py-2 transition-colors flex items-center gap-2"
+            style={{
+              background: selectedWorks.size === 0 || isProcessing ? 'var(--color-gray)' : 'var(--color-text)',
+              color: 'var(--color-bg)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              padding: '14px',
+              border: 'none',
+              cursor: selectedWorks.size === 0 || isProcessing ? 'not-allowed' : 'pointer'
+            }}
           >
-            <Plus className="w-4 h-4" />
             Add Selected ({selectedWorks.size} works)
           </button>
         </div>

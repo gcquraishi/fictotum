@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, MapPin, Info, Loader2, AlertCircle, Plus } from 'lucide-react';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -249,21 +248,22 @@ export default function LocationPicker({
     if (!showSuggestModal) return null;
 
     return (
-      <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 p-4">
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div className="absolute inset-0 z-10 flex items-center justify-center p-4" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+        <div className="w-full max-w-md" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
           {/* Modal Header */}
-          <div className="px-6 py-4 border-b border-brand-primary/20">
+          <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
             <div className="flex items-center justify-between">
-              <h4 className="text-lg font-semibold text-brand-primary">Suggest New Location</h4>
+              <h4 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '18px', color: 'var(--color-text)' }}>Suggest New Location</h4>
               <button
                 onClick={handleCloseSuggestModal}
-                className="p-1 hover:bg-brand-primary/10 rounded transition-colors"
+                className="p-1 transition-colors"
                 aria-label="Close"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)' }}
               >
-                <X className="w-5 h-5 text-brand-text" />
+                ✕
               </button>
             </div>
-            <p className="text-xs text-brand-text/60 mt-1">
+            <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
               Can't find the location you're looking for? Suggest it and we'll validate it.
             </p>
           </div>
@@ -271,16 +271,15 @@ export default function LocationPicker({
           {/* Modal Body */}
           <div className="px-6 py-4 space-y-4">
             {suggestionError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-800">{suggestionError}</p>
+              <div className="p-3 flex items-start gap-2" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-accent)' }}>
+                <p style={{ fontSize: '14px', color: 'var(--color-accent)' }}>{suggestionError}</p>
               </div>
             )}
 
             {/* Location Name */}
             <div>
-              <label className="block text-sm font-medium text-brand-text mb-1">
-                Location Name <span className="text-red-500">*</span>
+              <label className="block mb-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+                Location Name <span style={{ color: 'var(--color-accent)' }}>*</span>
               </label>
               <input
                 ref={suggestNameInputRef}
@@ -288,17 +287,18 @@ export default function LocationPicker({
                 value={suggestion.name}
                 onChange={(e) => setSuggestion(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Paris, Narnia, Atlantis"
-                className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                className="w-full"
+                style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
                 maxLength={100}
               />
-              <p className="text-xs text-brand-text/50 mt-1">
+              <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
                 {suggestion.name.length}/100 characters
               </p>
             </div>
 
             {/* Wikidata Q-ID (Optional) */}
             <div>
-              <label className="block text-sm font-medium text-brand-text mb-1">
+              <label className="block mb-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
                 Wikidata Q-ID (Optional)
               </label>
               <input
@@ -306,16 +306,17 @@ export default function LocationPicker({
                 value={suggestion.wikidataId}
                 onChange={(e) => setSuggestion(prev => ({ ...prev, wikidataId: e.target.value }))}
                 placeholder="e.g., Q90 (Paris)"
-                className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                className="w-full"
+                style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
               />
-              <p className="text-xs text-brand-text/50 mt-1">
+              <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
                 If you know the Wikidata identifier for this location, you can provide it here
               </p>
             </div>
 
             {/* Notes (Optional) */}
             <div>
-              <label className="block text-sm font-medium text-brand-text mb-1">
+              <label className="block mb-1" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
                 Notes (Optional)
               </label>
               <textarea
@@ -323,22 +324,25 @@ export default function LocationPicker({
                 onChange={(e) => setSuggestion(prev => ({ ...prev, notes: e.target.value }))}
                 placeholder="Any additional context about this location..."
                 rows={2}
-                className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
+                className="w-full resize-none"
+                style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
               />
             </div>
           </div>
 
           {/* Modal Footer */}
-          <div className="px-6 py-4 border-t border-brand-primary/20 bg-brand-primary/5 flex gap-3">
+          <div className="px-6 py-4 flex gap-3" style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-section-bg)' }}>
             <button
               onClick={handleCloseSuggestModal}
-              className="flex-1 px-4 py-2 bg-white border border-brand-primary/30 text-brand-text rounded-md text-sm font-medium hover:bg-brand-primary/5 transition-colors"
+              className="flex-1 transition-colors"
+              style={{ border: '1px solid var(--color-border)', background: 'none', fontFamily: 'var(--font-mono)', fontSize: '12px', padding: '14px', cursor: 'pointer', color: 'var(--color-text)' }}
             >
               Cancel
             </button>
             <button
               onClick={handleSubmitSuggestion}
-              className="flex-1 px-4 py-2 bg-brand-accent hover:bg-brand-accent/90 text-white rounded-md text-sm font-medium transition-colors"
+              className="flex-1 transition-colors"
+              style={{ background: 'var(--color-text)', color: 'var(--color-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', padding: '14px', border: 'none', cursor: 'pointer' }}
             >
               Suggest Location
             </button>
@@ -355,19 +359,8 @@ export default function LocationPicker({
   const renderTypeBadge = (type?: string) => {
     if (!type) return null;
 
-    const typeStyles: Record<string, string> = {
-      city: 'bg-blue-100 text-blue-800 border-blue-300',
-      country: 'bg-green-100 text-green-800 border-green-300',
-      region: 'bg-purple-100 text-purple-800 border-purple-300',
-      building: 'bg-orange-100 text-orange-800 border-orange-300',
-      landmark: 'bg-pink-100 text-pink-800 border-pink-300',
-      fictional: 'bg-gray-100 text-gray-800 border-gray-300'
-    };
-
-    const style = typeStyles[type.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-300';
-
     return (
-      <span className={`px-2 py-0.5 rounded text-xs font-medium border ${style}`}>
+      <span className="px-2 py-0.5" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '1px', border: '1px solid var(--color-border)', color: 'var(--color-gray)' }}>
         {type}
       </span>
     );
@@ -386,25 +379,27 @@ export default function LocationPicker({
         data-index={index}
         onClick={() => onSelect(location.location_id)}
         onMouseEnter={() => setSelectedIndex(index)}
-        className={`w-full px-4 py-3 text-left border-b border-brand-primary/10 hover:bg-brand-primary/10 transition-colors ${
-          isSelected ? 'bg-brand-primary/10' : 'bg-white'
-        }`}
+        className="w-full px-4 py-3 text-left transition-colors"
+        style={{
+          borderBottom: '1px solid var(--color-border)',
+          background: isSelected ? 'var(--color-section-bg)' : 'var(--color-bg)',
+          cursor: 'pointer'
+        }}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-brand-primary flex-shrink-0" />
-              <p className="font-medium text-brand-text">{location.name}</p>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 500, color: 'var(--color-text)' }}>{location.name}</p>
             </div>
 
             {location.modern_name && location.modern_name !== location.name && (
-              <p className="text-xs text-brand-text/60 mt-1 ml-6">
+              <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
                 Modern: {location.modern_name}
               </p>
             )}
 
             {location.time_period && (
-              <p className="text-xs text-brand-text/50 mt-1 ml-6">
+              <p className="mt-1" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
                 Period: {location.time_period}
               </p>
             )}
@@ -421,38 +416,38 @@ export default function LocationPicker({
   // ============================================================================
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26, 26, 26, 0.4)' }}>
+      <div className="w-full max-w-2xl max-h-[80vh] flex flex-col relative" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border-bold)' }}>
         {/* Header */}
-        <div className="px-6 py-4 border-b border-brand-primary/20">
+        <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-brand-primary">Add Location</h3>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: '24px', color: 'var(--color-text)' }}>Add Location</h3>
             <button
               onClick={onCancel}
-              className="p-1 hover:bg-brand-primary/10 rounded transition-colors"
+              className="p-1 transition-colors"
               aria-label="Close"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)' }}
             >
-              <X className="w-5 h-5 text-brand-text" />
+              ✕
             </button>
           </div>
 
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-brand-text/40" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search locations by name or type..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+              className="w-full"
+              style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
             />
           </div>
 
           {/* Admin-only info notice */}
-          <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-md flex items-start gap-2">
-            <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-blue-800">
+          <div className="mt-3 p-2 flex items-start gap-2" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }}>
+            <p style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
               Only existing locations can be selected. New locations must be created by admins to ensure data quality.
             </p>
           </div>
@@ -462,8 +457,7 @@ export default function LocationPicker({
         {loading && (
           <div className="flex-1 flex items-center justify-center py-12">
             <div className="text-center">
-              <Loader2 className="w-8 h-8 text-brand-primary animate-spin mx-auto mb-2" />
-              <p className="text-sm text-brand-text/60">Loading locations...</p>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>Loading locations...</p>
             </div>
           </div>
         )}
@@ -472,11 +466,11 @@ export default function LocationPicker({
         {error && (
           <div className="flex-1 flex items-center justify-center py-12 px-6">
             <div className="text-center">
-              <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-              <p className="text-sm text-red-800 mb-3">{error}</p>
+              <p className="mb-3" style={{ fontSize: '14px', color: 'var(--color-accent)' }}>{error}</p>
               <button
                 onClick={fetchLocations}
-                className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/90 text-white rounded-md text-sm font-medium transition-colors"
+                className="transition-colors"
+                style={{ background: 'var(--color-text)', color: 'var(--color-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', padding: '14px', border: 'none', cursor: 'pointer' }}
               >
                 Retry
               </button>
@@ -491,8 +485,7 @@ export default function LocationPicker({
               filteredLocations.map((location, index) => renderLocationItem(location, index))
             ) : (
               <div className="text-center py-12 px-6">
-                <MapPin className="w-12 h-12 text-brand-text/20 mx-auto mb-4" />
-                <p className="text-brand-text/60">
+                <p style={{ fontSize: '14px', color: 'var(--color-gray)' }}>
                   {searchQuery
                     ? `No locations found matching "${searchQuery}"`
                     : 'No locations available'}
@@ -502,13 +495,13 @@ export default function LocationPicker({
 
             {/* Suggest Location Button */}
             {onSuggestLocation && (
-              <div className="p-4 border-t border-brand-primary/20">
+              <div className="p-4" style={{ borderTop: '1px solid var(--color-border)' }}>
                 <button
                   onClick={handleOpenSuggestModal}
-                  className="w-full px-4 py-3 bg-brand-primary/5 hover:bg-brand-primary/10 border border-brand-primary/20 rounded-lg text-brand-text transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 transition-colors flex items-center justify-center gap-2"
+                  style={{ border: '1px solid var(--color-border)', background: 'var(--color-section-bg)', fontFamily: 'var(--font-mono)', fontSize: '12px', cursor: 'pointer', color: 'var(--color-text)' }}
                 >
-                  <Plus className="w-4 h-4" />
-                  <span className="text-sm font-medium">Can't find your location? Suggest a new one</span>
+                  <span>Can't find your location? Suggest a new one</span>
                 </button>
               </div>
             )}
@@ -516,8 +509,8 @@ export default function LocationPicker({
         )}
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-brand-primary/20 bg-brand-primary/5">
-          <p className="text-xs text-brand-text/60 text-center">
+        <div className="px-6 py-3" style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-section-bg)' }}>
+          <p className="text-center" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
             Use arrow keys to navigate, Enter to select, Escape to close
           </p>
         </div>

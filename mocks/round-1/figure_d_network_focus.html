@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Henry VIII (Network)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .split-container {
+            flex: 1;
+            display: flex;
+            height: calc(100vh - 60px); /* Adjust for hypothetical footer or just fill screen */
+        }
+
+        .graph-pane {
+            width: 50%;
+            background: #fafafa;
+            border-right: 1px solid var(--color-border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content-pane {
+            width: 50%;
+            padding: 60px;
+            overflow-y: auto;
+        }
+
+        /* Mock Graph Nodes */
+        .node {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .node-center {
+            width: 80px;
+            height: 80px;
+            background: var(--color-text);
+            color: #fff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .node-person {
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            border: 1px solid var(--color-gray);
+            color: var(--color-text);
+        }
+        .node-work {
+            width: 40px;
+            height: 40px;
+            background: var(--color-accent);
+            color: #fff;
+        }
+
+        .edge {
+            position: absolute;
+            background: var(--color-border);
+            height: 1px;
+            transform-origin: left center;
+        }
+
+        /* Content Styling */
+        h1 {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+        
+        .dates {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--color-accent);
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .bio {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 40px;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 8px;
+            margin-bottom: 24px;
+            display: block;
+            margin-top: 40px;
+        }
+
+        .connection-list { list-style: none; }
+        .connection-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f9f9f9;
+        }
+        .conn-name { font-size: 18px; font-weight: 400; display: block; }
+        .conn-meta { font-family: var(--font-mono); font-size: 10px; color: var(--color-gray); margin-top: 4px; display: block; }
+        .conn-link { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; text-decoration: none; color: var(--color-accent); }
+
+    </style>
+</head>
+<body>
+
+    <div class="split-container">
+        <div class="graph-pane">
+            <div class="node node-center">HENRY VIII</div>
+            
+            <!-- Edges -->
+            <div class="edge" style="width: 150px; top: 50%; left: 50%; transform: rotate(0deg);"></div>
+            <div class="edge" style="width: 150px; top: 50%; left: 50%; transform: rotate(72deg);"></div>
+            <div class="edge" style="width: 150px; top: 50%; left: 50%; transform: rotate(144deg);"></div>
+            <div class="edge" style="width: 150px; top: 50%; left: 50%; transform: rotate(216deg);"></div>
+            <div class="edge" style="width: 150px; top: 50%; left: 50%; transform: rotate(288deg);"></div>
+
+            <!-- Surrounding Nodes -->
+            <div class="node node-person" style="top: 50%; left: 75%;">Anne B.</div>
+            <div class="node node-person" style="top: 25%; left: 60%;">Cromwell</div>
+            <div class="node node-work" style="top: 75%; left: 60%;">Wolf Hall</div>
+            <div class="node node-work" style="top: 75%; left: 40%;">Tudors</div>
+            <div class="node node-person" style="top: 50%; left: 25%;">More</div>
+
+            <div style="position: absolute; bottom: 20px; left: 20px; font-family: var(--font-mono); font-size: 10px; color: var(--color-gray);">
+                INTERACTIVE GRAPH VISUALIZATION
+            </div>
+        </div>
+
+        <div class="content-pane">
+            <span style="font-family: var(--font-mono); font-size: 10px; color: #ccc;">NODE ID: Q38370</span>
+            <h1>Henry VIII</h1>
+            <span class="dates">1491&mdash;1547 / King of England</span>
+
+            <p class="bio">
+                A central node in the Tudor network, Henry VIII connects to 42 other historical figures within the database. His portrayal history is characterized by high connectivity to Anne Boleyn, Thomas More, and Thomas Cromwell, forming a dense subgraph of recurring dramatic conflicts.
+            </p>
+
+            <span class="section-label">Connected Figures</span>
+            <ul class="connection-list">
+                <li class="connection-item">
+                    <div>
+                        <span class="conn-name">Anne Boleyn</span>
+                        <span class="conn-meta">Spouse / Portrayed together in 8 works</span>
+                    </div>
+                    <a href="#" class="conn-link">Inspect</a>
+                </li>
+                <li class="connection-item">
+                    <div>
+                        <span class="conn-name">Thomas More</span>
+                        <span class="conn-meta">Lord Chancellor / Portrayed together in 5 works</span>
+                    </div>
+                    <a href="#" class="conn-link">Inspect</a>
+                </li>
+                 <li class="connection-item">
+                    <div>
+                        <span class="conn-name">Thomas Cromwell</span>
+                        <span class="conn-meta">Chief Minister / Portrayed together in 4 works</span>
+                    </div>
+                    <a href="#" class="conn-link">Inspect</a>
+                </li>
+            </ul>
+
+            <span class="section-label">Shared Universe Works</span>
+            <ul class="connection-list">
+                <li class="connection-item">
+                    <div>
+                        <span class="conn-name">The Tudors (2007)</span>
+                        <span class="conn-meta">Features 6 connected figures</span>
+                    </div>
+                    <a href="#" class="conn-link">View Graph</a>
+                </li>
+                <li class="connection-item">
+                    <div>
+                        <span class="conn-name">Wolf Hall (2015)</span>
+                        <span class="conn-meta">Features 5 connected figures</span>
+                    </div>
+                    <a href="#" class="conn-link">View Graph</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

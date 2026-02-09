@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
 
 interface Figure {
   canonical_id: string;
@@ -46,7 +45,6 @@ export default function FigureSearchInput({
         setResults(data.figures || []);
         setShowDropdown(true);
       } catch (error) {
-        console.error('Error searching figures:', error);
         setResults([]);
       } finally {
         setIsLoading(false);
@@ -86,7 +84,6 @@ export default function FigureSearchInput({
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
           ref={inputRef}
           type="text"
@@ -102,48 +99,121 @@ export default function FigureSearchInput({
           }}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '16px',
+            padding: '10px 36px 10px 12px',
+            border: '1px solid var(--color-border)',
+            background: 'white',
+            color: 'var(--color-text)',
+            width: '100%',
+            outline: 'none',
+          }}
+          onFocusCapture={(e) => {
+            (e.target as HTMLInputElement).style.borderColor = 'var(--color-border-bold)';
+          }}
+          onBlurCapture={(e) => {
+            (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)';
+          }}
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
         />
         {searchTerm && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 hover:opacity-70 transition-opacity"
             type="button"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              color: 'var(--color-gray)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
-            <X className="w-5 h-5" />
+            Clear
           </button>
         )}
       </div>
 
       {/* Dropdown */}
       {showDropdown && (results.length > 0 || isLoading) && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+        <div
+          className="absolute z-10 w-full overflow-y-auto"
+          style={{
+            marginTop: '2px',
+            background: 'white',
+            border: '1px solid var(--color-border-bold)',
+            maxHeight: '256px',
+          }}
+        >
           {isLoading ? (
-            <div className="px-4 py-3 text-center text-gray-600">
-              <div className="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
-              <span className="ml-2">Searching...</span>
+            <div
+              style={{
+                padding: '12px 16px',
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-gray)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}
+            >
+              Searching...
             </div>
           ) : results.length === 0 ? (
-            <div className="px-4 py-3 text-center text-gray-600">
+            <div
+              style={{
+                padding: '12px 16px',
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-gray)',
+              }}
+            >
               No figures found
             </div>
           ) : (
-            <ul>
+            <ul style={{ listStyle: 'none' }}>
               {results.map((figure) => (
                 <li key={figure.canonical_id}>
                   <button
                     onClick={() => handleSelect(figure)}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-100 focus:outline-none transition-colors"
+                    className="w-full text-left hover:bg-[var(--color-section-bg)] transition-colors"
                     type="button"
+                    style={{
+                      padding: '10px 16px',
+                      borderBottom: '1px solid var(--color-border)',
+                      cursor: 'pointer',
+                      background: 'none',
+                      border: 'none',
+                      borderBottomWidth: '1px',
+                      borderBottomStyle: 'solid',
+                      borderBottomColor: 'var(--color-border)',
+                      width: '100%',
+                    }}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-gray-900 font-medium truncate">{figure.name}</p>
-                        {figure.era && (
-                          <p className="text-sm text-gray-600 truncate">{figure.era}</p>
-                        )}
-                      </div>
-                    </div>
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: '16px',
+                        color: 'var(--color-text)',
+                      }}
+                    >
+                      {figure.name}
+                    </p>
+                    {figure.era && (
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '11px',
+                          color: 'var(--color-gray)',
+                          marginTop: '2px',
+                        }}
+                      >
+                        {figure.era}
+                      </p>
+                    )}
                   </button>
                 </li>
               ))}
@@ -154,8 +224,15 @@ export default function FigureSearchInput({
 
       {/* Selected indicator */}
       {selectedFigure && (
-        <div className="mt-2 text-sm text-gray-600">
-          Selected: <span className="text-blue-600 font-medium">{selectedFigure.name}</span>
+        <div
+          style={{
+            marginTop: '6px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            color: 'var(--color-gray)',
+          }}
+        >
+          Selected: <span style={{ color: 'var(--color-accent)', fontWeight: 500 }}>{selectedFigure.name}</span>
         </div>
       )}
     </div>

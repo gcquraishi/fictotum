@@ -1,6 +1,5 @@
 'use client';
 
-import { Database, Globe, PlusCircle, ArrowRight, ExternalLink, Info } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import WikidataMatchCard from './WikidataMatchCard';
 import type {
@@ -83,40 +82,59 @@ export default function TwoTierSearchResults({
 
     return (
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Database className="w-5 h-5 text-brand-primary" />
-          <h3 className="text-lg font-semibold text-brand-primary">
-            Already in Fictotum
-          </h3>
-        </div>
+        <h3 style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '12px',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          color: 'var(--color-text)',
+          marginBottom: '16px'
+        }}>
+          Already in Fictotum
+        </h3>
         <div className="space-y-2">
           {dbResults.map((result) => (
             <button
               key={result.id}
               onClick={() => onSelectExisting(result)}
-              className="w-full p-4 bg-white border border-brand-primary/20 rounded-lg hover:border-brand-accent hover:shadow-md transition-all duration-200 text-left group"
+              className="w-full p-4 text-left group hover:opacity-70 transition-opacity"
+              style={{
+                background: 'var(--color-bg)',
+                border: '1px solid var(--color-border)'
+              }}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="font-medium text-brand-text group-hover:text-brand-accent transition-colors">
+                  <p style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: 300,
+                    fontSize: '18px',
+                    color: 'var(--color-text)'
+                  }}>
                     {result.name}
                   </p>
                   {result.description && (
-                    <p className="text-sm text-brand-text/60 mt-1">
+                    <p className="text-sm mt-1" style={{ color: 'var(--color-gray)' }}>
                       {result.description}
                     </p>
                   )}
                   {result.year && (
-                    <p className="text-xs text-brand-text/50 mt-1">
+                    <p className="text-xs mt-1" style={{ color: 'var(--color-gray)' }}>
                       {result.year}
                     </p>
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="capitalize text-brand-primary px-2 py-1 bg-brand-primary/10 rounded">
+                  <span className="capitalize px-2 py-1" style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    background: 'var(--color-section-bg)',
+                    color: 'var(--color-text)'
+                  }}>
                     {result.type}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-brand-accent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             </button>
@@ -143,19 +161,36 @@ export default function TwoTierSearchResults({
       <div className="pt-4">
         <button
           onClick={() => setShowWikidataResults(true)}
-          className="w-full p-4 bg-brand-accent/5 border-2 border-dashed border-brand-accent/30 rounded-lg hover:border-brand-accent hover:bg-brand-accent/10 transition-all duration-200 text-left group"
+          className="w-full p-4 text-left group hover:opacity-70 transition-opacity"
+          style={{
+            background: 'var(--color-section-bg)',
+            border: '2px dashed var(--color-border)'
+          }}
         >
           <div className="flex items-center gap-3">
-            <Globe className="w-5 h-5 text-brand-accent flex-shrink-0" />
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              color: 'var(--color-accent)',
+              flexShrink: 0
+            }}>
+              WIKIDATA
+            </span>
             <div className="flex-1">
-              <p className="font-medium text-brand-text group-hover:text-brand-accent transition-colors">
+              <p style={{
+                fontFamily: 'var(--font-serif)',
+                fontWeight: 300,
+                fontSize: '16px',
+                color: 'var(--color-text)'
+              }}>
                 Not finding what you're looking for?
               </p>
-              <p className="text-sm text-brand-text/60 mt-1">
+              <p className="text-sm mt-1" style={{ color: 'var(--color-gray)' }}>
                 Search Wikidata for {dedupedWikidataResults.length} more option{dedupedWikidataResults.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <ExternalLink className="w-4 h-4 text-brand-accent opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </button>
       </div>
@@ -172,17 +207,28 @@ export default function TwoTierSearchResults({
 
     return (
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Globe className="w-5 h-5 text-brand-accent" />
-          <h3 className="text-lg font-semibold text-brand-primary">
-            Add from Wikidata
-          </h3>
-        </div>
+        <h3 style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '12px',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          color: 'var(--color-text)',
+          marginBottom: '16px'
+        }}>
+          Add from Wikidata
+        </h3>
 
         {isEnriching && (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-blue-800">
+          <div className="p-4 flex items-center gap-3" style={{
+            borderLeft: '4px solid var(--color-accent)',
+            background: 'var(--color-section-bg)'
+          }}>
+            <div className="w-5 h-5 border-2 animate-spin" style={{
+              borderColor: 'var(--color-accent)',
+              borderTopColor: 'transparent',
+              borderRadius: '50%'
+            }} />
+            <p className="text-sm" style={{ color: 'var(--color-text)' }}>
               Loading AI suggestions for locations and eras...
             </p>
           </div>
@@ -215,18 +261,36 @@ export default function TwoTierSearchResults({
   // ============================================================================
 
   const renderManualCreation = () => (
-    <div className="pt-4 border-t border-brand-primary/10">
+    <div className="pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
       <button
         onClick={onSelectUserGenerated}
-        className="w-full p-4 bg-brand-primary/5 border-2 border-dashed border-brand-primary/30 rounded-lg hover:border-brand-accent hover:bg-brand-accent/5 transition-all duration-200 text-left group"
+        className="w-full p-4 text-left group hover:opacity-70 transition-opacity"
+        style={{
+          background: 'var(--color-section-bg)',
+          border: '2px dashed var(--color-border)'
+        }}
       >
         <div className="flex items-center gap-3">
-          <PlusCircle className="w-5 h-5 text-brand-accent flex-shrink-0" />
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            textTransform: 'uppercase',
+            letterSpacing: '1.5px',
+            color: 'var(--color-accent)',
+            flexShrink: 0
+          }}>
+            CREATE
+          </span>
           <div>
-            <p className="font-medium text-brand-text group-hover:text-brand-accent transition-colors">
+            <p style={{
+              fontFamily: 'var(--font-serif)',
+              fontWeight: 300,
+              fontSize: '16px',
+              color: 'var(--color-text)'
+            }}>
               Not found anywhere?
             </p>
-            <p className="text-sm text-brand-text/60 mt-1">
+            <p className="text-sm mt-1" style={{ color: 'var(--color-gray)' }}>
               Create a new entry without Wikidata enrichment
             </p>
           </div>
@@ -241,15 +305,28 @@ export default function TwoTierSearchResults({
 
   const renderEmptyState = () => (
     <div className="text-center py-12">
-      <Database className="w-12 h-12 text-brand-text/20 mx-auto mb-4" />
-      <p className="text-brand-text/60 mb-4">
+      <p className="mb-4" style={{
+        fontFamily: 'var(--font-serif)',
+        fontWeight: 300,
+        fontSize: '18px',
+        color: 'var(--color-gray)'
+      }}>
         No results found for "{searchQuery}"
       </p>
       <button
         onClick={onSelectUserGenerated}
-        className="px-6 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors inline-flex items-center gap-2 shadow-sm"
+        className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
+        style={{
+          background: 'var(--color-text)',
+          color: 'var(--color-bg)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '12px',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          padding: '14px',
+          border: 'none'
+        }}
       >
-        <PlusCircle className="w-4 h-4" />
         Add Manually
       </button>
     </div>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Henry VIII (Timeline)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 80px;
+        }
+
+        header {
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: baseline;
+            gap: 24px;
+        }
+
+        .title { font-size: 64px; font-weight: 300; margin-right: 16px; line-height: 1; }
+        .meta-dates { font-family: var(--font-mono); font-size: 16px; color: var(--color-accent); }
+        .meta-role { font-family: var(--font-mono); font-size: 14px; color: var(--color-gray); text-transform: uppercase; }
+        .canon { font-family: var(--font-mono); font-size: 10px; color: #ccc; margin-left: auto; }
+
+        .timeline-section {
+            padding: 80px 40px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--color-border);
+            overflow-x: auto;
+        }
+
+        .timeline-container {
+            width: 100%;
+            min-width: 1000px;
+            height: 300px;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .axis-line {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--color-gray);
+        }
+
+        .year-marker {
+            position: absolute;
+            bottom: 10px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--color-gray);
+            transform: translateX(-50%);
+        }
+        .year-tick {
+            position: absolute;
+            bottom: 40px;
+            height: 5px;
+            width: 1px;
+            background: var(--color-gray);
+        }
+
+        /* Timeline dots */
+        .dot {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--color-text);
+            transform: translate(-50%, 50%);
+            bottom: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dot:hover { transform: translate(-50%, 50%) scale(1.5); z-index: 10; }
+        
+        /* Sentiment colors */
+        .dot.heroic { background: #D4AF37; } /* Gold */
+        .dot.villainous { background: var(--color-accent); }
+        .dot.neutral { background: var(--color-gray); }
+
+        .dot-label {
+            position: absolute;
+            bottom: 60px; /* above dot */
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            background: #fff;
+            padding: 2px 4px;
+            border: 1px solid #ddd;
+            display: none;
+            white-space: nowrap;
+        }
+        .dot:hover .dot-label { display: block; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .stat-box {
+            padding: 24px;
+            border-right: 1px solid var(--color-border);
+            text-align: center;
+        }
+        .stat-box:last-child { border-right: none; }
+        
+        .stat-val { font-size: 32px; display: block; margin-bottom: 8px; }
+        .stat-lbl { font-family: var(--font-mono); font-size: 10px; uppercase; letter-spacing: 1px; color: var(--color-gray); }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1200px;
+            margin: 60px auto;
+            gap: 80px;
+            padding: 0 40px;
+        }
+
+        .chart-section h3, .list-section h3 {
+            font-size: 24px;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .bar-chart {
+            display: flex;
+            height: 40px;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        .bar-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 10px; color: #fff; }
+
+        .listing-row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 12px 0;
+            align-items: baseline;
+            font-size: 14px;
+        }
+        .list-yr { font-family: var(--font-mono); color: var(--color-accent); }
+        .list-title { font-style: italic; }
+        .list-med { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; color: var(--color-gray); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title">Henry VIII</div>
+        <div class="meta-dates">1491&mdash;1547</div>
+        <div class="meta-role">King of England</div>
+        <div class="canon">Q38370</div>
+    </header>
+
+    <div class="timeline-section">
+        <div class="timeline-container">
+            <div class="axis-line"></div>
+            
+            <!-- Axis Markers -->
+            <div class="year-marker" style="left: 0%">1930</div>
+            <div class="year-marker" style="left: 25%">1950</div>
+            <div class="year-marker" style="left: 50%">1970</div>
+            <div class="year-marker" style="left: 75%">1990</div>
+            <div class="year-marker" style="left: 100%">2010</div>
+
+            <!-- Dots (approximate positions) -->
+            <!-- 1933: The Private Life -->
+            <div class="dot heroic" style="left: 3.5%; width: 20px; height: 20px;">
+                <div class="dot-label">1933: Private Life of Henry VIII</div>
+            </div>
+
+            <!-- 1966: Man for All Seasons -->
+            <div class="dot villainous" style="left: 42%; width: 16px; height: 16px;">
+                <div class="dot-label">1966: Man for All Seasons</div>
+            </div>
+
+            <!-- 1969: Anne of the Thousand Days -->
+            <div class="dot villainous" style="left: 46%; width: 14px; height: 14px;"></div>
+
+            <!-- 1971: Six Wives -->
+            <div class="dot neutral" style="left: 48%; width: 18px; height: 18px;">
+                <div class="dot-label">1971: Six Wives of Henry VIII</div>
+            </div>
+
+            <!-- 2007: The Tudors -->
+            <div class="dot heroic" style="left: 90%; width: 24px; height: 24px;">
+                <div class="dot-label">2007: The Tudors</div>
+            </div>
+            
+            <!-- 2008: The Other Boleyn Girl -->
+            <div class="dot neutral" style="left: 91%; width: 12px; height: 12px; bottom: 70px;"></div>
+
+            <!-- 2015: Wolf Hall -->
+            <div class="dot villainous" style="left: 100%; width: 22px; height: 22px;">
+                <div class="dot-label">2015: Wolf Hall</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <span class="stat-val">12</span>
+            <span class="stat-lbl">Portrayals</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-val">1933</span>
+            <span class="stat-lbl">First</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-val">2015</span>
+            <span class="stat-lbl">Latest</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-val">82</span>
+            <span class="stat-lbl">Years Span</span>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="chart-section">
+            <h3>Sentiment Distribution</h3>
+            <div class="bar-chart">
+                <div class="bar-segment" style="width: 25%; background: #D4AF37;">Heroic</div>
+                <div class="bar-segment" style="width: 50%; background: #999;">Balanced</div>
+                <div class="bar-segment" style="width: 25%; background: var(--color-accent);">Villainous</div>
+            </div>
+            <p style="font-size: 14px; color: var(--color-gray); line-height: 1.5;">
+                Portrayals of Henry VIII are evenly split between balanced historical accounts and polarized interpretations. Villainous depictions spike in works centered on Thomas More or Anne Boleyn.
+            </p>
+        </div>
+
+        <div class="list-section">
+            <h3>Chronological Listing</h3>
+            <div class="listing-row">
+                <span class="list-yr">1933</span>
+                <span class="list-title">The Private Life of Henry VIII</span>
+                <span class="list-med">Film</span>
+            </div>
+            <div class="listing-row">
+                <span class="list-yr">1953</span>
+                <span class="list-title">Young Bess</span>
+                <span class="list-med">Film</span>
+            </div>
+            <div class="listing-row">
+                <span class="list-yr">1966</span>
+                <span class="list-title">A Man for All Seasons</span>
+                <span class="list-med">Film</span>
+            </div>
+            <div class="listing-row">
+                <span class="list-yr">1969</span>
+                <span class="list-title">Anne of the Thousand Days</span>
+                <span class="list-med">Film</span>
+            </div>
+            <div class="listing-row">
+                <span class="list-yr">1971</span>
+                <span class="list-title">The Six Wives of Henry VIII</span>
+                <span class="list-med">TV</span>
+            </div>
+            <div class="listing-row">
+                <span class="list-yr">2007</span>
+                <span class="list-title">The Tudors</span>
+                <span class="list-med">TV</span>
+            </div>
+             <div class="listing-row">
+                <span class="list-yr">2015</span>
+                <span class="list-title">Wolf Hall</span>
+                <span class="list-med">TV</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

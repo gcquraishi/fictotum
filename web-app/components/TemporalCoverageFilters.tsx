@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Filter } from 'lucide-react';
 
 interface TemporalCoverageFiltersProps {
   onFilterChange: (filters: {
@@ -46,30 +45,44 @@ export default function TemporalCoverageFilters({
   };
 
   return (
-    <div className="bg-stone-100 border-2 border-stone-200 p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Filter className="w-5 h-5 text-amber-600" />
-        <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest">
-          Coverage Filters
-        </h3>
-      </div>
+    <div
+      style={{
+        border: '1px solid var(--color-border)',
+        padding: '24px',
+      }}
+    >
+      <p className="fsg-label" style={{ marginBottom: '16px' }}>
+        Coverage Filters
+      </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
         {/* Granularity Selector */}
         <div>
-          <label className="block text-[10px] font-black text-stone-600 uppercase tracking-widest mb-2">
+          <label
+            className="fsg-label-sm"
+            style={{ display: 'block', marginBottom: '8px' }}
+          >
             Time Granularity
           </label>
-          <div className="flex gap-2">
+          <div style={{ display: 'flex', gap: '0' }}>
             {(['century', 'decade', 'year'] as const).map((option) => (
               <button
                 key={option}
                 onClick={() => handleGranularityChange(option)}
-                className={`flex-1 px-3 py-2 text-xs font-black uppercase tracking-wider border-2 transition-all ${
-                  granularity === option
-                    ? 'bg-amber-600 border-amber-600 text-white'
-                    : 'bg-white border-stone-300 text-stone-700 hover:border-amber-600'
-                }`}
+                className="hover:opacity-80 transition-opacity"
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  border: '1px solid var(--color-border)',
+                  marginLeft: option === 'century' ? '0' : '-1px',
+                  background: granularity === option ? 'var(--color-text)' : 'white',
+                  color: granularity === option ? 'var(--color-bg)' : 'var(--color-text)',
+                  cursor: 'pointer',
+                }}
               >
                 {option}
               </button>
@@ -81,7 +94,8 @@ export default function TemporalCoverageFilters({
         <div>
           <label
             htmlFor="mediaType"
-            className="block text-[10px] font-black text-stone-600 uppercase tracking-widest mb-2"
+            className="fsg-label-sm"
+            style={{ display: 'block', marginBottom: '8px' }}
           >
             Media Type
           </label>
@@ -89,7 +103,19 @@ export default function TemporalCoverageFilters({
             id="mediaType"
             value={mediaType}
             onChange={(e) => handleMediaTypeChange(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-bold uppercase tracking-wide border-2 border-stone-300 bg-white text-stone-900 focus:border-amber-600 focus:outline-none"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              border: '1px solid var(--color-border)',
+              background: 'white',
+              color: 'var(--color-text)',
+              outline: 'none',
+              cursor: 'pointer',
+            }}
           >
             <option value="all">All Types</option>
             <option value="Book">Books Only</option>
@@ -101,17 +127,38 @@ export default function TemporalCoverageFilters({
 
         {/* Series Toggle */}
         <div>
-          <label className="block text-[10px] font-black text-stone-600 uppercase tracking-widest mb-2">
+          <label
+            className="fsg-label-sm"
+            style={{ display: 'block', marginBottom: '8px' }}
+          >
             Content Type
           </label>
-          <label className="flex items-center gap-3 cursor-pointer bg-white border-2 border-stone-300 hover:border-amber-600 transition-all px-3 py-2">
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              cursor: 'pointer',
+              border: '1px solid var(--color-border)',
+              padding: '8px 12px',
+            }}
+            className="hover:opacity-80 transition-opacity"
+          >
             <input
               type="checkbox"
               checked={showSeriesOnly}
               onChange={(e) => handleSeriesToggle(e.target.checked)}
-              className="w-4 h-4 text-amber-600 border-stone-300 focus:ring-amber-500"
+              style={{ accentColor: 'var(--color-accent)' }}
             />
-            <span className="text-xs font-black uppercase tracking-wider text-stone-700">
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                color: 'var(--color-text)',
+              }}
+            >
               Series Only
             </span>
           </label>
@@ -120,32 +167,69 @@ export default function TemporalCoverageFilters({
 
       {/* Active Filters Summary */}
       {(mediaType !== 'all' || showSeriesOnly) && (
-        <div className="mt-4 pt-4 border-t-2 border-stone-200">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-              Active:
-            </span>
-            {mediaType !== 'all' && (
-              <span className="inline-flex items-center px-2 py-1 bg-amber-600 text-white text-[10px] font-black uppercase tracking-wider">
-                {mediaType}
-              </span>
-            )}
-            {showSeriesOnly && (
-              <span className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider">
-                Series Only
-              </span>
-            )}
-            <button
-              onClick={() => {
-                setMediaType('all');
-                setShowSeriesOnly(false);
-                onFilterChange({ granularity, mediaType: undefined, showSeriesOnly: false });
+        <div
+          style={{
+            marginTop: '16px',
+            paddingTop: '16px',
+            borderTop: '1px solid var(--color-border)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span className="fsg-label-sm">Active:</span>
+          {mediaType !== 'all' && (
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                background: 'var(--color-text)',
+                color: 'var(--color-bg)',
+                padding: '4px 8px',
               }}
-              className="text-[10px] text-amber-600 hover:text-amber-700 font-black uppercase tracking-wider underline"
             >
-              Clear All
-            </button>
-          </div>
+              {mediaType}
+            </span>
+          )}
+          {showSeriesOnly && (
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                background: 'var(--color-accent)',
+                color: 'white',
+                padding: '4px 8px',
+              }}
+            >
+              Series Only
+            </span>
+          )}
+          <button
+            onClick={() => {
+              setMediaType('all');
+              setShowSeriesOnly(false);
+              onFilterChange({ granularity, mediaType: undefined, showSeriesOnly: false });
+            }}
+            className="hover:opacity-70 transition-opacity"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: 'var(--color-accent)',
+              textDecoration: 'underline',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Clear All
+          </button>
         </div>
       )}
     </div>

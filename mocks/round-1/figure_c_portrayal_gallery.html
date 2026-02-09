@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictotum - Henry VIII (Gallery)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --color-text: #1A1A1A;
+            --color-bg: #FEFEFE;
+            --color-accent: #8B2635;
+            --color-gray: #666666;
+            --color-border: #E0E0E0;
+            --color-border-bold: #1A1A1A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        header {
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 72px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .header-meta {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--color-accent);
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .bio-snippet {
+            font-size: 18px;
+            font-style: italic;
+            color: var(--color-gray);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .stats-bar {
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--color-text);
+            background: #fafafa;
+        }
+
+        .main-container {
+            display: flex;
+            padding: 40px;
+            gap: 40px;
+        }
+
+        .gallery-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            border: 1px solid var(--color-border);
+            padding: 24px;
+            background: #fff;
+            transition: border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+        .card:hover { border-color: var(--color-text); }
+
+        .card-year {
+            font-family: var(--font-mono);
+            font-size: 24px;
+            color: var(--color-accent);
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .card-meta {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--color-gray);
+            margin-bottom: 16px;
+        }
+
+        .card-actor {
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--color-gray);
+            flex-grow: 1;
+        }
+
+        .sentiment-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .sidebar {
+            width: 300px;
+        }
+
+        .sidebar-section { margin-bottom: 40px; }
+        .sidebar-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--color-text);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .related-list { list-style: none; }
+        .related-list li { margin-bottom: 12px; }
+        .related-link { text-decoration: none; color: var(--color-text); font-size: 16px; display: block; }
+        .related-role { font-family: var(--font-mono); font-size: 10px; color: var(--color-gray); display: block; margin-top: 2px;}
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Henry VIII</h1>
+        <span class="header-meta">1491&mdash;1547 / King of England</span>
+        <p class="bio-snippet">The Tudor monarch whose quest for an heir transformed England.</p>
+    </header>
+
+    <div class="stats-bar">
+        12 Portrayals &nbsp;/&nbsp; 1933-2015 &nbsp;/&nbsp; Film & Television
+    </div>
+
+    <div class="main-container">
+        <div class="gallery-grid">
+            
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="card-year">1933</div>
+                <div>
+                    <h3 class="card-title">The Private Life of Henry VIII</h3>
+                    <div class="card-meta">Film / UK</div>
+                    <div class="card-actor">Charles Laughton</div>
+                    <p class="card-desc">Laughton's Oscar-winning performance defined the "boisterous tyrant" archetype.</p>
+                </div>
+                <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 10px;">
+                    <span class="sentiment-dot" style="background: #D4AF37;"></span> HUMANIZING
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="card-year">1966</div>
+                <div>
+                    <h3 class="card-title">A Man for All Seasons</h3>
+                    <div class="card-meta">Film / UK</div>
+                    <div class="card-actor">Robert Shaw</div>
+                    <p class="card-desc">A young, vibrant, but terrifyingly capricious king.</p>
+                </div>
+                <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 10px;">
+                    <span class="sentiment-dot" style="background: var(--color-accent);"></span> VILLAINOUS
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card">
+                <div class="card-year">1969</div>
+                <div>
+                    <h3 class="card-title">Anne of the Thousand Days</h3>
+                    <div class="card-meta">Film / UK</div>
+                    <div class="card-actor">Richard Burton</div>
+                    <p class="card-desc">Depicts the King as a conflicted lover turned tyrant.</p>
+                </div>
+                <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 10px;">
+                    <span class="sentiment-dot" style="background: #666;"></span> MIXED
+                </div>
+            </div>
+
+             <!-- Card 4 -->
+             <div class="card">
+                <div class="card-year">1971</div>
+                <div>
+                    <h3 class="card-title">The Six Wives of Henry VIII</h3>
+                    <div class="card-meta">TV / BBC</div>
+                    <div class="card-actor">Keith Michell</div>
+                    <p class="card-desc">The definitive chronological study of his reign.</p>
+                </div>
+                <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 10px;">
+                    <span class="sentiment-dot" style="background: #999;"></span> BALANCED
+                </div>
+            </div>
+
+             <!-- Card 5 -->
+             <div class="card">
+                <div class="card-year">2007</div>
+                <div>
+                    <h3 class="card-title">The Tudors</h3>
+                    <div class="card-meta">TV / Showtime</div>
+                    <div class="card-actor">Jonathan Rhys Meyers</div>
+                    <p class="card-desc">A radical reimagining of Henry as a rock-star prince.</p>
+                </div>
+                <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 10px;">
+                    <span class="sentiment-dot" style="background: #D4AF37;"></span> ROMANTIC
+                </div>
+            </div>
+
+             <!-- Card 6 -->
+             <div class="card">
+                <div class="card-year">2008</div>
+                <div>
+                    <h3 class="card-title">The Other Boleyn Girl</h3>
+                    <div class="card-meta">Film / US</div>
+                    <div class="card-actor">Eric Bana</div>
+                    <p class="card-desc">Focuses on his manipulation by the Boleyn family.</p>
+                </div>
+                <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 10px;">
+                    <span class="sentiment-dot" style="background: #666;"></span> NEUTRAL
+                </div>
+            </div>
+
+        </div>
+
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <span class="sidebar-title">Network Connections</span>
+                <ul class="related-list">
+                    <li>
+                        <a href="#" class="related-link">Anne Boleyn</a>
+                        <span class="related-role">Spouse (Second)</span>
+                    </li>
+                    <li>
+                        <a href="#" class="related-link">Thomas Cromwell</a>
+                        <span class="related-role">Chief Minister</span>
+                    </li>
+                    <li>
+                        <a href="#" class="related-link">Thomas More</a>
+                        <span class="related-role">Lord Chancellor</span>
+                    </li>
+                    <li>
+                        <a href="#" class="related-link">Catherine of Aragon</a>
+                        <span class="related-role">Spouse (First)</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <span class="sidebar-title">About This Figure</span>
+                <p style="font-size: 14px; line-height: 1.6; color: var(--color-gray);">
+                    Henry VIII (1491-1547) was King of England from 1509 until his death. He is best known for his six marriages and his efforts to have his first marriage annulled.
+                </p>
+            </div>
+        </aside>
+    </div>
+
+</body>
+</html>

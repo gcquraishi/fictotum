@@ -2,23 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Search,
-  Settings as SettingsIcon,
-  CheckCircle,
-  Loader2,
-  ArrowLeft,
-  ArrowRight,
-  PlusCircle,
-  User,
-  Film,
-  MapPin,
-  Calendar,
-  Globe,
-  AlertCircle,
-  Clock,
-  Info
-} from 'lucide-react';
 import TwoTierSearchResults from '@/components/TwoTierSearchResults';
 import SettingsConfirmation from '@/components/SettingsConfirmation';
 import CreatorWorksView from '@/components/CreatorWorksView';
@@ -771,9 +754,9 @@ export default function ContributePage() {
   const renderSearchSkeleton = () => (
     <div className="space-y-2 animate-pulse">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="p-4 bg-white border border-brand-primary/20 rounded-lg">
-          <div className="h-5 bg-brand-primary/10 rounded w-3/4 mb-2"></div>
-          <div className="h-4 bg-brand-primary/10 rounded w-1/2"></div>
+        <div key={i} style={{ padding: '16px', background: 'white', border: '1px solid var(--color-border)' }}>
+          <div style={{ height: '20px', background: 'var(--color-section-bg)', width: '75%', marginBottom: '8px' }} />
+          <div style={{ height: '16px', background: 'var(--color-section-bg)', width: '50%' }} />
         </div>
       ))}
     </div>
@@ -789,19 +772,19 @@ export default function ContributePage() {
     const progress = (currentStep / totalSteps) * 100;
 
     return (
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-brand-text/60">
+      <div style={{ marginBottom: '32px' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
             Step {currentStep} of {totalSteps}
           </p>
-          <p className="text-sm text-brand-text/60">
-            {Math.round(progress)}% complete
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-gray)' }}>
+            {Math.round(progress)}%
           </p>
         </div>
-        <div className="w-full bg-brand-primary/10 rounded-full h-2">
+        <div style={{ width: '100%', background: 'var(--color-section-bg)', height: '2px' }}>
           <div
-            className="bg-brand-accent h-2 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
+            className="transition-all duration-500 ease-out"
+            style={{ width: `${progress}%`, height: '2px', background: 'var(--color-accent)' }}
           />
         </div>
       </div>
@@ -815,10 +798,18 @@ export default function ContributePage() {
   const renderSearchStep = () => (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-brand-primary mb-2">
+        <h2
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '28px',
+            fontWeight: 300,
+            color: 'var(--color-text)',
+            marginBottom: '8px',
+          }}
+        >
           What would you like to add?
         </h2>
-        <p className="text-brand-text/70">
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
           Search for a historical figure or media work to add to Fictotum
         </p>
       </div>
@@ -826,30 +817,50 @@ export default function ContributePage() {
       {/* Search Form */}
       <form onSubmit={handleSearch} className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-brand-text/40" />
           <input
             type="text"
             value={wizardState.searchQuery}
             onChange={(e) => handleSearchInputChange(e.target.value)}
             placeholder="Search by name or title..."
-            className="w-full pl-12 pr-4 py-3 bg-white border border-brand-primary/30 rounded-lg text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition-shadow"
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '16px',
+              padding: '12px 16px',
+              border: '1px solid var(--color-border)',
+              background: 'white',
+              color: 'var(--color-text)',
+              width: '100%',
+              outline: 'none',
+            }}
+            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border-bold)'; }}
+            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
             autoFocus
           />
           {isSearching && (
-            <Loader2 className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-brand-accent animate-spin" />
+            <span
+              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+              style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}
+            >
+              Searching...
+            </span>
           )}
         </div>
 
-        <p className="text-xs text-brand-text/50">
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', letterSpacing: '1px' }}>
           Start typing to search automatically, or press Enter
         </p>
       </form>
 
       {/* Error Display */}
       {wizardState.error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-800">{wizardState.error}</p>
+        <div
+          style={{
+            padding: '12px 16px',
+            background: 'var(--color-section-bg)',
+            borderLeft: '4px solid var(--color-accent)',
+          }}
+        >
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-accent)' }}>{wizardState.error}</p>
         </div>
       )}
 
@@ -880,69 +891,93 @@ export default function ContributePage() {
   const renderEntityTypeStep = () => (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-brand-primary mb-2">
+        <h2
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '28px',
+            fontWeight: 300,
+            color: 'var(--color-text)',
+            marginBottom: '8px',
+          }}
+        >
           What type of entity are you creating?
         </h2>
-        <p className="text-brand-text/70">
-          Choose whether you're adding a historical figure or a media work
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+          Choose whether you&apos;re adding a historical figure or a media work
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'var(--color-border)', border: '1px solid var(--color-border)' }}>
         {/* Figure Option */}
         <button
           onClick={() => handleEntityTypeSelection('figure')}
-          className="p-6 bg-white border-2 border-brand-primary/20 rounded-lg hover:border-brand-accent hover:shadow-lg transition-all duration-200 text-left group"
+          className="hover:opacity-80 transition-opacity"
+          style={{
+            padding: '24px',
+            background: 'var(--color-bg)',
+            border: 'none',
+            textAlign: 'left',
+            cursor: 'pointer',
+          }}
         >
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-brand-primary/10 rounded-lg group-hover:bg-brand-accent/10 transition-colors">
-              <User className="w-6 h-6 text-brand-primary group-hover:text-brand-accent" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-brand-text group-hover:text-brand-accent transition-colors">
-                Historical Figure
-              </h3>
-              <p className="text-sm text-brand-text/60 mt-1">
-                A real or fictional person who appears in media works
-              </p>
-              <p className="text-xs text-brand-text/50 mt-2">
-                Example: Napoleon Bonaparte, Sherlock Holmes
-              </p>
-            </div>
-          </div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-accent)', marginBottom: '8px' }}>
+            Figure
+          </p>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300, color: 'var(--color-text)', marginBottom: '8px' }}>
+            Historical Figure
+          </h3>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+            A real or fictional person who appears in media works
+          </p>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', letterSpacing: '1px' }}>
+            e.g. Napoleon Bonaparte, Sherlock Holmes
+          </p>
         </button>
 
         {/* Work Option */}
         <button
           onClick={() => handleEntityTypeSelection('work')}
-          className="p-6 bg-white border-2 border-brand-primary/20 rounded-lg hover:border-brand-accent hover:shadow-lg transition-all duration-200 text-left group"
+          className="hover:opacity-80 transition-opacity"
+          style={{
+            padding: '24px',
+            background: 'var(--color-bg)',
+            border: 'none',
+            textAlign: 'left',
+            cursor: 'pointer',
+          }}
         >
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-brand-primary/10 rounded-lg group-hover:bg-brand-accent/10 transition-colors">
-              <Film className="w-6 h-6 text-brand-primary group-hover:text-brand-accent" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-brand-text group-hover:text-brand-accent transition-colors">
-                Media Work
-              </h3>
-              <p className="text-sm text-brand-text/60 mt-1">
-                A book, film, game, or TV series
-              </p>
-              <p className="text-xs text-brand-text/50 mt-2">
-                Example: War and Peace, The Crown, Assassin's Creed
-              </p>
-            </div>
-          </div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-accent)', marginBottom: '8px' }}>
+            Work
+          </p>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300, color: 'var(--color-text)', marginBottom: '8px' }}>
+            Media Work
+          </h3>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+            A book, film, game, or TV series
+          </p>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', letterSpacing: '1px' }}>
+            e.g. War and Peace, The Crown
+          </p>
         </button>
       </div>
 
-      <div className="flex justify-start">
+      <div>
         <button
           onClick={goBack}
-          className="px-4 py-2 text-brand-text/60 hover:text-brand-text transition-colors flex items-center gap-2"
+          className="hover:opacity-70 transition-opacity"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            color: 'var(--color-gray)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '8px 0',
+          }}
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Search
+          &larr; Back to Search
         </button>
       </div>
     </div>
@@ -977,107 +1012,144 @@ export default function ContributePage() {
       });
     };
 
+    const inputStyle = {
+      fontFamily: 'var(--font-serif)',
+      fontSize: '16px',
+      padding: '10px 12px',
+      border: '1px solid var(--color-border)',
+      background: 'white',
+      color: 'var(--color-text)',
+      width: '100%',
+      outline: 'none',
+    };
+
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-brand-primary mb-2">
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '28px',
+              fontWeight: 300,
+              color: 'var(--color-text)',
+              marginBottom: '8px',
+            }}
+          >
             Create Historical Figure
           </h2>
-          <p className="text-brand-text/70">
-            Provide details about <span className="font-semibold">{wizardState.searchQuery}</span>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-gray)' }}>
+            Provide details about <span style={{ color: 'var(--color-accent)' }}>{wizardState.searchQuery}</span>
           </p>
         </div>
 
         {formError && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{formError}</p>
+          <div style={{ padding: '12px 16px', background: 'var(--color-section-bg)', borderLeft: '4px solid var(--color-accent)' }}>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-accent)' }}>{formError}</p>
           </div>
         )}
 
         <div className="space-y-4">
           {/* Historicity Field (Required) */}
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-2">
-              Historicity <span className="text-red-500">*</span>
+            <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+              Historicity <span style={{ color: 'var(--color-accent)' }}>*</span>
             </label>
-            <div className="grid grid-cols-3 gap-3">
-              {(['Historical', 'Fictional', 'Disputed'] as const).map((option) => (
+            <div style={{ display: 'flex', gap: '0', border: '1px solid var(--color-border)' }}>
+              {(['Historical', 'Fictional', 'Disputed'] as const).map((option, idx) => (
                 <button
                   key={option}
                   onClick={() => setFormData(prev => ({ ...prev, historicity: option }))}
-                  className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                    formData.historicity === option
-                      ? 'border-brand-accent bg-brand-accent/10 text-brand-accent font-medium'
-                      : 'border-brand-primary/20 text-brand-text hover:border-brand-primary/40'
-                  }`}
+                  className="hover:opacity-80 transition-opacity"
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '12px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    border: 'none',
+                    borderRight: idx < 2 ? '1px solid var(--color-border)' : 'none',
+                    cursor: 'pointer',
+                    background: formData.historicity === option ? 'var(--color-text)' : 'var(--color-bg)',
+                    color: formData.historicity === option ? 'var(--color-bg)' : 'var(--color-text)',
+                  }}
                 >
                   {option}
                 </button>
               ))}
             </div>
-            <p className="text-xs text-brand-text/50 mt-2">
-              Was this person real (Historical), fictional (Fictional), or is their existence debated (Disputed)?
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', marginTop: '8px', letterSpacing: '1px' }}>
+              Was this person real (Historical), fictional (Fictional), or debated (Disputed)?
             </p>
           </div>
 
           {/* Birth Year */}
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-1">
-              Birth Year (Optional)
+            <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+              Birth Year
             </label>
             <input
               type="number"
               value={formData.birth_year}
               onChange={(e) => setFormData(prev => ({ ...prev, birth_year: e.target.value }))}
               placeholder="e.g., 1769"
-              className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+              style={inputStyle}
             />
           </div>
 
           {/* Death Year */}
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-1">
-              Death Year (Optional)
+            <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+              Death Year
             </label>
             <input
               type="number"
               value={formData.death_year}
               onChange={(e) => setFormData(prev => ({ ...prev, death_year: e.target.value }))}
               placeholder="e.g., 1821"
-              className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+              style={inputStyle}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-brand-text mb-1">
-              Description (Optional)
+            <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+              Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Brief description or context about this figure..."
               rows={3}
-              className="w-full px-3 py-2 bg-white border border-brand-primary/30 rounded-md text-brand-text placeholder-brand-text/40 focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
+              style={{ ...inputStyle, resize: 'none' as const }}
             />
           </div>
         </div>
 
-        <div className="flex justify-between pt-4">
+        <div className="flex justify-between" style={{ paddingTop: '16px', borderTop: '1px solid var(--color-border)' }}>
           <button
             onClick={goBack}
-            className="px-4 py-2 text-brand-text/60 hover:text-brand-text transition-colors flex items-center gap-2"
+            className="hover:opacity-70 transition-opacity"
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)', background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+            &larr; Back
           </button>
           <button
             onClick={handleSubmit}
-            className="px-6 py-2 bg-brand-accent hover:bg-brand-accent/90 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="hover:opacity-80 transition-opacity"
+            style={{
+              background: 'var(--color-text)',
+              color: 'var(--color-bg)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              padding: '12px 24px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
-            Continue
-            <ArrowRight className="w-4 h-4" />
+            Continue &rarr;
           </button>
         </div>
       </div>
@@ -1092,9 +1164,10 @@ export default function ContributePage() {
     // Ensure we have enriched data before rendering
     if (!wizardState.enrichedData) {
       return (
-        <div className="text-center py-8">
-          <Loader2 className="w-8 h-8 text-brand-accent animate-spin mx-auto mb-4" />
-          <p className="text-brand-text/60">Loading settings...</p>
+        <div style={{ padding: '48px 0', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+            Loading settings...
+          </p>
         </div>
       );
     }
@@ -1122,111 +1195,94 @@ export default function ContributePage() {
 
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-brand-primary mb-2">
-              Confirm & Create
-            </h2>
-            <p className="text-brand-text/70">
-              Review the details before adding to Fictotum
-            </p>
-          </div>
+        <div>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '28px',
+              fontWeight: 300,
+              color: 'var(--color-text)',
+              marginBottom: '8px',
+            }}
+          >
+            Confirm &amp; Create
+          </h2>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+            Review the details before adding to Fictotum
+          </p>
         </div>
 
         {/* Error Display */}
         {wizardState.error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{wizardState.error}</p>
+          <div style={{ padding: '12px 16px', background: 'var(--color-section-bg)', borderLeft: '4px solid var(--color-accent)' }}>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-accent)' }}>{wizardState.error}</p>
           </div>
         )}
 
         {/* Preview Card */}
-        <div className="bg-white p-6 rounded-lg border border-brand-primary/20 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            {wizardState.entityType === 'figure' ? (
-              <User className="w-8 h-8 text-brand-primary" />
-            ) : (
-              <Film className="w-8 h-8 text-brand-primary" />
-            )}
+        <div style={{ border: '1px solid var(--color-border)', padding: '24px' }}>
+          <div className="flex items-center gap-3" style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--color-border)' }}>
             <div className="flex-1">
-              <p className="text-sm text-brand-text/60 uppercase tracking-wider">
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
                 {wizardState.entityType}
               </p>
-              <h3 className="text-lg font-semibold text-brand-text">
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: 300, color: 'var(--color-text)' }}>
                 {entityName}
               </h3>
             </div>
             {!wizardState.isUserGenerated && (
-              <div className="px-3 py-1 bg-green-100 border border-green-300 text-green-800 rounded text-xs font-medium">
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-text)', border: '1px solid var(--color-border-bold)', padding: '4px 10px' }}>
                 Wikidata Verified
-              </div>
+              </span>
             )}
           </div>
 
-          <div className="space-y-3 text-sm">
+          <div className="space-y-3">
             {/* Wikidata Q-ID */}
             {match && (
-              <div className="flex items-center gap-2 text-brand-text/70">
-                <Globe className="w-4 h-4" />
-                <span className="font-mono">{match.qid}</span>
+              <div className="fsg-meta-row">
+                <span>Wikidata ID</span>
+                <span style={{ color: 'var(--color-accent)' }}>{match.qid}</span>
               </div>
             )}
 
             {/* Birth/Death years for figures */}
             {wizardState.entityType === 'figure' && wizardState.settings.customFields?.birth_year && (
-              <div className="flex items-center gap-2 text-brand-text/70">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  {wizardState.settings.customFields.birth_year} - {wizardState.settings.customFields.death_year || 'present'}
+              <div className="fsg-meta-row">
+                <span>Lifespan</span>
+                <span style={{ color: 'var(--color-accent)' }}>
+                  {wizardState.settings.customFields.birth_year} &ndash; {wizardState.settings.customFields.death_year || 'present'}
                 </span>
               </div>
             )}
 
             {/* Release/Setting year for works */}
             {wizardState.entityType === 'work' && wizardState.enrichedData?.metadata?.release_year && (
-              <div className="flex items-center gap-2 text-brand-text/70">
-                <Calendar className="w-4 h-4" />
-                <div className="flex items-center gap-1">
-                  <span>Publication/Release Year: {wizardState.enrichedData.metadata.release_year}</span>
-                  <div className="group relative">
-                    <Info className="w-3.5 h-3.5 text-brand-text/40 cursor-help" />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-brand-text text-white text-xs rounded shadow-lg z-10">
-                      When the work was originally published or released
-                    </div>
-                  </div>
-                </div>
+              <div className="fsg-meta-row">
+                <span>Publication Year</span>
+                <span style={{ color: 'var(--color-accent)' }}>{wizardState.enrichedData.metadata.release_year}</span>
               </div>
             )}
 
             {wizardState.entityType === 'work' && wizardState.enrichedData?.settingYear && (
-              <div className="flex items-center gap-2 text-brand-text/70">
-                <Clock className="w-4 h-4" />
-                <div className="flex items-center gap-1">
-                  <span>Setting Year/Period: {wizardState.enrichedData.settingYear}</span>
-                  <div className="group relative">
-                    <Info className="w-3.5 h-3.5 text-brand-text/40 cursor-help" />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-brand-text text-white text-xs rounded shadow-lg z-10">
-                      When the story takes place (e.g., "1984" was published in 1949 but set in 1984)
-                    </div>
-                  </div>
-                </div>
+              <div className="fsg-meta-row">
+                <span>Setting Year</span>
+                <span style={{ color: 'var(--color-accent)' }}>{wizardState.enrichedData.settingYear}</span>
               </div>
             )}
 
             {/* Locations */}
             {wizardState.settings.locations.length > 0 && (
-              <div className="pt-3 border-t border-brand-primary/10">
-                <div className="flex items-center gap-2 text-brand-text/70 mb-2">
-                  <MapPin className="w-4 h-4" />
-                  <span className="font-medium">Locations ({wizardState.settings.locations.length})</span>
-                </div>
-                <div className="ml-6 space-y-1">
+              <div style={{ paddingTop: '12px', borderTop: '1px dotted var(--color-border)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+                  Locations ({wizardState.settings.locations.length})
+                </p>
+                <div className="space-y-1" style={{ marginLeft: '16px' }}>
                   {wizardState.enrichedData?.suggestedLocations
                     ?.filter(loc => wizardState.settings.locations.includes(loc.id))
                     .map(loc => (
-                      <div key={loc.id} className="text-xs text-brand-text/60">
-                        • {loc.name}
+                      <div key={loc.id} style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--color-gray)' }}>
+                        {loc.name}
                         {loc.modern_name && loc.modern_name !== loc.name && ` (${loc.modern_name})`}
                       </div>
                     ))}
@@ -1236,16 +1292,23 @@ export default function ContributePage() {
 
             {/* Era Tags */}
             {wizardState.settings.eraTags.length > 0 && (
-              <div className="pt-3 border-t border-brand-primary/10">
-                <div className="flex items-center gap-2 text-brand-text/70 mb-2">
-                  <Calendar className="w-4 h-4" />
-                  <span className="font-medium">Era Tags ({wizardState.settings.eraTags.length})</span>
-                </div>
-                <div className="ml-6 flex flex-wrap gap-2">
+              <div style={{ paddingTop: '12px', borderTop: '1px dotted var(--color-border)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+                  Era Tags ({wizardState.settings.eraTags.length})
+                </p>
+                <div className="flex flex-wrap gap-2">
                   {wizardState.settings.eraTags.map(era => (
                     <span
                       key={era.name}
-                      className="px-2 py-1 bg-brand-primary/10 text-brand-primary rounded text-xs"
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '10px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        border: '1px solid var(--color-border)',
+                        padding: '4px 10px',
+                        color: 'var(--color-text)',
+                      }}
                     >
                       {era.name}
                     </span>
@@ -1256,28 +1319,47 @@ export default function ContributePage() {
           </div>
         </div>
 
-        {/* Data Source Badge */}
-        <div className="flex items-center gap-2 text-xs text-brand-text/60">
-          <span>Data source:</span>
-          <span className="font-medium">
-            {wizardState.isUserGenerated ? 'User-generated' : 'Wikidata'}
-          </span>
+        {/* Data Source */}
+        <div className="fsg-meta-row">
+          <span>Data source</span>
+          <span>{wizardState.isUserGenerated ? 'User-generated' : 'Wikidata'}</span>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex gap-3" style={{ paddingTop: '16px', borderTop: '1px solid var(--color-border)' }}>
           <button
             onClick={goBack}
-            className="flex-1 px-6 py-3 bg-white border border-brand-primary/30 text-brand-text font-semibold rounded-lg hover:bg-brand-primary/5 transition-colors min-h-[48px] sm:min-h-0"
+            className="flex-1 hover:opacity-70 transition-opacity"
+            style={{
+              padding: '14px',
+              background: 'none',
+              border: '1px solid var(--color-border)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: 'var(--color-text)',
+              cursor: 'pointer',
+            }}
           >
             Back
           </button>
           <button
             onClick={handleConfirmCreate}
-            className="flex-1 px-6 py-3 bg-brand-accent hover:bg-brand-accent/90 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm min-h-[48px] sm:min-h-0"
+            className="flex-1 hover:opacity-80 transition-opacity"
+            style={{
+              padding: '14px',
+              background: 'var(--color-text)',
+              color: 'var(--color-bg)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
-            <CheckCircle className="w-5 h-5" />
-            Confirm & Create
+            Confirm &amp; Create
           </button>
         </div>
       </div>
@@ -1289,14 +1371,19 @@ export default function ContributePage() {
   // ============================================================================
 
   const renderCreatingStep = () => (
-    <div className="text-center py-12">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-accent/10 mb-6">
-        <Loader2 className="w-8 h-8 text-brand-accent animate-spin" />
-      </div>
-      <h2 className="text-2xl font-bold text-brand-primary mb-2">
+    <div style={{ textAlign: 'center', padding: '48px 0' }}>
+      <h2
+        style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: '28px',
+          fontWeight: 300,
+          color: 'var(--color-text)',
+          marginBottom: '8px',
+        }}
+      >
         Creating Entity...
       </h2>
-      <p className="text-brand-text/70">
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
         Please wait while we add this to Fictotum
       </p>
     </div>
@@ -1307,18 +1394,23 @@ export default function ContributePage() {
   // ============================================================================
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 md:py-8 max-w-3xl">
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 40px' }}>
         {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex items-center gap-2 md:gap-3 mb-2">
-            <PlusCircle className="w-6 h-6 md:w-8 md:h-8 text-brand-accent flex-shrink-0" />
-            <h1 className="text-2xl md:text-3xl font-bold text-brand-primary">
-              Add to Fictotum
-            </h1>
-          </div>
-          <p className="text-sm md:text-base text-brand-text/70">
-            Unified hub for contributing historical figures and media works
+        <div style={{ marginBottom: '40px' }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '42px',
+              fontWeight: 300,
+              color: 'var(--color-text)',
+              marginBottom: '8px',
+            }}
+          >
+            Add to Fictotum
+          </h1>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
+            Contributing historical figures and media works
           </p>
         </div>
 
@@ -1326,7 +1418,7 @@ export default function ContributePage() {
         {wizardState.step !== 'search' && renderProgressBar()}
 
         {/* Step Content */}
-        <div className="bg-white p-4 md:p-8 rounded-lg border border-brand-primary/20 shadow-sm">
+        <div style={{ border: '1px solid var(--color-border)', padding: '32px' }}>
           {wizardState.step === 'search' && renderSearchStep()}
           {wizardState.step === 'entity-type' && renderEntityTypeStep()}
           {wizardState.step === 'figure-form' && renderFigureFormStep()}
@@ -1335,10 +1427,10 @@ export default function ContributePage() {
           {wizardState.step === 'creating' && renderCreatingStep()}
         </div>
 
-        {/* Keyboard Shortcuts Hint - Hidden on mobile */}
-        <div className="mt-6 text-center hidden md:block">
-          <p className="text-xs text-brand-text/40">
-            Tip: Use Tab to navigate, Enter to select, and Escape to go back
+        {/* Keyboard Shortcuts Hint */}
+        <div className="hidden md:block" style={{ marginTop: '24px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', letterSpacing: '1px' }}>
+            Tab to navigate &middot; Enter to select &middot; Escape to go back
           </p>
         </div>
       </div>

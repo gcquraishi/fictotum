@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Clock, Database, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
 import TemporalCoverageChart from '@/components/TemporalCoverageChart';
 import CoverageGapIndicator from '@/components/CoverageGapIndicator';
 import TemporalCoverageFilters from '@/components/TemporalCoverageFilters';
@@ -22,11 +21,7 @@ export default function CoveragePage() {
     granularity: 'century',
   });
 
-  useEffect(() => {
-    fetchCoverageData();
-  }, [filters]);
-
-  const fetchCoverageData = async () => {
+  const fetchCoverageData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -46,7 +41,11 @@ export default function CoveragePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchCoverageData();
+  }, [fetchCoverageData]);
 
   const handlePeriodClick = (bucket: TimeBucket) => {
     setSelectedPeriod(bucket.period);
@@ -63,167 +62,211 @@ export default function CoveragePage() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 text-foreground">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Back Link */}
-          <Link
-            href="/"
-            className="text-amber-600 hover:text-amber-700 mb-6 inline-block font-mono text-sm uppercase tracking-wide font-bold"
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 40px' }}>
+        {/* Back Link */}
+        <Link
+          href="/"
+          className="hover:opacity-70 transition-opacity"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            color: 'var(--color-gray)',
+            textDecoration: 'none',
+            display: 'inline-block',
+            marginBottom: '32px',
+          }}
+        >
+          &larr; Back to Home
+        </Link>
+
+        {/* Header */}
+        <div style={{ marginBottom: '40px' }}>
+          <p className="fsg-label" style={{ marginBottom: '8px' }}>
+            Temporal Distribution Analysis
+          </p>
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '48px',
+              fontWeight: 300,
+              color: 'var(--color-text)',
+              marginBottom: '12px',
+            }}
           >
-            ← Back to Dashboard
-          </Link>
+            Temporal Coverage Explorer
+          </h1>
+          <p
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '18px',
+              color: 'var(--color-gray)',
+              maxWidth: '700px',
+              lineHeight: '1.5',
+            }}
+          >
+            Comprehensive visualization of Fictotum's historical coverage across all time periods,
+            showing content density, media type distribution, and identification of under-represented eras.
+          </p>
+        </div>
 
-          {/* Header - HISTORICAL COVERAGE ARCHIVE */}
-          <div className="bg-white border-t-8 border-amber-600 shadow-2xl p-8 mb-8 relative overflow-hidden">
-            {/* Classification Banner */}
-            <div className="absolute top-0 left-0 right-0 bg-amber-600 text-white text-center py-1">
-              <div className="text-[10px] font-black uppercase tracking-[0.4em]">
-                HISTORICAL COVERAGE ARCHIVE
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
-                <Database className="w-3 h-3" />
-                Temporal Distribution Analysis // Active Monitoring
-              </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase mb-4 leading-none">
-                Temporal Coverage Explorer
-              </h1>
-              <p className="text-lg text-stone-600 leading-relaxed max-w-3xl">
-                Comprehensive visualization of Fictotum's historical coverage across all time periods, showing content density, media type distribution, and identification of under-represented eras.
-              </p>
-            </div>
+        {/* Error State */}
+        {error && (
+          <div
+            style={{
+              marginBottom: '32px',
+              padding: '16px',
+              background: 'var(--color-section-bg)',
+              borderLeft: '4px solid var(--color-accent)',
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-accent)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '4px',
+              }}
+            >
+              Error Loading Coverage Data
+            </p>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-text)' }}>
+              {error}
+            </p>
           </div>
+        )}
 
-          {/* Error State */}
-          {error && (
-            <div className="bg-red-50 border-2 border-red-600 p-6 mb-8">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-red-600" />
-                <div>
-                  <h3 className="font-black text-red-900 uppercase tracking-wide mb-1">
-                    Error Loading Coverage Data
-                  </h3>
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
+        {/* Loading State */}
+        {loading && (
+          <div style={{ padding: '96px 0', textAlign: 'center' }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+              }}
+            >
+              Analyzing temporal coverage...
+            </p>
+          </div>
+        )}
+
+        {/* Main Content */}
+        {data && !loading && (
+          <>
+            {/* Statistics Row */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+                marginBottom: '32px',
+              }}
+            >
+              <div style={{ background: 'var(--color-bg)', padding: '20px' }}>
+                <p className="fsg-label-sm" style={{ marginBottom: '8px' }}>Total Works</p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '32px',
+                    fontWeight: 500,
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  {data.statistics.totalWorks}
+                </p>
               </div>
-            </div>
-          )}
 
-          {/* Loading State */}
-          {loading && (
-            <div className="flex items-center justify-center py-24">
-              <div className="text-center">
-                <div className="inline-block w-16 h-16 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-sm font-black text-stone-600 uppercase tracking-widest">
-                  Analyzing Temporal Coverage...
+              <div style={{ background: 'var(--color-bg)', padding: '20px' }}>
+                <p className="fsg-label-sm" style={{ marginBottom: '8px' }}>Total Figures</p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '32px',
+                    fontWeight: 500,
+                    color: 'var(--color-text)',
+                  }}
+                >
+                  {data.statistics.totalFigures}
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--color-bg)', padding: '20px' }}>
+                <p className="fsg-label-sm" style={{ marginBottom: '8px' }}>Date Range</p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    color: 'var(--color-text)',
+                  }}
+                >
+                  {data.statistics.earliestYear < 0
+                    ? `${Math.abs(data.statistics.earliestYear)} BCE`
+                    : data.statistics.earliestYear}
+                  {' \u2014 '}
+                  {data.statistics.latestYear}
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--color-bg)', padding: '20px' }}>
+                <p className="fsg-label-sm" style={{ marginBottom: '8px' }}>Coverage Quality</p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '32px',
+                    fontWeight: 500,
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  {calculateCoveragePercentage()}%
                 </p>
               </div>
             </div>
-          )}
 
-          {/* Main Content */}
-          {data && !loading && (
-            <>
-              {/* Statistics Cards */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="bg-stone-100 border-2 border-stone-200 p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Database className="w-5 h-5 text-amber-600" />
-                    <p className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-                      Total Works
-                    </p>
-                  </div>
-                  <p className="text-4xl font-black text-amber-600 font-mono">
-                    {data.statistics.totalWorks}
-                  </p>
-                </div>
+            {/* Filters */}
+            <div style={{ marginBottom: '32px' }}>
+              <TemporalCoverageFilters onFilterChange={setFilters} />
+            </div>
 
-                <div className="bg-stone-100 border-2 border-stone-200 p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="w-5 h-5 text-green-600" />
-                    <p className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-                      Total Figures
-                    </p>
-                  </div>
-                  <p className="text-4xl font-black text-green-600 font-mono">
-                    {data.statistics.totalFigures}
-                  </p>
-                </div>
-
-                <div className="bg-stone-100 border-2 border-stone-200 p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="w-5 h-5 text-blue-600" />
-                    <p className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-                      Date Range
-                    </p>
-                  </div>
-                  <p className="text-lg font-black text-blue-600 font-mono">
-                    {data.statistics.earliestYear < 0
-                      ? `${Math.abs(data.statistics.earliestYear)} BCE`
-                      : data.statistics.earliestYear}
-                    {' - '}
-                    {data.statistics.latestYear}
-                  </p>
-                </div>
-
-                <div className="bg-stone-100 border-2 border-stone-200 p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="w-5 h-5 text-purple-600" />
-                    <p className="text-[10px] font-black text-stone-600 uppercase tracking-widest">
-                      Coverage Quality
-                    </p>
-                  </div>
-                  <p className="text-4xl font-black text-purple-600 font-mono">
-                    {calculateCoveragePercentage()}%
-                  </p>
-                </div>
+            {/* Main Chart */}
+            <div style={{ marginBottom: '32px' }}>
+              <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+                <span>Temporal Distribution</span>
               </div>
-
-              {/* Filters */}
-              <div className="mb-8">
-                <TemporalCoverageFilters onFilterChange={setFilters} />
-              </div>
-
-              {/* Main Chart */}
-              <div className="mb-8">
-                <div className="bg-amber-600 text-white px-4 py-2 mb-0">
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2">
-                    <span>■</span> Temporal Distribution
-                  </h2>
-                </div>
-                <TemporalCoverageChart
-                  timeBuckets={data.timeBuckets}
-                  onPeriodClick={handlePeriodClick}
-                />
-              </div>
-
-              {/* Coverage Gaps */}
-              <div className="mb-8">
-                <div className="bg-amber-600 text-white px-4 py-2 mb-0">
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2">
-                    <span>■</span> Coverage Analysis
-                  </h2>
-                </div>
-                <div className="border-2 border-amber-600 border-t-0 p-0">
-                  <CoverageGapIndicator
-                    coverageGaps={data.statistics.coverageGaps}
-                    onGapClick={handleGapClick}
-                  />
-                </div>
-              </div>
-
-              {/* Period Detail Panel */}
-              <PeriodDetailPanel
-                period={selectedPeriod || ''}
-                isOpen={selectedPeriod !== null}
-                onClose={() => setSelectedPeriod(null)}
+              <TemporalCoverageChart
+                timeBuckets={data.timeBuckets}
+                onPeriodClick={handlePeriodClick}
               />
-            </>
-          )}
-        </div>
+            </div>
+
+            {/* Coverage Gaps */}
+            <div style={{ marginBottom: '32px' }}>
+              <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+                <span>Coverage Analysis</span>
+              </div>
+              <CoverageGapIndicator
+                coverageGaps={data.statistics.coverageGaps}
+                onGapClick={handleGapClick}
+              />
+            </div>
+
+            {/* Period Detail Panel */}
+            <PeriodDetailPanel
+              period={selectedPeriod || ''}
+              isOpen={selectedPeriod !== null}
+              onClose={() => setSelectedPeriod(null)}
+            />
+          </>
+        )}
       </div>
     </div>
   );
