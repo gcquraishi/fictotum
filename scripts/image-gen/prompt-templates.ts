@@ -1,9 +1,22 @@
 /**
  * Prompt templates for AI house-style image generation.
  *
- * Aesthetic: Two-tone engraved portrait / archival illustration.
- * Palette: Wine-red (#8B2635) + cream (#FEFEFE) + black (#1A1A1A).
- * Feel: Scholarly, archival, intentionally stylized (not photorealistic).
+ * Aesthetic: Halftone pop-art sticker — hand-inked, screen-printed feel.
+ * Palette: Halftone flesh tones, muted dusty olive, wine-red (#8B2635),
+ *          charcoal blacks.
+ * Feel: Bold, tactile, collectible — like vinyl die-cut stickers.
+ *
+ * Style references:
+ *   - Alexei Vella editorial illustration (salzmanart.com/alexei-vella.html)
+ *   - Ben-Day dot / halftone screen-printing
+ *   - Heavy black ink outlines with hand-drawn quality
+ *   - Fine crosshatched linework for hair and texture
+ *   - Die-cut sticker presentation (white border around silhouette)
+ *
+ * IMPORTANT: Output images are NOT final assets. They are generated with a
+ * solid cream background for clean composition, then post-processed to remove
+ * the background and produce transparent PNGs (true die-cut stickers).
+ * The UI layer controls what background they sit on (cream, charcoal, etc.).
  */
 
 // ---------------------------------------------------------------------------
@@ -37,9 +50,7 @@ export interface WorkEntity {
 // Style preamble (shared across all prompts)
 // ---------------------------------------------------------------------------
 
-const STYLE_PREAMBLE = `Style: crosshatched line engraving, like a vintage encyclopedia plate or banknote illustration.
-Colors: deep wine red (#8B2635) ink on cream (#FEFEFE) paper. Two-tone only.
-No text, no labels, no borders, no background patterns. Clean, scholarly, minimal.`;
+const STYLE_PREAMBLE = `Heavily stylized in a halftone pop-art sticker style. Skin tones rendered with visible halftone dot patterns like vintage comic book printing. Heavy black ink outlines with slightly rough hand-drawn quality edges. Fine crosshatched ink linework for hair texture. Colorful but controlled palette: natural flesh tones via halftone dots, muted dusty olive greens, deep wine red (#8B2635) accents, dark ink blacks for outlines. The illustration looks like a hand-inked screen-printed die-cut sticker with a thick white border following the subject's silhouette. Place the sticker on a plain solid cream (#FEFEFE) background. The sticker must float freely within the frame with visible background on all sides — it must never touch or bleed off any edge of the image. No drop shadow. No text, no labels, no watermarks.`;
 
 // ---------------------------------------------------------------------------
 // Figure prompts
@@ -56,8 +67,8 @@ export function buildFigurePrompt(figure: FigureEntity): string {
     ? ` ${figure.description}`
     : '';
 
-  return `A two-tone engraved portrait illustration of ${figure.name}${titleContext}, a historical figure${eraContext}${dateContext}.${descContext}
-Bust portrait, head and shoulders, facing slightly left. Dignified, period-appropriate attire.
+  return `Illustration of ${figure.name}${titleContext}, a historical figure${eraContext}${dateContext}.${descContext}
+Head and face only, tightly cropped, front-facing with intense expression. Strong angular bone structure, deep-set eyes. Period-appropriate details (hair, headwear, attire at neckline).
 ${STYLE_PREAMBLE}`;
 }
 
@@ -92,8 +103,8 @@ function buildFilmPrompt(work: WorkEntity, type: string): string {
   const dirContext = dirStr ? ` directed by ${dirStr}` : '';
   const typeLabel = type === 'Film' ? 'film' : 'television series';
 
-  return `A two-tone engraved illustration representing the ${typeLabel} "${work.title}"${yearStr}${dirContext}.
-Depict a symbolic scene or key visual motif from the work. Cinematic composition, dramatic lighting suggested through crosshatching density.
+  return `Illustration representing the ${typeLabel} "${work.title}"${yearStr}${dirContext}.
+Symbolic scene or key visual motif from the work. Cinematic composition, dramatic mood.
 ${STYLE_PREAMBLE}`;
 }
 
@@ -102,8 +113,8 @@ function buildBookPrompt(work: WorkEntity): string {
   const authorStr = work.author || work.creator;
   const authorContext = authorStr ? ` by ${authorStr}` : '';
 
-  return `A two-tone engraved still-life illustration representing the book "${work.title}"${authorContext}${yearStr}.
-Show symbolic objects related to the book's themes arranged as a classical bookplate composition. Scholarly, contemplative.
+  return `Illustration representing the book "${work.title}"${authorContext}${yearStr}.
+Symbolic objects related to the book's themes arranged as a still-life composition. Scholarly, contemplative.
 ${STYLE_PREAMBLE}`;
 }
 
@@ -112,16 +123,16 @@ function buildPlayPrompt(work: WorkEntity): string {
   const authorStr = work.author || work.creator;
   const authorContext = authorStr ? ` by ${authorStr}` : '';
 
-  return `A two-tone engraved illustration representing the stage play "${work.title}"${authorContext}${yearStr}.
-Depict a symbolic theatrical scene with dramatic staging. Masks, curtains, or stage elements as compositional framing.
+  return `Illustration representing the stage play "${work.title}"${authorContext}${yearStr}.
+Symbolic theatrical scene with dramatic staging. Masks, curtains, or stage elements as compositional framing.
 ${STYLE_PREAMBLE}`;
 }
 
 function buildGamePrompt(work: WorkEntity): string {
   const yearStr = work.release_year ? ` (${work.release_year})` : '';
 
-  return `A two-tone engraved illustration representing the video game "${work.title}"${yearStr}.
-Depict a symbolic scene or iconic visual motif from the game. Dynamic composition suggesting action or exploration.
+  return `Illustration representing the video game "${work.title}"${yearStr}.
+Symbolic scene or iconic visual motif from the game. Dynamic composition suggesting action or exploration.
 ${STYLE_PREAMBLE}`;
 }
 
@@ -129,8 +140,8 @@ function buildDefaultWorkPrompt(work: WorkEntity): string {
   const yearStr = work.release_year ? ` (${work.release_year})` : '';
   const typeStr = work.media_type ? `${work.media_type} ` : '';
 
-  return `A two-tone engraved illustration representing the ${typeStr}"${work.title}"${yearStr}.
-Depict a symbolic composition representing the work's themes and subject matter.
+  return `Illustration representing the ${typeStr}"${work.title}"${yearStr}.
+Symbolic composition representing the work's themes and subject matter.
 ${STYLE_PREAMBLE}`;
 }
 

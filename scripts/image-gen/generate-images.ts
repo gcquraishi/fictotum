@@ -26,6 +26,7 @@ import {
   type FigureEntity,
   type WorkEntity,
 } from './prompt-templates';
+import { removeBackground } from './remove-bg';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -347,6 +348,10 @@ async function main() {
         fs.writeFileSync(outputPath, imageBuffer);
         console.log(`  Saved: ${filename} (${(imageBuffer.length / 1024).toFixed(1)}KB)`);
 
+        // Remove background → transparent PNG (die-cut sticker)
+        await removeBackground(outputPath);
+        console.log(`  Background removed (transparent PNG)`);
+
         manifest.entries.push({
           id: figure.canonical_id,
           entityType: 'figure',
@@ -394,6 +399,10 @@ async function main() {
         const outputPath = path.join(OUTPUT_DIR, filename);
         fs.writeFileSync(outputPath, imageBuffer);
         console.log(`  Saved: ${filename} (${(imageBuffer.length / 1024).toFixed(1)}KB)`);
+
+        // Remove background → transparent PNG (die-cut sticker)
+        await removeBackground(outputPath);
+        console.log(`  Background removed (transparent PNG)`);
 
         manifest.entries.push({
           id: workId,
