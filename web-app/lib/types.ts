@@ -21,11 +21,21 @@ export interface HistoricalFigure {
   is_fictional: boolean;
   historicity_status?: 'Historical' | 'Fictional' | 'Disputed';
   era?: string;
+  birth_year?: number | null;
+  death_year?: number | null;
+  description?: string;
+  title?: string;
+  image_url?: string | null;
 }
 
 export interface MediaWork {
+  media_id?: string;
   title: string;
   media_type?: string;
+  creator?: string;
+  director?: string;
+  author?: string;
+  image_url?: string | null;
 
   /**
    * Release/Publication Year: When the work was originally published or released
@@ -55,12 +65,20 @@ export interface MediaWork {
 
 export interface Portrayal {
   media: MediaWork;
-  sentiment: 'Heroic' | 'Villainous' | 'Complex'; // Legacy field (deprecated, use sentiment_tags)
-  sentiment_tags?: string[]; // New: array of sentiment tags (lowercase normalized)
+  sentiment: string;
+  sentiment_tags?: string[];
   tag_metadata?: {
-    common: string[]; // Tags from SUGGESTED_TAGS
-    custom: string[];  // User-provided custom tags
+    common: string[];
+    custom: string[];
   };
+  actor_name?: string;
+  character_name?: string;
+  role_description?: string;
+  is_protagonist?: boolean;
+  conflict_flag?: boolean;
+  conflict_notes?: string;
+  anachronism_flag?: boolean;
+  anachronism_notes?: string;
 }
 
 export interface FigureProfile extends HistoricalFigure {

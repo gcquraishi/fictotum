@@ -1,606 +1,345 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import FigureCard from '@/components/FigureCard';
+import WorkCard from '@/components/WorkCard';
+import HomepageSearch from '@/components/HomepageSearch';
+import { getSession } from '@/lib/neo4j';
 
-interface GraphNode {
-  id: string;
-  name: string;
-  type: 'figure' | 'media';
-  canonical_id?: string;
-  wikidata_id?: string;
-  is_fictional?: boolean;
-  media_type?: string;
-  x?: number;
-  y?: number;
-  fx?: number | null;
-  fy?: number | null;
-}
+export const dynamic = 'force-dynamic';
 
-interface GraphLink {
-  source: string | GraphNode;
-  target: string | GraphNode;
-  sentiment?: string;
-}
-
-interface Stats {
-  figures: number;
-  works: number;
-  portrayals: number;
-  topPortrayed: { name: string; canonical_id: string; count: number }[];
-  latestAdditions: { name: string; canonical_id: string; date: string }[];
-}
-
-export default function LandingPage() {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [graphLoaded, setGraphLoaded] = useState(false);
-  const simulationRef = useRef<any>(null);
-  const router = useRouter();
-
-  // Node type color map
-  const NODE_COLORS: Record<string, string> = {
-    historical:  '#2C2C2C',
-    fictional:   '#5D4E6D',
-    Book:        '#6B4423',
-    Film:        '#8B2635',
-    TVSeries:    '#4A5D5E',
-    'Video Game':'#3E5641',
-    Game:        '#8B6914',
-    default:     '#666666',
-  };
-
-  // Node type icon map (typographic symbols)
-  const NODE_ICONS: Record<string, string> = {
-    historical:   '\u2022',  // •
-    fictional:    '\u25C7',  // ◇
-    Book:         '\u25AA',  // ▪
-    Film:         '\u25B8',  // ▸
-    TVSeries:     '\u25AB',  // ▫
-    'Video Game': '\u2666',  // ♦
-    Game:         '\u25A3',  // ▣
-    default:      '\u2015',  // ―
-  };
-
-  function getNodeColor(d: GraphNode): string {
-    if (d.type === 'figure') {
-      return d.is_fictional ? NODE_COLORS.fictional : NODE_COLORS.historical;
-    }
-    return NODE_COLORS[d.media_type || ''] || NODE_COLORS.default;
-  }
-
-  function getNodeIcon(d: GraphNode): string {
-    if (d.type === 'figure') {
-      return d.is_fictional ? NODE_ICONS.fictional : NODE_ICONS.historical;
-    }
-    return NODE_ICONS[d.media_type || ''] || NODE_ICONS.default;
-  }
-
-  function getNodeUrl(d: GraphNode): string {
-    if (d.type === 'figure' && d.canonical_id) {
-      return `/figure/${d.canonical_id}`;
-    }
-    if (d.type === 'media' && d.wikidata_id) {
-      return `/media/${d.wikidata_id}`;
-    }
-    return '#';
-  }
-
-  // Fetch stats
-  useEffect(() => {
-    fetch('/api/stats')
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(() => setStats({ figures: 0, works: 0, portrayals: 0, topPortrayed: [], latestAdditions: [] }));
-  }, []);
-
-  // D3.js Force-Directed Graph
-  useEffect(() => {
-    if (graphLoaded) return;
-
-    let d3Module: any;
-    let cleanup = false;
-
-    const initGraph = async () => {
-      d3Module = await import('d3');
-      if (cleanup) return;
-
-      // Fetch real graph data, fallback to generated data
-      let nodes: GraphNode[] = [];
-      let links: GraphLink[] = [];
-
-      try {
-        const res = await fetch('/api/graph/landing');
-        if (res.ok) {
-          const data = await res.json();
-          nodes = data.nodes || [];
-          links = data.links || [];
-        }
-      } catch {
-        // Fallback: generate demo nodes
+async function getHomepageData() {
+  const session = await getSession();
+  try {
+    const toNum = (v: unknown): number | null => {
+      if (v === null || v === undefined) return null;
+      if (typeof v === 'number') return v;
+      if (typeof v === 'object' && v !== null && 'toNumber' in v) {
+        return (v as { toNumber: () => number }).toNumber();
       }
-
-      // If no real data, generate placeholder nodes
-      if (nodes.length === 0) {
-        nodes = Array.from({ length: 60 }, (_, i) => ({
-          id: `node-${i}`,
-          name: `Entity ${i}`,
-          type: i % 3 === 0 ? 'figure' as const : 'media' as const,
-        }));
-        for (let i = 0; i < 50; i++) {
-          links.push({
-            source: `node-${Math.floor(Math.random() * 60)}`,
-            target: `node-${Math.floor(Math.random() * 60)}`,
-          });
-        }
-      }
-
-      if (cleanup || !containerRef.current || !svgRef.current) return;
-
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-
-      const svg = d3Module.select(svgRef.current)
-        .attr('width', width)
-        .attr('height', height)
-        .attr('viewBox', [0, 0, width, height]);
-
-      // Clear previous content
-      svg.selectAll('*').remove();
-
-      // Compute node degree from links for sizing and label visibility
-      const degreeMap = new Map<string, number>();
-      links.forEach((link: any) => {
-        const sid = typeof link.source === 'string' ? link.source : link.source.id;
-        const tid = typeof link.target === 'string' ? link.target : link.target.id;
-        degreeMap.set(sid, (degreeMap.get(sid) || 0) + 1);
-        degreeMap.set(tid, (degreeMap.get(tid) || 0) + 1);
-      });
-
-      // Size nodes by actual connectivity
-      const nodesWithRadius = nodes.map((n: any) => {
-        const degree = degreeMap.get(n.id) || 1;
-        const r = n.type === 'figure'
-          ? Math.min(4 + degree * 1.5, 18)
-          : Math.min(3 + degree * 0.8, 10);
-        return { ...n, r, degree };
-      });
-
-      // Hub nodes: high-degree figures always show labels
-      const HUB_DEGREE = 6;
-
-      // Build neighbor lookup for click highlighting
-      const neighborMap = new Map<string, Set<string>>();
-      links.forEach((link: any) => {
-        const sid = typeof link.source === 'string' ? link.source : link.source.id;
-        const tid = typeof link.target === 'string' ? link.target : link.target.id;
-        if (!neighborMap.has(sid)) neighborMap.set(sid, new Set());
-        if (!neighborMap.has(tid)) neighborMap.set(tid, new Set());
-        neighborMap.get(sid)!.add(tid);
-        neighborMap.get(tid)!.add(sid);
-      });
-
-      const simulation = d3Module.forceSimulation(nodesWithRadius)
-        .force('link', d3Module.forceLink(links).id((d: any) => d.id).distance(100))
-        .force('charge', d3Module.forceManyBody().strength(-150))
-        .force('center', d3Module.forceCenter(width / 2, height / 2))
-        .force('collide', d3Module.forceCollide().radius((d: any) => d.r + 14));
-
-      simulationRef.current = simulation;
-
-      // Zoomable container wrapping all graph content
-      const graphContainer = svg.append('g').attr('class', 'graph-container');
-
-      const zoom = d3Module.zoom()
-        .scaleExtent([0.5, 3])
-        .on('zoom', (event: any) => {
-          graphContainer.attr('transform', event.transform);
-        });
-      svg.call(zoom);
-      // Double-click resets to default view instead of D3's default 2x zoom-in
-      svg.on('dblclick.zoom', () => {
-        svg.transition().duration(400).call(zoom.transform, d3Module.zoomIdentity);
-      });
-
-      // SVG layers in z-order: links, nodes, labels
-      const linkGroup = graphContainer.append('g').attr('class', 'links');
-      const nodeGroup = graphContainer.append('g').attr('class', 'nodes');
-      const labelGroup = graphContainer.append('g').attr('class', 'labels');
-
-      const linkElements = linkGroup.selectAll('line')
-        .data(links)
-        .join('line')
-        .attr('stroke', '#D0D0D0')
-        .attr('stroke-opacity', 0.4)
-        .attr('stroke-width', 1);
-
-      const nodeElements = nodeGroup.selectAll('circle')
-        .data(nodesWithRadius)
-        .join('circle')
-        .attr('r', (d: any) => d.r)
-        .attr('fill', (d: any) => getNodeColor(d))
-        .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.7 : 0.3)
-        .style('cursor', 'pointer');
-
-      // Labels: truncate long names, always visible for hubs
-      const truncate = (s: string, max: number) =>
-        s.length > max ? s.slice(0, max - 1) + '\u2026' : s;
-
-      const labelElements = labelGroup.selectAll('text')
-        .data(nodesWithRadius)
-        .join('text')
-        .text((d: any) => getNodeIcon(d) + ' ' + truncate(d.name, 20))
-        .attr('font-size', (d: any) => d.type === 'figure' ? '11px' : '9px')
-        .attr('font-family', (d: any) =>
-          d.type === 'figure' ? 'Georgia, serif' : 'var(--font-mono, monospace)')
-        .attr('fill', '#1A1A1A')
-        .attr('text-anchor', 'middle')
-        .attr('dy', (d: any) => -(d.r + 5))
-        .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.85 : 0)
-        .style('user-select', 'none')
-        .style('pointer-events', 'auto')
-        .style('cursor', 'pointer');
-
-      // -- Selection state --
-      let selectedNodeId: string | null = null;
-
-      function resetHighlight() {
-        selectedNodeId = null;
-        nodeElements.transition().duration(200)
-          .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.7 : 0.3)
-          .attr('r', (d: any) => d.r);
-        linkElements.transition().duration(200)
-          .attr('stroke-opacity', 0.4)
-          .attr('stroke', '#D0D0D0');
-        labelElements.transition().duration(200)
-          .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.85 : 0);
-      }
-
-      function selectNode(d: any) {
-        if (selectedNodeId === d.id) {
-          resetHighlight();
-          return;
-        }
-        selectedNodeId = d.id;
-        const neighbors = neighborMap.get(d.id) || new Set<string>();
-
-        nodeElements.transition().duration(200)
-          .attr('opacity', (n: any) =>
-            n.id === d.id ? 1 : neighbors.has(n.id) ? 0.8 : 0.06)
-          .attr('r', (n: any) => n.id === d.id ? n.r * 1.3 : n.r);
-
-        linkElements.transition().duration(200)
-          .attr('stroke-opacity', (l: any) => {
-            const sid = typeof l.source === 'object' ? l.source.id : l.source;
-            const tid = typeof l.target === 'object' ? l.target.id : l.target;
-            return (sid === d.id || tid === d.id) ? 0.7 : 0.03;
-          })
-          .attr('stroke', (l: any) => {
-            const sid = typeof l.source === 'object' ? l.source.id : l.source;
-            const tid = typeof l.target === 'object' ? l.target.id : l.target;
-            return (sid === d.id || tid === d.id) ? '#8B2635' : '#D0D0D0';
-          });
-
-        labelElements.transition().duration(200)
-          .attr('opacity', (n: any) =>
-            n.id === d.id || neighbors.has(n.id) ? 1 : 0);
-      }
-
-      // Click background to deselect
-      svg.on('click', () => {
-        resetHighlight();
-      });
-
-      // -- Hover --
-      nodeElements
-        .on('mouseover', function (this: SVGCircleElement, _event: any, d: any) {
-          if (selectedNodeId) return;
-          d3Module.select(this).transition().duration(150)
-            .attr('opacity', 1)
-            .attr('r', d.r * 1.2);
-          // Show this node's label
-          labelElements.filter((t: any) => t.id === d.id)
-            .transition().duration(150).attr('opacity', 1);
-        })
-        .on('mouseout', function (this: SVGCircleElement, _event: any, d: any) {
-          if (selectedNodeId) return;
-          d3Module.select(this).transition().duration(150)
-            .attr('opacity', d.degree >= HUB_DEGREE ? 0.7 : 0.3)
-            .attr('r', d.r);
-          labelElements.filter((t: any) => t.id === d.id)
-            .transition().duration(150)
-            .attr('opacity', d.degree >= HUB_DEGREE ? 0.85 : 0);
-        });
-
-      // -- Drag with click detection --
-      let hasDragged = false;
-
-      nodeElements.call(d3Module.drag()
-        .on('start', (event: any) => {
-          event.sourceEvent.stopPropagation();
-          hasDragged = false;
-          event.subject.fx = event.subject.x;
-          event.subject.fy = event.subject.y;
-        })
-        .on('drag', (event: any) => {
-          if (!hasDragged) {
-            hasDragged = true;
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-          }
-          event.subject.fx = event.x;
-          event.subject.fy = event.y;
-        })
-        .on('end', (event: any) => {
-          if (!event.active) simulation.alphaTarget(0);
-          event.subject.fx = null;
-          event.subject.fy = null;
-        })
-      );
-
-      // Click circle to explore connections (only fires if not dragged)
-      nodeElements.on('click', function (_event: any, d: any) {
-        _event.stopPropagation();
-        if (hasDragged) return;
-        selectNode(d);
-      });
-
-      // Click label to navigate to detail page
-      labelElements.on('click', (event: any, d: any) => {
-        event.stopPropagation();
-        const url = getNodeUrl(d);
-        if (url !== '#') {
-          router.push(url);
-        }
-      });
-
-      // -- Tick: update positions for nodes, links, and labels --
-      simulation.on('tick', () => {
-        linkElements
-          .attr('x1', (d: any) => d.source.x)
-          .attr('y1', (d: any) => d.source.y)
-          .attr('x2', (d: any) => d.target.x)
-          .attr('y2', (d: any) => d.target.y);
-
-        nodeElements
-          .attr('cx', (d: any) => d.x)
-          .attr('cy', (d: any) => d.y);
-
-        labelElements
-          .attr('x', (d: any) => d.x)
-          .attr('y', (d: any) => d.y);
-      });
-
-      // Resize handler
-      const handleResize = () => {
-        if (!containerRef.current) return;
-        const newWidth = containerRef.current.clientWidth;
-        const newHeight = containerRef.current.clientHeight;
-        svg.attr('width', newWidth).attr('height', newHeight)
-          .attr('viewBox', [0, 0, newWidth, newHeight]);
-        simulation.force('center', d3Module.forceCenter(newWidth / 2, newHeight / 2));
-        simulation.alpha(0.3).restart();
-      };
-
-      window.addEventListener('resize', handleResize);
-      setGraphLoaded(true);
-
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        simulation.stop();
-      };
+      return Number(v);
     };
 
-    initGraph();
+    const figuresResult = await session.run(`
+      MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m:MediaWork)
+      WITH f, count(r) AS portrayalCount
+      ORDER BY portrayalCount DESC
+      LIMIT 12
+      RETURN f.canonical_id AS canonical_id, f.name AS name, f.era AS era,
+             f.birth_year AS birth_year, f.death_year AS death_year,
+             f.image_url AS image_url, f.historicity_status AS historicity_status,
+             portrayalCount
+    `);
 
-    return () => {
-      cleanup = true;
-      if (simulationRef.current) {
-        simulationRef.current.stop();
-      }
+    const worksResult = await session.run(`
+      MATCH (m:MediaWork)<-[r:APPEARS_IN]-(:HistoricalFigure)
+      WITH m, count(r) AS figureCount
+      ORDER BY figureCount DESC
+      LIMIT 8
+      RETURN m.media_id AS media_id, m.title AS title, m.media_type AS media_type,
+             m.release_year AS release_year, m.creator AS creator,
+             m.director AS director, m.author AS author,
+             m.image_url AS image_url, m.wikidata_id AS wikidata_id,
+             figureCount
+    `);
+
+    const erasResult = await session.run(`
+      MATCH (f:HistoricalFigure)
+      WITH f.era AS era, count(f) AS figureCount
+      WHERE era IS NOT NULL
+      ORDER BY figureCount DESC
+      LIMIT 12
+      RETURN era, figureCount
+    `);
+
+    const statsResult = await session.run(`
+      MATCH (f:HistoricalFigure) WITH count(f) AS figureCount
+      MATCH (m:MediaWork) WITH figureCount, count(m) AS workCount
+      MATCH ()-[r:APPEARS_IN]->() WITH figureCount, workCount, count(r) AS portrayalCount
+      RETURN figureCount, workCount, portrayalCount
+    `);
+
+    const figures = figuresResult.records.map(r => ({
+      canonical_id: r.get('canonical_id') as string,
+      name: r.get('name') as string,
+      era: r.get('era') as string | null,
+      birth_year: toNum(r.get('birth_year')),
+      death_year: toNum(r.get('death_year')),
+      image_url: r.get('image_url') as string | null,
+      historicity_status: (r.get('historicity_status') as string) || 'Historical',
+      portrayalCount: toNum(r.get('portrayalCount')) || 0,
+    }));
+
+    const works = worksResult.records.map(r => ({
+      media_id: r.get('media_id') as string,
+      title: r.get('title') as string,
+      media_type: r.get('media_type') as string | null,
+      release_year: toNum(r.get('release_year')),
+      creator: (r.get('creator') || r.get('director') || r.get('author')) as string | null,
+      image_url: r.get('image_url') as string | null,
+      wikidata_id: r.get('wikidata_id') as string | null,
+      figureCount: toNum(r.get('figureCount')) || 0,
+    }));
+
+    const eras = erasResult.records.map(r => ({
+      name: r.get('era') as string,
+      figureCount: toNum(r.get('figureCount')) || 0,
+    }));
+
+    const statsRecord = statsResult.records[0];
+    const stats = {
+      figures: toNum(statsRecord.get('figureCount')) || 0,
+      works: toNum(statsRecord.get('workCount')) || 0,
+      portrayals: toNum(statsRecord.get('portrayalCount')) || 0,
     };
-  }, [graphLoaded]);
+
+    return { figures, works, eras, stats };
+  } catch (error) {
+    console.error('Homepage data error:', error);
+    return {
+      figures: [] as { canonical_id: string; name: string; era: string | null; birth_year: number | null; death_year: number | null; image_url: string | null; historicity_status: string; portrayalCount: number }[],
+      works: [] as { media_id: string; title: string; media_type: string | null; release_year: number | null; creator: string | null; image_url: string | null; wikidata_id: string | null; figureCount: number }[],
+      eras: [] as { name: string; figureCount: number }[],
+      stats: { figures: 0, works: 0, portrayals: 0 },
+    };
+  } finally {
+    await session.close();
+  }
+}
+
+export default async function HomePage() {
+  const data = await getHomepageData();
 
   return (
-    <div>
-      {/* Hero Graph Section - Full Viewport */}
-      <div
-        style={{
-          height: '85vh',
-          width: '100%',
-          backgroundColor: '#f9f9f9',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          borderBottom: '2px solid var(--color-border-bold)',
-        }}
-      >
-        {/* Interactive Graph Container */}
-        <div
-          ref={containerRef}
-          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
-        >
-          <svg ref={svgRef} style={{ width: '100%', height: '100%', touchAction: 'none' }} />
-        </div>
-
-        {/* Top-left title badge */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '32px',
-            left: '40px',
-            zIndex: 10,
-            pointerEvents: 'none',
-          }}
-        >
-          <h1
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '28px',
-              fontWeight: 300,
-              color: 'var(--color-text)',
-              background: 'rgba(254,254,254,0.85)',
-              padding: '12px 20px',
-              borderLeft: '4px solid var(--color-accent)',
-              lineHeight: 1.3,
-            }}
-          >
-            The Intersection<br />of History &amp; Fiction
-          </h1>
-        </div>
-
-        {/* Bottom bar with stats and hint */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '16px 40px',
-            background: 'rgba(254,254,254,0.85)',
-            borderTop: '1px solid var(--color-border)',
-            pointerEvents: 'none',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              color: 'var(--color-accent)',
-            }}
-          >
-            {stats ? stats.portrayals.toLocaleString() : '...'} Portrayals Mapped
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              color: 'var(--color-gray)',
-              letterSpacing: '2px',
-            }}
-          >
-            Click circle to explore &middot; Click name to view details &middot; Scroll to zoom
-          </span>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      {/* ================================================================
+          HERO SECTION
+          ================================================================ */}
       <section
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
+          padding: '80px 40px 60px',
+          borderBottom: '1px solid var(--color-border)',
           maxWidth: '1200px',
-          margin: '60px auto',
-          gap: '40px',
-          padding: '0 40px',
-          textAlign: 'center',
+          margin: '0 auto',
         }}
       >
-        <div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '56px',
-              fontWeight: 300,
-              marginBottom: '12px',
-              fontFeatureSettings: '"onum"',
-            }}
-          >
-            {stats ? stats.portrayals.toLocaleString() : '...'}
-          </h2>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              color: 'var(--color-gray)',
-            }}
-          >
-            Total Entities
-          </span>
-        </div>
-        <div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '56px',
-              fontWeight: 300,
-              marginBottom: '12px',
-              fontFeatureSettings: '"onum"',
-            }}
-          >
-            {stats ? stats.figures.toLocaleString() : '...'}
-          </h2>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              color: 'var(--color-gray)',
-            }}
-          >
-            Historical Figures
-          </span>
-        </div>
-        <div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '56px',
-              fontWeight: 300,
-              marginBottom: '12px',
-              fontFeatureSettings: '"onum"',
-            }}
-          >
-            {stats ? stats.works.toLocaleString() : '...'}
-          </h2>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              color: 'var(--color-gray)',
-            }}
-          >
-            Media Works
-          </span>
-        </div>
+        <h1
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '56px',
+            fontWeight: 300,
+            lineHeight: 1.15,
+            marginBottom: '16px',
+          }}
+        >
+          Fictotum Archive
+        </h1>
+        <p
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '20px',
+            color: 'var(--color-gray)',
+            fontStyle: 'italic',
+            marginBottom: '32px',
+            maxWidth: '600px',
+          }}
+        >
+          How history becomes fiction. Explore {data.stats.portrayals.toLocaleString()} portrayals
+          of {data.stats.figures.toLocaleString()} historical figures across{' '}
+          {data.stats.works.toLocaleString()} media works.
+        </p>
+
+        <HomepageSearch />
       </section>
 
-      {/* Explore Buttons */}
+      {/* ================================================================
+          STATS BAR
+          ================================================================ */}
       <div
         style={{
+          display: 'flex',
           maxWidth: '1200px',
-          margin: '0 auto 80px',
-          padding: '0 40px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '24px',
+          margin: '0 auto',
+          borderBottom: '1px solid var(--color-border)',
         }}
       >
         {[
-          { label: 'By Era', sub: 'Ancient to Modern', href: '/browse/eras' },
-          { label: 'By Medium', sub: 'Film, TV, Novels', href: '/search' },
-          { label: 'By Sentiment', sub: 'Heroic vs Villainous', href: '/search' },
-          { label: 'Network View', sub: 'Visual Connections', href: '/explore/graph' },
+          { label: 'Figures', value: data.stats.figures },
+          { label: 'Media Works', value: data.stats.works },
+          { label: 'Portrayals', value: data.stats.portrayals },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            style={{
+              flex: 1,
+              padding: '16px 40px',
+              borderRight: '1px solid var(--color-border)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+            }}
+          >
+            <span style={{ color: 'var(--color-gray)' }}>{stat.label} </span>
+            <span style={{ fontWeight: 600, color: 'var(--color-accent)' }}>
+              {stat.value.toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* ================================================================
+          MOST PORTRAYED FIGURES
+          ================================================================ */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 40px 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '24px',
+          }}
+        >
+          <div className="fsg-section-header" style={{ flex: 1 }}>
+            <span>Most Portrayed Figures</span>
+            <span>({data.figures.length})</span>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '20px',
+          }}
+        >
+          {data.figures.slice(0, 8).map((figure) => (
+            <FigureCard
+              key={figure.canonical_id}
+              canonicalId={figure.canonical_id}
+              name={figure.name}
+              birthYear={figure.birth_year}
+              deathYear={figure.death_year}
+              era={figure.era || undefined}
+              imageUrl={figure.image_url}
+              portrayalCount={figure.portrayalCount}
+              historicityStatus={
+                (figure.historicity_status as 'Historical' | 'Fictional' | 'Disputed') || 'Historical'
+              }
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ================================================================
+          BROWSE BY ERA
+          ================================================================ */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 40px 0' }}>
+        <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+          <span>Browse by Era</span>
+          <Link
+            href="/browse/eras"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              textDecoration: 'none',
+              color: 'var(--color-accent)',
+            }}
+            className="hover:opacity-70 transition-opacity"
+          >
+            View All
+          </Link>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px',
+            paddingTop: '8px',
+          }}
+        >
+          {data.eras.map((era) => (
+            <Link
+              key={era.name}
+              href={`/search?era=${encodeURIComponent(era.name)}`}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                padding: '6px 14px',
+                border: '1px solid var(--color-border)',
+                textDecoration: 'none',
+                color: 'var(--color-text)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              className="hover:border-[var(--color-border-bold)] hover:bg-[var(--color-section-bg)] transition-colors"
+            >
+              {era.name}
+              <span style={{ color: 'var(--color-gray)', fontSize: '10px' }}>
+                {era.figureCount}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ================================================================
+          POPULAR WORKS
+          ================================================================ */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 40px 0' }}>
+        <div className="fsg-section-header" style={{ marginBottom: '24px' }}>
+          <span>Popular Works</span>
+          <span>({data.works.length})</span>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '20px',
+          }}
+        >
+          {data.works.map((work) => (
+            <WorkCard
+              key={work.media_id}
+              mediaId={work.media_id}
+              title={work.title}
+              releaseYear={work.release_year}
+              mediaType={work.media_type || undefined}
+              creator={work.creator || undefined}
+              imageUrl={work.image_url}
+              wikidataId={work.wikidata_id || undefined}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ================================================================
+          EXPLORE NAVIGATION
+          ================================================================ */}
+      <section
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '48px 40px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '20px',
+        }}
+      >
+        {[
+          { label: 'Browse by Era', sub: 'Ancient to Modern', href: '/browse/eras' },
+          { label: 'Browse by Location', sub: 'Places in History', href: '/browse/locations' },
+          { label: 'Coverage Map', sub: 'Temporal Gaps', href: '/explore/coverage' },
+          { label: 'Network Graph', sub: 'Visual Connections', href: '/explore/graph' },
         ].map((btn) => (
           <Link
             key={btn.label}
             href={btn.href}
             style={{
-              padding: '32px',
+              padding: '24px',
               border: '1px solid var(--color-border)',
               textAlign: 'center',
               fontFamily: 'var(--font-mono)',
@@ -608,16 +347,15 @@ export default function LandingPage() {
               textTransform: 'uppercase',
               textDecoration: 'none',
               color: 'var(--color-text)',
-              transition: 'all 0.2s',
               display: 'block',
             }}
-            className="hover:bg-[#1A1A1A] hover:text-white hover:border-[#1A1A1A]"
+            className="hover:bg-[#1A1A1A] hover:text-white hover:border-[#1A1A1A] transition-colors"
           >
             {btn.label}
             <span
               style={{
                 display: 'block',
-                marginTop: '8px',
+                marginTop: '6px',
                 fontFamily: 'var(--font-serif)',
                 fontSize: '14px',
                 color: 'var(--color-gray)',
@@ -629,136 +367,14 @@ export default function LandingPage() {
             </span>
           </Link>
         ))}
-      </div>
-
-      {/* Lists Section */}
-      <section
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto 60px',
-          padding: '0 40px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '80px',
-          borderTop: '1px solid var(--color-border)',
-          paddingTop: '60px',
-        }}
-      >
-        {/* Top Portrayed Figures */}
-        <div>
-          <h3
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              color: 'var(--color-gray)',
-              marginBottom: '24px',
-              borderBottom: '1px solid var(--color-text)',
-              paddingBottom: '8px',
-            }}
-          >
-            Top Portrayed Figures
-          </h3>
-          <ul style={{ listStyle: 'none' }}>
-            {(stats?.topPortrayed ?? []).map((figure) => (
-              <li
-                key={figure.canonical_id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '16px 0',
-                  borderBottom: '1px solid #f0f0f0',
-                  alignItems: 'baseline',
-                }}
-              >
-                <Link
-                  href={`/figure/${figure.canonical_id}`}
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    fontSize: '20px',
-                    fontWeight: 400,
-                    textDecoration: 'none',
-                    color: 'inherit',
-                  }}
-                  className="hover:text-[#8B2635]"
-                >
-                  {figure.name}
-                </Link>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '14px',
-                    color: 'var(--color-accent)',
-                  }}
-                >
-                  {figure.count}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Latest Additions */}
-        <div>
-          <h3
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              color: 'var(--color-gray)',
-              marginBottom: '24px',
-              borderBottom: '1px solid var(--color-text)',
-              paddingBottom: '8px',
-            }}
-          >
-            Latest Additions
-          </h3>
-          <ul style={{ listStyle: 'none' }}>
-            {(stats?.latestAdditions ?? []).map((figure) => (
-              <li
-                key={figure.canonical_id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '16px 0',
-                  borderBottom: '1px solid #f0f0f0',
-                  alignItems: 'baseline',
-                }}
-              >
-                <Link
-                  href={`/figure/${figure.canonical_id}`}
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    fontSize: '20px',
-                    fontWeight: 400,
-                    textDecoration: 'none',
-                    color: 'inherit',
-                  }}
-                  className="hover:text-[#8B2635]"
-                >
-                  {figure.name}
-                </Link>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '14px',
-                    color: 'var(--color-accent)',
-                  }}
-                >
-                  {figure.date}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
       </section>
 
-      {/* Departments Section */}
+      {/* ================================================================
+          DEPARTMENTS
+          ================================================================ */}
       <section
         style={{
-          padding: '80px 40px',
+          padding: '60px 40px',
           background: 'var(--color-dept-bg)',
           borderTop: '1px solid var(--color-border)',
         }}
@@ -769,20 +385,26 @@ export default function LandingPage() {
             margin: '0 auto',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '40px',
+            gap: '32px',
           }}
         >
           {[
-            { title: 'Contribute', desc: 'Submit new portrayals or historical data to the archive for verification.', href: '/contribute' },
-            { title: 'Methodology', desc: 'How we define historical fiction and classify portrayals within the graph.', href: '#' },
-            { title: 'API Access', desc: 'Documentation for researchers and data scientists to query our Neo4j database.', href: '#' },
-            { title: 'About Fictotum', desc: 'The mission and vision of the curated archive of historical intersections.', href: '#' },
+            {
+              title: 'Contribute',
+              desc: 'Submit new portrayals or historical data to the archive.',
+              href: '/contribute',
+            },
+            {
+              title: 'Pathfinder',
+              desc: 'Discover connections between any two historical figures.',
+              href: '/explore/pathfinder',
+            },
           ].map((dept) => (
             <Link
               key={dept.title}
               href={dept.href}
               style={{
-                padding: '32px',
+                padding: '28px',
                 border: '1px solid var(--color-border)',
                 background: '#fff',
                 textDecoration: 'none',
@@ -797,7 +419,7 @@ export default function LandingPage() {
                   fontSize: '12px',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  marginBottom: '16px',
+                  marginBottom: '12px',
                   display: 'block',
                   borderBottom: '1px solid var(--color-border)',
                   paddingBottom: '8px',
@@ -821,7 +443,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ================================================================
+          FOOTER
+          ================================================================ */}
       <footer
         style={{
           borderTop: '1px solid var(--color-border-bold)',
@@ -840,4 +464,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

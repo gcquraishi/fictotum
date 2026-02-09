@@ -1,6 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getFigureById, calculateSentimentDistribution } from '@/lib/db';
+import { ExternalLink } from 'lucide-react';
+import { getFigureById } from '@/lib/db';
+import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, isValidImageUrl } from '@/lib/card-utils';
+import PortrayalFilters from '@/components/PortrayalFilters';
+import ConnectedFigures from '@/components/ConnectedFigures';
 
 export default async function FigurePage({
   params,
@@ -14,26 +18,20 @@ export default async function FigurePage({
     notFound();
   }
 
-  const sentimentDistribution = calculateSentimentDistribution(figure.portrayals);
-
-  // Sort portrayals by release year for timeline
-  const sortedPortrayals = [...figure.portrayals].sort(
-    (a, b) => Number(a.media.release_year) - Number(b.media.release_year)
-  );
-
-  const earliestYear = sortedPortrayals.length > 0 ? Number(sortedPortrayals[0].media.release_year) : null;
-  const latestYear = sortedPortrayals.length > 0 ? Number(sortedPortrayals[sortedPortrayals.length - 1].media.release_year) : null;
-
-  // Determine primary medium
+  // Compute stats
+  const totalPortrayals = figure.portrayals.length;
   const mediaTypeCounts: Record<string, number> = {};
-  figure.portrayals.forEach(p => {
+  figure.portrayals.forEach((p) => {
     const type = p.media.media_type || 'Unknown';
     mediaTypeCounts[type] = (mediaTypeCounts[type] || 0) + 1;
   });
-  const primaryMedium = Object.entries(mediaTypeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+
+  const lifespan = formatLifespan(figure.birth_year, figure.death_year);
+  const placeholder = getPlaceholderStyle('figure', figure.name, figure.historicity_status);
+  const borderColor = getFigureTypeColor(figure.historicity_status);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
       {/* Breadcrumb Header */}
       <div
         style={{
@@ -69,389 +67,295 @@ export default async function FigurePage({
         </span>
       </div>
 
-      {/* Split Container */}
-      <div style={{ flex: 1, display: 'flex', height: 'calc(100vh - 65px)' }}>
-        {/* LEFT PANE: Visual Timeline */}
+      {/* Main Content */}
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '40px 24px 80px' }}>
+        {/* ================================================================
+            HERO SECTION
+            ================================================================ */}
         <div
           style={{
-            width: '50%',
-            background: '#fafafa',
-            borderRight: '1px solid var(--color-border)',
-            position: 'relative',
-            overflow: 'hidden',
+            display: 'flex',
+            gap: '32px',
+            marginBottom: '40px',
           }}
         >
-          {/* View Controls */}
+          {/* Portrait */}
           <div
             style={{
-              position: 'absolute',
-              top: '20px',
-              left: '20px',
-              zIndex: 20,
-              display: 'flex',
-              gap: '10px',
+              width: '180px',
+              height: '240px',
+              flexShrink: 0,
+              overflow: 'hidden',
+              borderBottom: `3px solid ${borderColor}`,
             }}
           >
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                textTransform: 'uppercase',
-                padding: '6px 12px',
-                border: '1px solid var(--color-border-bold)',
-                background: 'var(--color-text)',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              Chronology
-            </span>
-            <Link
-              href={`/explore/graph`}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                textTransform: 'uppercase',
-                padding: '6px 12px',
-                border: '1px solid var(--color-border-bold)',
-                background: '#fff',
-                color: 'var(--color-text)',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}
-            >
-              Network Graph
-            </Link>
-          </div>
-
-          {/* Timeline Visualization */}
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              position: 'relative',
-              padding: '40px 60px',
-            }}
-          >
-            {/* Vertical Axis */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '60px',
-                bottom: '60px',
-                left: '60px',
-                width: '2px',
-                background: 'var(--color-border)',
-              }}
-            />
-
-            {/* Timeline Nodes */}
-            {sortedPortrayals.map((portrayal, index) => {
-              const totalNodes = sortedPortrayals.length;
-              const topPercent = totalNodes > 1
-                ? 10 + (index / (totalNodes - 1)) * 70
-                : 40;
-
-              // Determine sentiment color
-              let nodeColor = 'var(--color-text)';
-              if (portrayal.sentiment === 'Heroic') nodeColor = '#D4AF37';
-              else if (portrayal.sentiment === 'Villainous') nodeColor = 'var(--color-accent)';
-
-              return (
-                <div
-                  key={`${portrayal.media.title}-${portrayal.media.release_year}`}
-                  style={{
-                    position: 'absolute',
-                    top: `${topPercent}%`,
-                    left: '60px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                  }}
-                  className="group"
-                >
-                  {/* Connector Line */}
-                  <div
-                    style={{
-                      height: '1px',
-                      width: '30px',
-                      background: 'var(--color-border)',
-                      marginRight: '10px',
-                    }}
-                  />
-
-                  {/* Node Circle */}
-                  <div
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      borderRadius: '50%',
-                      background: nodeColor,
-                      transition: 'transform 0.2s',
-                      flexShrink: 0,
-                    }}
-                  />
-
-                  {/* Label */}
-                  <span
-                    style={{
-                      marginLeft: '10px',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '11px',
-                      color: 'var(--color-gray)',
-                      opacity: 0.7,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {portrayal.media.release_year}: {portrayal.media.title}
-                  </span>
-                </div>
-              );
-            })}
-
-            {/* Legend */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '20px',
-                left: '80px',
-                width: '200px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                color: 'var(--color-gray)',
-                lineHeight: 1.4,
-              }}
-            >
-              <div>&uarr; OLDEST</div>
-              <div>&darr; NEWEST</div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT PANE: Content (Dossier Style) */}
-        <div
-          style={{
-            width: '50%',
-            padding: '60px',
-            overflowY: 'auto',
-            background: '#fff',
-          }}
-        >
-          {/* Document Header */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              marginBottom: '40px',
-              borderBottom: '2px solid var(--color-border-bold)',
-              paddingBottom: '24px',
-            }}
-          >
-            <div>
-              <h1
+            {isValidImageUrl(figure.image_url) ? (
+              <img
+                src={figure.image_url!}
+                alt={figure.name}
                 style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '64px',
-                  fontWeight: 300,
-                  lineHeight: 1,
-                  marginBottom: '8px',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
                 }}
-              >
-                {figure.name}
-              </h1>
-              <span
+              />
+            ) : (
+              <div
                 style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '14px',
-                  color: 'var(--color-accent)',
-                }}
-              >
-                {figure.era || 'Historical Figure'}
-              </span>
-            </div>
-
-            {/* Canonical Badge */}
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                border: '1px solid var(--color-gray)',
-                padding: '4px 8px',
-                color: 'var(--color-gray)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Verified {figure.canonical_id}
-            </span>
-          </div>
-
-          {/* Biographical Summary */}
-          <div className="fsg-section-header" style={{ marginTop: '0' }}>
-            <span>Biographical Summary</span>
-          </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '18px',
-              lineHeight: 1.7,
-              color: 'var(--color-text)',
-              marginBottom: '24px',
-              textAlign: 'justify',
-              marginTop: '20px',
-            }}
-          >
-            {figure.name} is documented in the Fictotum archive with{' '}
-            {figure.portrayals.length} recorded media portrayal{figure.portrayals.length !== 1 ? 's' : ''}.
-            {figure.era && ` Active during the ${figure.era} era.`}
-            {earliestYear && latestYear && earliestYear !== latestYear
-              ? ` Portrayals span from ${earliestYear} to ${latestYear}.`
-              : earliestYear
-              ? ` First recorded portrayal in ${earliestYear}.`
-              : ''}
-          </p>
-
-          {/* Metadata Grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '16px',
-              marginBottom: '30px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-            }}
-          >
-            <div className="fsg-meta-row">
-              <span style={{ color: 'var(--color-gray)' }}>Total Portrayals</span>
-              <span>{figure.portrayals.length}</span>
-            </div>
-            <div className="fsg-meta-row">
-              <span style={{ color: 'var(--color-gray)' }}>First Appearance</span>
-              <span>{earliestYear || 'N/A'}</span>
-            </div>
-            <div className="fsg-meta-row">
-              <span style={{ color: 'var(--color-gray)' }}>Most Recent</span>
-              <span>{latestYear || 'N/A'}</span>
-            </div>
-            <div className="fsg-meta-row">
-              <span style={{ color: 'var(--color-gray)' }}>Primary Medium</span>
-              <span>{primaryMedium}</span>
-            </div>
-          </div>
-
-          {/* Documented Appearances */}
-          <div className="fsg-section-header">
-            <span>Documented Appearances</span>
-            <span>({figure.portrayals.length} Records)</span>
-          </div>
-
-          <ul style={{ listStyle: 'none', marginTop: '20px' }}>
-            {sortedPortrayals.map((portrayal, idx) => (
-              <li
-                key={`${portrayal.media.title}-${idx}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '80px 1fr',
-                  padding: '20px 0',
-                  borderBottom: '1px solid var(--color-border)',
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: placeholder.backgroundColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <span
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '14px',
-                    color: 'var(--color-accent)',
-                    fontWeight: 500,
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '56px',
+                    fontWeight: 300,
+                    color: placeholder.textColor,
+                    opacity: 0.5,
                   }}
                 >
-                  {portrayal.media.release_year}
+                  {placeholder.initials}
                 </span>
-                <div>
-                  <h4
+              </div>
+            )}
+          </div>
+
+          {/* Name + Meta */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '48px',
+                fontWeight: 300,
+                lineHeight: 1.1,
+                marginBottom: '8px',
+              }}
+            >
+              {figure.name}
+            </h1>
+
+            {figure.title && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '18px',
+                  fontStyle: 'italic',
+                  color: 'var(--color-gray)',
+                  marginBottom: '8px',
+                }}
+              >
+                {figure.title}
+              </p>
+            )}
+
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                alignItems: 'center',
+                marginBottom: '16px',
+              }}
+            >
+              {lifespan && (
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '13px',
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  {lifespan}
+                </span>
+              )}
+              {figure.era && (
+                <>
+                  {lifespan && (
+                    <span style={{ color: 'var(--color-border)', fontSize: '12px' }}>&middot;</span>
+                  )}
+                  <span
                     style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontSize: '18px',
-                      fontWeight: 400,
-                      fontStyle: 'italic',
-                      marginBottom: '4px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      color: 'var(--color-gray)',
                     }}
                   >
-                    {portrayal.media.title}
-                  </h4>
+                    {figure.era}
+                  </span>
+                </>
+              )}
+              {figure.historicity_status && figure.historicity_status !== 'Historical' && (
+                <>
+                  <span style={{ color: 'var(--color-border)', fontSize: '12px' }}>&middot;</span>
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '10px',
                       textTransform: 'uppercase',
-                      color: 'var(--color-gray)',
-                      marginBottom: '8px',
-                      display: 'block',
+                      letterSpacing: '1px',
+                      padding: '2px 6px',
+                      border: `1px solid ${borderColor}`,
+                      color: borderColor,
                     }}
                   >
-                    {portrayal.media.media_type || 'Media'} / Sentiment: {portrayal.sentiment}
+                    {figure.historicity_status}
                   </span>
-                  {portrayal.sentiment_tags && portrayal.sentiment_tags.length > 0 && (
-                    <p
-                      style={{
-                        fontFamily: 'var(--font-serif)',
-                        fontSize: '14px',
-                        color: '#444',
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      Tags: {portrayal.sentiment_tags.join(', ')}
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+                </>
+              )}
+            </div>
 
-          {/* Network Analysis */}
-          <div className="fsg-section-header">
-            <span>Network Analysis</span>
+            {figure.description && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '16px',
+                  lineHeight: 1.7,
+                  color: 'var(--color-text)',
+                }}
+              >
+                {figure.description}
+              </p>
+            )}
+
+            {!figure.description && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '16px',
+                  lineHeight: 1.7,
+                  color: 'var(--color-text)',
+                }}
+              >
+                {figure.name} is documented in the Fictotum archive with{' '}
+                {totalPortrayals} recorded media portrayal{totalPortrayals !== 1 ? 's' : ''}.
+                {figure.era && ` Active during the ${figure.era}.`}
+              </p>
+            )}
           </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '14px',
-              lineHeight: 1.7,
-              color: 'var(--color-text)',
-              marginTop: '20px',
-              marginBottom: '40px',
-            }}
-          >
-            {figure.name} connects to multiple other historical figures within the database.
-            The portrayal history is characterized by{' '}
-            {sentimentDistribution.Heroic > sentimentDistribution.Villainous
-              ? 'predominantly heroic'
-              : sentimentDistribution.Villainous > sentimentDistribution.Heroic
-              ? 'predominantly villainous'
-              : 'complex and nuanced'}{' '}
-            representations across {Object.keys(mediaTypeCounts).length} media type{Object.keys(mediaTypeCounts).length !== 1 ? 's' : ''}.
-          </p>
+        </div>
 
-          {/* Explore Full Graph CTA */}
-          <Link
-            href={`/explore/graph`}
+        {/* ================================================================
+            STATS BAR
+            ================================================================ */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0',
+            borderTop: '1px solid var(--color-border)',
+            borderBottom: '1px solid var(--color-border)',
+            marginBottom: '32px',
+          }}
+        >
+          <div
             style={{
-              display: 'inline-block',
+              padding: '12px 20px',
+              borderRight: '1px solid var(--color-border)',
               fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              padding: '12px 24px',
-              background: 'var(--color-text)',
-              color: '#fff',
-              textDecoration: 'none',
-              transition: 'all 0.2s',
+              fontSize: '11px',
             }}
-            className="hover:opacity-80"
           >
-            Explore Full Network Graph
-          </Link>
+            <span style={{ color: 'var(--color-gray)' }}>Total </span>
+            <span style={{ fontWeight: 600 }}>{totalPortrayals}</span>
+          </div>
+          {Object.entries(mediaTypeCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([type, count]) => (
+              <div
+                key={type}
+                style={{
+                  padding: '12px 20px',
+                  borderRight: '1px solid var(--color-border)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                }}
+              >
+                <span style={{ color: 'var(--color-gray)' }}>{formatMediaType(type)} </span>
+                <span>{count}</span>
+              </div>
+            ))}
+        </div>
+
+        {/* ================================================================
+            DOCUMENTED APPEARANCES
+            ================================================================ */}
+        <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+          <span>Documented Appearances</span>
+          <span>({totalPortrayals} Records)</span>
+        </div>
+
+        <PortrayalFilters portrayals={figure.portrayals} />
+
+        {/* ================================================================
+            CONNECTED FIGURES
+            ================================================================ */}
+        <div style={{ marginTop: '48px' }}>
+          <ConnectedFigures figureId={figure.canonical_id} />
+        </div>
+
+        {/* ================================================================
+            EXTERNAL LINKS
+            ================================================================ */}
+        {figure.wikidata_id && (
+          <div style={{ marginTop: '48px' }}>
+            <div className="fsg-section-header">
+              <span>External References</span>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: '16px',
+                marginTop: '16px',
+              }}
+            >
+              <a
+                href={`https://www.wikidata.org/wiki/${figure.wikidata_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  color: 'var(--color-text)',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 16px',
+                  border: '1px solid var(--color-border)',
+                }}
+                className="hover:opacity-70 transition-opacity"
+              >
+                <ExternalLink size={12} />
+                Wikidata {figure.wikidata_id}
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            PROVENANCE FOOTER
+            ================================================================ */}
+        <div
+          style={{
+            marginTop: '64px',
+            paddingTop: '16px',
+            borderTop: '1px solid var(--color-border)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>canonical_id: {figure.canonical_id}</span>
+          <span>Fictotum Archive</span>
         </div>
       </div>
     </div>

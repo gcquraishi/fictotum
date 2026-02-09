@@ -6,7 +6,7 @@ interface MediaTimelineProps {
   groupBySeries?: boolean;
 }
 
-const SENTIMENT_COLORS = {
+const SENTIMENT_COLORS: Record<string, string> = {
   Heroic: 'bg-green-50 text-green-700 border-green-500',
   Villainous: 'bg-red-50 text-red-700 border-red-500',
   Complex: 'bg-stone-50 text-stone-700 border-stone-500',

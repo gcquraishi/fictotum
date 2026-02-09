@@ -72,7 +72,15 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
          media: m,
          sentiment: r.sentiment,
          sentiment_tags: r.sentiment_tags,
-         tag_metadata: r.tag_metadata
+         tag_metadata: r.tag_metadata,
+         actor_name: r.actor_name,
+         character_name: r.character_name,
+         role_description: r.role_description,
+         is_protagonist: r.is_protagonist,
+         conflict_flag: r.conflict_flag,
+         conflict_notes: r.conflict_notes,
+         anachronism_flag: r.anachronism_flag,
+         anachronism_notes: r.anachronism_notes
        })[0..100] as portrayals`,
       { canonicalId }
     );
@@ -84,33 +92,53 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
     const record = result.records[0];
     const figureNode = record.get('f');
     const portrayalsData = record.get('portrayals');
+    const fp = figureNode.properties;
 
     const portrayals: Portrayal[] = portrayalsData
       .filter((p: any) => p.media !== null)
       .map((p: any) => {
-        // Hybrid format support: use sentiment_tags if available, otherwise fall back to legacy sentiment
         const sentimentTags = p.sentiment_tags || (p.sentiment ? [p.sentiment.toLowerCase()] : ['complex']);
         const legacySentiment = sentimentTags[0] || 'complex';
+        const mp = p.media.properties;
 
         return {
           media: {
-            title: p.media.properties.title,
-            release_year: p.media.properties.release_year?.toNumber?.() ?? Number(p.media.properties.release_year),
-            wikidata_id: p.media.properties.wikidata_id,
-            media_type: p.media.properties.media_type,
+            media_id: mp.media_id,
+            title: mp.title,
+            release_year: mp.release_year?.toNumber?.() ?? Number(mp.release_year),
+            wikidata_id: mp.wikidata_id,
+            media_type: mp.media_type,
+            creator: mp.creator,
+            director: mp.director,
+            author: mp.author,
+            image_url: mp.image_url || null,
           },
-          sentiment: legacySentiment, // Legacy field for backward compatibility
+          sentiment: legacySentiment,
           sentiment_tags: sentimentTags,
           tag_metadata: p.tag_metadata || undefined,
+          actor_name: p.actor_name || undefined,
+          character_name: p.character_name || undefined,
+          role_description: p.role_description || undefined,
+          is_protagonist: p.is_protagonist || undefined,
+          conflict_flag: p.conflict_flag || undefined,
+          conflict_notes: p.conflict_notes || undefined,
+          anachronism_flag: p.anachronism_flag || undefined,
+          anachronism_notes: p.anachronism_notes || undefined,
         };
       });
 
     return {
-      canonical_id: figureNode.properties.canonical_id,
-      name: figureNode.properties.name,
-      is_fictional: figureNode.properties.is_fictional || false,
-      historicity_status: figureNode.properties.historicity_status || (figureNode.properties.is_fictional ? 'Fictional' : 'Historical'),
-      era: figureNode.properties.era,
+      canonical_id: fp.canonical_id,
+      wikidata_id: fp.wikidata_id,
+      name: fp.name,
+      is_fictional: fp.is_fictional || false,
+      historicity_status: fp.historicity_status || (fp.is_fictional ? 'Fictional' : 'Historical'),
+      era: fp.era,
+      birth_year: fp.birth_year?.toNumber?.() ?? (fp.birth_year != null ? Number(fp.birth_year) : null),
+      death_year: fp.death_year?.toNumber?.() ?? (fp.death_year != null ? Number(fp.death_year) : null),
+      description: fp.description || undefined,
+      title: fp.title || undefined,
+      image_url: fp.image_url || null,
       portrayals,
     };
   } finally {
@@ -126,7 +154,10 @@ export function calculateSentimentDistribution(portrayals: Portrayal[]): Sentime
 
   const counts = portrayals.reduce(
     (acc, p) => {
-      acc[p.sentiment] = (acc[p.sentiment] || 0) + 1;
+      const key = p.sentiment as keyof SentimentDistribution;
+      if (key in acc) {
+        acc[key] = (acc[key] || 0) + 1;
+      }
       return acc;
     },
     { Heroic: 0, Villainous: 0, Complex: 0 } as SentimentDistribution

@@ -7,11 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "validate:entities": "tsx ../scripts/qa/validate_hardcoded_ids.ts"
+    "validate:entities": "tsx ../scripts/qa/validate_hardcoded_ids.ts",
+    "images:generate": "NODE_PATH=./node_modules npx tsx ../scripts/image-gen/generate-images.ts",
+    "images:upload": "NODE_PATH=./node_modules npx tsx ../scripts/image-gen/upload-and-link.ts"
   },
   "dependencies": {
     "@auth/neo4j-adapter": "^2.11.1",
+    "@google/genai": "^1.40.0",
     "@google/generative-ai": "^0.24.1",
+    "@vercel/blob": "^2.2.0",
     "d3": "^7.9.0",
     "double-metaphone": "^2.0.1",
     "lru-cache": "^11.2.5",
@@ -33,7 +37,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "tailwindcss": "^4",
-    "tsx": "^4.21.0",
+    "tsx": "^4.19.0",
     "typescript": "^5"
   }
 }

@@ -5,3 +5,5 @@ __pycache__/
 mcp.json
 .vercel
 .env*.local
+tmp/
+web-app/public/images/
