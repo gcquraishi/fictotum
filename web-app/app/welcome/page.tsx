@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getSession } from '@/lib/neo4j';
 import FigureCard from '@/components/FigureCard';
 import PortrayalCard from '@/components/PortrayalCard';
@@ -282,6 +283,17 @@ export default async function WelcomePage() {
           {figure.mediaTypeCount} media types{yearSpan ? ` spanning ${yearSpan}+ years` : ''}.
           Hero. Villain. Genius. Tyrant. Every portrayal tells a different story.
         </p>
+
+        {/* Tactical Illustration */}
+        <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'center' }}>
+          <Image 
+            src="/illustrations/caesar_sticker.png"
+            alt="Julius Caesar Sticker" 
+            width={320} 
+            height={320}
+            priority
+          />
+        </div>
 
         {/* Figure nameplate */}
         <div
