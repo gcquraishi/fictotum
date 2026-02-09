@@ -15,9 +15,26 @@
   --color-section-bg: #F0F0F0;
   --color-hero-bg: #F9F9F9;
   --color-dept-bg: #FAFAFA;
+
+  /* Node Type Colors */
+  --color-node-historical: #2C2C2C;
+  --color-node-fictional:  #5D4E6D;
+  --color-node-book:       #6B4423;
+  --color-node-film:       #8B2635;
+  --color-node-tv:         #4A5D5E;
+  --color-node-videogame:  #3E5641;
+  --color-node-boardgame:  #8B6914;
+  --color-node-default:    #666666;
 }
 
 @theme inline {
+  /* Responsive Breakpoints (required for md:, lg:, etc.) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
   /* Base Colors */
   --color-background: var(--color-bg);
   --color-foreground: var(--color-text);

@@ -80,6 +80,10 @@ export interface GraphNode {
   name: string;
   type: 'figure' | 'media';
   sentiment?: 'Heroic' | 'Villainous' | 'Complex';
+  canonical_id?: string;
+  wikidata_id?: string;
+  is_fictional?: boolean;
+  media_type?: string;
   mediaCategory?: MediaCategory; // Only applicable to media nodes
   seriesMetadata?: {
     seriesId: string;

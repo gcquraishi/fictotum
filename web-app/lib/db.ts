@@ -387,6 +387,8 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
           id: figureId,
           name: figureNode.properties.name,
           type: 'figure',
+          canonical_id: figureNode.properties.canonical_id,
+          is_fictional: figureNode.properties.is_fictional || false,
         });
         nodeIds.add(figureId);
       }
@@ -401,6 +403,8 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
               id: mediaId,
               name: conn.media.properties.title,
               type: 'media',
+              wikidata_id: conn.media.properties.wikidata_id,
+              media_type: conn.media.properties.media_type,
               sentiment: conn.sentiment || 'Complex',
             });
             nodeIds.add(mediaId);
@@ -423,6 +427,8 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
             id: otherId,
             name: otherFigure.properties.name,
             type: 'figure',
+            canonical_id: otherFigure.properties.canonical_id,
+            is_fictional: otherFigure.properties.is_fictional || false,
           });
           nodeIds.add(otherId);
         }

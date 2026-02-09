@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface GraphNode {
   id: string;
   name: string;
   type: 'figure' | 'media';
+  canonical_id?: string;
+  wikidata_id?: string;
+  is_fictional?: boolean;
+  media_type?: string;
   x?: number;
   y?: number;
   fx?: number | null;
@@ -33,6 +38,55 @@ export default function LandingPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [graphLoaded, setGraphLoaded] = useState(false);
   const simulationRef = useRef<any>(null);
+  const router = useRouter();
+
+  // Node type color map
+  const NODE_COLORS: Record<string, string> = {
+    historical:  '#2C2C2C',
+    fictional:   '#5D4E6D',
+    Book:        '#6B4423',
+    Film:        '#8B2635',
+    TVSeries:    '#4A5D5E',
+    'Video Game':'#3E5641',
+    Game:        '#8B6914',
+    default:     '#666666',
+  };
+
+  // Node type icon map (typographic symbols)
+  const NODE_ICONS: Record<string, string> = {
+    historical:   '\u2022',  // •
+    fictional:    '\u25C7',  // ◇
+    Book:         '\u25AA',  // ▪
+    Film:         '\u25B8',  // ▸
+    TVSeries:     '\u25AB',  // ▫
+    'Video Game': '\u2666',  // ♦
+    Game:         '\u25A3',  // ▣
+    default:      '\u2015',  // ―
+  };
+
+  function getNodeColor(d: GraphNode): string {
+    if (d.type === 'figure') {
+      return d.is_fictional ? NODE_COLORS.fictional : NODE_COLORS.historical;
+    }
+    return NODE_COLORS[d.media_type || ''] || NODE_COLORS.default;
+  }
+
+  function getNodeIcon(d: GraphNode): string {
+    if (d.type === 'figure') {
+      return d.is_fictional ? NODE_ICONS.fictional : NODE_ICONS.historical;
+    }
+    return NODE_ICONS[d.media_type || ''] || NODE_ICONS.default;
+  }
+
+  function getNodeUrl(d: GraphNode): string {
+    if (d.type === 'figure' && d.canonical_id) {
+      return `/figure/${d.canonical_id}`;
+    }
+    if (d.type === 'media' && d.wikidata_id) {
+      return `/media/${d.wikidata_id}`;
+    }
+    return '#';
+  }
 
   // Fetch stats
   useEffect(() => {
@@ -96,55 +150,212 @@ export default function LandingPage() {
       // Clear previous content
       svg.selectAll('*').remove();
 
-      // Assign radius based on node characteristics
-      const nodesWithRadius = nodes.map((n: any, i: number) => ({
-        ...n,
-        r: n.type === 'figure' ? (i % 5 === 0 ? 12 : 8) : 4,
-      }));
+      // Compute node degree from links for sizing and label visibility
+      const degreeMap = new Map<string, number>();
+      links.forEach((link: any) => {
+        const sid = typeof link.source === 'string' ? link.source : link.source.id;
+        const tid = typeof link.target === 'string' ? link.target : link.target.id;
+        degreeMap.set(sid, (degreeMap.get(sid) || 0) + 1);
+        degreeMap.set(tid, (degreeMap.get(tid) || 0) + 1);
+      });
+
+      // Size nodes by actual connectivity
+      const nodesWithRadius = nodes.map((n: any) => {
+        const degree = degreeMap.get(n.id) || 1;
+        const r = n.type === 'figure'
+          ? Math.min(4 + degree * 1.5, 18)
+          : Math.min(3 + degree * 0.8, 10);
+        return { ...n, r, degree };
+      });
+
+      // Hub nodes: high-degree figures always show labels
+      const HUB_DEGREE = 6;
+
+      // Build neighbor lookup for click highlighting
+      const neighborMap = new Map<string, Set<string>>();
+      links.forEach((link: any) => {
+        const sid = typeof link.source === 'string' ? link.source : link.source.id;
+        const tid = typeof link.target === 'string' ? link.target : link.target.id;
+        if (!neighborMap.has(sid)) neighborMap.set(sid, new Set());
+        if (!neighborMap.has(tid)) neighborMap.set(tid, new Set());
+        neighborMap.get(sid)!.add(tid);
+        neighborMap.get(tid)!.add(sid);
+      });
 
       const simulation = d3Module.forceSimulation(nodesWithRadius)
         .force('link', d3Module.forceLink(links).id((d: any) => d.id).distance(100))
         .force('charge', d3Module.forceManyBody().strength(-150))
         .force('center', d3Module.forceCenter(width / 2, height / 2))
-        .force('collide', d3Module.forceCollide().radius((d: any) => d.r + 5));
+        .force('collide', d3Module.forceCollide().radius((d: any) => d.r + 14));
 
       simulationRef.current = simulation;
 
-      const linkGroup = svg.append('g')
-        .attr('stroke', '#E0E0E0')
-        .attr('stroke-opacity', 0.6);
+      // Zoomable container wrapping all graph content
+      const graphContainer = svg.append('g').attr('class', 'graph-container');
+
+      const zoom = d3Module.zoom()
+        .scaleExtent([0.5, 3])
+        .on('zoom', (event: any) => {
+          graphContainer.attr('transform', event.transform);
+        });
+      svg.call(zoom);
+      // Double-click resets to default view instead of D3's default 2x zoom-in
+      svg.on('dblclick.zoom', () => {
+        svg.transition().duration(400).call(zoom.transform, d3Module.zoomIdentity);
+      });
+
+      // SVG layers in z-order: links, nodes, labels
+      const linkGroup = graphContainer.append('g').attr('class', 'links');
+      const nodeGroup = graphContainer.append('g').attr('class', 'nodes');
+      const labelGroup = graphContainer.append('g').attr('class', 'labels');
 
       const linkElements = linkGroup.selectAll('line')
         .data(links)
         .join('line')
+        .attr('stroke', '#D0D0D0')
+        .attr('stroke-opacity', 0.4)
         .attr('stroke-width', 1);
-
-      const nodeGroup = svg.append('g');
 
       const nodeElements = nodeGroup.selectAll('circle')
         .data(nodesWithRadius)
         .join('circle')
         .attr('r', (d: any) => d.r)
-        .attr('fill', (d: any) => d.type === 'figure' ? '#1A1A1A' : '#8B2635')
-        .attr('opacity', 0.3)
-        .style('cursor', 'grab')
-        .call(drag(d3Module, simulation) as any);
+        .attr('fill', (d: any) => getNodeColor(d))
+        .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.7 : 0.3)
+        .style('cursor', 'pointer');
 
-      // Hover interactions
-      nodeElements.on('mouseover', function (this: SVGCircleElement) {
-        d3Module.select(this)
-          .transition()
-          .duration(200)
-          .attr('opacity', 1)
-          .attr('r', (d: any) => d.r * 1.5);
-      }).on('mouseout', function (this: SVGCircleElement) {
-        d3Module.select(this)
-          .transition()
-          .duration(200)
-          .attr('opacity', 0.3)
+      // Labels: truncate long names, always visible for hubs
+      const truncate = (s: string, max: number) =>
+        s.length > max ? s.slice(0, max - 1) + '\u2026' : s;
+
+      const labelElements = labelGroup.selectAll('text')
+        .data(nodesWithRadius)
+        .join('text')
+        .text((d: any) => getNodeIcon(d) + ' ' + truncate(d.name, 20))
+        .attr('font-size', (d: any) => d.type === 'figure' ? '11px' : '9px')
+        .attr('font-family', (d: any) =>
+          d.type === 'figure' ? 'Georgia, serif' : 'var(--font-mono, monospace)')
+        .attr('fill', '#1A1A1A')
+        .attr('text-anchor', 'middle')
+        .attr('dy', (d: any) => -(d.r + 5))
+        .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.85 : 0)
+        .style('user-select', 'none')
+        .style('pointer-events', 'auto')
+        .style('cursor', 'pointer');
+
+      // -- Selection state --
+      let selectedNodeId: string | null = null;
+
+      function resetHighlight() {
+        selectedNodeId = null;
+        nodeElements.transition().duration(200)
+          .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.7 : 0.3)
           .attr('r', (d: any) => d.r);
+        linkElements.transition().duration(200)
+          .attr('stroke-opacity', 0.4)
+          .attr('stroke', '#D0D0D0');
+        labelElements.transition().duration(200)
+          .attr('opacity', (d: any) => d.degree >= HUB_DEGREE ? 0.85 : 0);
+      }
+
+      function selectNode(d: any) {
+        if (selectedNodeId === d.id) {
+          resetHighlight();
+          return;
+        }
+        selectedNodeId = d.id;
+        const neighbors = neighborMap.get(d.id) || new Set<string>();
+
+        nodeElements.transition().duration(200)
+          .attr('opacity', (n: any) =>
+            n.id === d.id ? 1 : neighbors.has(n.id) ? 0.8 : 0.06)
+          .attr('r', (n: any) => n.id === d.id ? n.r * 1.3 : n.r);
+
+        linkElements.transition().duration(200)
+          .attr('stroke-opacity', (l: any) => {
+            const sid = typeof l.source === 'object' ? l.source.id : l.source;
+            const tid = typeof l.target === 'object' ? l.target.id : l.target;
+            return (sid === d.id || tid === d.id) ? 0.7 : 0.03;
+          })
+          .attr('stroke', (l: any) => {
+            const sid = typeof l.source === 'object' ? l.source.id : l.source;
+            const tid = typeof l.target === 'object' ? l.target.id : l.target;
+            return (sid === d.id || tid === d.id) ? '#8B2635' : '#D0D0D0';
+          });
+
+        labelElements.transition().duration(200)
+          .attr('opacity', (n: any) =>
+            n.id === d.id || neighbors.has(n.id) ? 1 : 0);
+      }
+
+      // Click background to deselect
+      svg.on('click', () => {
+        resetHighlight();
       });
 
+      // -- Hover --
+      nodeElements
+        .on('mouseover', function (this: SVGCircleElement, _event: any, d: any) {
+          if (selectedNodeId) return;
+          d3Module.select(this).transition().duration(150)
+            .attr('opacity', 1)
+            .attr('r', d.r * 1.2);
+          // Show this node's label
+          labelElements.filter((t: any) => t.id === d.id)
+            .transition().duration(150).attr('opacity', 1);
+        })
+        .on('mouseout', function (this: SVGCircleElement, _event: any, d: any) {
+          if (selectedNodeId) return;
+          d3Module.select(this).transition().duration(150)
+            .attr('opacity', d.degree >= HUB_DEGREE ? 0.7 : 0.3)
+            .attr('r', d.r);
+          labelElements.filter((t: any) => t.id === d.id)
+            .transition().duration(150)
+            .attr('opacity', d.degree >= HUB_DEGREE ? 0.85 : 0);
+        });
+
+      // -- Drag with click detection --
+      let hasDragged = false;
+
+      nodeElements.call(d3Module.drag()
+        .on('start', (event: any) => {
+          event.sourceEvent.stopPropagation();
+          hasDragged = false;
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
+        })
+        .on('drag', (event: any) => {
+          if (!hasDragged) {
+            hasDragged = true;
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+          }
+          event.subject.fx = event.x;
+          event.subject.fy = event.y;
+        })
+        .on('end', (event: any) => {
+          if (!event.active) simulation.alphaTarget(0);
+          event.subject.fx = null;
+          event.subject.fy = null;
+        })
+      );
+
+      // Click circle to explore connections (only fires if not dragged)
+      nodeElements.on('click', function (_event: any, d: any) {
+        _event.stopPropagation();
+        if (hasDragged) return;
+        selectNode(d);
+      });
+
+      // Click label to navigate to detail page
+      labelElements.on('click', (event: any, d: any) => {
+        event.stopPropagation();
+        const url = getNodeUrl(d);
+        if (url !== '#') {
+          router.push(url);
+        }
+      });
+
+      // -- Tick: update positions for nodes, links, and labels --
       simulation.on('tick', () => {
         linkElements
           .attr('x1', (d: any) => d.source.x)
@@ -155,6 +366,10 @@ export default function LandingPage() {
         nodeElements
           .attr('cx', (d: any) => d.x)
           .attr('cy', (d: any) => d.y);
+
+        labelElements
+          .attr('x', (d: any) => d.x)
+          .attr('y', (d: any) => d.y);
       });
 
       // Resize handler
@@ -208,65 +423,73 @@ export default function LandingPage() {
           ref={containerRef}
           style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
         >
-          <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+          <svg ref={svgRef} style={{ width: '100%', height: '100%', touchAction: 'none' }} />
         </div>
 
-        {/* Hero Overlay */}
+        {/* Top-left title badge */}
         <div
           style={{
             position: 'absolute',
-            textAlign: 'center',
+            top: '32px',
+            left: '40px',
             zIndex: 10,
             pointerEvents: 'none',
-            maxWidth: '800px',
           }}
         >
           <h1
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '84px',
+              fontSize: '28px',
               fontWeight: 300,
-              letterSpacing: '-3px',
-              lineHeight: 1,
               color: 'var(--color-text)',
-              background: 'rgba(254,254,254,0.9)',
-              padding: '30px 40px',
-              border: '1px solid var(--color-border)',
+              background: 'rgba(254,254,254,0.85)',
+              padding: '12px 20px',
+              borderLeft: '4px solid var(--color-accent)',
+              lineHeight: 1.3,
             }}
           >
-            The Intersection of History & Fiction
+            The Intersection<br />of History &amp; Fiction
           </h1>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '14px',
-              textTransform: 'uppercase',
-              letterSpacing: '3px',
-              marginTop: '24px',
-              color: 'var(--color-accent)',
-              background: '#fff',
-              padding: '8px 16px',
-              display: 'inline-block',
-            }}
-          >
-            Exploring {stats ? stats.portrayals.toLocaleString() : '...'} Portrayals Across Time
-          </span>
         </div>
 
-        {/* Bottom hint */}
+        {/* Bottom bar with stats and hint */}
         <div
           style={{
             position: 'absolute',
-            bottom: '30px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--color-gray)',
-            letterSpacing: '2px',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '16px 40px',
+            background: 'rgba(254,254,254,0.85)',
+            borderTop: '1px solid var(--color-border)',
+            pointerEvents: 'none',
           }}
         >
-          [ INTERACTIVE FORCE-DIRECTED GRAPH &mdash; DRAG TO EXPLORE ]
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: 'var(--color-accent)',
+            }}
+          >
+            {stats ? stats.portrayals.toLocaleString() : '...'} Portrayals Mapped
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              color: 'var(--color-gray)',
+              letterSpacing: '2px',
+            }}
+          >
+            Click circle to explore &middot; Click name to view details &middot; Scroll to zoom
+          </span>
         </div>
       </div>
 
@@ -618,27 +841,3 @@ export default function LandingPage() {
   );
 }
 
-// D3 Drag behavior
-function drag(d3: any, simulation: any) {
-  function dragstarted(event: any) {
-    if (!event.active) simulation.alphaTarget(0.3).restart();
-    event.subject.fx = event.subject.x;
-    event.subject.fy = event.subject.y;
-  }
-
-  function dragged(event: any) {
-    event.subject.fx = event.x;
-    event.subject.fy = event.y;
-  }
-
-  function dragended(event: any) {
-    if (!event.active) simulation.alphaTarget(0);
-    event.subject.fx = null;
-    event.subject.fy = null;
-  }
-
-  return d3.drag()
-    .on('start', dragstarted)
-    .on('drag', dragged)
-    .on('end', dragended);
-}
