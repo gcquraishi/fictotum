@@ -1,3 +1,5 @@
+'use client';
+
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import {
   getMediaTypeColor,
