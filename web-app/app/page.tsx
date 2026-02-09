@@ -148,6 +148,23 @@ export default async function HomePage() {
         </p>
 
         <HomepageSearch />
+
+        <Link
+          href="/welcome"
+          style={{
+            display: 'inline-block',
+            marginTop: '16px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            color: 'var(--color-accent)',
+            textDecoration: 'none',
+          }}
+          className="hover:opacity-70 transition-opacity"
+        >
+          See how it works &rarr;
+        </Link>
       </section>
 
       {/* ================================================================
