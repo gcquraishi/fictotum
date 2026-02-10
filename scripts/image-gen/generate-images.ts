@@ -3,13 +3,20 @@
  * Batch image generation for Fictotum entities.
  *
  * Generates AI illustrations for HistoricalFigure and MediaWork nodes
- * using Google Gemini (gemini-2.5-flash-image) in the house engraved style.
+ * using Google Gemini (gemini-2.5-flash-image) in the house sticker style.
+ *
+ * Features:
+ *   - Adaptive rate control: starts fast, backs off on 429s, speeds up on success
+ *   - Parallel workers: configurable concurrency (default 2)
+ *   - Resume: manifest tracks completed images, skips on restart
+ *   - Background removal: auto-converts to transparent PNG
  *
  * Usage (from web-app/):
  *   npx tsx ../scripts/image-gen/generate-images.ts --type figures --limit 10
  *   npx tsx ../scripts/image-gen/generate-images.ts --type works --limit 10
  *   npx tsx ../scripts/image-gen/generate-images.ts --type all
  *   npx tsx ../scripts/image-gen/generate-images.ts --type figures --dry-run
+ *   npx tsx ../scripts/image-gen/generate-images.ts --type figures --concurrency 3
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -36,9 +43,57 @@ const OUTPUT_DIR = path.resolve(__dirname, '../../tmp/generated-images');
 const MANIFEST_PATH = path.resolve(OUTPUT_DIR, 'manifest.json');
 const MODEL_NAME = 'gemini-2.5-flash-image';
 const ASPECT_RATIO = '3:4'; // Portrait orientation for cards
-const RATE_LIMIT_MS = 4000; // 4s between requests (15 RPM safe margin)
 const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 10000;
+
+// ---------------------------------------------------------------------------
+// Adaptive rate controller
+// ---------------------------------------------------------------------------
+
+class RateController {
+  private delayMs: number;
+  private readonly minDelay: number;
+  private readonly maxDelay: number;
+  private consecutiveSuccesses = 0;
+  private readonly speedUpAfter: number;
+
+  constructor(opts?: {
+    initialDelayMs?: number;
+    minDelayMs?: number;
+    maxDelayMs?: number;
+    speedUpAfter?: number;
+  }) {
+    this.delayMs = opts?.initialDelayMs ?? 1500;
+    this.minDelay = opts?.minDelayMs ?? 800;
+    this.maxDelay = opts?.maxDelayMs ?? 60000;
+    this.speedUpAfter = opts?.speedUpAfter ?? 5;
+  }
+
+  /** Call after a successful request. */
+  recordSuccess(): void {
+    this.consecutiveSuccesses++;
+    if (this.consecutiveSuccesses >= this.speedUpAfter) {
+      this.delayMs = Math.max(this.minDelay, Math.floor(this.delayMs * 0.75));
+      this.consecutiveSuccesses = 0;
+    }
+  }
+
+  /** Call after a 429 rate limit. Returns the backoff duration used. */
+  recordRateLimit(attempt: number): number {
+    this.consecutiveSuccesses = 0;
+    this.delayMs = Math.min(this.maxDelay, this.delayMs * 2);
+    // Backoff = current delay * attempt multiplier, capped at max
+    return Math.min(this.maxDelay, this.delayMs * attempt);
+  }
+
+  /** Wait the current delay between requests. */
+  async wait(): Promise<void> {
+    await sleep(this.delayMs);
+  }
+
+  get currentDelay(): number {
+    return this.delayMs;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // CLI Args
@@ -49,6 +104,7 @@ interface CliArgs {
   limit: number;
   dryRun: boolean;
   offset: number;
+  concurrency: number;
 }
 
 function parseArgs(): CliArgs {
@@ -58,6 +114,7 @@ function parseArgs(): CliArgs {
     limit: Infinity,
     dryRun: false,
     offset: 0,
+    concurrency: 2,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -67,6 +124,8 @@ function parseArgs(): CliArgs {
       result.limit = parseInt(args[++i], 10);
     } else if (args[i] === '--offset' && args[i + 1]) {
       result.offset = parseInt(args[++i], 10);
+    } else if (args[i] === '--concurrency' && args[i + 1]) {
+      result.concurrency = Math.max(1, Math.min(5, parseInt(args[++i], 10)));
     } else if (args[i] === '--dry-run') {
       result.dryRun = true;
     }
@@ -220,12 +279,13 @@ async function fetchWorks(
 }
 
 // ---------------------------------------------------------------------------
-// Image generation
+// Image generation (single request with retries)
 // ---------------------------------------------------------------------------
 
 async function generateImage(
   ai: GoogleGenAI,
   prompt: string,
+  rate: RateController,
 ): Promise<Buffer | null> {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -245,7 +305,7 @@ async function generateImage(
       if (!parts) {
         console.error(`  No parts in response (attempt ${attempt})`);
         if (attempt < MAX_RETRIES) {
-          await sleep(RETRY_DELAY_MS);
+          await sleep(5000);
           continue;
         }
         return null;
@@ -254,41 +314,62 @@ async function generateImage(
       for (const part of parts) {
         if ((part as any).inlineData) {
           const imageData = (part as any).inlineData.data;
+          rate.recordSuccess();
           return Buffer.from(imageData, 'base64');
         }
       }
 
       console.error(`  No image data in response (attempt ${attempt})`);
       if (attempt < MAX_RETRIES) {
-        await sleep(RETRY_DELAY_MS);
+        await sleep(5000);
       }
     } catch (err: any) {
       const msg = err.message || String(err);
       console.error(`  API error (attempt ${attempt}): ${msg}`);
 
-      // API key referrer restriction
+      // API key referrer restriction — don't retry
       if (msg.includes('API_KEY_HTTP_REFERRER_BLOCKED') || msg.includes('PERMISSION_DENIED')) {
         console.error('\n  *** API KEY REFERRER RESTRICTION ***');
         console.error('  The GEMINI_API_KEY has HTTP referrer restrictions that block CLI usage.');
         console.error('  Fix: Go to Google Cloud Console > APIs & Services > Credentials');
         console.error('  and either remove referrer restrictions from this key or create');
         console.error('  a new unrestricted key for server-side use.\n');
-        return null; // Don't retry, this won't resolve
+        return null;
       }
 
-      // Rate limit: back off significantly
+      // Rate limit: adaptive backoff
       if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
-        const backoff = RETRY_DELAY_MS * attempt * 2;
-        console.log(`  Rate limited. Waiting ${backoff / 1000}s...`);
+        const backoff = rate.recordRateLimit(attempt);
+        console.log(`  Rate limited. Backing off ${(backoff / 1000).toFixed(1)}s (delay now ${(rate.currentDelay / 1000).toFixed(1)}s)...`);
         await sleep(backoff);
       } else if (attempt < MAX_RETRIES) {
-        await sleep(RETRY_DELAY_MS);
+        await sleep(5000);
       }
     }
   }
 
   return null;
 }
+
+// ---------------------------------------------------------------------------
+// Work item types for the parallel queue
+// ---------------------------------------------------------------------------
+
+interface FigureWorkItem {
+  kind: 'figure';
+  index: number;
+  total: number;
+  entity: FigureEntity;
+}
+
+interface MediaWorkItem {
+  kind: 'work';
+  index: number;
+  total: number;
+  entity: WorkEntity;
+}
+
+type WorkItem = FigureWorkItem | MediaWorkItem;
 
 // ---------------------------------------------------------------------------
 // Main pipeline
@@ -298,7 +379,7 @@ async function main() {
   const args = parseArgs();
   console.log(`\n=== Fictotum Image Generation ===`);
   console.log(`Type: ${args.type} | Limit: ${args.limit === Infinity ? 'all' : args.limit} | Offset: ${args.offset} | Dry run: ${args.dryRun}`);
-  console.log(`Model: ${MODEL_NAME} | Aspect: ${ASPECT_RATIO}`);
+  console.log(`Model: ${MODEL_NAME} | Aspect: ${ASPECT_RATIO} | Concurrency: ${args.concurrency}`);
   console.log(`Output: ${OUTPUT_DIR}\n`);
 
   // Ensure output dirs exist
@@ -321,115 +402,125 @@ async function main() {
   }
   const ai = new GoogleGenAI({ apiKey });
 
-  let totalGenerated = 0;
-  let totalFailed = 0;
+  // Shared rate controller across all workers
+  const rate = new RateController({
+    initialDelayMs: 1500,
+    minDelayMs: 800,
+    maxDelayMs: 60000,
+    speedUpAfter: 5,
+  });
 
-  // --- Generate figure images ---
+  // Build work queue
+  const queue: WorkItem[] = [];
+
   if (args.type === 'figures' || args.type === 'all') {
     const figures = await fetchFigures(driver, args.limit, args.offset, existingIds);
     console.log(`\nFigures to process: ${figures.length}`);
-
     for (let i = 0; i < figures.length; i++) {
-      const figure = figures[i];
-      const prompt = buildFigurePrompt(figure);
-      const safeId = sanitizeFilename(figure.canonical_id);
-      const filename = `figures/${safeId}.png`;
-
-      console.log(`[${i + 1}/${figures.length}] ${figure.name} (${figure.canonical_id})`);
-
-      if (args.dryRun) {
-        console.log(`  PROMPT: ${prompt.substring(0, 120)}...`);
-        continue;
-      }
-
-      const imageBuffer = await generateImage(ai, prompt);
-      if (imageBuffer) {
-        const outputPath = path.join(OUTPUT_DIR, filename);
-        fs.writeFileSync(outputPath, imageBuffer);
-        console.log(`  Saved: ${filename} (${(imageBuffer.length / 1024).toFixed(1)}KB)`);
-
-        // Remove background → transparent PNG (die-cut sticker)
-        await removeBackground(outputPath);
-        console.log(`  Background removed (transparent PNG)`);
-
-        manifest.entries.push({
-          id: figure.canonical_id,
-          entityType: 'figure',
-          name: figure.name,
-          filename,
-          prompt,
-          generatedAt: new Date().toISOString(),
-          model: MODEL_NAME,
-        });
-        saveManifest(manifest);
-        totalGenerated++;
-      } else {
-        console.error(`  FAILED: Could not generate image for ${figure.name}`);
-        totalFailed++;
-      }
-
-      // Rate limit
-      if (i < figures.length - 1) {
-        await sleep(RATE_LIMIT_MS);
-      }
+      queue.push({ kind: 'figure', index: queue.length, total: 0, entity: figures[i] });
     }
   }
 
-  // --- Generate work images ---
   if (args.type === 'works' || args.type === 'all') {
     const works = await fetchWorks(driver, args.limit, args.offset, existingIds);
-    console.log(`\nWorks to process: ${works.length}`);
-
+    console.log(`Works to process: ${works.length}`);
     for (let i = 0; i < works.length; i++) {
-      const work = works[i];
-      const prompt = buildWorkPrompt(work);
-      const workId = work.wikidata_id || work.media_id || 'unknown';
-      const safeId = sanitizeFilename(workId);
-      const filename = `works/${safeId}.png`;
+      queue.push({ kind: 'work', index: queue.length, total: 0, entity: works[i] });
+    }
+  }
 
-      console.log(`[${i + 1}/${works.length}] ${work.title} (${workId})`);
+  // Set total count on all items
+  for (const item of queue) {
+    item.total = queue.length;
+  }
+
+  if (queue.length === 0) {
+    console.log('\nNothing to generate.');
+    await driver.close();
+    return;
+  }
+
+  // Run parallel workers
+  console.log(`\nProcessing ${queue.length} items with ${args.concurrency} worker(s)...\n`);
+
+  let generated = 0;
+  let failed = 0;
+  let cursor = 0;
+
+  async function worker(workerId: number): Promise<void> {
+    while (true) {
+      const idx = cursor++;
+      if (idx >= queue.length) break;
+
+      const item = queue[idx];
+      const label = item.kind === 'figure'
+        ? `${(item.entity as FigureEntity).name} (${(item.entity as FigureEntity).canonical_id})`
+        : `${(item.entity as MediaWorkItem['entity']).title}`;
+
+      const prompt = item.kind === 'figure'
+        ? buildFigurePrompt(item.entity as FigureEntity)
+        : buildWorkPrompt(item.entity as MediaWorkItem['entity']);
+
+      let filename: string;
+      let entityId: string;
+      if (item.kind === 'figure') {
+        const fig = item.entity as FigureEntity;
+        entityId = fig.canonical_id;
+        filename = `figures/${sanitizeFilename(fig.canonical_id)}.png`;
+      } else {
+        const work = item.entity as MediaWorkItem['entity'];
+        entityId = work.wikidata_id || work.media_id || 'unknown';
+        filename = `works/${sanitizeFilename(entityId)}.png`;
+      }
+
+      console.log(`[${item.index + 1}/${item.total}] (w${workerId}) ${label}`);
 
       if (args.dryRun) {
         console.log(`  PROMPT: ${prompt.substring(0, 120)}...`);
         continue;
       }
 
-      const imageBuffer = await generateImage(ai, prompt);
+      // Wait before request (adaptive delay)
+      await rate.wait();
+
+      const imageBuffer = await generateImage(ai, prompt, rate);
       if (imageBuffer) {
         const outputPath = path.join(OUTPUT_DIR, filename);
         fs.writeFileSync(outputPath, imageBuffer);
-        console.log(`  Saved: ${filename} (${(imageBuffer.length / 1024).toFixed(1)}KB)`);
+        console.log(`  Saved: ${filename} (${(imageBuffer.length / 1024).toFixed(1)}KB) [${(rate.currentDelay / 1000).toFixed(1)}s delay]`);
 
-        // Remove background → transparent PNG (die-cut sticker)
+        // Remove background → transparent PNG
         await removeBackground(outputPath);
         console.log(`  Background removed (transparent PNG)`);
 
         manifest.entries.push({
-          id: workId,
-          entityType: 'work',
-          name: work.title,
+          id: entityId,
+          entityType: item.kind === 'figure' ? 'figure' : 'work',
+          name: item.kind === 'figure'
+            ? (item.entity as FigureEntity).name
+            : (item.entity as MediaWorkItem['entity']).title,
           filename,
           prompt,
           generatedAt: new Date().toISOString(),
           model: MODEL_NAME,
         });
         saveManifest(manifest);
-        totalGenerated++;
+        generated++;
       } else {
-        console.error(`  FAILED: Could not generate image for ${work.title}`);
-        totalFailed++;
-      }
-
-      if (i < works.length - 1) {
-        await sleep(RATE_LIMIT_MS);
+        console.error(`  FAILED: ${label}`);
+        failed++;
       }
     }
   }
+
+  const workerCount = Math.min(args.concurrency, queue.length);
+  const workers = Array.from({ length: workerCount }, (_, i) => worker(i));
+  await Promise.all(workers);
 
   await driver.close();
 
   console.log(`\n=== Generation Complete ===`);
-  console.log(`Generated: ${totalGenerated} | Failed: ${totalFailed}`);
+  console.log(`Generated: ${generated} | Failed: ${failed}`);
   console.log(`Manifest: ${manifest.entries.length} total images`);
   if (args.dryRun) {
     console.log('(Dry run -- no images were actually generated)');
