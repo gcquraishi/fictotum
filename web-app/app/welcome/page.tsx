@@ -214,10 +214,12 @@ function getYearSpan(portrayals: ShowcaseData['portrayals']): string {
 }
 
 function getMediaTypeSummary(mediaTypes: string[]): string {
-  return mediaTypes
+  const unique = mediaTypes
     .map(formatMediaType)
-    .filter((v, i, arr) => arr.indexOf(v) === i)
-    .join(', ');
+    .map((t) => t.toLowerCase())
+    .filter((v, i, arr) => arr.indexOf(v) === i);
+  if (unique.length <= 1) return unique[0] || '';
+  return `${unique.slice(0, -1).join(', ')}, and ${unique[unique.length - 1]}`;
 }
 
 // =============================================================================
@@ -233,14 +235,13 @@ export default async function WelcomePage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
       {/* ================================================================
-          HERO
+          HERO — compact layout, sticker + text side by side
           ================================================================ */}
       <section
         style={{
-          padding: '100px 40px 60px',
+          padding: '48px 40px 32px',
           maxWidth: '800px',
           margin: '0 auto',
-          textAlign: 'center',
         }}
       >
         <p
@@ -250,102 +251,97 @@ export default async function WelcomePage() {
             textTransform: 'uppercase',
             letterSpacing: '2px',
             color: 'var(--color-accent)',
-            marginBottom: '24px',
+            marginBottom: '16px',
           }}
         >
           Fictotum Archive
         </p>
 
-        <h1
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '48px',
-            fontWeight: 300,
-            lineHeight: 1.2,
-            marginBottom: '16px',
-          }}
-        >
-          One Figure,<br />A Thousand Stories
-        </h1>
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'center', marginBottom: '24px' }}>
+          {/* Sticker */}
+          <div style={{ flexShrink: 0 }}>
+            <Image
+              src="/illustrations/caesar_sticker.png"
+              alt="Julius Caesar Sticker"
+              width={180}
+              height={180}
+              priority
+            />
+          </div>
 
-        <p
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '20px',
-            color: 'var(--color-gray)',
-            fontStyle: 'italic',
-            lineHeight: 1.6,
-            maxWidth: '560px',
-            margin: '0 auto 40px',
-          }}
-        >
-          {figure.name} has been reimagined {figure.portrayalCount} times across{' '}
-          {figure.mediaTypeCount} media types{yearSpan ? ` spanning ${yearSpan}+ years` : ''}.
-          Hero. Villain. Genius. Tyrant. Every portrayal tells a different story.
-        </p>
-
-        {/* Tactical Illustration */}
-        <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'center' }}>
-          <Image 
-            src="/illustrations/caesar_sticker.png"
-            alt="Julius Caesar Sticker" 
-            width={320} 
-            height={320}
-            priority
-          />
-        </div>
-
-        {/* Figure nameplate */}
-        <div
-          style={{
-            display: 'inline-block',
-            padding: '20px 40px',
-            border: '1px solid var(--color-border)',
-            borderBottom: '3px solid var(--color-accent)',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '28px',
-              fontWeight: 300,
-              marginBottom: '4px',
-            }}
-          >
-            {figure.name}
-          </p>
-          {lifespan && (
-            <p
+          {/* Text + nameplate */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1
               style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
-                color: 'var(--color-gray)',
-                marginBottom: '4px',
+                fontFamily: 'var(--font-serif)',
+                fontSize: '36px',
+                fontWeight: 300,
+                lineHeight: 1.2,
+                marginBottom: '12px',
               }}
             >
-              {lifespan}
+              One Figure, A Thousand Stories
+            </h1>
+
+            <p
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '16px',
+                color: 'var(--color-gray)',
+                fontStyle: 'italic',
+                lineHeight: 1.5,
+                marginBottom: '12px',
+              }}
+            >
+              {figure.name} has been reimagined {figure.portrayalCount} times across{' '}
+              {figure.mediaTypeCount} media types{yearSpan ? ` spanning ${yearSpan}+ years` : ''}.
+              Hero. Villain. Genius. Tyrant.
             </p>
-          )}
-          <p
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              color: 'var(--color-accent)',
-            }}
-          >
-            {figure.era}
-          </p>
+
+            {/* Inline nameplate */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '20px',
+                  fontWeight: 400,
+                }}
+              >
+                {figure.name}
+              </span>
+              {lifespan && (
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    color: 'var(--color-gray)',
+                  }}
+                >
+                  {lifespan}
+                </span>
+              )}
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  color: 'var(--color-accent)',
+                }}
+              >
+                {figure.era}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Stat pills */}
+        {/* Stat pills — compact row */}
         <div
           style={{
             display: 'flex',
-            justifyContent: 'center',
             gap: '24px',
-            marginTop: '32px',
+            paddingTop: '16px',
+            borderTop: '1px solid var(--color-border)',
           }}
         >
           {[
@@ -378,26 +374,26 @@ export default async function WelcomePage() {
         style={{
           maxWidth: '800px',
           margin: '0 auto',
-          padding: '0 40px 48px',
+          padding: '0 40px 32px',
         }}
       >
         <div
           style={{
             borderTop: '1px solid var(--color-border)',
-            paddingTop: '40px',
+            paddingTop: '24px',
           }}
         >
-          <div className="fsg-section-header" style={{ marginBottom: '8px' }}>
+          <div className="fsg-section-header" style={{ marginBottom: '4px' }}>
             <span>Contrasting Portrayals</span>
           </div>
           <p
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '16px',
+              fontSize: '15px',
               fontStyle: 'italic',
               color: 'var(--color-gray)',
-              marginBottom: '24px',
-              lineHeight: 1.6,
+              marginBottom: '16px',
+              lineHeight: 1.5,
             }}
           >
             The same historical figure, seen through{' '}
@@ -434,26 +430,26 @@ export default async function WelcomePage() {
         style={{
           maxWidth: '800px',
           margin: '0 auto',
-          padding: '0 40px 48px',
+          padding: '0 40px 32px',
         }}
       >
         <div
           style={{
             borderTop: '1px solid var(--color-border)',
-            paddingTop: '40px',
+            paddingTop: '24px',
           }}
         >
-          <div className="fsg-section-header" style={{ marginBottom: '8px' }}>
+          <div className="fsg-section-header" style={{ marginBottom: '4px' }}>
             <span>Connected Figures</span>
           </div>
           <p
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '16px',
+              fontSize: '15px',
               fontStyle: 'italic',
               color: 'var(--color-gray)',
-              marginBottom: '24px',
-              lineHeight: 1.6,
+              marginBottom: '16px',
+              lineHeight: 1.5,
             }}
           >
             Historical figures who co-appear with {figure.name} across the same
