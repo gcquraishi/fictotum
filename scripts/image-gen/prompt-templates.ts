@@ -96,14 +96,6 @@ const PALETTES: ColorPalette[] = [
 ];
 
 /**
- * Get a palette by index (wraps around). Deterministic per figure
- * so regenerating the same figure always gets the same palette.
- */
-export function getPalette(index: number): ColorPalette {
-  return PALETTES[index % PALETTES.length];
-}
-
-/**
  * Deterministic palette assignment from canonical_id.
  * Hashes the ID to pick a consistent palette index.
  */

@@ -117,9 +117,15 @@ function parseArgs(): CliArgs {
     concurrency: 2,
   };
 
+  const VALID_TYPES = ['figures', 'works', 'all'] as const;
+
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--type' && args[i + 1]) {
-      result.type = args[++i] as CliArgs['type'];
+      const val = args[++i];
+      if (!VALID_TYPES.includes(val as CliArgs['type'])) {
+        throw new Error(`Invalid --type "${val}". Valid options: ${VALID_TYPES.join(', ')}`);
+      }
+      result.type = val as CliArgs['type'];
     } else if (args[i] === '--limit' && args[i + 1]) {
       result.limit = parseInt(args[++i], 10);
     } else if (args[i] === '--offset' && args[i + 1]) {
@@ -297,7 +303,7 @@ async function generateImage(
           imageConfig: {
             aspectRatio: ASPECT_RATIO,
           },
-        } as any,
+        },
       });
 
       // Extract image data from response
@@ -312,10 +318,9 @@ async function generateImage(
       }
 
       for (const part of parts) {
-        if ((part as any).inlineData) {
-          const imageData = (part as any).inlineData.data;
+        if (part.inlineData?.data) {
           rate.recordSuccess();
-          return Buffer.from(imageData, 'base64');
+          return Buffer.from(part.inlineData.data, 'base64');
         }
       }
 
@@ -323,8 +328,8 @@ async function generateImage(
       if (attempt < MAX_RETRIES) {
         await sleep(5000);
       }
-    } catch (err: any) {
-      const msg = err.message || String(err);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       console.error(`  API error (attempt ${attempt}): ${msg}`);
 
       // API key referrer restriction — don't retry
@@ -446,6 +451,8 @@ async function main() {
   let generated = 0;
   let failed = 0;
   let cursor = 0;
+  let manifestDirty = false;
+  const MANIFEST_SAVE_INTERVAL = 10;
 
   async function worker(workerId: number): Promise<void> {
     while (true) {
@@ -504,8 +511,12 @@ async function main() {
           generatedAt: new Date().toISOString(),
           model: MODEL_NAME,
         });
-        saveManifest(manifest);
         generated++;
+        manifestDirty = true;
+        if (generated % MANIFEST_SAVE_INTERVAL === 0) {
+          saveManifest(manifest);
+          manifestDirty = false;
+        }
       } else {
         console.error(`  FAILED: ${label}`);
         failed++;
@@ -516,6 +527,11 @@ async function main() {
   const workerCount = Math.min(args.concurrency, queue.length);
   const workers = Array.from({ length: workerCount }, (_, i) => worker(i));
   await Promise.all(workers);
+
+  // Final manifest save for any remaining entries
+  if (manifestDirty) {
+    saveManifest(manifest);
+  }
 
   await driver.close();
 

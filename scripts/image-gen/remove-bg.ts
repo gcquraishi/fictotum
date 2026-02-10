@@ -70,7 +70,7 @@ export async function removeBackground(
     seedIfBackground(w - 1, y, pixels, w, h, bgColor, threshold, isBackground, queue);
   }
 
-  // BFS flood fill
+  // Flood fill (DFS via stack — same connected-component result as BFS)
   while (queue.length > 0) {
     const idx = queue.pop()!;
     const x = idx % w;

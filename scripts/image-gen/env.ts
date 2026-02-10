@@ -17,7 +17,9 @@ export function loadEnvFile(filePath: string): void {
     const eqIdx = trimmed.indexOf('=');
     if (eqIdx === -1) continue;
     const key = trimmed.substring(0, eqIdx).trim();
-    const value = trimmed.substring(eqIdx + 1).trim();
+    const raw = trimmed.substring(eqIdx + 1).trim();
+    // Strip surrounding quotes (single or double)
+    const value = raw.replace(/^(['"])(.*)\1$/, '$2');
     if (!process.env[key]) {
       process.env[key] = value;
     }
