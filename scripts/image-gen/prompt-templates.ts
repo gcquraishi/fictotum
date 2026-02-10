@@ -2,12 +2,14 @@
  * Prompt templates for AI house-style image generation.
  *
  * Aesthetic: Simplified graphic sticker — bold flat shapes, chunky outlines.
- * Palette: Warm flesh tones, muted dusty olive, wine-red (#8B2635),
- *          dark brown/charcoal outlines.
+ * Palette: NON-REALISTIC skin tones (palette-derived), charcoal outlines.
+ *          Six two-color palettes rotate across figures for variety.
  * Feel: Bold, tactile, collectible — like vinyl die-cut stickers.
  *
  * Style references:
  *   - Alexei Vella spot illustrations (salzmanart.com/alexei-vella.html)
+ *   - Andy Rementer (non-realistic color, geometric flat shapes)
+ *   - Shepard Fairey screen prints (stylized skin tones)
  *   - Rubber stamp / screen print aesthetic
  *   - Thick chunky outlines, flat solid color fills
  *   - Minimal facial detail — iconic, not photorealistic
@@ -51,10 +53,73 @@ export interface WorkEntity {
 }
 
 // ---------------------------------------------------------------------------
+// Color palette system
+// ---------------------------------------------------------------------------
+
+export interface ColorPalette {
+  name: string;
+  skin: { hex: string; description: string };
+  accent: { hex: string; description: string };
+}
+
+const PALETTES: ColorPalette[] = [
+  {
+    name: 'Burgundy & Olive',
+    skin: { hex: '#6B7F5E', description: 'muted yellow-green olive' },
+    accent: { hex: '#8B2635', description: 'dark red-brown burgundy' },
+  },
+  {
+    name: 'Indigo & Amber',
+    skin: { hex: '#C4922A', description: 'warm golden amber' },
+    accent: { hex: '#2C3E6B', description: 'dark blue-purple indigo' },
+  },
+  {
+    name: 'Sienna & Slate',
+    skin: { hex: '#5E7B8A', description: 'muted grey-blue slate' },
+    accent: { hex: '#A0522D', description: 'warm reddish-brown sienna' },
+  },
+  {
+    name: 'Teal & Terracotta',
+    skin: { hex: '#B5603A', description: 'warm orange-brown terracotta' },
+    accent: { hex: '#3B6E6E', description: 'dark blue-green teal' },
+  },
+  {
+    name: 'Plum & Sage',
+    skin: { hex: '#8A9A7B', description: 'grey-green sage' },
+    accent: { hex: '#6B3A5E', description: 'dark reddish-purple aubergine' },
+  },
+  {
+    name: 'Ochre & Iron',
+    skin: { hex: '#B8860B', description: 'warm yellow-brown ochre' },
+    accent: { hex: '#4A4A4A', description: 'dark iron grey' },
+  },
+];
+
+/**
+ * Get a palette by index (wraps around). Deterministic per figure
+ * so regenerating the same figure always gets the same palette.
+ */
+export function getPalette(index: number): ColorPalette {
+  return PALETTES[index % PALETTES.length];
+}
+
+/**
+ * Deterministic palette assignment from canonical_id.
+ * Hashes the ID to pick a consistent palette index.
+ */
+export function getPaletteForFigure(canonicalId: string): ColorPalette {
+  let hash = 0;
+  for (let i = 0; i < canonicalId.length; i++) {
+    hash = ((hash << 5) - hash + canonicalId.charCodeAt(i)) | 0;
+  }
+  return PALETTES[Math.abs(hash) % PALETTES.length];
+}
+
+// ---------------------------------------------------------------------------
 // Style preamble (shared across all prompts)
 // ---------------------------------------------------------------------------
 
-const STYLE_PREAMBLE = `Simplified graphic illustration style. Bold flat color shapes with thick chunky dark outlines, like a rubber stamp or screen print. Minimal facial detail — simple lines for features, NOT photorealistic. No crosshatching, no halftone dots, no gradients. Flat solid color fills only. Visible paper grain texture throughout. Limited palette: warm flesh tones, muted dusty olive green, deep wine red (#8B2635), dark brown outlines. Die-cut sticker with thick white border following silhouette. Plain solid cream (#FEFEFE) background. Sticker floats freely within the frame, never touches edges. No drop shadow. No text, no labels, no watermarks.`;
+const STYLE_PREAMBLE = `Simplified graphic illustration style. Bold flat color shapes with thick chunky dark charcoal outlines, like a rubber stamp or screen print. Minimal facial detail — simple lines for features, NOT photorealistic. NO shading, NO shadows, NO gradients, NO texture in hair. Every shape is a single flat color with hard edges. No crosshatching, no halftone dots. Flat solid color fills only. Die-cut sticker with thick white border following silhouette. Plain solid cream (#FEFEFE) background. Sticker floats freely within the frame, never touches edges. No drop shadow. No text, no labels, no watermarks.`;
 
 // ---------------------------------------------------------------------------
 // Emotional mood system
@@ -123,7 +188,7 @@ function inferMood(figure: FigureEntity): EmotionalMood {
 // Figure prompts
 // ---------------------------------------------------------------------------
 
-export function buildFigurePrompt(figure: FigureEntity): string {
+export function buildFigurePrompt(figure: FigureEntity, palette?: ColorPalette): string {
   const eraContext = figure.era ? ` from the ${figure.era} era` : '';
   const dateContext =
     figure.birth_year && figure.death_year
@@ -137,8 +202,12 @@ export function buildFigurePrompt(figure: FigureEntity): string {
   const mood = inferMood(figure);
   const moodExpr = MOOD_EXPRESSIONS[mood];
 
+  const pal = palette || getPaletteForFigure(figure.canonical_id);
+  const colorDirective = `NO realistic skin tones. Skin and face filled with ${pal.skin.description} (${pal.skin.hex}). Clothing and accessories filled with ${pal.accent.description} (${pal.accent.hex}). Charcoal (#2A2A2A) outlines.`;
+
   return `Illustration of ${figure.name}${titleContext}, a historical figure${eraContext}${dateContext}.${descContext}
 Head and upper body. ${moodExpr} Period-appropriate details (hair, headwear, attire at neckline).
+${colorDirective}
 ${STYLE_PREAMBLE}`;
 }
 
