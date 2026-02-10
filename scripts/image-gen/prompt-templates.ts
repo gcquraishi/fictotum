@@ -1,17 +1,21 @@
 /**
  * Prompt templates for AI house-style image generation.
  *
- * Aesthetic: Halftone pop-art sticker — hand-inked, screen-printed feel.
- * Palette: Halftone flesh tones, muted dusty olive, wine-red (#8B2635),
- *          charcoal blacks.
+ * Aesthetic: Simplified graphic sticker — bold flat shapes, chunky outlines.
+ * Palette: Warm flesh tones, muted dusty olive, wine-red (#8B2635),
+ *          dark brown/charcoal outlines.
  * Feel: Bold, tactile, collectible — like vinyl die-cut stickers.
  *
  * Style references:
- *   - Alexei Vella editorial illustration (salzmanart.com/alexei-vella.html)
- *   - Ben-Day dot / halftone screen-printing
- *   - Heavy black ink outlines with hand-drawn quality
- *   - Fine crosshatched linework for hair and texture
+ *   - Alexei Vella spot illustrations (salzmanart.com/alexei-vella.html)
+ *   - Rubber stamp / screen print aesthetic
+ *   - Thick chunky outlines, flat solid color fills
+ *   - Minimal facial detail — iconic, not photorealistic
  *   - Die-cut sticker presentation (white border around silhouette)
+ *
+ * Emotional moods: Each figure gets an expression that matches their
+ * historical memory (commanding, defiant, scheming, solemn, etc.)
+ * rather than a generic "intense" or "smiling" default.
  *
  * IMPORTANT: Output images are NOT final assets. They are generated with a
  * solid cream background for clean composition, then post-processed to remove
@@ -50,7 +54,70 @@ export interface WorkEntity {
 // Style preamble (shared across all prompts)
 // ---------------------------------------------------------------------------
 
-const STYLE_PREAMBLE = `Heavily stylized in a halftone pop-art sticker style. Skin tones rendered with visible halftone dot patterns like vintage comic book printing. Heavy black ink outlines with slightly rough hand-drawn quality edges. Fine crosshatched ink linework for hair texture. Colorful but controlled palette: natural flesh tones via halftone dots, muted dusty olive greens, deep wine red (#8B2635) accents, dark ink blacks for outlines. The illustration looks like a hand-inked screen-printed die-cut sticker with a thick white border following the subject's silhouette. Place the sticker on a plain solid cream (#FEFEFE) background. The sticker must float freely within the frame with visible background on all sides — it must never touch or bleed off any edge of the image. No drop shadow. No text, no labels, no watermarks.`;
+const STYLE_PREAMBLE = `Simplified graphic illustration style. Bold flat color shapes with thick chunky dark outlines, like a rubber stamp or screen print. Minimal facial detail — simple lines for features, NOT photorealistic. No crosshatching, no halftone dots, no gradients. Flat solid color fills only. Visible paper grain texture throughout. Limited palette: warm flesh tones, muted dusty olive green, deep wine red (#8B2635), dark brown outlines. Die-cut sticker with thick white border following silhouette. Plain solid cream (#FEFEFE) background. Sticker floats freely within the frame, never touches edges. No drop shadow. No text, no labels, no watermarks.`;
+
+// ---------------------------------------------------------------------------
+// Emotional mood system
+// ---------------------------------------------------------------------------
+
+type EmotionalMood =
+  | 'commanding'    // rulers, conquerors, emperors
+  | 'defiant'       // warriors, martyrs, revolutionaries
+  | 'scheming'      // politicians, spymasters, manipulators
+  | 'solemn'        // witnesses, victims, diarists
+  | 'dignified'     // tragic figures, fallen royalty
+  | 'wise'          // thinkers, scientists, philosophers
+  | 'roguish'       // adventurers, pirates, scoundrels
+  | 'stoic'         // soldiers, dutiful leaders
+  | 'fierce'        // warlords, berserkers, conquerors
+  | 'composed';     // default — neutral, self-possessed
+
+const MOOD_EXPRESSIONS: Record<EmotionalMood, string> = {
+  commanding: 'Commanding, imperious expression — the look of someone accustomed to absolute authority.',
+  defiant: 'Defiant, resolute expression — jaw set, eyes burning with conviction.',
+  scheming: 'Sly, knowing expression — a slight smirk that says they know something you do not.',
+  solemn: 'Solemn, contemplative expression — a quiet witness to history, eyes that have seen too much.',
+  dignified: 'Dignified, composed expression with an undercurrent of tragedy — grace under pressure.',
+  wise: 'Warm but thoughtful expression — the look of deep intelligence and curiosity.',
+  roguish: 'Roguish, self-satisfied expression — cocky half-smile, eyes gleaming with mischief.',
+  stoic: 'Stoic, duty-bound expression — steady gaze, no emotion wasted.',
+  fierce: 'Fierce, intimidating expression — a warrior who inspires fear.',
+  composed: 'Composed, self-possessed expression — calm and present.',
+};
+
+/**
+ * Keyword-based mood inference from figure metadata.
+ * Checks title, description, and era for mood signals.
+ */
+function inferMood(figure: FigureEntity): EmotionalMood {
+  const text = [
+    figure.title,
+    figure.description,
+    figure.name,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  const era = (figure.era || '').toLowerCase();
+
+  // Specific role keywords → mood (order matters — first match wins)
+  // Fate-based moods take priority (how they're remembered matters most)
+  if (/martyr|saint|burned|executed for|heretic/.test(text)) return 'defiant';
+  if (/witness|diary|diarist|holocaust|victim|refugee|prisoner/.test(text)) return 'solemn';
+  if (/beheaded|assassinated|overthrown|deposed|exiled|tragic|fallen/.test(text)) return 'dignified';
+  // Role-based moods
+  if (/pirate|privateer|buccaneer|adventurer|rogue|scoundrel/.test(text)) return 'roguish';
+  if (/schemer|spymaster|advisor|chief minister|chancellor|cardinal|political fixer/.test(text)) return 'scheming';
+  if (/philosopher|scientist|mathematician|inventor|thinker|polymath|writer|poet|playwright/.test(text)) return 'wise';
+  if (/warlord|berserker|conqueror|khan|raider|barbarian/.test(text)) return 'fierce';
+  if (/revolutionary|rebel|insurgent|freedom fighter|resistance/.test(text)) return 'defiant';
+  if (/emperor|empress|pharaoh|king|queen|tsar|sultan|dictator|ruler/.test(text)) return 'commanding';
+  if (/general|marshal|commander|admiral|officer|colonel/.test(text)) return 'stoic';
+
+  // Era-based fallbacks
+  if (/revolution|civil war/.test(era)) return 'defiant';
+  if (/world war/.test(era)) return 'stoic';
+
+  return 'composed';
+}
 
 // ---------------------------------------------------------------------------
 // Figure prompts
@@ -67,8 +134,11 @@ export function buildFigurePrompt(figure: FigureEntity): string {
     ? ` ${figure.description}`
     : '';
 
+  const mood = inferMood(figure);
+  const moodExpr = MOOD_EXPRESSIONS[mood];
+
   return `Illustration of ${figure.name}${titleContext}, a historical figure${eraContext}${dateContext}.${descContext}
-Head and face only, tightly cropped, front-facing with intense expression. Strong angular bone structure, deep-set eyes. Period-appropriate details (hair, headwear, attire at neckline).
+Head and upper body. ${moodExpr} Period-appropriate details (hair, headwear, attire at neckline).
 ${STYLE_PREAMBLE}`;
 }
 
