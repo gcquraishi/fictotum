@@ -113,9 +113,14 @@ export default function EraTagPicker({
     setLoading(true);
     setError(null);
 
+    // Convert presets to Era objects for use as fallback/merge source
+    const presetEras: Era[] = PRESET_ERAS.map(p => ({
+      name: p.name,
+      start_year: p.start_year,
+      end_year: p.end_year
+    }));
+
     try {
-      // Bug fix CHR-19: Use a non-empty query to get era results
-      // Universal search returns empty when q='' even with type filter
       const response = await fetch('/api/search/universal?q=a&limit=500');
 
       if (!response.ok) {
@@ -135,11 +140,20 @@ export default function EraTagPicker({
         end_year: result.metadata?.end_year || parseInt(result.meta?.split(' - ')[1]) || 9999
       }));
 
-      setEras(transformedEras);
-      setFilteredEras(transformedEras.filter(e => !excludeTags.includes(e.name)));
+      // Merge API results with presets so the list is never empty
+      const apiNames = new Set(transformedEras.map(e => e.name));
+      const mergedEras = [
+        ...transformedEras,
+        ...presetEras.filter(p => !apiNames.has(p.name))
+      ];
+
+      setEras(mergedEras);
+      setFilteredEras(mergedEras.filter(e => !excludeTags.includes(e.name)));
     } catch (err) {
       console.error('Failed to fetch eras:', err);
-      setError('Failed to load era tags. Please try again.');
+      // Fall back to presets on error instead of showing an error state
+      setEras(presetEras);
+      setFilteredEras(presetEras.filter(e => !excludeTags.includes(e.name)));
     } finally {
       setLoading(false);
     }

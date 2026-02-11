@@ -10,11 +10,12 @@ interface ConflictFeedProps {
   conflicts: ConflictingFigure[];
 }
 
-const SENTIMENT_COLORS = {
+const SENTIMENT_COLORS: Record<string, string> = {
   Heroic: '#22c55e',
   Villainous: '#ef4444',
   Complex: '#eab308',
   Neutral: '#6b7280',
+  Tragic: '#8b5cf6',
 };
 
 const MEDIA_TYPE_ICONS: Record<string, typeof Film> = {
