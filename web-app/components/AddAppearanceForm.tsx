@@ -71,7 +71,7 @@ export default function AddAppearanceForm({ figureId }: { figureId: string }) {
       return;
     }
     // Search only for series types
-    const response = await fetch(`/api/media/search?q=${query}&type=BookSeries,FilmSeries,TVSeriesCollection,GameSeries,BoardGameSeries`);
+    const response = await fetch(`/api/media/search?q=${query}&type=Book Series,Game Series`);
     const data = await response.json();
     setParentSeriesResults(data.works || []);
   };

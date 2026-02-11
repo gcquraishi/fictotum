@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     let whereClause = 'WHERE toLower(m.title) CONTAINS toLower($query)';
 
     if (!includeSeries) {
-      whereClause += ` AND NOT m.media_type IN ['BookSeries', 'FilmSeries', 'TVSeriesCollection', 'GameSeries', 'BoardGameSeries']`;
+      whereClause += ` AND NOT m.media_type IN ['Book Series', 'Game Series']`;
     }
 
     if (typeFilter) {

@@ -1746,7 +1746,7 @@ export async function getTemporalCoverage(
     const workResult = await session.run(
       `MATCH (m:MediaWork)
        WHERE m.release_year IS NOT NULL
-         AND NOT m.media_type IN ['BookSeries', 'GameSeries', 'FilmSeries', 'TVSeriesCollection']
+         AND NOT m.media_type IN ['Book Series', 'Game Series']
          ${mediaFilter}
          ${regionFilter}
        WITH m, toInteger(floor(toFloat(m.release_year) / ${bucketSize}) * ${bucketSize}) as bucketStart
@@ -1864,7 +1864,7 @@ export async function getTemporalCoverageDetails(
       `MATCH (m:MediaWork)
        WHERE m.release_year >= $startYear
          AND m.release_year <= $endYear
-         AND NOT m.media_type IN ['BookSeries', 'GameSeries', 'FilmSeries', 'TVSeriesCollection']
+         AND NOT m.media_type IN ['Book Series', 'Game Series']
        RETURN m
        ORDER BY m.release_year DESC
        LIMIT $limit`,
@@ -1887,7 +1887,7 @@ export async function getTemporalCoverageDetails(
       `MATCH (m:MediaWork)
        WHERE m.release_year >= $startYear
          AND m.release_year <= $endYear
-         AND NOT m.media_type IN ['BookSeries', 'GameSeries', 'FilmSeries', 'TVSeriesCollection']
+         AND NOT m.media_type IN ['Book Series', 'Game Series']
        WITH count(m) as workCount,
             collect(m.media_type) as allTypes,
             collect(m.creator) as allCreators

@@ -9,33 +9,33 @@ import { BookOpen, Film, Tv, Gamepad2, Theater, BookImage, type LucideIcon } fro
 // COLOR MAPS
 // =============================================================================
 
-/** Media type → accent color (matches CSS variables in globals.css) */
+/** Media type → accent color (matches canonical DB values after FIC-99 normalization) */
 export const MEDIA_TYPE_COLORS: Record<string, string> = {
-  Film:        '#8B2635',  // var(--color-node-film)
-  Book:        '#6B4423',  // var(--color-node-book)
-  TVSeries:    '#4A5D5E',  // var(--color-node-tv)
-  TVMiniseries:'#4A5D5E',
-  Game:        '#3E5641',  // var(--color-node-videogame)
-  VideoGame:   '#3E5641',
-  GAME:        '#3E5641',  // Normalize inconsistent DB values
-  Play:        '#5D4E6D',
-  BookSeries:  '#6B4423',
-  Comic:       '#8B6914',
-  default:     '#666666',  // var(--color-node-default)
+  'Film':           '#8B2635',
+  'Book':           '#6B4423',
+  'TV Series':      '#4A5D5E',
+  'TV Miniseries':  '#4A5D5E',
+  'TV Movie':       '#4A5D5E',
+  'Video Game':     '#3E5641',
+  'Game Series':    '#3E5641',
+  'Play':           '#5D4E6D',
+  'Book Series':    '#6B4423',
+  'Epic Poem':      '#6B4423',
+  'Musical':        '#5D4E6D',
+  'Documentary':    '#4A6741',
+  'Manga':          '#8B6914',
+  'Graphic Novel':  '#8B6914',
+  'Comic':          '#8B6914',
+  default:          '#666666',
 };
 
-/** Sentiment → color for badges and accents */
+/** Sentiment → color for badges and accents (canonical values after FIC-100 normalization) */
 export const SENTIMENT_COLORS: Record<string, string> = {
   Heroic:     '#22c55e',
-  heroic:     '#22c55e',
   Villainous: '#ef4444',
-  villainous: '#ef4444',
   Complex:    '#eab308',
-  complex:    '#eab308',
   Neutral:    '#6b7280',
-  neutral:    '#6b7280',
-  Positive:   '#22c55e',
-  mixed:      '#eab308',
+  Tragic:     '#8b5cf6',
   default:    '#6b7280',
 };
 
@@ -51,18 +51,23 @@ export const FIGURE_TYPE_COLORS: Record<string, string> = {
 // ICON MAPS
 // =============================================================================
 
-/** Media type → Lucide icon component */
+/** Media type → Lucide icon component (matches canonical DB values) */
 export const MEDIA_TYPE_ICONS: Record<string, LucideIcon> = {
-  Film:        Film,
-  Book:        BookOpen,
-  TVSeries:    Tv,
-  TVMiniseries:Tv,
-  Game:        Gamepad2,
-  VideoGame:   Gamepad2,
-  GAME:        Gamepad2,
-  Play:        Theater,
-  BookSeries:  BookImage,
-  Comic:       BookImage,
+  'Film':           Film,
+  'Book':           BookOpen,
+  'TV Series':      Tv,
+  'TV Miniseries':  Tv,
+  'TV Movie':       Tv,
+  'Video Game':     Gamepad2,
+  'Game Series':    Gamepad2,
+  'Play':           Theater,
+  'Musical':        Theater,
+  'Book Series':    BookImage,
+  'Epic Poem':      BookOpen,
+  'Documentary':    Film,
+  'Manga':          BookImage,
+  'Graphic Novel':  BookImage,
+  'Comic':          BookImage,
 };
 
 // =============================================================================
@@ -108,27 +113,10 @@ export function formatLifespan(birthYear?: number | null, deathYear?: number | n
   return `${birth}\u2009\u2013\u2009${death}`;
 }
 
-/** Normalize media type label for display (handles inconsistent DB values) */
+/** Format media type for display. DB values are now canonical after FIC-99. */
 export function formatMediaType(mediaType?: string): string {
   if (!mediaType) return 'Media';
-  const normalized: Record<string, string> = {
-    Film: 'Film',
-    film: 'Film',
-    Book: 'Book',
-    book: 'Book',
-    BOOK: 'Book',
-    TVSeries: 'TV Series',
-    TVMiniseries: 'TV Miniseries',
-    Game: 'Game',
-    game: 'Game',
-    GAME: 'Game',
-    VideoGame: 'Video Game',
-    'Video Game': 'Video Game',
-    Play: 'Play',
-    BookSeries: 'Book Series',
-    Comic: 'Comic',
-  };
-  return normalized[mediaType] || mediaType;
+  return mediaType;
 }
 
 // =============================================================================

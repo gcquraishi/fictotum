@@ -17,11 +17,11 @@ const SENTIMENT_COLORS = {
   Neutral: '#6b7280',
 };
 
-const MEDIA_TYPE_ICONS = {
-  Book: BookOpen,
-  Game: Gamepad2,
-  Film: Film,
-  TVSeries: Tv,
+const MEDIA_TYPE_ICONS: Record<string, typeof Film> = {
+  'Book': BookOpen,
+  'Video Game': Gamepad2,
+  'Film': Film,
+  'TV Series': Tv,
 };
 
 export default function ConflictFeed({ conflicts }: ConflictFeedProps) {

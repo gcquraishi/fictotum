@@ -6,8 +6,8 @@ export async function GET(request: NextRequest) {
   try {
     const result = await session.run(
       `MATCH (series:MediaWork)
-       WHERE (series.media_type IN ['BookSeries', 'FilmSeries', 'TVSeriesCollection', 'GameSeries', 'BoardGameSeries'])
-       OR (series.media_type IN ['Book', 'Film', 'TVSeries', 'Game'] AND (series)-[:PART_OF]->())
+       WHERE (series.media_type IN ['Book Series', 'Game Series'])
+       OR (series.media_type IN ['Book', 'Film', 'TV Series', 'Video Game'] AND (series)-[:PART_OF]->())
        OPTIONAL MATCH (work:MediaWork)-[:PART_OF]->(series)
        OPTIONAL MATCH (fig:HistoricalFigure)-[:APPEARS_IN]->(work)
        WITH series,

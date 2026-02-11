@@ -97,7 +97,7 @@ export interface GraphNode {
   id: string;
   name: string;
   type: 'figure' | 'media';
-  sentiment?: 'Heroic' | 'Villainous' | 'Complex';
+  sentiment?: string;
   canonical_id?: string;
   wikidata_id?: string;
   is_fictional?: boolean;
@@ -130,7 +130,7 @@ export interface GraphNode {
 export interface GraphLink {
   source: string;
   target: string;
-  sentiment: 'Heroic' | 'Villainous' | 'Complex';
+  sentiment: string;
   relationshipType?: 'APPEARS_IN' | 'INTERACTED_WITH' | string;
   featured?: boolean;
 }
@@ -152,11 +152,11 @@ export interface ScholarlyWork {
 export interface DetailedPortrayal {
   media: MediaWork & {
     media_id: string;
-    media_type: 'Book' | 'Game' | 'Film' | 'TVSeries';
+    media_type: string;
     creator?: string;
   };
-  sentiment: 'Heroic' | 'Villainous' | 'Complex' | 'Neutral'; // Legacy (deprecated)
-  sentiment_tags?: string[]; // New: array of sentiment tags
+  sentiment: string;
+  sentiment_tags?: string[];
   tag_metadata?: {
     common: string[];
     custom: string[];
@@ -184,10 +184,10 @@ export interface FigureDossier {
 export interface ConflictPortrayal {
   media: MediaWork & {
     media_id: string;
-    media_type: 'Book' | 'Game' | 'Film' | 'TVSeries';
+    media_type: string;
     creator?: string;
   };
-  sentiment: 'Heroic' | 'Villainous' | 'Complex' | 'Neutral'; // Legacy (deprecated)
+  sentiment: string;
   sentiment_tags?: string[];
   tag_metadata?: {
     common: string[];
@@ -244,7 +244,7 @@ export interface SeriesRelationship {
 
 export interface MediaWorkWithSeries extends MediaWork {
   media_id?: string;
-  media_type?: 'Book' | 'Game' | 'Film' | 'TVSeries' | 'BookSeries' | 'FilmSeries' | 'TVSeriesCollection' | 'GameSeries' | 'BoardGameSeries';
+  media_type?: string;
   parent_series?: MediaWork;
   child_works?: SeriesRelationship[];
   series_position?: {

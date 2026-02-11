@@ -1,68 +1,47 @@
 /**
  * Sentiment Parser Test Cases
  * Run with: npx ts-node sentiment-parser.test.ts
+ *
+ * After FIC-100 normalization, DB has 5 canonical values:
+ * Heroic, Villainous, Complex, Neutral, Tragic
  */
 
-import { parseSentiment, getSentimentScore, getNormalizedSentiment } from './sentiment-parser';
+import { parseSentiment, getSentimentScore, getCanonicalSentiment } from './sentiment-parser';
 
 console.log('=== Sentiment Parser Test Cases ===\n');
 
-// Test Case 1: Simple sentiments
-console.log('Test Case 1: Simple Sentiments');
-console.log('--------------------------------');
-const simple = ['heroic', 'villainous', 'complex', 'neutral', 'positive', 'negative'];
-simple.forEach(s => {
-  const result = parseSentiment(s);
-  console.log(`"${s}" → ${result.normalized} (${result.numericScore}/100)`);
-});
-
-// Test Case 2: Hyphenated compounds (the problem cases)
-console.log('\nTest Case 2: Hyphenated Compounds');
+// Test Case 1: Canonical sentiments (the only values in the DB now)
+console.log('Test Case 1: Canonical Sentiments');
 console.log('----------------------------------');
-const hyphenated = [
-  'villainous-desperate',
-  'romantic-tragic',
-  'complex-tyrannical',
-  'heroic-sympathetic',
-  'manipulative-cruel',
-  'noble-courageous'
-];
-hyphenated.forEach(s => {
+const canonical = ['Heroic', 'Villainous', 'Complex', 'Neutral', 'Tragic'];
+canonical.forEach(s => {
   const result = parseSentiment(s);
-  console.log(`"${s}" → ${result.normalized} (${result.numericScore}/100)`);
+  console.log(`"${s}" → ${result.canonical} (${result.numericScore}/100)`);
 });
 
-// Test Case 3: Mixed sentiments (should be complex)
-console.log('\nTest Case 3: Mixed Sentiments');
-console.log('-----------------------------');
-const mixed = ['heroic-villainous', 'sympathetic-cruel', 'noble-tyrannical'];
-mixed.forEach(s => {
-  const result = parseSentiment(s);
-  console.log(`"${s}" → ${result.normalized} (${result.numericScore}/100)`);
-});
-
-// Test Case 4: Edge cases
-console.log('\nTest Case 4: Edge Cases');
+// Test Case 2: Edge cases (nulls, empty, unknown)
+console.log('\nTest Case 2: Edge Cases');
 console.log('-----------------------');
-const edge = [null, undefined, '', 'unknown', 'documentary', 'historical'];
+const edge = [null, undefined, '', 'unknown'];
 edge.forEach(s => {
   const result = parseSentiment(s);
-  console.log(`"${s}" → ${result.normalized} (${result.numericScore}/100)`);
+  console.log(`"${s}" → ${result.canonical} (${result.numericScore}/100)`);
 });
 
-// Test Case 5: Henry VIII actual sentiments
-console.log('\nTest Case 5: Henry VIII Actual Sentiments');
-console.log('-----------------------------------------');
-const henryVIII = [
-  'Complex',
-  'villainous-desperate',
-  'romantic-tragic',
-  'Heroic',
-  'Villainous'
-];
-henryVIII.forEach(s => {
-  const result = parseSentiment(s);
-  console.log(`"${s}" → ${result.normalized} (${result.numericScore}/100)`);
+// Test Case 3: Score ordering
+console.log('\nTest Case 3: Score Ordering');
+console.log('---------------------------');
+console.log('Expected: Heroic(85) > Neutral(50) = Complex(50) > Tragic(30) > Villainous(15)');
+canonical.sort((a, b) => getSentimentScore(b) - getSentimentScore(a));
+canonical.forEach(s => {
+  console.log(`  ${s}: ${getSentimentScore(s)}`);
 });
+
+// Test Case 4: getCanonicalSentiment helper
+console.log('\nTest Case 4: getCanonicalSentiment');
+console.log('-----------------------------------');
+console.log(`"Heroic" → ${getCanonicalSentiment('Heroic')}`);
+console.log(`null → ${getCanonicalSentiment(null)}`);
+console.log(`"garbage" → ${getCanonicalSentiment('garbage')}`);
 
 console.log('\n=== All Tests Complete ===');

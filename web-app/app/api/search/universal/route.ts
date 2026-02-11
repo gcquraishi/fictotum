@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       // 2. Media Works (Non-Series)
       MATCH (m:MediaWork)
       WHERE toLower(m.title) CONTAINS toLower($q)
-        AND NOT coalesce(m.media_type, m.type) IN ['BookSeries', 'FilmSeries', 'TVSeriesCollection', 'GameSeries', 'BoardGameSeries']
+        AND NOT coalesce(m.media_type, m.type) IN ['Book Series', 'Game Series']
       WITH m, coalesce(m.media_id, m.wikidata_id) as id, coalesce(m.media_type, m.type) as media_type, coalesce(m.release_year, m.year) as year
       RETURN {
         type: 'media',
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       // 3. Series
       MATCH (m:MediaWork)
       WHERE toLower(m.title) CONTAINS toLower($q)
-        AND coalesce(m.media_type, m.type) IN ['BookSeries', 'FilmSeries', 'TVSeriesCollection', 'GameSeries', 'BoardGameSeries']
+        AND coalesce(m.media_type, m.type) IN ['Book Series', 'Game Series']
       WITH m, coalesce(m.media_id, m.wikidata_id) as id, coalesce(m.media_type, m.type) as media_type
       RETURN {
         type: 'series',
