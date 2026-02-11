@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import {
   getMediaTypeColor,
@@ -82,19 +83,17 @@ export default function PortrayalCard({
           height: '107px',
           flexShrink: 0,
           overflow: 'hidden',
+          position: 'relative',
           borderBottom: `2px solid ${accentColor}`,
         }}
       >
         {media.imageUrl ? (
-          <img
+          <Image
             src={media.imageUrl}
             alt={media.title}
-            loading="lazy"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
+            fill
+            sizes="80px"
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <div

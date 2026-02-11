@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   getMediaTypeColor,
   getMediaTypeIcon,
@@ -65,15 +66,12 @@ export default function WorkCard({
           }}
         >
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
               alt={title}
-              loading="lazy"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+              fill
+              sizes="140px"
+              style={{ objectFit: 'cover' }}
             />
           ) : (
             <div
@@ -166,15 +164,12 @@ export default function WorkCard({
         }}
       >
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={title}
-            loading="lazy"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <div

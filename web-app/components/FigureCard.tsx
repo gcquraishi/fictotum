@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Clock } from 'lucide-react';
 import {
   formatLifespan,
@@ -67,15 +68,12 @@ export default function FigureCard({
           }}
         >
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
               alt={name}
-              loading="lazy"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+              fill
+              sizes="140px"
+              style={{ objectFit: 'cover' }}
             />
           ) : (
             <div
@@ -164,15 +162,12 @@ export default function FigureCard({
         }}
       >
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={name}
-            loading="lazy"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <div

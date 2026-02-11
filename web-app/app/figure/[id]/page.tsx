@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 import { getFigureById } from '@/lib/db';
 import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, isValidImageUrl } from '@/lib/card-utils';
@@ -86,18 +87,18 @@ export default async function FigurePage({
               height: '240px',
               flexShrink: 0,
               overflow: 'hidden',
+              position: 'relative',
               borderBottom: `3px solid ${borderColor}`,
             }}
           >
             {isValidImageUrl(figure.image_url) ? (
-              <img
+              <Image
                 src={figure.image_url!}
                 alt={figure.name}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
+                fill
+                priority
+                sizes="180px"
+                style={{ objectFit: 'cover' }}
               />
             ) : (
               <div
