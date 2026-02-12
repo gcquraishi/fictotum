@@ -445,10 +445,10 @@ export default function LocationPicker({
             />
           </div>
 
-          {/* Admin-only info notice */}
+          {/* Info notice */}
           <div className="mt-3 p-2 flex items-start gap-2" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }}>
             <p style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
-              Only existing locations can be selected. New locations must be created by admins to ensure data quality.
+              Select an existing location below, or suggest a new one if you can't find it.
             </p>
           </div>
         </div>
@@ -485,11 +485,28 @@ export default function LocationPicker({
               filteredLocations.map((location, index) => renderLocationItem(location, index))
             ) : (
               <div className="text-center py-12 px-6">
-                <p style={{ fontSize: '14px', color: 'var(--color-gray)' }}>
+                <p style={{ fontSize: '14px', color: 'var(--color-gray)', marginBottom: '8px' }}>
                   {searchQuery
                     ? `No locations found matching "${searchQuery}"`
                     : 'No locations available'}
                 </p>
+                {onSuggestLocation && searchQuery && (
+                  <button
+                    onClick={handleOpenSuggestModal}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '12px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      color: 'var(--color-accent)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Suggest "{searchQuery}" as a new location
+                  </button>
+                )}
               </div>
             )}
 
