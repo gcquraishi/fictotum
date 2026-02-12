@@ -7,15 +7,78 @@ import { auth } from '@/lib/auth';
 const MODEL_NAME = 'gemini-2.5-flash-image';
 const ASPECT_RATIO = '3:4';
 
-const STYLE_PREAMBLE = `Style: crosshatched line engraving, like a vintage encyclopedia plate or banknote illustration.
-Colors: deep wine red (#8B2635) ink on cream (#FEFEFE) paper. Two-tone only.
-No text, no labels, no borders, no background patterns. Clean, scholarly, minimal.`;
+const STYLE_PREAMBLE = `Simplified graphic illustration style. Bold flat color shapes with thick chunky dark charcoal outlines, like a rubber stamp or screen print. Minimal facial detail — simple lines for features, NOT photorealistic. NO shading, NO shadows, NO gradients, NO texture in hair. Every shape is a single flat color with hard edges. No crosshatching, no halftone dots. Flat solid color fills only. Die-cut sticker with thick white border following silhouette. Plain solid cream (#FEFEFE) background. Sticker floats freely within the frame, never touches edges. No drop shadow. No text, no labels, no watermarks.`;
+
+// ---------------------------------------------------------------------------
+// Color palette system (deterministic per figure)
+// ---------------------------------------------------------------------------
+
+interface ColorPalette {
+  name: string;
+  skin: { hex: string; description: string };
+  accent: { hex: string; description: string };
+}
+
+const PALETTES: ColorPalette[] = [
+  { name: 'Burgundy & Olive', skin: { hex: '#6B7F5E', description: 'muted yellow-green olive' }, accent: { hex: '#8B2635', description: 'dark red-brown burgundy' } },
+  { name: 'Indigo & Amber', skin: { hex: '#C4922A', description: 'warm golden amber' }, accent: { hex: '#2C3E6B', description: 'dark blue-purple indigo' } },
+  { name: 'Sienna & Slate', skin: { hex: '#5E7B8A', description: 'muted grey-blue slate' }, accent: { hex: '#A0522D', description: 'warm reddish-brown sienna' } },
+  { name: 'Teal & Terracotta', skin: { hex: '#B5603A', description: 'warm orange-brown terracotta' }, accent: { hex: '#3B6E6E', description: 'dark blue-green teal' } },
+  { name: 'Plum & Sage', skin: { hex: '#8A9A7B', description: 'grey-green sage' }, accent: { hex: '#6B3A5E', description: 'dark reddish-purple aubergine' } },
+  { name: 'Ochre & Iron', skin: { hex: '#B8860B', description: 'warm yellow-brown ochre' }, accent: { hex: '#4A4A4A', description: 'dark iron grey' } },
+];
+
+function getPaletteForFigure(canonicalId: string): ColorPalette {
+  let hash = 0;
+  for (let i = 0; i < canonicalId.length; i++) {
+    hash = ((hash << 5) - hash + canonicalId.charCodeAt(i)) | 0;
+  }
+  return PALETTES[Math.abs(hash) % PALETTES.length];
+}
+
+// ---------------------------------------------------------------------------
+// Mood system
+// ---------------------------------------------------------------------------
+
+type EmotionalMood = 'commanding' | 'defiant' | 'scheming' | 'solemn' | 'dignified' | 'wise' | 'roguish' | 'stoic' | 'fierce' | 'composed';
+
+const MOOD_EXPRESSIONS: Record<EmotionalMood, string> = {
+  commanding: 'Commanding, imperious expression — the look of someone accustomed to absolute authority.',
+  defiant: 'Defiant, resolute expression — jaw set, eyes burning with conviction.',
+  scheming: 'Sly, knowing expression — a slight smirk that says they know something you do not.',
+  solemn: 'Solemn, contemplative expression — a quiet witness to history, eyes that have seen too much.',
+  dignified: 'Dignified, composed expression with an undercurrent of tragedy — grace under pressure.',
+  wise: 'Warm but thoughtful expression — the look of deep intelligence and curiosity.',
+  roguish: 'Roguish, self-satisfied expression — cocky half-smile, eyes gleaming with mischief.',
+  stoic: 'Stoic, duty-bound expression — steady gaze, no emotion wasted.',
+  fierce: 'Fierce, intimidating expression — a warrior who inspires fear.',
+  composed: 'Composed, self-possessed expression — calm and present.',
+};
+
+function inferMood(data: FigureData): EmotionalMood {
+  const text = [data.title, data.description, data.name].filter(Boolean).join(' ').toLowerCase();
+  const era = (data.era || '').toLowerCase();
+  if (/martyr|saint|burned|executed for|heretic/.test(text)) return 'defiant';
+  if (/witness|diary|diarist|holocaust|victim|refugee|prisoner/.test(text)) return 'solemn';
+  if (/beheaded|assassinated|overthrown|deposed|exiled|tragic|fallen/.test(text)) return 'dignified';
+  if (/pirate|privateer|buccaneer|adventurer|rogue|scoundrel/.test(text)) return 'roguish';
+  if (/schemer|spymaster|advisor|chief minister|chancellor|cardinal|political fixer/.test(text)) return 'scheming';
+  if (/philosopher|scientist|mathematician|inventor|thinker|polymath|writer|poet|playwright/.test(text)) return 'wise';
+  if (/warlord|berserker|conqueror|khan|raider|barbarian/.test(text)) return 'fierce';
+  if (/revolutionary|rebel|insurgent|freedom fighter|resistance/.test(text)) return 'defiant';
+  if (/emperor|empress|pharaoh|king|queen|tsar|sultan|dictator|ruler/.test(text)) return 'commanding';
+  if (/general|marshal|commander|admiral|officer|colonel/.test(text)) return 'stoic';
+  if (/revolution|civil war/.test(era)) return 'defiant';
+  if (/world war/.test(era)) return 'stoic';
+  return 'composed';
+}
 
 // ---------------------------------------------------------------------------
 // Types for Neo4j query results
 // ---------------------------------------------------------------------------
 
 interface FigureData {
+  canonical_id: string;
   name: string;
   era?: string;
   birth_year?: number;
@@ -81,7 +144,7 @@ export async function POST(request: NextRequest) {
       if (entityType === 'figure') {
         const result = await dbSession.run(
           `MATCH (f:HistoricalFigure {canonical_id: $id})
-           RETURN f.name AS name, f.era AS era,
+           RETURN f.canonical_id AS canonical_id, f.name AS name, f.era AS era,
                   f.birth_year AS birth_year, f.death_year AS death_year,
                   f.description AS description, f.title AS title`,
           { id: entityId },
@@ -158,6 +221,7 @@ export async function POST(request: NextRequest) {
         access: 'public',
         contentType: 'image/png',
         token: blobToken,
+        addRandomSuffix: false, // Overwrite existing — prevents orphaned blobs
       });
       imageUrl = blob.url;
     } else {
@@ -213,15 +277,51 @@ export async function POST(request: NextRequest) {
 // Inline prompt builders (simplified versions of the script templates)
 // ---------------------------------------------------------------------------
 
+function getProminenceDecade(data: FigureData): string | null {
+  if (data.birth_year != null && data.death_year != null) {
+    const peak = Math.round(data.birth_year + (data.death_year - data.birth_year) * 0.6);
+    return fmtDecade(peak);
+  }
+  if (data.birth_year != null) {
+    return fmtDecade(data.birth_year + 40);
+  }
+  return null;
+}
+
+function fmtDecade(year: number): string {
+  if (year < 0) {
+    const absDecade = Math.floor(Math.abs(year) / 10) * 10;
+    return `the ${absDecade}s BCE`;
+  }
+  const decade = Math.floor(year / 10) * 10;
+  return `the ${decade}s`;
+}
+
 function buildFigurePrompt(data: FigureData): string {
   const eraCtx = data.era ? ` from the ${data.era} era` : '';
   const dateCtx = data.birth_year && data.death_year
     ? ` (${fmtYear(data.birth_year)} - ${fmtYear(data.death_year)})`
     : '';
   const titleCtx = data.title ? `, known as ${data.title}` : '';
+  const descCtx = data.description ? ` ${data.description}` : '';
 
-  return `A two-tone engraved portrait illustration of ${data.name}${titleCtx}, a historical figure${eraCtx}${dateCtx}.
-Bust portrait, head and shoulders, facing slightly left. Dignified, period-appropriate attire.
+  const mood = inferMood(data);
+  const moodExpr = MOOD_EXPRESSIONS[mood];
+
+  const pal = getPaletteForFigure(data.canonical_id);
+  const colorDirective = `NO realistic skin tones. Skin and face filled with ${pal.skin.description} (${pal.skin.hex}). Clothing and accessories filled with ${pal.accent.description} (${pal.accent.hex}). Charcoal (#2A2A2A) outlines.`;
+
+  const decade = getProminenceDecade(data);
+  const attireDirective = decade
+    ? `Attire, hairstyle, and accessories appropriate to ${decade}. Period-accurate details at neckline and headwear.`
+    : `Period-appropriate details (hair, headwear, attire at neckline).`;
+
+  const isModern = data.birth_year != null && data.birth_year > 1900;
+  const figureLabel = isModern ? 'a public figure' : 'a historical figure';
+
+  return `Illustration of ${data.name}${titleCtx}, ${figureLabel}${eraCtx}${dateCtx}.${descCtx}
+Head and upper body. ${moodExpr} ${attireDirective}
+${colorDirective}
 ${STYLE_PREAMBLE}`;
 }
 
@@ -231,8 +331,8 @@ function buildWorkPrompt(data: WorkData): string {
   const dirCtx = dir ? ` by ${dir}` : '';
   const type = data.media_type || 'work';
 
-  return `A two-tone engraved illustration representing the ${type} "${data.title}"${dirCtx}${year}.
-Depict a symbolic scene or key visual motif from the work.
+  return `Illustration representing the ${type} "${data.title}"${dirCtx}${year}.
+Symbolic scene or key visual motif from the work.
 ${STYLE_PREAMBLE}`;
 }
 
