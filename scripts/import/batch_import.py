@@ -437,6 +437,30 @@ class BatchImporter:
                 title = work["title"]
                 wikidata_id = work.get("wikidata_id")
                 release_year = work.get("release_year")
+                media_type = work.get("media_type")
+
+                # Check 0: Exact title + year + type match (catches cross-QID duplicates)
+                if release_year and media_type:
+                    query_compound = """
+                    MATCH (m:MediaWork)
+                    WHERE toLower(trim(m.title)) = toLower(trim($title))
+                      AND m.release_year = $year
+                      AND m.media_type = $media_type
+                    RETURN m.media_id AS media_id, m.title AS title,
+                           m.wikidata_id AS wikidata_id,
+                           m.release_year AS release_year
+                    LIMIT 1
+                    """
+                    result = session.run(query_compound, title=title, year=release_year, media_type=media_type)
+                    record = result.single()
+                    if record:
+                        self.duplicate_works.append({
+                            "input_work": work,
+                            "existing_work": dict(record),
+                            "match_type": "title_year_type_exact",
+                            "confidence": "high"
+                        })
+                        continue
 
                 # Check 1: Exact Q-ID match
                 if wikidata_id and wikidata_id.startswith("Q"):
