@@ -194,16 +194,17 @@ export async function getAllFigures(): Promise<HistoricalFigure[]> {
   }
 }
 
-export async function getMediaById(wikidataId: string) {
+export async function getMediaById(id: string) {
   const session = await getSession();
   try {
     const result = await session.run(
-      `MATCH (m:MediaWork {wikidata_id: $wikidataId})
+      `MATCH (m:MediaWork)
+       WHERE m.wikidata_id = $id OR m.media_id = $id
        OPTIONAL MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m)
        OPTIONAL MATCH (m)-[pr:PART_OF]->(parent:MediaWork)
        OPTIONAL MATCH (child:MediaWork)-[cr:PART_OF]->(m)
        RETURN m,
-              collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description})[0..50] as portrayals,
+              collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description, sentiment_tags: r.sentiment_tags})[0..50] as portrayals,
               parent,
               pr,
               collect(DISTINCT {
@@ -217,7 +218,7 @@ export async function getMediaById(wikidataId: string) {
                 is_main_series: cr.is_main_series,
                 relationship_type: cr.relationship_type
               })[0..100] as children`,
-      { wikidataId }
+      { id }
     );
 
     if (result.records.length === 0) return null;
@@ -240,16 +241,21 @@ export async function getMediaById(wikidataId: string) {
       translator: mediaNode.properties.translator,
       channel: mediaNode.properties.channel,
       production_studio: mediaNode.properties.production_studio,
+      image_url: mediaNode.properties.image_url || null,
+      scholarly_source: mediaNode.properties.scholarly_source || null,
+      historical_inaccuracies: mediaNode.properties.historical_inaccuracies || null,
       setting_year: mediaNode.properties.setting_year?.toNumber?.() ?? (mediaNode.properties.setting_year ? Number(mediaNode.properties.setting_year) : undefined),
       setting_year_end: mediaNode.properties.setting_year_end?.toNumber?.() ?? (mediaNode.properties.setting_year_end ? Number(mediaNode.properties.setting_year_end) : undefined),
       portrayals: portrayals.map((p: any) => ({
         figure: {
           canonical_id: p.figure.properties.canonical_id,
           name: p.figure.properties.name,
+          image_url: p.figure.properties.image_url || null,
           is_fictional: p.figure.properties.is_fictional,
           historicity_status: p.figure.properties.historicity_status || (p.figure.properties.is_fictional ? 'Fictional' : 'Historical'),
         },
         sentiment: p.sentiment,
+        sentiment_tags: p.sentiment_tags || [],
         role: p.role
       })),
       parent_series: parentNode ? {
@@ -281,13 +287,15 @@ export async function getMediaById(wikidataId: string) {
   }
 }
 
-export async function getMediaGraphData(wikidataId: string): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
+export async function getMediaGraphData(id: string): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   const session = await getSession();
   try {
     const result = await session.run(
-      `MATCH (m:MediaWork {wikidata_id: $wikidataId})<-[r:APPEARS_IN]-(f:HistoricalFigure)
+      `MATCH (m:MediaWork)
+       WHERE m.wikidata_id = $id OR m.media_id = $id
+       OPTIONAL MATCH (m)<-[r:APPEARS_IN]-(f:HistoricalFigure)
        RETURN m, r, f`,
-      { wikidataId }
+      { id }
     );
 
     const nodes: GraphNode[] = [];
@@ -296,7 +304,7 @@ export async function getMediaGraphData(wikidataId: string): Promise<{ nodes: Gr
 
     if (result.records.length > 0) {
       const mediaNode = result.records[0].get('m');
-      const mediaId = `media-${wikidataId}`;
+      const mediaId = `media-${id}`;
       nodes.push({
         id: mediaId,
         name: mediaNode.properties.title,
@@ -309,6 +317,7 @@ export async function getMediaGraphData(wikidataId: string): Promise<{ nodes: Gr
     result.records.forEach(record => {
       const figureNode = record.get('f');
       const relationship = record.get('r');
+      if (!figureNode || !relationship) return;
       const figureId = `figure-${figureNode.properties.canonical_id}`;
 
       if (!nodeIds.has(figureId)) {
@@ -321,7 +330,7 @@ export async function getMediaGraphData(wikidataId: string): Promise<{ nodes: Gr
       }
 
       links.push({
-        source: `media-${wikidataId}`,
+        source: `media-${id}`,
         target: figureId,
         sentiment: relationship.properties.sentiment || 'Complex',
       });
@@ -1584,18 +1593,19 @@ export async function getDiscoveryStats(): Promise<DiscoveryBrowseResult> {
   }
 }
 
-export async function getMediaLocationsAndEras(wikidataId: string): Promise<{
+export async function getMediaLocationsAndEras(id: string): Promise<{
   locations: Location[];
   eras: Era[];
 }> {
   const session = await getSession();
   try {
     const result = await session.run(
-      `MATCH (m:MediaWork {wikidata_id: $wikidataId})
+      `MATCH (m:MediaWork)
+       WHERE m.wikidata_id = $id OR m.media_id = $id
        OPTIONAL MATCH (m)-[:SET_IN]->(l:Location)
        OPTIONAL MATCH (m)-[:SET_IN_ERA]->(e:Era)
        RETURN collect(DISTINCT l) as locations, collect(DISTINCT e) as eras`,
-      { wikidataId }
+      { id }
     );
 
     if (result.records.length === 0) {

@@ -1,18 +1,16 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getMediaById, getMediaGraphData, getMediaLocationsAndEras } from '@/lib/db';
-import GraphExplorer from '@/components/GraphExplorer';
-import TemporalSignature from '@/components/TemporalSignature';
-import HistoricalAccuracySpectrum from '@/components/HistoricalAccuracySpectrum';
-import TemporalNarrativeArc from '@/components/TemporalNarrativeArc';
-import { BookOpen, Film, Tv, Gamepad2, User, List, MapPin, Clock, Archive } from 'lucide-react';
-
-function formatYear(year: number): string {
-  if (year < 0) {
-    return `${Math.abs(year)} BCE`;
-  }
-  return `${year}`;
-}
+import Image from 'next/image';
+import { ExternalLink } from 'lucide-react';
+import { getMediaById, getMediaLocationsAndEras } from '@/lib/db';
+import {
+  formatYear,
+  getMediaTypeColor,
+  getMediaTypeIcon,
+  getPlaceholderStyle,
+  getSentimentColor,
+  isValidImageUrl,
+} from '@/lib/card-utils';
 
 export default async function MediaPage({
   params,
@@ -26,315 +24,819 @@ export default async function MediaPage({
     notFound();
   }
 
-  const graphData = await getMediaGraphData(id);
   const { locations, eras } = await getMediaLocationsAndEras(id);
 
-  const getIcon = (type: string) => {
-    switch (type?.toUpperCase()) {
-      case 'FILM': return <Film className="w-10 h-10 text-amber-600" />;
-      case 'TV_SERIES': return <Tv className="w-10 h-10 text-amber-600" />;
-      case 'GAME': return <Gamepad2 className="w-10 h-10 text-amber-600" />;
-      default: return <BookOpen className="w-10 h-10 text-amber-600" />;
-    }
-  };
+  const totalFigures = media.portrayals.length;
+  const accentColor = getMediaTypeColor(media.media_type);
+  const placeholder = getPlaceholderStyle('work', media.title, media.media_type);
+  const MediaIcon = getMediaTypeIcon(media.media_type);
+
+  // Build setting year display
+  const settingYearDisplay = media.setting_year
+    ? media.setting_year_end
+      ? `${formatYear(media.setting_year)}\u2009\u2013\u2009${formatYear(media.setting_year_end)}`
+      : formatYear(media.setting_year)
+    : null;
+
+  // Collect metadata details for the details grid
+  const details: { label: string; value: string }[] = [];
+  if (media.publisher) details.push({ label: 'Publisher', value: media.publisher });
+  if (media.translator) details.push({ label: 'Translator', value: media.translator });
+  if (media.channel) details.push({ label: 'Channel', value: media.channel });
+  if (media.production_studio) details.push({ label: 'Studio', value: media.production_studio });
 
   return (
-    <div className="min-h-screen bg-stone-100 text-foreground">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <Link href="/" className="text-amber-600 hover:text-amber-700 mb-6 inline-block font-mono text-sm uppercase tracking-wide font-bold">
-            ← Back to Dashboard
-          </Link>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      {/* Breadcrumb Header */}
+      <div
+        style={{
+          padding: '20px 40px',
+          borderBottom: '1px solid var(--color-border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '14px',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            color: 'var(--color-text)',
+          }}
+          className="hover:opacity-70 transition-opacity"
+        >
+          Fictotum Archive
+        </Link>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            textTransform: 'uppercase',
+          }}
+        >
+          Index / Media Works / {media.wikidata_id || media.media_id}
+        </span>
+      </div>
 
-          <div className="bg-white border-t-8 border-amber-600 shadow-2xl p-8 mb-8 relative overflow-hidden">
-            {/* Classification Banner */}
-            <div className="absolute top-0 left-0 right-0 bg-amber-600 text-white text-center py-1">
-              <div className="text-[10px] font-black uppercase tracking-[0.4em]">
-                MEDIA ARTIFACT FILE
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
-                <Archive className="w-3 h-3" />
-                Artifact ID // {media.wikidata_id}
-              </div>
-              <div className="flex items-start gap-6">
-                <div className="flex-shrink-0">
-                  <div className="w-24 h-24 bg-amber-50 border-4 border-amber-600 flex items-center justify-center shadow-lg">
-                    {getIcon(media.media_type)}
-                  </div>
-                  {/* Cataloged Stamp */}
-                  <div className="mt-2 text-center">
-                    <div className="inline-block px-2 py-0.5 bg-green-600 text-white text-[8px] font-black uppercase tracking-wider transform rotate-12">
-                      CATALOGED
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-grow">
-                  <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase mb-2 leading-none">{media.title}</h1>
-                  <p className="text-lg text-stone-600 mb-2 font-mono">
-                    {media.media_type} {media.release_year ? `(${media.release_year})` : ''}
-                  </p>
-                  {media.creator && (
-                    <p className="text-stone-600">Created by <Link href={`/creator/${encodeURIComponent(media.creator)}`} className="text-stone-900 font-bold hover:text-amber-700 underline">{media.creator}</Link></p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Location & Era Section */}
-          {(locations.length > 0 || eras.length > 0) && (
-            <div className="bg-stone-100 border-2 border-stone-200 p-6 mb-8">
-              <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <span className="text-amber-600">■</span> Story Context
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Locations */}
-                {locations.length > 0 && (
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <MapPin className="w-5 h-5 text-amber-600" />
-                      <h3 className="text-[10px] font-black text-amber-700 uppercase tracking-[0.2em]">
-                        Locations
-                      </h3>
-                    </div>
-                    <div className="space-y-2">
-                      {locations.map(loc => (
-                        <Link
-                          key={loc.location_id}
-                          href={`/browse/location/${loc.location_id}`}
-                          className="block p-3 bg-white border-2 border-stone-300 hover:border-amber-600 transition-all"
-                        >
-                          <p className="text-stone-900 font-bold hover:text-amber-700 uppercase tracking-tight">{loc.name}</p>
-                          <p className="text-xs text-stone-500 capitalize font-mono">{loc.location_type}</p>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Eras */}
-                {eras.length > 0 && (
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Clock className="w-5 h-5 text-amber-600" />
-                      <h3 className="text-[10px] font-black text-amber-700 uppercase tracking-[0.2em]">
-                        Time Periods
-                      </h3>
-                    </div>
-                    <div className="space-y-2">
-                      {eras.map(era => (
-                        <Link
-                          key={era.era_id}
-                          href={`/browse/era/${era.era_id}`}
-                          className="block p-3 bg-white border-2 border-stone-300 hover:border-amber-600 transition-all"
-                        >
-                          <p className="text-stone-900 font-bold hover:text-amber-700 uppercase tracking-tight">{era.name}</p>
-                          <p className="text-xs text-stone-500 font-mono">{formatYear(era.start_year)} – {formatYear(era.end_year)}</p>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Media Details Section */}
-          {(media.publisher || media.translator || media.channel || media.production_studio) && (
-            <div className="bg-stone-100 border-2 border-stone-200 p-6 mb-8">
-              <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <span className="text-amber-600">■</span> Media Details
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {media.publisher && (
-                  <div className="bg-white border-2 border-stone-300 p-3">
-                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Publisher</p>
-                    <p className="text-stone-900 font-bold">{media.publisher}</p>
-                  </div>
-                )}
-                {media.translator && (
-                  <div className="bg-white border-2 border-stone-300 p-3">
-                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Translator</p>
-                    <p className="text-stone-900 font-bold">{media.translator}</p>
-                  </div>
-                )}
-                {media.channel && (
-                  <div className="bg-white border-2 border-stone-300 p-3">
-                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Channel</p>
-                    <p className="text-stone-900 font-bold">{media.channel}</p>
-                  </div>
-                )}
-                {media.production_studio && (
-                  <div className="bg-white border-2 border-stone-300 p-3">
-                    <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black mb-1">Production Studio</p>
-                    <p className="text-stone-900 font-bold">{media.production_studio}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Series Hierarchy Section */}
-          {(media.parent_series || (media.child_works && media.child_works.length > 0)) && (
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <List className="w-5 h-5 text-blue-400" />
-                <h2 className="text-xl font-semibold text-white">Series Information</h2>
-              </div>
-
-              {/* Parent Series Link */}
-              {media.parent_series && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">Part of Series</h3>
-                  <Link
-                    href={`/media/${media.parent_series.wikidata_id || media.parent_series.media_id}`}
-                    className="block p-4 bg-gray-900 rounded-lg border border-gray-700 hover:border-blue-500 transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-white">{media.parent_series.title}</p>
-                        <p className="text-sm text-gray-400">
-                          {media.parent_series.release_year} • {media.parent_series.media_type}
-                        </p>
-                      </div>
-                      {media.series_position && (
-                        <div className="text-right">
-                          {media.series_position.sequence_number && (
-                            <p className="text-sm text-blue-400">#{media.series_position.sequence_number}</p>
-                          )}
-                          {media.series_position.season_number && media.series_position.episode_number && (
-                            <p className="text-xs text-gray-500">
-                              S{media.series_position.season_number}E{media.series_position.episode_number}
-                            </p>
-                          )}
-                          {media.series_position.relationship_type && (
-                            <p className="text-xs text-gray-500 capitalize">
-                              {media.series_position.relationship_type}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                </div>
-              )}
-
-              {/* Child Works */}
-              {media.child_works && media.child_works.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">
-                    Works in this Series ({media.child_works.length})
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {media.child_works
-                      .sort((a: any, b: any) => {
-                        // Sort by season, then sequence, then episode, then year
-                        if (a.season_number && b.season_number) {
-                          if (a.season_number !== b.season_number) return a.season_number - b.season_number;
-                          if (a.episode_number && b.episode_number) return a.episode_number - b.episode_number;
-                        }
-                        if (a.sequence_number && b.sequence_number) return a.sequence_number - b.sequence_number;
-                        return a.release_year - b.release_year;
-                      })
-                      .map((work: any) => (
-                        <Link
-                          key={work.media_id}
-                          href={`/media/${work.media_id}`}
-                          className="block p-3 bg-gray-900 rounded-lg border border-gray-700 hover:border-blue-500 transition-all"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-grow min-w-0">
-                              <p className="font-medium text-white truncate">{work.title}</p>
-                              <p className="text-xs text-gray-400">{work.release_year}</p>
-                            </div>
-                            <div className="flex-shrink-0 text-right">
-                              {work.sequence_number && (
-                                <p className="text-sm font-semibold text-blue-400">#{work.sequence_number}</p>
-                              )}
-                              {work.season_number && work.episode_number && (
-                                <p className="text-xs text-gray-500">
-                                  S{work.season_number}E{work.episode_number}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Archaeological Analysis Section */}
-          <div className="mb-8">
-            <div className="bg-amber-600 text-white px-4 py-2 mb-0">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-2">
-                <span>■</span> Archaeological Analysis
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-stone-50 border-2 border-amber-600 border-t-0 p-6">
-              {media.setting_year && media.release_year ? (
-                <TemporalSignature
-                  settingYear={media.setting_year}
-                  releaseYear={media.release_year}
-                  historicalSpan={media.setting_year_end ? media.setting_year_end - media.setting_year : undefined}
+      {/* Main Content */}
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '40px 24px 80px' }}>
+        {/* ================================================================
+            HERO SECTION
+            ================================================================ */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '32px',
+            marginBottom: '40px',
+          }}
+        >
+          {/* Cover Image / Placeholder */}
+          <div
+            style={{
+              width: '180px',
+              height: '240px',
+              flexShrink: 0,
+              overflow: 'hidden',
+              position: 'relative',
+              borderBottom: `3px solid ${accentColor}`,
+            }}
+          >
+            {isValidImageUrl(media.image_url) ? (
+              <Image
+                src={media.image_url!}
+                alt={media.title}
+                fill
+                priority
+                sizes="180px"
+                style={{ objectFit: 'cover' }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: placeholder.backgroundColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <MediaIcon
+                  size={56}
+                  style={{ color: placeholder.textColor, opacity: 0.5 }}
                 />
-              ) : (
-                <div className="bg-stone-100 border-2 border-stone-200 p-6">
-                  <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span className="text-amber-600">■</span> Temporal Signature
-                  </h2>
-                  <div className="bg-white border-2 border-stone-300 p-6 text-center">
-                    <p className="text-xs text-stone-500">Temporal data not available for this work</p>
-                  </div>
-                </div>
-              )}
-              <HistoricalAccuracySpectrum
-                wikidataId={media.wikidata_id}
-                workTitle={media.title}
-              />
-              <TemporalNarrativeArc
-                wikidataId={media.wikidata_id}
-                workTitle={media.title}
-              />
-            </div>
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div className="lg:col-span-2">
-               <GraphExplorer nodes={graphData.nodes} links={graphData.links} />
+          {/* Title + Meta */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '42px',
+                fontWeight: 300,
+                lineHeight: 1.1,
+                marginBottom: '8px',
+              }}
+            >
+              {media.title}
+            </h1>
+
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                alignItems: 'center',
+                marginBottom: '16px',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  padding: '2px 8px',
+                  border: `1px solid ${accentColor}`,
+                  color: accentColor,
+                }}
+              >
+                {media.media_type}
+              </span>
+
+              {media.release_year && (
+                <>
+                  <span style={{ color: 'var(--color-border)', fontSize: '12px' }}>&middot;</span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '13px',
+                      color: 'var(--color-accent)',
+                    }}
+                  >
+                    {media.release_year}
+                  </span>
+                </>
+              )}
+
+              {settingYearDisplay && (
+                <>
+                  <span style={{ color: 'var(--color-border)', fontSize: '12px' }}>&middot;</span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '11px',
+                      color: 'var(--color-gray)',
+                    }}
+                  >
+                    Set {settingYearDisplay}
+                  </span>
+                </>
+              )}
             </div>
-            <div className="bg-stone-100 border-2 border-stone-200 p-6">
-              <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <span className="text-amber-600">■</span> Historical Figures
-              </h2>
-              <div className="space-y-4">
-                {media.portrayals.map((p: any) => (
+
+            {media.creator && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '16px',
+                  color: 'var(--color-text)',
+                  marginBottom: '8px',
+                }}
+              >
+                by{' '}
+                <span style={{ fontWeight: 500 }}>{media.creator}</span>
+              </p>
+            )}
+
+            {media.scholarly_source && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '14px',
+                  color: 'var(--color-gray)',
+                  fontStyle: 'italic',
+                }}
+              >
+                Scholarly sources: {media.scholarly_source}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ================================================================
+            STATS BAR
+            ================================================================ */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0',
+            borderTop: '1px solid var(--color-border)',
+            borderBottom: '1px solid var(--color-border)',
+            marginBottom: '32px',
+          }}
+        >
+          <div
+            style={{
+              padding: '12px 20px',
+              borderRight: '1px solid var(--color-border)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+            }}
+          >
+            <span style={{ color: 'var(--color-gray)' }}>Figures </span>
+            <span style={{ fontWeight: 600 }}>{totalFigures}</span>
+          </div>
+
+          {media.release_year && (
+            <div
+              style={{
+                padding: '12px 20px',
+                borderRight: '1px solid var(--color-border)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+              }}
+            >
+              <span style={{ color: 'var(--color-gray)' }}>Released </span>
+              <span>{media.release_year}</span>
+            </div>
+          )}
+
+          {locations.length > 0 && (
+            <div
+              style={{
+                padding: '12px 20px',
+                borderRight: '1px solid var(--color-border)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+              }}
+            >
+              <span style={{ color: 'var(--color-gray)' }}>Locations </span>
+              <span>{locations.length}</span>
+            </div>
+          )}
+
+          {media.historical_inaccuracies && (
+            <div
+              style={{
+                padding: '12px 20px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+              }}
+            >
+              <span style={{ color: 'var(--color-gray)' }}>Inaccuracies </span>
+              <span>{media.historical_inaccuracies.length}</span>
+            </div>
+          )}
+        </div>
+
+        {/* ================================================================
+            PRODUCTION DETAILS
+            ================================================================ */}
+        {details.length > 0 && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Production Details</span>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              {details.map((d) => (
+                <div
+                  key={d.label}
+                  style={{
+                    padding: '12px 16px',
+                    background: 'var(--color-bg)',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '2px',
+                      color: 'var(--color-gray)',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {d.label}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: '14px',
+                      color: 'var(--color-text)',
+                    }}
+                  >
+                    {d.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            SERIES INFORMATION
+            ================================================================ */}
+        {(media.parent_series || (media.child_works && media.child_works.length > 0)) && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Series</span>
+              {media.child_works && media.child_works.length > 0 && (
+                <span>({media.child_works.length} Works)</span>
+              )}
+            </div>
+
+            {/* Parent Series */}
+            {media.parent_series && (
+              <Link
+                href={`/media/${media.parent_series.wikidata_id || media.parent_series.media_id}`}
+                style={{
+                  display: 'block',
+                  padding: '16px',
+                  border: '1px solid var(--color-border)',
+                  textDecoration: 'none',
+                  color: 'var(--color-text)',
+                  marginBottom: '12px',
+                }}
+                className="hover:opacity-70 transition-opacity"
+              >
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '2px',
+                    color: 'var(--color-gray)',
+                    marginBottom: '4px',
+                  }}
+                >
+                  Part of
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '18px',
+                    fontWeight: 300,
+                  }}
+                >
+                  {media.parent_series.title}
+                  {media.series_position?.sequence_number && (
+                    <span style={{ color: 'var(--color-accent)', marginLeft: '8px' }}>
+                      #{media.series_position.sequence_number}
+                    </span>
+                  )}
+                </p>
+              </Link>
+            )}
+
+            {/* Child Works */}
+            {media.child_works && media.child_works.length > 0 && (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                  gap: '1px',
+                  background: 'var(--color-border)',
+                  border: '1px solid var(--color-border)',
+                }}
+              >
+                {media.child_works
+                  .sort((a: any, b: any) => {
+                    if (a.season_number && b.season_number) {
+                      if (a.season_number !== b.season_number) return a.season_number - b.season_number;
+                      if (a.episode_number && b.episode_number) return a.episode_number - b.episode_number;
+                    }
+                    if (a.sequence_number && b.sequence_number) return a.sequence_number - b.sequence_number;
+                    return a.release_year - b.release_year;
+                  })
+                  .map((work: any) => (
+                    <Link
+                      key={work.media_id}
+                      href={`/media/${work.media_id}`}
+                      style={{
+                        display: 'block',
+                        padding: '12px 16px',
+                        background: 'var(--color-bg)',
+                        textDecoration: 'none',
+                        color: 'var(--color-text)',
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <p
+                            style={{
+                              fontFamily: 'var(--font-serif)',
+                              fontSize: '14px',
+                              fontWeight: 300,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {work.title}
+                          </p>
+                          <p
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '11px',
+                              color: 'var(--color-gray)',
+                            }}
+                          >
+                            {work.release_year}
+                          </p>
+                        </div>
+                        {work.sequence_number && (
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '11px',
+                              color: 'var(--color-accent)',
+                              flexShrink: 0,
+                            }}
+                          >
+                            #{work.sequence_number}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ================================================================
+            WHO'S IN THIS? (Historical Figures)
+            ================================================================ */}
+        {totalFigures > 0 && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Who&apos;s in This?</span>
+              <span>({totalFigures} Figures)</span>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              {media.portrayals.map((p: any) => {
+                const sentimentColor = getSentimentColor(p.sentiment);
+                const figPlaceholder = getPlaceholderStyle('figure', p.figure.name, p.figure.historicity_status);
+
+                return (
                   <Link
                     key={p.figure.canonical_id}
                     href={`/figure/${p.figure.canonical_id}`}
-                    className="block p-4 bg-white border-2 border-stone-300 hover:border-amber-600 transition-all"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '16px',
+                      padding: '16px',
+                      background: 'var(--color-bg)',
+                      textDecoration: 'none',
+                      color: 'var(--color-text)',
+                    }}
+                    className="hover:opacity-70 transition-opacity"
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-stone-900">{p.figure.name}</span>
-                      <span className={`text-[10px] px-2 py-0.5 font-black uppercase tracking-wider border-2 ${
-                        p.sentiment === 'Heroic' ? 'bg-green-50 border-green-600 text-green-800' :
-                        p.sentiment === 'Villainous' ? 'bg-red-50 border-red-600 text-red-800' :
-                        'bg-yellow-50 border-yellow-600 text-yellow-800'
-                      }`}>
-                        {p.sentiment}
-                      </span>
+                    {/* Mini Portrait */}
+                    <div
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        flexShrink: 0,
+                        overflow: 'hidden',
+                        position: 'relative',
+                      }}
+                    >
+                      {isValidImageUrl(p.figure.image_url) ? (
+                        <Image
+                          src={p.figure.image_url}
+                          alt={p.figure.name}
+                          fill
+                          sizes="44px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: figPlaceholder.backgroundColor,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-serif)',
+                              fontSize: '16px',
+                              fontWeight: 300,
+                              color: figPlaceholder.textColor,
+                              opacity: 0.5,
+                            }}
+                          >
+                            {figPlaceholder.initials}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    {p.role && <p className="text-sm text-stone-600 italic font-mono">"{p.role}"</p>}
+
+                    {/* Name + Role */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          fontSize: '16px',
+                          fontWeight: 400,
+                        }}
+                      >
+                        {p.figure.name}
+                      </p>
+                      {p.role && (
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '13px',
+                            color: 'var(--color-gray)',
+                            fontStyle: 'italic',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {p.role}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Sentiment Badge */}
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '10px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        padding: '3px 8px',
+                        border: `1px solid ${sentimentColor}`,
+                        color: sentimentColor,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {p.sentiment}
+                    </span>
                   </Link>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
+        )}
+
+        {/* ================================================================
+            HISTORICAL ACCURACY
+            ================================================================ */}
+        {media.historical_inaccuracies && media.historical_inaccuracies.length > 0 && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Historical Accuracy Notes</span>
+              <span>({media.historical_inaccuracies.length})</span>
+            </div>
+
+            <div
+              style={{
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              {media.historical_inaccuracies.map((note: string, idx: number) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '12px 16px',
+                    borderBottom: idx < media.historical_inaccuracies.length - 1 ? '1px solid var(--color-border)' : 'none',
+                    display: 'flex',
+                    gap: '12px',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      color: 'var(--color-accent)',
+                      flexShrink: 0,
+                      marginTop: '3px',
+                    }}
+                  >
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: '14px',
+                      lineHeight: 1.6,
+                      color: 'var(--color-text)',
+                    }}
+                  >
+                    {note}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            STORY CONTEXT (Locations & Eras)
+            ================================================================ */}
+        {(locations.length > 0 || eras.length > 0) && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Story Context</span>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: locations.length > 0 && eras.length > 0 ? '1fr 1fr' : '1fr',
+                gap: '24px',
+              }}
+            >
+              {/* Locations */}
+              {locations.length > 0 && (
+                <div>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '2px',
+                      color: 'var(--color-gray)',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    Locations
+                  </p>
+                  <div style={{ border: '1px solid var(--color-border)' }}>
+                    {locations.map((loc, idx) => (
+                      <div
+                        key={loc.location_id}
+                        style={{
+                          padding: '10px 16px',
+                          borderBottom: idx < locations.length - 1 ? '1px solid var(--color-border)' : 'none',
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '14px',
+                            color: 'var(--color-text)',
+                          }}
+                        >
+                          {loc.name}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '10px',
+                            color: 'var(--color-gray)',
+                            textTransform: 'capitalize',
+                          }}
+                        >
+                          {loc.location_type}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Eras */}
+              {eras.length > 0 && (
+                <div>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '2px',
+                      color: 'var(--color-gray)',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    Time Periods
+                  </p>
+                  <div style={{ border: '1px solid var(--color-border)' }}>
+                    {eras.map((era, idx) => (
+                      <div
+                        key={era.era_id}
+                        style={{
+                          padding: '10px 16px',
+                          borderBottom: idx < eras.length - 1 ? '1px solid var(--color-border)' : 'none',
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '14px',
+                            color: 'var(--color-text)',
+                          }}
+                        >
+                          {era.name}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '10px',
+                            color: 'var(--color-gray)',
+                          }}
+                        >
+                          {formatYear(era.start_year)}{'\u2009\u2013\u2009'}{formatYear(era.end_year)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            EXTERNAL LINKS
+            ================================================================ */}
+        {media.wikidata_id && (
+          <div style={{ marginTop: '48px' }}>
+            <div className="fsg-section-header">
+              <span>External References</span>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: '16px',
+                marginTop: '16px',
+              }}
+            >
+              <a
+                href={`https://www.wikidata.org/wiki/${media.wikidata_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  color: 'var(--color-text)',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 16px',
+                  border: '1px solid var(--color-border)',
+                }}
+                className="hover:opacity-70 transition-opacity"
+              >
+                <ExternalLink size={12} />
+                Wikidata {media.wikidata_id}
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            PROVENANCE FOOTER
+            ================================================================ */}
+        <div
+          style={{
+            marginTop: '64px',
+            paddingTop: '16px',
+            borderTop: '1px solid var(--color-border)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>{media.wikidata_id || media.media_id}</span>
+          <span>Fictotum Archive</span>
         </div>
       </div>
     </div>
