@@ -25,49 +25,87 @@ interface EraTagPickerProps {
 // Common eras with canonical date ranges for quick selection
 
 const PRESET_ERAS = [
-  {
-    name: 'French Revolution',
-    start_year: 1789,
-    end_year: 1799,
-    is_approximate: true,
-    description: 'Revolutionary period in France (dates contested)'
-  },
-  {
-    name: 'Victorian Era',
-    start_year: 1837,
-    end_year: 1901,
-    is_approximate: false,
-    description: 'British history during Queen Victoria\'s reign'
-  },
-  {
-    name: 'Renaissance',
-    start_year: 1300,
-    end_year: 1600,
-    is_approximate: true,
-    description: 'Cultural rebirth in Europe (approximate dates)'
-  },
-  {
-    name: 'Medieval Period',
-    start_year: 500,
-    end_year: 1500,
-    is_approximate: true,
-    description: 'Middle Ages in European history'
-  },
-  {
-    name: 'Roaring Twenties',
-    start_year: 1920,
-    end_year: 1929,
-    is_approximate: true,
-    description: 'Post-WWI prosperity and cultural flourishing'
-  },
-  {
-    name: 'World War II',
-    start_year: 1939,
-    end_year: 1945,
-    is_approximate: false,
-    description: 'Global conflict (1939-1945)'
-  }
+  { name: 'Roman Empire', start_year: -27, end_year: 476, is_approximate: true, description: 'Roman imperial period' },
+  { name: 'Roman Republic', start_year: -509, end_year: -27, is_approximate: true, description: 'Roman republican period' },
+  { name: 'World War II', start_year: 1939, end_year: 1945, is_approximate: false, description: 'Global conflict (1939-1945)' },
+  { name: 'High Medieval', start_year: 1000, end_year: 1300, is_approximate: true, description: 'High Middle Ages in Europe' },
+  { name: 'Late Medieval', start_year: 1300, end_year: 1500, is_approximate: true, description: 'Late Middle Ages in Europe' },
+  { name: 'Early Medieval', start_year: 500, end_year: 1000, is_approximate: true, description: 'Early Middle Ages / Dark Ages' },
+  { name: 'American Revolution', start_year: 1765, end_year: 1783, is_approximate: true, description: 'American independence movement' },
+  { name: 'French Revolution', start_year: 1789, end_year: 1799, is_approximate: true, description: 'Revolutionary period in France' },
+  { name: 'Victorian Era', start_year: 1837, end_year: 1901, is_approximate: false, description: 'British history during Queen Victoria\'s reign' },
+  { name: 'Napoleonic Era', start_year: 1799, end_year: 1815, is_approximate: false, description: 'Napoleonic Wars and Empire' },
+  { name: 'Cold War', start_year: 1947, end_year: 1991, is_approximate: true, description: 'US-Soviet geopolitical tension' },
+  { name: 'Classical Greece', start_year: -510, end_year: -323, is_approximate: true, description: 'Greek classical period' },
+  { name: 'Renaissance', start_year: 1300, end_year: 1600, is_approximate: true, description: 'Cultural rebirth in Europe' },
+  { name: 'Tudor Era', start_year: 1485, end_year: 1603, is_approximate: false, description: 'Tudor dynasty in England' },
+  { name: 'Gilded Age', start_year: 1870, end_year: 1900, is_approximate: true, description: 'American industrial expansion' },
+  { name: 'US Civil War', start_year: 1861, end_year: 1865, is_approximate: false, description: 'American Civil War' },
+  { name: 'Golden Age of Piracy', start_year: 1650, end_year: 1730, is_approximate: true, description: 'Peak of maritime piracy' },
+  { name: 'Prohibition', start_year: 1920, end_year: 1933, is_approximate: false, description: 'US alcohol prohibition' },
+  { name: 'Hellenistic Period', start_year: -323, end_year: -31, is_approximate: true, description: 'Post-Alexander Greek world' },
+  { name: 'New Kingdom', start_year: -1550, end_year: -1070, is_approximate: true, description: 'Ancient Egyptian New Kingdom' },
 ];
+
+// Canonical era names from the database — used for fuzzy-match guardrails
+const CANONICAL_ERA_NAMES = [
+  'Roman Empire', 'Roman Republic', 'World War II', 'High Medieval', 'Late Medieval',
+  'Early Medieval', 'American Revolution', 'French Revolution', 'Victorian Era',
+  'Napoleonic Era', 'Cold War', 'Classical Greece', 'Renaissance', 'Tudor Era',
+  'Gilded Age', 'US Civil War', 'Golden Age of Piracy', 'Prohibition',
+  'Hellenistic Period', 'New Kingdom', 'Three Kingdoms China', 'Sengoku Japan',
+  'Ptolemaic Egypt', 'Edwardian Era', 'Stuart Era', 'Early Church',
+  'Archaic Greece', 'Old Kingdom', 'Late Antiquity', 'Space Race',
+  'Ancient Near East', 'Mughal India', 'Medieval Africa', 'Greco-Persian Wars',
+  'Early Dynastic', 'Civil Rights Movement', 'English Civil War',
+  'Scientific Revolution', 'Islamic Golden Age', 'Dutch Golden Age',
+  'Baroque', 'Song Dynasty', 'Tang Dynasty', 'Peloponnesian War',
+  'Second Punic War', 'Heian Period Japan',
+];
+
+/**
+ * Simple Levenshtein distance for fuzzy matching on custom era creation.
+ * Returns similarity score 0-1 (1 = exact match).
+ */
+function eraNameSimilarity(a: string, b: string): number {
+  const al = a.toLowerCase();
+  const bl = b.toLowerCase();
+  if (al === bl) return 1;
+
+  // Check if one contains the other (high similarity)
+  if (al.includes(bl) || bl.includes(al)) return 0.8;
+
+  const len = Math.max(al.length, bl.length);
+  if (len === 0) return 1;
+
+  // Levenshtein distance
+  const matrix: number[][] = [];
+  for (let i = 0; i <= al.length; i++) {
+    matrix[i] = [i];
+    for (let j = 1; j <= bl.length; j++) {
+      if (i === 0) { matrix[i][j] = j; continue; }
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + (al[i - 1] === bl[j - 1] ? 0 : 1)
+      );
+    }
+  }
+  return 1 - matrix[al.length][bl.length] / len;
+}
+
+/**
+ * Find canonical era names similar to the input.
+ * Returns matches with similarity >= threshold, sorted by score descending.
+ */
+function findSimilarEras(input: string, threshold = 0.5): { name: string; score: number }[] {
+  if (!input.trim()) return [];
+  return CANONICAL_ERA_NAMES
+    .map(name => ({ name, score: eraNameSimilarity(input.trim(), name) }))
+    .filter(m => m.score >= threshold && m.score < 1) // exclude exact matches
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+}
 
 // ============================================================================
 // MAIN COMPONENT
@@ -97,6 +135,7 @@ export default function EraTagPicker({
   });
   const [dateRangeUncertain, setDateRangeUncertain] = useState(false);
   const [customFormError, setCustomFormError] = useState<string | null>(null);
+  const [similarSuggestions, setSimilarSuggestions] = useState<{ name: string; score: number }[]>([]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -220,8 +259,22 @@ export default function EraTagPicker({
       return;
     }
 
+    // Check for similar canonical names (guardrail)
+    const similar = findSimilarEras(customEra.name.trim(), 0.6);
+    if (similar.length > 0 && similarSuggestions.length === 0) {
+      // First attempt: show suggestions instead of creating
+      setSimilarSuggestions(similar);
+      return;
+    }
+
     // Create the era (confidence 1.0 for user-created tags)
     onSelect(customEra.name.trim(), 1.0);
+  };
+
+  // Update suggestions as user types
+  const handleCustomNameChange = (value: string) => {
+    setCustomEra(prev => ({ ...prev, name: value }));
+    setSimilarSuggestions([]); // Clear previous suggestions on name change
   };
 
   const handleCancelCustomForm = () => {
@@ -229,6 +282,7 @@ export default function EraTagPicker({
     setCustomEra({ name: '', start_year: '', end_year: '', is_approximate: false });
     setDateRangeUncertain(false);
     setCustomFormError(null);
+    setSimilarSuggestions([]);
   };
 
   const handleSelectPreset = (preset: typeof PRESET_ERAS[0]) => {
@@ -355,11 +409,38 @@ export default function EraTagPicker({
           <input
             type="text"
             value={customEra.name}
-            onChange={(e) => setCustomEra(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="e.g., Tudor Period, Victorian Era"
+            onChange={(e) => handleCustomNameChange(e.target.value)}
+            placeholder="e.g., Tudor Era, Victorian Era"
             className="w-full"
             style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', padding: '10px 12px', border: '1px solid var(--color-border)', background: 'white', color: 'var(--color-text)', outline: 'none' }}
           />
+
+          {/* Fuzzy-match suggestions */}
+          {similarSuggestions.length > 0 && (
+            <div className="mt-2 p-3" style={{ background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }}>
+              <p className="mb-2" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>
+                Did you mean one of these existing eras?
+              </p>
+              <div className="space-y-1">
+                {similarSuggestions.map(s => (
+                  <button
+                    key={s.name}
+                    onClick={() => onSelect(s.name, 1.0)}
+                    className="w-full text-left px-3 py-2 transition-colors hover:opacity-80"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
+                  >
+                    <span style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--color-text)' }}>{s.name}</span>
+                    <span className="ml-2" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-gray)' }}>
+                      {Math.round(s.score * 100)}% match
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2" style={{ fontSize: '12px', color: 'var(--color-gray)' }}>
+                Click a suggestion above, or press "Create Era Tag" again to use your custom name.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Date Range Uncertain Checkbox */}
