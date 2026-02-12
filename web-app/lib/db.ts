@@ -1025,12 +1025,13 @@ export async function getMediaParentSeries(wikidataId: string) {
   }
 }
 
-export async function getSeriesMetadata(seriesWikidataId: string): Promise<SeriesMetadata | null> {
+export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | null> {
   const session = await getSession();
   try {
-    // Fetch series and all its works
+    // Fetch series and all its works (dual-key lookup)
     const seriesResult = await session.run(
-      `MATCH (series:MediaWork {wikidata_id: $seriesWikidataId})
+      `MATCH (series:MediaWork)
+       WHERE series.wikidata_id = $id OR series.media_id = $id
        OPTIONAL MATCH (work:MediaWork)-[r:PART_OF]->(series)
        OPTIONAL MATCH (fig:HistoricalFigure)-[app:APPEARS_IN]->(work)
        RETURN series,
@@ -1042,7 +1043,7 @@ export async function getSeriesMetadata(seriesWikidataId: string): Promise<Serie
                 figure: fig,
                 work_index: r.sequence_number
               })[0..1000] as character_appearances`,
-      { seriesWikidataId }
+      { id }
     );
 
     if (seriesResult.records.length === 0) return null;

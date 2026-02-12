@@ -1,335 +1,633 @@
-'use client';
-
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { BookOpen, Film, Tv, Gamepad2, Users, Calendar, Zap, TrendingUp } from 'lucide-react';
-import GraphExplorer from '@/components/GraphExplorer';
-import { SeriesMetadata, GraphNode, GraphLink } from '@/lib/types';
+import { getSeriesMetadata } from '@/lib/db';
+import {
+  getMediaTypeColor,
+  getMediaTypeIcon,
+  getPlaceholderStyle,
+} from '@/lib/card-utils';
 
-export default function SeriesPage({
+export default async function SeriesPage({
   params,
 }: {
   params: Promise<{ seriesId: string }>;
 }) {
-  const [params_, setParams] = useState<{ seriesId: string } | null>(null);
-  const [metadata, setMetadata] = useState<SeriesMetadata | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [graphData, setGraphData] = useState<{ nodes: GraphNode[]; links: GraphLink[] } | null>(null);
+  const { seriesId } = await params;
+  const metadata = await getSeriesMetadata(seriesId);
 
-  useEffect(() => {
-    (async () => {
-      const p = await params;
-      setParams(p);
-
-      try {
-        const response = await fetch(`/api/series/${p.seriesId}`);
-        if (!response.ok) {
-          if (response.status === 404) {
-            notFound();
-          }
-          throw new Error('Failed to fetch series data');
-        }
-
-        const data = await response.json();
-        setMetadata(data);
-
-        // Build graph data from characters and relationships
-        const nodes: GraphNode[] = [];
-        const links: GraphLink[] = [];
-        const nodeIds = new Set<string>();
-
-        // Add series node
-        const seriesId = `series-${data.series.wikidata_id}`;
-        nodes.push({
-          id: seriesId,
-          name: data.series.title,
-          type: 'media',
-          sentiment: 'Complex',
-        });
-        nodeIds.add(seriesId);
-
-        // Add character nodes and links
-        data.characters.roster.forEach((char: any) => {
-          const charId = `figure-${char.canonical_id}`;
-          if (!nodeIds.has(charId)) {
-            nodes.push({
-              id: charId,
-              name: char.name,
-              type: 'figure',
-            });
-            nodeIds.add(charId);
-          }
-
-          links.push({
-            source: charId,
-            target: seriesId,
-            sentiment: 'Complex',
-          });
-        });
-
-        // Build figure-to-figure links based on shared works
-        const charactersInWorks: Record<number, string[]> = {};
-        data.characters.roster.forEach((char: any) => {
-          char.works.forEach((workIdx: number) => {
-            if (!charactersInWorks[workIdx]) {
-              charactersInWorks[workIdx] = [];
-            }
-            charactersInWorks[workIdx].push(char.canonical_id);
-          });
-        });
-
-        // Add links for characters appearing together
-        const figureLinks = new Set<string>();
-        Object.values(charactersInWorks).forEach((figs: string[]) => {
-          for (let i = 0; i < figs.length; i++) {
-            for (let j = i + 1; j < figs.length; j++) {
-              const linkKey = [figs[i], figs[j]].sort().join('|');
-              if (!figureLinks.has(linkKey)) {
-                figureLinks.add(linkKey);
-                links.push({
-                  source: `figure-${figs[i]}`,
-                  target: `figure-${figs[j]}`,
-                  sentiment: 'Complex',
-                });
-              }
-            }
-          }
-        });
-
-        setGraphData({ nodes, links });
-      } catch (err: any) {
-        setError(err.message || 'Failed to load series');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [params]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading series...</div>
-      </div>
-    );
+  if (!metadata) {
+    notFound();
   }
 
-  if (error || !metadata) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="text-red-500 mb-4">Error: {error || 'Series not found'}</div>
-            <Link href="/" className="text-blue-400 hover:text-blue-300">
-              ← Back to Dashboard
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const { series, works, characters, stats } = metadata;
+  const accentColor = getMediaTypeColor(series.media_type);
+  const SeriesIcon = getMediaTypeIcon(series.media_type);
+  const placeholder = getPlaceholderStyle('work', series.title, series.media_type);
+  const [yearStart, yearEnd] = stats.yearRange;
 
-  const getIcon = (type: string) => {
-    switch (type?.toUpperCase()) {
-      case 'FILM_SERIES':
-      case 'FILM':
-        return <Film className="w-10 h-10 text-blue-400" />;
-      case 'TV_SERIES':
-      case 'TV_SERIES_COLLECTION':
-        return <Tv className="w-10 h-10 text-blue-400" />;
-      case 'GAME_SERIES':
-      case 'GAME':
-        return <Gamepad2 className="w-10 h-10 text-blue-400" />;
-      default:
-        return <BookOpen className="w-10 h-10 text-blue-400" />;
+  // Sort works by sequence, then release year
+  const sortedWorks = [...works].sort((a, b) => {
+    if (a.season_number && b.season_number) {
+      if (a.season_number !== b.season_number) return a.season_number - b.season_number;
+      if (a.episode_number && b.episode_number) return a.episode_number - b.episode_number;
     }
-  };
-
-  const [yearStart, yearEnd] = metadata.stats.yearRange;
+    if (a.sequence_number && b.sequence_number) return a.sequence_number - b.sequence_number;
+    return (a.release_year || 0) - (b.release_year || 0);
+  });
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mb-6 inline-block">
-            ← Back to Dashboard
-          </Link>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      {/* Breadcrumb Header */}
+      <div
+        style={{
+          padding: '20px 40px',
+          borderBottom: '1px solid var(--color-border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '14px',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            color: 'var(--color-text)',
+          }}
+          className="hover:opacity-70 transition-opacity"
+        >
+          Fictotum Archive
+        </Link>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            textTransform: 'uppercase',
+          }}
+        >
+          Index / Series / {series.wikidata_id || series.media_id}
+        </span>
+      </div>
 
-          {/* Series Header */}
-          <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-lg p-8 mb-8">
-            <div className="flex items-start gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center border-2 border-blue-500/30">
-                  {getIcon(metadata.series.media_type)}
-                </div>
-              </div>
-              <div className="flex-grow">
-                <h1 className="text-4xl font-bold text-white mb-2">{metadata.series.title}</h1>
-                <p className="text-lg text-gray-300 mb-2">
-                  {metadata.series.media_type} Series • {metadata.works.length} works
-                </p>
-                {metadata.series.creator && (
-                  <p className="text-gray-400">
-                    Created by <span className="text-white">{metadata.series.creator}</span>
-                  </p>
-                )}
-              </div>
-            </div>
+      {/* Main Content */}
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '40px 24px 80px' }}>
+
+        {/* ================================================================
+            HERO SECTION
+            ================================================================ */}
+        <div style={{ display: 'flex', gap: '32px', marginBottom: '40px' }}>
+          {/* Series Icon Placeholder */}
+          <div
+            style={{
+              width: '180px',
+              height: '240px',
+              flexShrink: 0,
+              overflow: 'hidden',
+              position: 'relative',
+              borderBottom: `3px solid ${accentColor}`,
+              backgroundColor: placeholder.backgroundColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <SeriesIcon
+              style={{
+                width: '64px',
+                height: '64px',
+                color: accentColor,
+                opacity: 0.6,
+              }}
+            />
           </div>
 
-          {/* Series Metadata Card */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            {/* Character Count */}
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-5 h-5 text-blue-400" />
-                <span className="text-sm text-gray-400">Total Characters</span>
-              </div>
-              <p className="text-2xl font-bold text-white">{metadata.characters.total}</p>
+          {/* Title Block */}
+          <div style={{ flex: 1 }}>
+            {/* Media Type Badge */}
+            <div
+              style={{
+                display: 'inline-block',
+                padding: '4px 12px',
+                border: `1px solid ${accentColor}`,
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: accentColor,
+                marginBottom: '12px',
+              }}
+            >
+              {series.media_type}
             </div>
 
-            {/* Year Range */}
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-5 h-5 text-blue-400" />
-                <span className="text-sm text-gray-400">Year Range</span>
-              </div>
-              <p className="text-2xl font-bold text-white">
-                {yearStart === yearEnd ? yearStart : `${yearStart}–${yearEnd}`}
+            <h1
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '36px',
+                fontWeight: 300,
+                lineHeight: 1.15,
+                color: 'var(--color-text)',
+                marginBottom: '8px',
+              }}
+            >
+              {series.title}
+            </h1>
+
+            {series.creator && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '16px',
+                  color: 'var(--color-gray)',
+                  marginBottom: '4px',
+                }}
+              >
+                by {series.creator}
               </p>
-            </div>
+            )}
 
-            {/* Avg Characters per Work */}
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-5 h-5 text-blue-400" />
-                <span className="text-sm text-gray-400">Avg Chars/Work</span>
-              </div>
-              <p className="text-2xl font-bold text-white">{metadata.stats.avgCharactersPerWork.toFixed(1)}</p>
-            </div>
-
-            {/* Total Interactions */}
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-5 h-5 text-blue-400" />
-                <span className="text-sm text-gray-400">Unique Pairs</span>
-              </div>
-              <p className="text-2xl font-bold text-white">{metadata.stats.totalInteractions}</p>
-            </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: 'var(--color-gray)',
+                marginTop: '8px',
+              }}
+            >
+              {works.length} work{works.length !== 1 ? 's' : ''}
+              {yearStart > 0 && (
+                <>
+                  {' '}&middot; {yearStart === yearEnd ? yearStart : `${yearStart}\u2009\u2013\u2009${yearEnd}`}
+                </>
+              )}
+            </p>
           </div>
+        </div>
 
-          {/* Works Grid */}
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold text-white mb-4">Works in this Series</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {metadata.works
-                .sort((a: any, b: any) => {
-                  // Sort by season, then sequence, then episode, then year
-                  if (a.season_number && b.season_number) {
-                    if (a.season_number !== b.season_number) return a.season_number - b.season_number;
-                    if (a.episode_number && b.episode_number) return a.episode_number - b.episode_number;
-                  }
-                  if (a.sequence_number && b.sequence_number) return a.sequence_number - b.sequence_number;
-                  return a.release_year - b.release_year;
-                })
-                .map((work: any, idx: number) => {
-                  const charCountInWork = metadata.characters.roster.filter((c: any) =>
-                    c.works.includes(idx)
-                  ).length;
-
-                  return (
-                    <Link
-                      key={work.media_id}
-                      href={`/media/${work.media_id}`}
-                      className="block p-4 bg-gray-900 rounded-lg border border-gray-700 hover:border-blue-500 transition-all"
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="font-medium text-white flex-grow truncate">{work.title}</h3>
-                        {work.sequence_number && (
-                          <span className="text-sm font-semibold text-blue-400 flex-shrink-0">#{work.sequence_number}</span>
-                        )}
-                        {work.season_number && work.episode_number && (
-                          <span className="text-xs text-gray-500 flex-shrink-0">
-                            S{work.season_number}E{work.episode_number}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-400 flex items-center justify-between">
-                        <span>{work.release_year}</span>
-                        <span className="text-blue-400">{charCountInWork} characters</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-            </div>
+        {/* ================================================================
+            STATS BAR
+            ================================================================ */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '1px',
+            background: 'var(--color-border)',
+            border: '1px solid var(--color-border)',
+            marginBottom: '40px',
+          }}
+        >
+          <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+                marginBottom: '4px',
+              }}
+            >
+              Works
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '28px',
+                fontWeight: 500,
+                color: accentColor,
+              }}
+            >
+              {works.length}
+            </p>
           </div>
+          <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+                marginBottom: '4px',
+              }}
+            >
+              Figures
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '28px',
+                fontWeight: 500,
+                color: 'var(--color-text)',
+              }}
+            >
+              {characters.total}
+            </p>
+          </div>
+          <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+                marginBottom: '4px',
+              }}
+            >
+              Year Range
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '16px',
+                fontWeight: 500,
+                color: 'var(--color-text)',
+                marginTop: '6px',
+              }}
+            >
+              {yearStart === yearEnd ? yearStart : `${yearStart}\u2009\u2013\u2009${yearEnd}`}
+            </p>
+          </div>
+          <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+                marginBottom: '4px',
+              }}
+            >
+              Unique Pairs
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '28px',
+                fontWeight: 500,
+                color: 'var(--color-text)',
+              }}
+            >
+              {stats.totalInteractions}
+            </p>
+          </div>
+        </div>
 
-          {/* Character Roster */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div className="lg:col-span-2">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-                <h2 className="text-xl font-semibold text-white mb-4">Character Roster</h2>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {metadata.characters.roster.map((char: any) => (
-                    <Link
-                      key={char.canonical_id}
-                      href={`/figure/${char.canonical_id}`}
-                      className="block p-3 bg-gray-900 rounded-lg border border-gray-700 hover:border-blue-500 transition-all"
+        {/* ================================================================
+            WORKS IN THIS SERIES
+            ================================================================ */}
+        <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+          <span>Works in this Series</span>
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: '1px',
+            background: 'var(--color-border)',
+            border: '1px solid var(--color-border)',
+            borderTop: 'none',
+            marginBottom: '40px',
+          }}
+        >
+          {sortedWorks.map((work, idx) => {
+            const charCountInWork = characters.roster.filter((c) =>
+              c.works.includes(idx)
+            ).length;
+
+            return (
+              <Link
+                key={work.media_id}
+                href={`/media/${work.media_id}`}
+                style={{
+                  display: 'block',
+                  background: 'var(--color-bg)',
+                  padding: '16px 20px',
+                  textDecoration: 'none',
+                  color: 'var(--color-text)',
+                }}
+                className="hover:opacity-80 transition-opacity"
+              >
+                <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', gap: '8px', marginBottom: '8px' }}>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                      lineHeight: 1.3,
+                      color: 'var(--color-text)',
+                      flex: 1,
+                    }}
+                  >
+                    {work.title}
+                  </p>
+                  {work.sequence_number && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: accentColor,
+                        flexShrink: 0,
+                      }}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-white font-medium">{char.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">{char.appearances} appearances</span>
-                          <span className="text-xs text-blue-400">{char.works.length} works</span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+                      #{work.sequence_number}
+                    </span>
+                  )}
+                  {work.season_number && work.episode_number && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '10px',
+                        color: 'var(--color-gray)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      S{work.season_number}E{work.episode_number}
+                    </span>
+                  )}
                 </div>
-              </div>
-            </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    color: 'var(--color-gray)',
+                  }}
+                >
+                  <span>{work.release_year || 'Unknown'}</span>
+                  <span style={{ color: accentColor }}>{charCountInWork} figure{charCountInWork !== 1 ? 's' : ''}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
 
-            {/* Character Appearance Matrix */}
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Appearance Matrix</h2>
-              <div className="text-xs text-gray-400 mb-4">
-                <p>Showing top {Math.min(10, metadata.characters.roster.length)} characters</p>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <tbody>
-                    {metadata.characters.roster.slice(0, 10).map((char: any) => (
-                      <tr key={char.canonical_id} className="border-b border-gray-700">
-                        <td className="py-1 pr-2 text-gray-300 truncate max-w-[120px]">{char.name}</td>
-                        <td className="py-1">
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: Math.min(5, metadata.works.length) }).map((_, idx) => (
-                              <div
-                                key={idx}
-                                className={`w-3 h-3 rounded-sm ${
-                                  char.works.includes(idx) ? 'bg-blue-500' : 'bg-gray-700'
-                                }`}
-                                title={char.works.includes(idx) ? `In ${metadata.works[idx]?.title}` : 'Not in work'}
-                              />
-                            ))}
-                          </div>
-                        </td>
-                      </tr>
+        {/* ================================================================
+            CHARACTER ROSTER
+            ================================================================ */}
+        {characters.roster.length > 0 && (
+          <>
+            <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+              <span>Character Roster</span>
+            </div>
+            <div
+              style={{
+                border: '1px solid var(--color-border)',
+                borderTop: 'none',
+                marginBottom: '40px',
+              }}
+            >
+              {characters.roster.map((char) => (
+                <Link
+                  key={char.canonical_id}
+                  href={`/figure/${char.canonical_id}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 20px',
+                    borderBottom: '1px solid var(--color-border)',
+                    textDecoration: 'none',
+                    color: 'var(--color-text)',
+                  }}
+                  className="hover:opacity-70 transition-opacity"
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {char.name}
+                  </span>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '11px',
+                        color: 'var(--color-gray)',
+                      }}
+                    >
+                      {char.appearances} appearance{char.appearances !== 1 ? 's' : ''}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '11px',
+                        color: accentColor,
+                      }}
+                    >
+                      {char.works.length} work{char.works.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ================================================================
+            APPEARANCE MATRIX
+            ================================================================ */}
+        {characters.roster.length > 0 && works.length > 1 && (
+          <>
+            <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+              <span>Appearance Matrix</span>
+            </div>
+            <div
+              style={{
+                border: '1px solid var(--color-border)',
+                borderTop: 'none',
+                marginBottom: '40px',
+                padding: '20px',
+                overflowX: 'auto',
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  color: 'var(--color-gray)',
+                  marginBottom: '16px',
+                }}
+              >
+                Top {Math.min(15, characters.roster.length)} characters across {Math.min(works.length, 10)} works
+              </p>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        textAlign: 'left',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '10px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        color: 'var(--color-gray)',
+                        padding: '4px 8px 8px 0',
+                      }}
+                    >
+                      Figure
+                    </th>
+                    {sortedWorks.slice(0, 10).map((work, idx) => (
+                      <th
+                        key={idx}
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '9px',
+                          color: 'var(--color-gray)',
+                          padding: '4px 2px 8px',
+                          textAlign: 'center',
+                          maxWidth: '60px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={work.title}
+                      >
+                        {work.sequence_number ? `#${work.sequence_number}` : (idx + 1)}
+                      </th>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </tr>
+                </thead>
+                <tbody>
+                  {characters.roster.slice(0, 15).map((char) => (
+                    <tr key={char.canonical_id} style={{ borderTop: '1px solid var(--color-border)' }}>
+                      <td
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          fontSize: '13px',
+                          color: 'var(--color-text)',
+                          padding: '6px 8px 6px 0',
+                          maxWidth: '140px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {char.name}
+                      </td>
+                      {sortedWorks.slice(0, 10).map((_, idx) => (
+                        <td key={idx} style={{ padding: '6px 2px', textAlign: 'center' }}>
+                          <div
+                            style={{
+                              width: '14px',
+                              height: '14px',
+                              margin: '0 auto',
+                              backgroundColor: char.works.includes(idx) ? accentColor : 'var(--color-section-bg)',
+                              opacity: char.works.includes(idx) ? 1 : 0.4,
+                            }}
+                            title={char.works.includes(idx) ? `In ${sortedWorks[idx]?.title}` : 'Not in work'}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+          </>
+        )}
 
-          {/* Network Graph */}
-          {graphData && (
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Series Character Network</h2>
-              <GraphExplorer nodes={graphData.nodes} links={graphData.links} />
+        {/* ================================================================
+            PRODUCTION DETAILS
+            ================================================================ */}
+        {(series.publisher || series.production_studio || series.channel) && (
+          <>
+            <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+              <span>Production Details</span>
             </div>
-          )}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+                borderTop: 'none',
+                marginBottom: '40px',
+              }}
+            >
+              {series.publisher && (
+                <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>Publisher</p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', color: 'var(--color-text)' }}>{series.publisher}</p>
+                </div>
+              )}
+              {series.production_studio && (
+                <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>Studio</p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', color: 'var(--color-text)' }}>{series.production_studio}</p>
+                </div>
+              )}
+              {series.channel && (
+                <div style={{ background: 'var(--color-bg)', padding: '16px 20px' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>Channel</p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', color: 'var(--color-text)' }}>{series.channel}</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ================================================================
+            EXTERNAL REFERENCES
+            ================================================================ */}
+        {series.wikidata_id && !series.wikidata_id.startsWith('PROV:') && (
+          <>
+            <div className="fsg-section-header" style={{ marginBottom: '0' }}>
+              <span>External References</span>
+            </div>
+            <div
+              style={{
+                border: '1px solid var(--color-border)',
+                borderTop: 'none',
+                padding: '16px 20px',
+                marginBottom: '40px',
+              }}
+            >
+              <a
+                href={`https://www.wikidata.org/wiki/${series.wikidata_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  color: accentColor,
+                  textDecoration: 'none',
+                }}
+                className="hover:opacity-70 transition-opacity"
+              >
+                Wikidata: {series.wikidata_id} &rarr;
+              </a>
+            </div>
+          </>
+        )}
+
+        {/* ================================================================
+            PROVENANCE
+            ================================================================ */}
+        <div
+          style={{
+            borderTop: '1px solid var(--color-border)',
+            paddingTop: '16px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+          }}
+        >
+          Fictotum Archive &middot; Series Record &middot; {series.wikidata_id || series.media_id}
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { BookMarked, Search, Loader2 } from 'lucide-react';
+import { getMediaTypeColor, getMediaTypeIcon } from '@/lib/card-utils';
 
 interface SeriesListItem {
   wikidata_id: string;
@@ -24,9 +24,7 @@ export default function SeriesBrowsePage() {
     const fetchSeries = async () => {
       try {
         const response = await fetch('/api/series/browse');
-        if (!response.ok) {
-          throw new Error('Failed to fetch series');
-        }
+        if (!response.ok) throw new Error('Failed to fetch series');
         const data = await response.json();
         setSeries(data);
         setFilteredSeries(data);
@@ -36,7 +34,6 @@ export default function SeriesBrowsePage() {
         setLoading(false);
       }
     };
-
     fetchSeries();
   }, []);
 
@@ -48,123 +45,286 @@ export default function SeriesBrowsePage() {
     setFilteredSeries(filtered);
   }, [searchQuery, series]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-stone-100 text-foreground flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
-          <span className="text-xl text-stone-500 font-mono uppercase tracking-widest">Loading series...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-stone-100 text-foreground">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header - Case File Style */}
-          <div className="mb-8 bg-white border-t-4 border-amber-600 shadow-xl p-8">
-            <div className="text-[10px] font-black text-amber-700 uppercase tracking-[0.3em] mb-2">
-              Series Archive // Fictional Universes
-            </div>
-            <div className="flex items-center gap-3 mb-2">
-              <BookMarked className="w-8 h-8 text-amber-600" />
-              <h1 className="text-4xl md:text-6xl font-bold text-stone-900 tracking-tighter uppercase">Browse Series</h1>
-            </div>
-            <p className="text-stone-600">
-              Explore all book, TV, film, and game series in Fictotum
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      {/* Breadcrumb Header */}
+      <div
+        style={{
+          padding: '20px 40px',
+          borderBottom: '1px solid var(--color-border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '14px',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            color: 'var(--color-text)',
+          }}
+          className="hover:opacity-70 transition-opacity"
+        >
+          Fictotum Archive
+        </Link>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            color: 'var(--color-gray)',
+            textTransform: 'uppercase',
+          }}
+        >
+          Index / Series
+        </span>
+      </div>
+
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '40px 24px 80px' }}>
+        {/* Page Header */}
+        <div style={{ marginBottom: '32px' }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: 'var(--color-gray)',
+              marginBottom: '8px',
+            }}
+          >
+            Series Archive
+          </p>
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '42px',
+              fontWeight: 300,
+              color: 'var(--color-text)',
+              marginBottom: '8px',
+            }}
+          >
+            Browse Series
+          </h1>
+          <p
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '16px',
+              color: 'var(--color-gray)',
+            }}
+          >
+            Explore all book, TV, film, and game series in the archive.
+          </p>
+        </div>
+
+        {/* Search */}
+        <div style={{ marginBottom: '32px' }}>
+          <input
+            type="text"
+            placeholder="Search by series name or creator..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              fontFamily: 'var(--font-serif)',
+              fontSize: '16px',
+              padding: '12px 16px',
+              border: '1px solid var(--color-border)',
+              background: 'var(--color-bg)',
+              color: 'var(--color-text)',
+              outline: 'none',
+            }}
+          />
+        </div>
+
+        {/* Loading */}
+        {loading && (
+          <div style={{ padding: '80px 0', textAlign: 'center' }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+              }}
+            >
+              Loading series...
             </p>
           </div>
+        )}
 
-          {/* Search Bar */}
-          <div className="mb-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-stone-400" />
-              <input
-                type="text"
-                placeholder="SEARCH BY SERIES NAME OR CREATOR..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border-2 border-stone-300 pl-10 pr-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-600 font-mono text-sm uppercase tracking-wide"
-              />
-            </div>
+        {/* Error */}
+        {error && (
+          <div
+            style={{
+              padding: '16px 20px',
+              border: '1px solid var(--color-accent)',
+              borderLeft: '4px solid var(--color-accent)',
+              marginBottom: '32px',
+            }}
+          >
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-accent)' }}>
+              {error}
+            </p>
           </div>
+        )}
 
-          {/* Error State */}
-          {error && (
-            <div className="bg-red-50 border-2 border-red-600 p-4 mb-8">
-              <p className="text-red-800 font-mono text-sm uppercase tracking-wide">{error}</p>
-            </div>
-          )}
+        {/* Series Grid */}
+        {!loading && !error && filteredSeries.length > 0 && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+              gap: '1px',
+              background: 'var(--color-border)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            {filteredSeries.map((s) => {
+              const accentColor = getMediaTypeColor(s.media_type);
+              const Icon = getMediaTypeIcon(s.media_type);
 
-          {/* Series Grid */}
-          {filteredSeries.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredSeries.map((s) => (
+              return (
                 <Link
                   key={s.wikidata_id}
                   href={`/series/${s.wikidata_id}`}
-                  className="group block bg-white border border-stone-300 p-6 hover:border-amber-600 transition-all shadow-sm hover:shadow-md"
+                  style={{
+                    display: 'block',
+                    background: 'var(--color-bg)',
+                    padding: '20px',
+                    textDecoration: 'none',
+                    color: 'var(--color-text)',
+                    borderBottom: `2px solid transparent`,
+                  }}
+                  className="hover:opacity-80 transition-opacity"
                 >
-                  <div className="mb-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <BookMarked className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                      <span className="inline-flex items-center px-2 py-1 text-[10px] font-black uppercase tracking-[0.15em] border-2 bg-stone-100 border-stone-400 text-stone-700">
-                        {s.media_type}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-stone-900 uppercase tracking-tight group-hover:text-amber-700 transition-colors line-clamp-2">
-                      {s.title}
-                    </h3>
-                    {s.creator && (
-                      <p className="text-sm text-stone-600 mt-1">by {s.creator}</p>
-                    )}
+                  {/* Type Badge + Icon */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <Icon style={{ width: '20px', height: '20px', color: accentColor, opacity: 0.7 }} />
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '9px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        padding: '2px 8px',
+                        border: `1px solid ${accentColor}`,
+                        color: accentColor,
+                      }}
+                    >
+                      {s.media_type}
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-4 border-t-2 border-stone-200">
-                    <div>
-                      <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Works</p>
-                      <p className="text-2xl font-bold text-amber-600 font-mono">{s.work_count}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-stone-400 uppercase tracking-widest font-black">Characters</p>
-                      <p className="text-2xl font-bold text-amber-600 font-mono">{s.character_count}</p>
-                    </div>
-                  </div>
+                  {/* Title */}
+                  <h3
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: '17px',
+                      fontWeight: 500,
+                      color: 'var(--color-text)',
+                      lineHeight: 1.3,
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {s.title}
+                  </h3>
+                  {s.creator && (
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: '13px',
+                        color: 'var(--color-gray)',
+                        marginBottom: '12px',
+                      }}
+                    >
+                      by {s.creator}
+                    </p>
+                  )}
 
-                  <div className="mt-4 text-sm text-amber-600 font-bold uppercase group-hover:translate-x-1 transition-transform">
-                    View File →
+                  {/* Stats */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '16px',
+                      paddingTop: '12px',
+                      borderTop: '1px solid var(--color-border)',
+                    }}
+                  >
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>Works</p>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 500, color: accentColor }}>{s.work_count}</p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>Figures</p>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 500, color: 'var(--color-text)' }}>{s.character_count}</p>
+                    </div>
                   </div>
                 </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 bg-white border-2 border-stone-300 shadow-sm">
-              <BookMarked className="w-16 h-16 text-stone-400 mx-auto mb-4" />
-              <p className="text-xl text-stone-500 mb-2 font-mono uppercase tracking-wide">
-                {searchQuery ? 'No series found matching your search' : 'No series available'}
-              </p>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="text-amber-600 hover:text-amber-700 mt-4 font-black uppercase text-sm tracking-widest"
-                >
-                  Clear search
-                </button>
-              )}
-            </div>
-          )}
+              );
+            })}
+          </div>
+        )}
 
-          {/* Summary */}
-          {!error && series.length > 0 && (
-            <div className="mt-12 pt-8 border-t-2 border-stone-300 text-center">
-              <p className="text-stone-500 font-mono uppercase tracking-wide text-sm">
-                Showing {filteredSeries.length} of {series.length} series
-              </p>
-            </div>
-          )}
-        </div>
+        {/* Empty State */}
+        {!loading && !error && filteredSeries.length === 0 && (
+          <div
+            style={{
+              padding: '80px 0',
+              textAlign: 'center',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-gray)', marginBottom: '8px' }}>
+              {searchQuery ? `No series found matching "${searchQuery}"` : 'No series available'}
+            </p>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  color: 'var(--color-accent)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  marginTop: '8px',
+                }}
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Summary */}
+        {!error && series.length > 0 && !loading && (
+          <div
+            style={{
+              marginTop: '32px',
+              paddingTop: '16px',
+              borderTop: '1px solid var(--color-border)',
+              textAlign: 'center',
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+                color: 'var(--color-gray)',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+              }}
+            >
+              Showing {filteredSeries.length} of {series.length} series
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
