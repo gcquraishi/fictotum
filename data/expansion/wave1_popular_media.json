@@ -1,0 +1,469 @@
+{
+  "metadata": {
+    "source": "Wikidata, IMDb, Wikipedia, Academic Sources",
+    "curator": "Claude Code (Sonnet 4.5) - Research Analyst",
+    "date": "2026-02-13",
+    "description": "Wave 1: High-value media works featuring orphan historical figures. Focus on popular biographical films, historical TV series, plays, and documentaries to maximize portrayal connections and close gap toward beta targets (400 MediaWorks, 681 portrayals)."
+  },
+  "works": [
+    {
+      "title": "Oppenheimer",
+      "wikidata_id": "Q108839994",
+      "media_type": "FILM",
+      "release_year": 2023,
+      "creator": "Christopher Nolan",
+      "description": "Epic biographical thriller about J. Robert Oppenheimer and the Manhattan Project, exploring the development of the atomic bomb during WWII.",
+      "setting": "United States, 1940s"
+    },
+    {
+      "title": "The Imitation Game",
+      "wikidata_id": "Q14918344",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Morten Tyldum",
+      "description": "Biographical thriller about mathematician Alan Turing's efforts to decrypt German intelligence codes during World War II.",
+      "setting": "United Kingdom, 1940s"
+    },
+    {
+      "title": "Hamilton",
+      "wikidata_id": "Q19320959",
+      "media_type": "PLAY",
+      "release_year": 2015,
+      "creator": "Lin-Manuel Miranda",
+      "description": "Revolutionary sung-and-rapped-through musical chronicling Alexander Hamilton's rise from Caribbean immigrant to Founding Father.",
+      "setting": "United States, 1770s-1800s"
+    },
+    {
+      "title": "The Crown",
+      "wikidata_id": "Q20707362",
+      "media_type": "TV_SERIES",
+      "release_year": 2016,
+      "creator": "Peter Morgan",
+      "description": "Historical drama depicting the reign of Queen Elizabeth II from her wedding to the present day, spanning political upheavals and personal challenges.",
+      "setting": "United Kingdom, 1947-2000s"
+    },
+    {
+      "title": "Vikings",
+      "wikidata_id": "Q2579463",
+      "media_type": "TV_SERIES",
+      "release_year": 2013,
+      "creator": "Michael Hirst",
+      "description": "Historical drama following the legendary Norse hero Ragnar Lothbrok and his descendants as they raid and explore new territories.",
+      "setting": "Scandinavia and England, 8th-11th centuries"
+    },
+    {
+      "title": "The Last Kingdom",
+      "wikidata_id": "Q18085820",
+      "media_type": "TV_SERIES",
+      "release_year": 2015,
+      "creator": "Stephen Butchard",
+      "description": "Historical drama based on Bernard Cornwell's Saxon Stories, following the Viking invasions of England and Alfred the Great's defense of Wessex.",
+      "setting": "England, 9th-10th centuries"
+    },
+    {
+      "title": "Napoleon",
+      "wikidata_id": "Q105806948",
+      "media_type": "FILM",
+      "release_year": 2023,
+      "creator": "Ridley Scott",
+      "description": "Epic historical war film chronicling Napoleon Bonaparte's rise to power, military campaigns, and turbulent relationship with Josephine.",
+      "setting": "France and Europe, 1790s-1820s"
+    },
+    {
+      "title": "Lincoln",
+      "wikidata_id": "Q32433",
+      "media_type": "FILM",
+      "release_year": 2012,
+      "creator": "Steven Spielberg",
+      "description": "Historical drama focusing on the final four months of Abraham Lincoln's life and his efforts to abolish slavery through the 13th Amendment.",
+      "setting": "United States, 1865"
+    },
+    {
+      "title": "Amadeus",
+      "wikidata_id": "Q190956",
+      "media_type": "FILM",
+      "release_year": 1984,
+      "creator": "Milos Forman",
+      "description": "Period drama exploring the fictionalized rivalry between composers Wolfgang Amadeus Mozart and Antonio Salieri in 18th-century Vienna.",
+      "setting": "Vienna, Austria, 1780s"
+    },
+    {
+      "title": "A Beautiful Mind",
+      "wikidata_id": "Q164103",
+      "media_type": "FILM",
+      "release_year": 2001,
+      "creator": "Ron Howard",
+      "description": "Biographical drama about mathematician John Nash, his groundbreaking work in game theory, and his struggle with schizophrenia.",
+      "setting": "United States, 1940s-1990s"
+    },
+    {
+      "title": "The Theory of Everything",
+      "wikidata_id": "Q15079318",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "James Marsh",
+      "description": "Biographical drama depicting the life of theoretical physicist Stephen Hawking and his relationship with his first wife Jane.",
+      "setting": "United Kingdom, 1960s-1990s"
+    },
+    {
+      "title": "Gandhi",
+      "wikidata_id": "Q202211",
+      "media_type": "FILM",
+      "release_year": 1982,
+      "creator": "Richard Attenborough",
+      "description": "Epic biographical film chronicling Mahatma Gandhi's life from his early activism in South Africa to India's independence movement.",
+      "setting": "South Africa and India, 1893-1948"
+    },
+    {
+      "title": "Troy",
+      "wikidata_id": "Q186587",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Wolfgang Petersen",
+      "description": "Epic historical action film loosely based on Homer's Iliad, depicting the Trojan War and the legendary heroes who fought in it.",
+      "setting": "Ancient Greece and Troy, circa 1200 BCE"
+    },
+    {
+      "title": "Alexander",
+      "wikidata_id": "Q162277",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Oliver Stone",
+      "description": "Epic historical drama chronicling the life of Alexander the Great, from his education under Aristotle to his vast conquests.",
+      "setting": "Macedonia and Asia, 356-323 BCE"
+    },
+    {
+      "title": "Braveheart",
+      "wikidata_id": "Q162729",
+      "media_type": "FILM",
+      "release_year": 1995,
+      "creator": "Mel Gibson",
+      "description": "Epic war film depicting William Wallace's leadership in the First War of Scottish Independence against King Edward I of England.",
+      "setting": "Scotland and England, 1290s-1300s"
+    },
+    {
+      "title": "Lawrence of Arabia",
+      "wikidata_id": "Q228186",
+      "media_type": "FILM",
+      "release_year": 1962,
+      "creator": "David Lean",
+      "description": "Epic biographical adventure film chronicling T.E. Lawrence's experiences in the Ottoman Empire during World War I.",
+      "setting": "Middle East, 1916-1918"
+    },
+    {
+      "title": "Elizabeth",
+      "wikidata_id": "Q499656",
+      "media_type": "FILM",
+      "release_year": 1998,
+      "creator": "Shekhar Kapur",
+      "description": "Historical drama depicting Elizabeth I's transformation from vulnerable young woman to England's Virgin Queen.",
+      "setting": "England, 1558-1560s"
+    },
+    {
+      "title": "The Favourite",
+      "wikidata_id": "Q22001133",
+      "media_type": "FILM",
+      "release_year": 2018,
+      "creator": "Yorgos Lanthimos",
+      "description": "Period dark comedy exploring the power dynamics between Queen Anne and two women vying for her favor in early 18th-century England.",
+      "setting": "England, 1700s"
+    },
+    {
+      "title": "Mary Queen of Scots",
+      "wikidata_id": "Q37909408",
+      "media_type": "FILM",
+      "release_year": 2018,
+      "creator": "Josie Rourke",
+      "description": "Historical drama exploring the turbulent life and rivalry between Mary Stuart and her cousin Elizabeth I.",
+      "setting": "Scotland and England, 1560s"
+    },
+    {
+      "title": "Downfall",
+      "wikidata_id": "Q152857",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Oliver Hirschbiegel",
+      "description": "Historical war drama depicting the final days of Adolf Hitler and the Nazi regime during the Battle of Berlin in 1945.",
+      "setting": "Berlin, Germany, 1945"
+    },
+    {
+      "title": "John Adams",
+      "wikidata_id": "Q1516431",
+      "media_type": "TV_SERIES",
+      "release_year": 2008,
+      "creator": "Tom Hooper",
+      "description": "Historical miniseries chronicling the life of America's second president from the Boston Massacre to his retirement.",
+      "setting": "United States, 1770s-1820s"
+    },
+    {
+      "title": "Chernobyl",
+      "wikidata_id": "Q48741246",
+      "media_type": "TV_SERIES",
+      "release_year": 2019,
+      "creator": "Craig Mazin",
+      "description": "Historical drama miniseries depicting the 1986 Chernobyl nuclear disaster and the heroic cleanup efforts that followed.",
+      "setting": "Soviet Union, 1986"
+    },
+    {
+      "title": "The Borgias",
+      "wikidata_id": "Q834868",
+      "media_type": "TV_SERIES",
+      "release_year": 2011,
+      "creator": "Neil Jordan",
+      "description": "Historical drama chronicling the corrupt and powerful Borgia family during the Italian Renaissance under Pope Alexander VI.",
+      "setting": "Italy, 1490s-1500s"
+    },
+    {
+      "title": "Medici",
+      "wikidata_id": "Q21079531",
+      "media_type": "TV_SERIES",
+      "release_year": 2016,
+      "creator": "Nicholas Meyer",
+      "description": "Historical drama depicting the rise of the Medici family as they became the most powerful banking dynasty in Renaissance Florence.",
+      "setting": "Florence, Italy, 1400s-1500s"
+    },
+    {
+      "title": "The King",
+      "wikidata_id": "Q54801155",
+      "media_type": "FILM",
+      "release_year": 2019,
+      "creator": "David Michod",
+      "description": "Historical drama based on Shakespeare's Henriad, depicting the transformation of Prince Hal into King Henry V of England.",
+      "setting": "England and France, 1413-1415"
+    },
+    {
+      "title": "Julius Caesar",
+      "wikidata_id": "Q215750",
+      "media_type": "PLAY",
+      "release_year": 1599,
+      "creator": "William Shakespeare",
+      "description": "Historical tragedy depicting the conspiracy against Julius Caesar, his assassination, and its aftermath in Republican Rome.",
+      "setting": "Rome, 44 BCE"
+    },
+    {
+      "title": "Henry V",
+      "wikidata_id": "Q495954",
+      "media_type": "PLAY",
+      "release_year": 1599,
+      "creator": "William Shakespeare",
+      "description": "Historical play chronicling King Henry V's military campaign in France, culminating in the Battle of Agincourt.",
+      "setting": "England and France, 1415"
+    },
+    {
+      "title": "Richard III",
+      "wikidata_id": "Q12910031",
+      "media_type": "PLAY",
+      "release_year": 1593,
+      "creator": "William Shakespeare",
+      "description": "Historical tragedy depicting Richard III's Machiavellian rise to power and brief reign as King of England.",
+      "setting": "England, 1470s-1480s"
+    },
+    {
+      "title": "Antony and Cleopatra",
+      "wikidata_id": "Q606830",
+      "media_type": "PLAY",
+      "release_year": 1606,
+      "creator": "William Shakespeare",
+      "description": "Historical tragedy exploring the doomed love affair between Mark Antony and Cleopatra during the Roman civil wars.",
+      "setting": "Egypt and Rome, 41-30 BCE"
+    },
+    {
+      "title": "The Crucible",
+      "wikidata_id": "Q1183443",
+      "media_type": "PLAY",
+      "release_year": 1953,
+      "creator": "Arthur Miller",
+      "description": "Historical drama depicting the Salem witch trials of 1692, written as an allegory for McCarthyism.",
+      "setting": "Salem, Massachusetts, 1692"
+    },
+    {
+      "title": "A Man for All Seasons",
+      "wikidata_id": "Q3779414",
+      "media_type": "PLAY",
+      "release_year": 1960,
+      "creator": "Robert Bolt",
+      "description": "Historical drama chronicling Sir Thomas More's refusal to endorse King Henry VIII's separation from the Catholic Church.",
+      "setting": "England, 1530s"
+    },
+    {
+      "title": "Elizabeth: The Golden Age",
+      "wikidata_id": "Q727846",
+      "media_type": "FILM",
+      "release_year": 2007,
+      "creator": "Shekhar Kapur",
+      "description": "Historical drama sequel depicting Elizabeth I's later reign, focusing on the Spanish Armada and her relationship with Sir Walter Raleigh.",
+      "setting": "England, 1580s"
+    },
+    {
+      "title": "13th",
+      "wikidata_id": "Q26703663",
+      "media_type": "FILM",
+      "release_year": 2016,
+      "creator": "Ava DuVernay",
+      "description": "Documentary exploring the intersection of race, justice, and mass incarceration in the United States through the lens of the 13th Amendment.",
+      "setting": "United States, 1865-present"
+    },
+    {
+      "title": "Apollo 11",
+      "wikidata_id": "Q61639822",
+      "media_type": "FILM",
+      "release_year": 2019,
+      "creator": "Todd Douglas Miller",
+      "description": "Documentary using archival footage to chronicle the 1969 Apollo 11 mission that successfully landed the first humans on the Moon.",
+      "setting": "United States and Moon, 1969"
+    },
+    {
+      "title": "They Shall Not Grow Old",
+      "wikidata_id": "Q57414487",
+      "media_type": "FILM",
+      "release_year": 2018,
+      "creator": "Peter Jackson",
+      "description": "Documentary using restored and colorized WWI footage from the Imperial War Museum to bring the experiences of soldiers to life.",
+      "setting": "Western Front, 1914-1918"
+    },
+    {
+      "title": "The Social Network",
+      "wikidata_id": "Q185888",
+      "media_type": "FILM",
+      "release_year": 2010,
+      "creator": "David Fincher",
+      "description": "Biographical drama depicting the founding of Facebook and the legal battles surrounding Mark Zuckerberg's creation.",
+      "setting": "United States, 2003-2004"
+    },
+    {
+      "title": "Steve Jobs",
+      "wikidata_id": "Q18754959",
+      "media_type": "FILM",
+      "release_year": 2015,
+      "creator": "Danny Boyle",
+      "description": "Biographical drama structured around three product launches that defined Steve Jobs's career at Apple.",
+      "setting": "United States, 1984-1998"
+    },
+    {
+      "title": "Schindler's List",
+      "wikidata_id": "Q483941",
+      "media_type": "FILM",
+      "release_year": 1993,
+      "creator": "Steven Spielberg",
+      "description": "Epic historical drama depicting Oskar Schindler's efforts to save over a thousand Polish-Jewish refugees during the Holocaust.",
+      "setting": "Poland, 1939-1945"
+    },
+    {
+      "title": "Bohemian Rhapsody",
+      "wikidata_id": "Q27894574",
+      "media_type": "FILM",
+      "release_year": 2018,
+      "creator": "Bryan Singer",
+      "description": "Biographical musical drama chronicling the life of Freddie Mercury and the rise of Queen from 1970 to their Live Aid performance.",
+      "setting": "United Kingdom, 1970-1985"
+    },
+    {
+      "title": "The Assassination of Jesse James by the Coward Robert Ford",
+      "wikidata_id": "Q465175",
+      "media_type": "FILM",
+      "release_year": 2007,
+      "creator": "Andrew Dominik",
+      "description": "Western drama depicting the final months of outlaw Jesse James and his eventual betrayal and murder by Robert Ford.",
+      "setting": "American West, 1881-1882"
+    },
+    {
+      "title": "Milk",
+      "wikidata_id": "Q219678",
+      "media_type": "FILM",
+      "release_year": 2008,
+      "creator": "Gus Van Sant",
+      "description": "Biographical drama about Harvey Milk, one of the first openly gay elected officials in the U.S., and his fight for LGBTQ rights.",
+      "setting": "San Francisco, 1970s"
+    },
+    {
+      "title": "Selma",
+      "wikidata_id": "Q15220483",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Ava DuVernay",
+      "description": "Historical drama depicting Martin Luther King Jr.'s 1965 voting rights marches from Selma to Montgomery, Alabama.",
+      "setting": "Alabama, United States, 1965"
+    },
+    {
+      "title": "Spotlight",
+      "wikidata_id": "Q18154945",
+      "media_type": "FILM",
+      "release_year": 2015,
+      "creator": "Tom McCarthy",
+      "description": "Biographical drama about The Boston Globe's investigation into widespread child sexual abuse by Catholic priests.",
+      "setting": "Boston, United States, 2001-2002"
+    },
+    {
+      "title": "The King's Speech",
+      "wikidata_id": "Q162729",
+      "media_type": "FILM",
+      "release_year": 2010,
+      "creator": "Tom Hooper",
+      "description": "Historical drama depicting King George VI's struggle to overcome his stammer with the help of speech therapist Lionel Logue.",
+      "setting": "United Kingdom, 1925-1939"
+    },
+    {
+      "title": "12 Years a Slave",
+      "wikidata_id": "Q156376",
+      "media_type": "FILM",
+      "release_year": 2013,
+      "creator": "Steve McQueen",
+      "description": "Historical drama based on Solomon Northup's memoir about his kidnapping and enslavement in the antebellum South.",
+      "setting": "United States, 1841-1853"
+    },
+    {
+      "title": "The Great",
+      "wikidata_id": "Q63985260",
+      "media_type": "TV_SERIES",
+      "release_year": 2020,
+      "creator": "Tony McNamara",
+      "description": "Satirical historical comedy-drama depicting Catherine the Great's rise to power in 18th-century Russia.",
+      "setting": "Russia, 1740s-1760s"
+    },
+    {
+      "title": "Band of Brothers",
+      "wikidata_id": "Q223898",
+      "media_type": "TV_SERIES",
+      "release_year": 2001,
+      "creator": "Tom Hanks",
+      "description": "War drama miniseries following Easy Company of the 101st Airborne Division through the European Theater of WWII.",
+      "setting": "Europe, 1944-1945"
+    },
+    {
+      "title": "The Pacific",
+      "wikidata_id": "Q467515",
+      "media_type": "TV_SERIES",
+      "release_year": 2010,
+      "creator": "Tom Hanks",
+      "description": "War drama miniseries chronicling the experiences of U.S. Marines fighting in the Pacific Theater during WWII.",
+      "setting": "Pacific Theater, 1941-1945"
+    },
+    {
+      "title": "The Tudors",
+      "wikidata_id": "Q389867",
+      "media_type": "TV_SERIES",
+      "release_year": 2007,
+      "creator": "Michael Hirst",
+      "description": "Historical drama depicting the reign of King Henry VIII, his six marriages, and the English Reformation.",
+      "setting": "England, 1520s-1540s"
+    },
+    {
+      "title": "Rome",
+      "wikidata_id": "Q200441",
+      "media_type": "TV_SERIES",
+      "release_year": 2005,
+      "creator": "John Milius",
+      "description": "Historical drama depicting the transformation of Rome from Republic to Empire through the eyes of two soldiers.",
+      "setting": "Rome, 52-27 BCE"
+    },
+    {
+      "title": "Masters of the Air",
+      "wikidata_id": "Q21997497",
+      "media_type": "TV_SERIES",
+      "release_year": 2024,
+      "creator": "John Orloff",
+      "description": "War drama miniseries following the Eighth Air Force's bomber crews as they conduct dangerous missions over Nazi Germany.",
+      "setting": "Europe, 1943-1945"
+    }
+  ]
+}
