@@ -28,6 +28,29 @@ import requests
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
+# Blacklist: Q-IDs that exist as HistoricalFigure nodes but produce wrong matches.
+# Actors misclassified as historical figures, fictional characters, or figures
+# whose Wikidata cast data is unreliable.
+EXCLUDE_FIGURE_QIDS = {
+    "Q4547",       # Daniel Craig (actor)
+    "Q256164",     # Derek Jacobi (actor)
+    "Q3454165",    # Kevin Bacon (actor)
+    "Q19572313",   # Judah Ben-Hur (fictional character)
+}
+
+# Blacklist: specific (figure_qid, work_qid) pairs that are false positives.
+EXCLUDE_PAIRS = {
+    ("Q310394", "Q221061"),   # Ethan Allen → Bridge of Spies (wrong match)
+    ("Q310394", "Q201924"),   # Ethan Allen → The Aviator (wrong match)
+    ("Q8581", "Q207698"),     # Saladin → The Last Samurai (wrong)
+    ("Q42305", "Q207698"),    # Richard the Lionheart → The Last Samurai (wrong)
+    ("Q254", "Q212695"),      # Mozart → Gandhi (just soundtrack, not subject)
+    ("Q254", "Q200221"),      # Mozart → Gandhi alt Q-ID (just soundtrack)
+    ("Q254", "Q217589"),      # Mozart → The Longest Day (just soundtrack)
+    ("Q254", "Q654804"),      # Mozart → The Longest Day alt Q-ID (just soundtrack)
+    ("Q207", "Q26824229"),    # George VI → 13th (marginal archival footage)
+}
+
 SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
 SPARQL_HEADERS = {
     "Accept": "application/sparql-results+json",
@@ -253,9 +276,11 @@ def build_proposals(
     # From work→person results: only keep people who exist in our DB
     for r in work_results:
         person_q = r["person_qid"]
-        if person_q not in all_figure_qids:
+        if person_q not in all_figure_qids or person_q in EXCLUDE_FIGURE_QIDS:
             continue
         work_q = r["work_qid"]
+        if (person_q, work_q) in EXCLUDE_PAIRS:
+            continue
         rel = ROLE_TO_REL.get(r["role"], "APPEARS_IN")
         key = (person_q, work_q, rel)
         if key not in proposals:
@@ -275,6 +300,8 @@ def build_proposals(
         if work_q not in work_qids:
             continue
         person_q = r["person_qid"]
+        if person_q in EXCLUDE_FIGURE_QIDS or (person_q, work_q) in EXCLUDE_PAIRS:
+            continue
         rel = ROLE_TO_REL.get(r["role"], "APPEARS_IN")
         key = (person_q, work_q, rel)
         if key not in proposals:
