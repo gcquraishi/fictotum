@@ -78,7 +78,7 @@ export default function Navbar() {
           }}
           className="hover:opacity-70 transition-opacity"
         >
-          Network
+          Graph
         </Link>
         {session ? (
           <button
@@ -186,7 +186,7 @@ export default function Navbar() {
                 fontFamily: 'var(--font-mono)',
               }}
             >
-              Network
+              Graph
             </Link>
           </nav>
         </div>

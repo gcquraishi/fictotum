@@ -488,7 +488,23 @@ export default async function MediaPage({
           <div style={{ marginBottom: '32px' }}>
             <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
               <span>Who&apos;s in This?</span>
-              <span>({totalFigures} Figures)</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span>({totalFigures} Figures)</span>
+                <Link
+                  href={`/contribute/portrayal?work=${encodeURIComponent(media.wikidata_id || media.media_id)}`}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    color: 'var(--color-accent)',
+                    textDecoration: 'none',
+                  }}
+                  className="hover:opacity-70 transition-opacity"
+                >
+                  + Add Portrayal
+                </Link>
+              </div>
             </div>
 
             <div

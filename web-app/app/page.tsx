@@ -2,6 +2,7 @@ import Link from 'next/link';
 import FigureCard from '@/components/FigureCard';
 import WorkCard from '@/components/WorkCard';
 import HomepageSearch from '@/components/HomepageSearch';
+import HomeGraphHero from '@/components/HomeGraphHero';
 import { getSession } from '@/lib/neo4j';
 
 export const dynamic = 'force-dynamic';
@@ -108,63 +109,49 @@ async function getHomepageData() {
 export default async function HomePage() {
   const data = await getHomepageData();
 
+  // Top 8 figure IDs for graph hero random selection
+  const graphFigureIds = data.figures.slice(0, 8).map(f => f.canonical_id);
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
       {/* ================================================================
-          HERO SECTION
+          GRAPH HERO
           ================================================================ */}
       <section
         style={{
-          padding: '80px 40px 60px',
           borderBottom: '1px solid var(--color-border)',
           maxWidth: '1200px',
           margin: '0 auto',
         }}
       >
-        <h1
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '56px',
-            fontWeight: 300,
-            lineHeight: 1.15,
-            marginBottom: '16px',
-          }}
-        >
-          Fictotum Archive
-        </h1>
+        <HomeGraphHero figureIds={graphFigureIds} />
+      </section>
+
+      {/* ================================================================
+          SEARCH BAR
+          ================================================================ */}
+      <section
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '32px 40px',
+          borderBottom: '1px solid var(--color-border)',
+        }}
+      >
         <p
           style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: '20px',
+            fontSize: '18px',
             color: 'var(--color-gray)',
             fontStyle: 'italic',
-            marginBottom: '32px',
-            maxWidth: '600px',
+            marginBottom: '16px',
           }}
         >
-          How history becomes fiction. Explore {data.stats.portrayals.toLocaleString()} portrayals
+          Explore {data.stats.portrayals.toLocaleString()} portrayals
           of {data.stats.figures.toLocaleString()} historical figures across{' '}
           {data.stats.works.toLocaleString()} media works.
         </p>
-
         <HomepageSearch />
-
-        <Link
-          href="/welcome"
-          style={{
-            display: 'inline-block',
-            marginTop: '16px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            color: 'var(--color-accent)',
-            textDecoration: 'none',
-          }}
-          className="hover:opacity-70 transition-opacity"
-        >
-          See how it works &rarr;
-        </Link>
       </section>
 
       {/* ================================================================
@@ -342,15 +329,13 @@ export default async function HomePage() {
           margin: '0 auto',
           padding: '48px 40px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '20px',
         }}
       >
         {[
-          { label: 'Browse by Era', sub: 'Ancient to Modern', href: '/browse/eras' },
-          { label: 'Browse by Location', sub: 'Places in History', href: '/browse/locations' },
-          { label: 'Coverage Map', sub: 'Temporal Gaps', href: '/explore/coverage' },
-          { label: 'Network Graph', sub: 'Visual Connections', href: '/explore/graph' },
+          { label: 'Graph', sub: 'Visual Connections', href: '/explore/graph' },
+          { label: 'Pathfinder', sub: 'Six Degrees of Separation', href: '/explore/pathfinder' },
         ].map((btn) => (
           <Link
             key={btn.label}
@@ -408,7 +393,7 @@ export default async function HomePage() {
           {[
             {
               title: 'Contribute',
-              desc: 'Submit new portrayals or historical data to the archive.',
+              desc: 'Add portrayals, works, and historical figures to the archive.',
               href: '/contribute',
             },
             {

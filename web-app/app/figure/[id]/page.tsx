@@ -289,7 +289,23 @@ export default async function FigurePage({
             ================================================================ */}
         <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
           <span>Documented Appearances</span>
-          <span>({totalPortrayals} Records)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span>({totalPortrayals} Records)</span>
+            <Link
+              href={`/contribute/portrayal?figure=${encodeURIComponent(figure.canonical_id)}`}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                color: 'var(--color-accent)',
+                textDecoration: 'none',
+              }}
+              className="hover:opacity-70 transition-opacity"
+            >
+              + Add Portrayal
+            </Link>
+          </div>
         </div>
 
         <PortrayalFilters portrayals={figure.portrayals} />
