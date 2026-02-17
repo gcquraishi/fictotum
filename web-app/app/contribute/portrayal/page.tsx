@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import InlineWorkCreator from '@/components/InlineWorkCreator';
@@ -35,6 +36,7 @@ const SENTIMENT_OPTIONS = [
 function PortrayalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status: authStatus } = useSession();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedWork, setSelectedWork] = useState<SelectedWork | null>(null);
@@ -117,9 +119,9 @@ function PortrayalContent() {
         .filter((r: any) => r.type === 'media' || r.type === 'work')
         .map((r: any) => ({
           id: r.id || r.media_id,
-          name: r.name || r.title,
+          name: r.label || r.name || r.title,
           type: 'media' as const,
-          subtitle: [r.media_type, r.release_year].filter(Boolean).join(' · '),
+          subtitle: r.meta || [r.media_type, r.release_year].filter(Boolean).join(' · '),
         }));
       setWorkResults(results);
     } catch {
@@ -148,9 +150,9 @@ function PortrayalContent() {
         .filter((r: any) => r.type === 'figure')
         .map((r: any) => ({
           id: r.id || r.canonical_id,
-          name: r.name,
+          name: r.label || r.name,
           type: 'figure' as const,
-          subtitle: [r.era, r.birth_year && r.death_year ? `${r.birth_year}–${r.death_year}` : null].filter(Boolean).join(' · '),
+          subtitle: r.meta || [r.era, r.birth_year && r.death_year ? `${r.birth_year}–${r.death_year}` : null].filter(Boolean).join(' · '),
         }));
       setFigureResults(results);
     } catch {
@@ -782,21 +784,60 @@ function PortrayalContent() {
               />
             </div>
 
+            {/* Auth check */}
+            {!session && authStatus !== 'loading' && (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  marginBottom: '16px',
+                  background: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    color: '#92400e',
+                  }}
+                >
+                  Sign in required to submit a portrayal.
+                </span>
+                <Link
+                  href="/api/auth/signin"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#92400e',
+                    fontWeight: 600,
+                    textDecoration: 'underline',
+                  }}
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
+
             {/* Submit */}
             <button
               onClick={handleSubmitPortrayal}
-              disabled={isSubmitting || selectedSentiments.length === 0}
+              disabled={isSubmitting || selectedSentiments.length === 0 || !session}
               style={{
                 width: '100%',
                 padding: '14px',
                 border: 'none',
-                background: isSubmitting || selectedSentiments.length === 0 ? 'var(--color-gray)' : 'var(--color-text)',
+                background: isSubmitting || selectedSentiments.length === 0 || !session ? 'var(--color-gray)' : 'var(--color-text)',
                 color: 'var(--color-bg)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '12px',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
-                cursor: isSubmitting || selectedSentiments.length === 0 ? 'default' : 'pointer',
+                cursor: isSubmitting || selectedSentiments.length === 0 || !session ? 'default' : 'pointer',
               }}
             >
               {isSubmitting ? 'Submitting...' : 'Add Portrayal'}

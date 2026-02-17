@@ -8,14 +8,14 @@ interface FigureDossierProps {
   dossier: FigureDossier;
 }
 
-const SENTIMENT_COLORS = {
+const SENTIMENT_COLORS: Record<string, string> = {
   Heroic: '#22c55e',    // green-500
   Villainous: '#ef4444', // red-500
   Complex: '#eab308',    // yellow-500
   Neutral: '#6b7280',    // gray-500
 };
 
-const MEDIA_TYPE_ICONS = {
+const MEDIA_TYPE_ICONS: Record<string, typeof Film> = {
   Book: BookOpen,
   Game: Gamepad2,
   Film: Film,

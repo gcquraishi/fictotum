@@ -61,7 +61,7 @@ function GraphContent() {
               marginBottom: '8px',
             }}
           >
-            Network Graph
+            Graph
           </h1>
           <p
             style={{

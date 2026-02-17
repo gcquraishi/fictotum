@@ -38,7 +38,7 @@ export default function AddWorkPage() {
       const results = (data.results || data || [])
         .filter((r: any) => r.type === 'figure')
         .slice(0, 5)
-        .map((r: any) => ({ id: r.id || r.canonical_id, name: r.name }));
+        .map((r: any) => ({ id: r.id || r.canonical_id, name: r.label || r.name }));
       setCreatorResults(results);
     } catch {
       setCreatorResults([]);
