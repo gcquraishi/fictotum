@@ -2,7 +2,7 @@ import Link from 'next/link';
 import FigureCard from '@/components/FigureCard';
 import WorkCard from '@/components/WorkCard';
 import HomepageSearch from '@/components/HomepageSearch';
-import HomeGraphHero from '@/components/HomeGraphHero';
+import HomeGraphExplorer from '@/components/HomeGraphExplorer';
 import { getSession } from '@/lib/neo4j';
 
 export const dynamic = 'force-dynamic';
@@ -124,7 +124,7 @@ export default async function HomePage() {
           margin: '0 auto',
         }}
       >
-        <HomeGraphHero figureIds={graphFigureIds} />
+        <HomeGraphExplorer figureIds={graphFigureIds} />
       </section>
 
       {/* ================================================================
