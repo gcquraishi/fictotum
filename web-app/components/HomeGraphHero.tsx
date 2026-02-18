@@ -81,7 +81,7 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
           (n: GraphNode) => n.id === `figure-${selectedId}` || n.id === selectedId
         );
         if (centerNode) setSelectedFigureName(centerNode.name);
-      } catch {
+      } catch (_e) {
         setNodes([]);
         setLinks([]);
       } finally {
@@ -96,7 +96,7 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
   useEffect(() => {
     if (nodes.length > 0 && forceGraphRef.current) {
       setTimeout(() => {
-        forceGraphRef.current?.zoomToFit?.(400, 60);
+        forceGraphRef.current?.zoomToFit?.(400, 100);
       }, 800);
     }
   }, [nodes]);
@@ -188,7 +188,7 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
             nodeRelSize={1}
             nodeVal={(node: GraphNode) => getNodeSize(node)}
             nodeColor={(node: GraphNode) => getNodeColor(node)}
-            nodeLabel={(node: GraphNode) => node.name}
+            nodeLabel={() => ''}
             linkColor={() => 'rgba(0,0,0,0.08)'}
             linkWidth={1}
             onNodeClick={handleNodeClick}
@@ -215,17 +215,14 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
               const padding = 3 / globalScale;
               const yOffset = (isCenterNode ? 10 : 7) / globalScale;
 
-              // Background
-              ctx.fillStyle = 'rgba(255,255,255,0.9)';
-              ctx.fillRect(
-                node.x - textWidth / 2 - padding,
-                node.y + yOffset - padding,
-                textWidth + padding * 2,
-                fontSize + padding * 2
-              );
+              // Halo effect for readability
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 3 / globalScale;
+              ctx.lineJoin = 'round';
+              ctx.strokeText(label, node.x, node.y + yOffset);
 
               // Text
-              ctx.fillStyle = isCenterNode ? 'var(--color-accent, #8B2635)' : '#1A1A1A';
+              ctx.fillStyle = isCenterNode ? '#8B2635' : '#1A1A1A';
               ctx.fillText(label, node.x, node.y + yOffset);
             }}
           />

@@ -31,11 +31,15 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-17_
+_Last updated: 2026-02-18_
 
-Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — web app exists but focus has been on data pipeline and entity resolution quality.
+Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — web app graph exploration UX significantly improved with bloom-mode expansion, dual-click behavior, and label readability fixes.
 
 ### Recent Completions
+- Graph Explorer UX overhaul: suppressed duplicate HTML tooltips, added label text halos, increased zoomToFit padding, always-on bloom-mode expansion
+- Dual-click behavior: click node circle = expand/re-center, click label text = navigate to detail page
+- Homepage graph hero (HomeGraphHero) ported with same label fixes and halo effects
+- SearchInput onSelect callback: graph page search now populates graph inline instead of navigating away
 - CHR-40: Batch import infrastructure (JSON validation, duplicate detection, dry-run mode)
 - Provenance tracking: 100% CREATED_BY coverage across all entity nodes
 - Database health monitoring script (`scripts/qa/neo4j_health_check.py`)
@@ -44,10 +48,10 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 
 ### Active Work
 - Data enrichment and population via batch imports
-- Web app feature development
+- Web app graph exploration and visualization improvements
 
 ### Known Issues
-- Web app features may lag behind data infrastructure maturity
+- Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
 - No automated CI/CD pipeline
 
 ## Roadmap

@@ -87,7 +87,10 @@ function GraphContent() {
           <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
             <span>Search</span>
           </div>
-          <SearchInput />
+          <SearchInput onSelect={(result) => {
+            const id = result.id;
+            handleSearch(id, result.type as 'figure' | 'media');
+          }} />
           <p
             style={{
               fontFamily: 'var(--font-mono)',

@@ -19,7 +19,11 @@ const categoryLabels: Record<string, string> = {
   actor: 'Actors',
 };
 
-export default function SearchInput() {
+interface SearchInputProps {
+  onSelect?: (result: SearchResult) => void;
+}
+
+export default function SearchInput({ onSelect }: SearchInputProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -69,7 +73,11 @@ export default function SearchInput() {
   }, [searchTerm]);
 
   const handleResultClick = (result: SearchResult) => {
-    router.push(result.url);
+    if (onSelect) {
+      onSelect(result);
+    } else {
+      router.push(result.url);
+    }
     setShowResults(false);
     setSearchTerm('');
   };

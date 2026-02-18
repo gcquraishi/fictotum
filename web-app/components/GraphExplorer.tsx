@@ -125,7 +125,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Feature flag for Bloom Exploration mode (Task 1.13)
-  const isBloomMode = process.env.NEXT_PUBLIC_BLOOM_MODE === 'true';
+  const isBloomMode = true;
 
   // Phase 1: Bloom Exploration - Camera control and center node tracking
   // CHR-22: Now using useRef since we removed dynamic import
@@ -875,7 +875,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       // Delay to ensure layout has settled
       const zoomTimer = setTimeout(() => {
         try {
-          const padding = 100;
+          const padding = 150;
           console.log('🔍 Calling zoomToFit with padding:', padding);
           forceGraphRef.current.zoomToFit?.(400, padding);
           console.log('✅ zoomToFit completed successfully');
@@ -1201,11 +1201,31 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   };
 
   // Handle node click
-  const handleNodeClick = async (node: GraphNode & { x?: number; y?: number }) => {
+  const handleNodeClick = async (node: GraphNode & { x?: number; y?: number }, event?: MouseEvent) => {
+    // Dual click behavior: detect if user clicked the label text (below circle) vs the node circle
+    // If label is clicked, navigate to detail page instead of expanding
+    if (event && forceGraphRef.current && typeof node.x === 'number' && typeof node.y === 'number') {
+      try {
+        const graphCoords = forceGraphRef.current.screen2GraphCoords(event.offsetX, event.offsetY);
+        const globalScale = forceGraphRef.current.zoom?.() ?? 1;
+        const baseSize = 12; // matches nodeRelSize
+        const nodeSize = isBaconNode(node.id) ? baseSize * BACON_SIZE : baseSize;
+        // Label starts at node.y + nodeSize (bottom of circle) — click below that = label click
+        const labelBoundary = node.y + nodeSize;
+        if (graphCoords.y > labelBoundary) {
+          // Clicked on the label text area — navigate to detail page
+          handleViewDetails(node);
+          return;
+        }
+      } catch (_e) {
+        // Fall through to normal click handling if coordinate conversion fails
+      }
+    }
+
     // Check if clicking an already-expanded node (to collapse it)
     const isClickingExpandedNode = expandedNodes.has(node.id);
 
-    // Phase 1: Camera centering on click (Tasks 1.2 & 1.3) - only in bloom mode
+    // Phase 1: Camera centering on click (Tasks 1.2 & 1.3)
     if (isBloomMode) {
       setCenterNodeId(node.id);
       centerCameraOnNode(node);
@@ -1902,15 +1922,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           graphData={{ nodes: visibleNodes, links: graphLinks }}
           width={dimensions.width}
           height={dimensions.height}
-          nodeLabel={(node: any) => {
-            if (node.type === 'media' && node.seriesMetadata?.isPartOfSeries) {
-              const workCountText = node.seriesMetadata.workCount
-                ? ` (${node.seriesMetadata.workCount} works)`
-                : '';
-              return `${node.name}\n\nPart of: ${node.seriesMetadata.seriesTitle}${workCountText}`;
-            }
-            return node.name || '';
-          }}
+          nodeLabel={() => ''}
           nodeColor={(node: any) => {
             if (isBaconNode(node.id)) return BACON_COLOR;
             if (node.type === 'figure') return '#3b82f6'; // Blue for figures
@@ -1924,7 +1936,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             return `${relType} (${link.sentiment})`;
           }}
           backgroundColor="#f9fafb"
-          onNodeClick={handleNodeClick as any}
+          onNodeClick={((node: any, event: MouseEvent) => handleNodeClick(node, event)) as any}
           onNodeHover={handleNodeHover as any}
           // CHR-22: Tighter force simulation for compact initial view (user can zoom out to explore)
           d3AlphaDecay={0.01}
@@ -2015,10 +2027,14 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 ctx.fill();
               }
 
-              // Draw label
+              // Draw label with halo for readability
               ctx.globalAlpha = 1;
-              ctx.fillStyle = '#1f2937';
               ctx.font = `bold ${fontSize}px Sans-Serif`;
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 3 / globalScale;
+              ctx.lineJoin = 'round';
+              ctx.strokeText(label, node.x, node.y + nodeSize + 12);
+              ctx.fillStyle = '#1f2937';
               ctx.fillText(label, node.x, node.y + nodeSize + 12);
 
               // Draw series badge for media nodes that are part of a series
