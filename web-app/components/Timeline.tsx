@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { TimelineFigure, HistoricalEvent } from '@/lib/types';
 
@@ -15,41 +15,95 @@ interface TimelineProps {
   };
 }
 
-// Era color palette — muted, consistent
+// Fisk-inspired palette — muted, watercolor-like era tones
 const ERA_COLORS: Record<string, string> = {
-  'Ancient': '#8B7355',
-  'Classical Antiquity': '#8B7355',
+  'Ancient': '#B8860B',
+  'Classical Antiquity': '#CD853F',
   'Ancient Rome': '#A0522D',
   'Ancient Greece': '#6B8E23',
-  'Medieval': '#4A6741',
-  'Middle Ages': '#4A6741',
+  'Ancient Egypt': '#DAA520',
+  'Medieval': '#556B2F',
+  'Middle Ages': '#556B2F',
   'Renaissance': '#6A5ACD',
+  'Tudor': '#8B4513',
   'Early Modern': '#4682B4',
-  'Enlightenment': '#DAA520',
+  'Enlightenment': '#B8860B',
   'Victorian Era': '#8B4513',
+  'Napoleonic': '#4169E1',
   'Modern': '#2F4F4F',
   'Contemporary': '#36454F',
+  'World War': '#8B0000',
 };
 
 function getEraColor(era?: string): string {
-  if (!era) return '#666666';
+  if (!era) return '#8B7355';
   for (const [key, color] of Object.entries(ERA_COLORS)) {
     if (era.toLowerCase().includes(key.toLowerCase())) return color;
   }
-  // Generate a stable color from era string
   let hash = 0;
   for (let i = 0; i < era.length; i++) {
     hash = era.charCodeAt(i) + ((hash << 5) - hash);
   }
   const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 35%, 45%)`;
+  return `hsl(${hue}, 30%, 42%)`;
 }
 
-const ROW_HEIGHT = 28;
-const LEFT_GUTTER = 0;
-const RIGHT_PADDING = 40;
-const TOP_PADDING = 60;
-const EVENT_MARKER_HEIGHT = 20;
+// --- Row packing: greedy first-fit algorithm ---
+// Assigns each figure to the first lane where it doesn't overlap,
+// with a small pixel gap between bars in the same lane.
+interface PackedFigure {
+  figure: TimelineFigure;
+  lane: number;
+}
+
+function packFiguresIntoLanes(
+  figures: TimelineFigure[],
+  yearToX: (year: number) => number,
+  gap: number
+): PackedFigure[] {
+  // Sort by birth year, then by lifespan length (longer first for better packing)
+  const sorted = [...figures].sort((a, b) => {
+    if (a.birth_year !== b.birth_year) return a.birth_year - b.birth_year;
+    return (b.death_year - b.birth_year) - (a.death_year - a.birth_year);
+  });
+
+  // Each lane tracks the rightmost pixel edge of the last bar placed
+  const laneEnds: number[] = [];
+  const result: PackedFigure[] = [];
+
+  for (const figure of sorted) {
+    const startX = yearToX(figure.birth_year);
+
+    // Find the first lane where this figure fits
+    let assignedLane = -1;
+    for (let i = 0; i < laneEnds.length; i++) {
+      if (startX >= laneEnds[i] + gap) {
+        assignedLane = i;
+        break;
+      }
+    }
+
+    // No existing lane fits — open a new one
+    if (assignedLane === -1) {
+      assignedLane = laneEnds.length;
+      laneEnds.push(-Infinity);
+    }
+
+    const endX = yearToX(figure.death_year);
+    laneEnds[assignedLane] = endX;
+
+    result.push({ figure, lane: assignedLane });
+  }
+
+  return result;
+}
+
+const MIN_BAR_HEIGHT = 10;
+const IDEAL_BAR_HEIGHT = 16;
+const LANE_PADDING = 2;
+const TOP_PADDING = 50;
+const EVENT_MARKER_HEIGHT = 16;
+const BOTTOM_PADDING = 20;
 
 export default function Timeline({ figures, events, stats }: TimelineProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -62,24 +116,44 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<HistoricalEvent | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [canvasWidth, setCanvasWidth] = useState(1200);
-
-  // Sort figures by birth year
-  const sortedFigures = [...figures].sort((a, b) => a.birth_year - b.birth_year);
-
-  const totalHeight = TOP_PADDING + EVENT_MARKER_HEIGHT + 20 + sortedFigures.length * ROW_HEIGHT + 40;
+  const [canvasHeight, setCanvasHeight] = useState(600);
 
   // Year-to-pixel conversion
   const yearToX = useCallback((year: number) => {
     const range = viewEnd - viewStart;
-    return LEFT_GUTTER + ((year - viewStart) / range) * (canvasWidth - LEFT_GUTTER - RIGHT_PADDING);
+    return ((year - viewStart) / range) * canvasWidth;
   }, [viewStart, viewEnd, canvasWidth]);
 
   const xToYear = useCallback((x: number) => {
     const range = viewEnd - viewStart;
-    return viewStart + ((x - LEFT_GUTTER) / (canvasWidth - LEFT_GUTTER - RIGHT_PADDING)) * range;
+    return viewStart + (x / canvasWidth) * range;
   }, [viewStart, viewEnd, canvasWidth]);
 
-  // Resize observer
+  // Pack figures into lanes (recalculates when view or data changes)
+  const packedFigures = useMemo(() => {
+    return packFiguresIntoLanes(figures, yearToX, 4);
+  }, [figures, yearToX]);
+
+  const laneCount = useMemo(() => {
+    if (packedFigures.length === 0) return 0;
+    return Math.max(...packedFigures.map(p => p.lane)) + 1;
+  }, [packedFigures]);
+
+  // Compute lane height — enforce minimum; allow canvas to grow beyond viewport
+  const figureAreaTop = TOP_PADDING + EVENT_MARKER_HEIGHT + 8;
+  const containerVisibleHeight = canvasHeight;
+  const figureAreaHeight = containerVisibleHeight - figureAreaTop - BOTTOM_PADDING;
+  const idealLaneH = IDEAL_BAR_HEIGHT + LANE_PADDING * 2;
+  const naturalLaneH = laneCount > 0 ? figureAreaHeight / laneCount : idealLaneH;
+  // Clamp: never smaller than MIN_BAR_HEIGHT, never bigger than ideal
+  const laneHeight = Math.max(MIN_BAR_HEIGHT + LANE_PADDING * 2, Math.min(idealLaneH, naturalLaneH));
+  const barH = laneHeight - LANE_PADDING * 2;
+  // If lanes overflow, the canvas needs to be taller than the container
+  const requiredCanvasHeight = figureAreaTop + laneCount * laneHeight + BOTTOM_PADDING;
+  const actualCanvasHeight = Math.max(containerVisibleHeight, requiredCanvasHeight);
+  const overflows = requiredCanvasHeight > containerVisibleHeight;
+
+  // Resize observer — fill the container
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -87,13 +161,14 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
         setCanvasWidth(entry.contentRect.width);
+        setCanvasHeight(entry.contentRect.height);
       }
     });
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
 
-  // Draw the timeline
+  // Draw
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -103,47 +178,55 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = canvasWidth * dpr;
-    canvas.height = totalHeight * dpr;
+    canvas.height = actualCanvasHeight * dpr;
     ctx.scale(dpr, dpr);
 
-    // Clear
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvasWidth, totalHeight);
+    // Cream background (Fisk-inspired)
+    ctx.fillStyle = '#FAF8F0';
+    ctx.fillRect(0, 0, canvasWidth, actualCanvasHeight);
+
+    // Alternating lane shading — subtle zebra stripes for row tracking
+    for (let i = 0; i < laneCount; i++) {
+      if (i % 2 === 1) {
+        const rowY = figureAreaTop + i * laneHeight;
+        ctx.fillStyle = '#F2EDE0';
+        ctx.fillRect(0, rowY, canvasWidth, laneHeight);
+      }
+    }
 
     const range = viewEnd - viewStart;
 
-    // Calculate tick interval
+    // Tick interval
     let tickInterval = 10;
-    if (range > 2000) tickInterval = 500;
-    else if (range > 1000) tickInterval = 200;
+    if (range > 3000) tickInterval = 500;
+    else if (range > 1500) tickInterval = 200;
     else if (range > 500) tickInterval = 100;
     else if (range > 200) tickInterval = 50;
     else if (range > 50) tickInterval = 10;
     else tickInterval = 5;
 
-    // Draw year axis
+    // Grid lines + year labels
     const firstTick = Math.ceil(viewStart / tickInterval) * tickInterval;
-    ctx.strokeStyle = '#E5E5E5';
-    ctx.lineWidth = 1;
-
     for (let year = firstTick; year <= viewEnd; year += tickInterval) {
       const x = yearToX(year);
 
-      // Vertical grid line
+      // Subtle vertical grid
+      ctx.strokeStyle = '#E8E2D4';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(x, TOP_PADDING - 10);
-      ctx.lineTo(x, totalHeight);
+      ctx.moveTo(x, TOP_PADDING - 6);
+      ctx.lineTo(x, actualCanvasHeight - BOTTOM_PADDING);
       ctx.stroke();
 
       // Year label
-      ctx.fillStyle = '#999999';
+      ctx.fillStyle = '#A09880';
       ctx.font = '10px ui-monospace, SFMono-Regular, monospace';
       ctx.textAlign = 'center';
       const label = year < 0 ? `${Math.abs(year)} BCE` : `${year}`;
-      ctx.fillText(label, x, TOP_PADDING - 16);
+      ctx.fillText(label, x, TOP_PADDING - 12);
     }
 
-    // Draw event markers (top section)
+    // Event markers (top band)
     const eventY = TOP_PADDING;
     events.forEach(event => {
       if (event.start_year == null) return;
@@ -152,89 +235,152 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
 
       if (x > canvasWidth + 10 || endX < -10) return;
 
-      // Event marker
-      ctx.fillStyle = '#EF4444';
-      ctx.globalAlpha = 0.7;
+      ctx.fillStyle = '#C0392B';
+      ctx.globalAlpha = 0.6;
 
       if (event.end_year && event.end_year !== event.start_year) {
-        // Spanning event — draw a line
         ctx.fillRect(x, eventY, Math.max(endX - x, 2), 3);
       } else {
-        // Point event — draw a diamond
         ctx.beginPath();
-        ctx.moveTo(x, eventY - 4);
-        ctx.lineTo(x + 4, eventY);
-        ctx.lineTo(x, eventY + 4);
-        ctx.lineTo(x - 4, eventY);
+        ctx.moveTo(x, eventY - 3);
+        ctx.lineTo(x + 3, eventY);
+        ctx.lineTo(x, eventY + 3);
+        ctx.lineTo(x - 3, eventY);
         ctx.closePath();
         ctx.fill();
       }
       ctx.globalAlpha = 1;
     });
 
-    // Draw figure lifespans
-    const figureStartY = TOP_PADDING + EVENT_MARKER_HEIGHT + 20;
-
-    sortedFigures.forEach((figure, index) => {
-      const y = figureStartY + index * ROW_HEIGHT;
+    // Figure lifespan bars (packed into lanes)
+    packedFigures.forEach(({ figure, lane }) => {
       const startX = yearToX(figure.birth_year);
       const endX = yearToX(figure.death_year);
-      const barWidth = Math.max(endX - startX, 2);
+      const w = Math.max(endX - startX, 2);
+      const y = figureAreaTop + lane * laneHeight + LANE_PADDING;
 
-      // Skip if entirely out of view
-      if (endX < 0 || startX > canvasWidth) return;
+      // Skip if out of view
+      if (endX < -10 || startX > canvasWidth + 10) return;
 
       const color = getEraColor(figure.era);
       const isHovered = hoveredFigure?.canonical_id === figure.canonical_id;
 
-      // Lifespan bar
+      // Bar — translucent like Fisk's overlapping river courses
       ctx.fillStyle = color;
-      ctx.globalAlpha = isHovered ? 1 : 0.65;
-      ctx.fillRect(startX, y + 4, barWidth, ROW_HEIGHT - 10);
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = isHovered ? 0.92 : 0.7;
 
-      // Portrayal count indicator (small dots)
-      if (figure.portrayal_count > 0) {
-        const dotCount = Math.min(figure.portrayal_count, 5);
-        for (let i = 0; i < dotCount; i++) {
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(startX + 8 + i * 6, y + ROW_HEIGHT / 2, 2, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      // Rounded ends when bars are wide enough
+      const radius = Math.min(barH / 2, 4);
+      if (w > radius * 2) {
+        ctx.beginPath();
+        ctx.moveTo(startX + radius, y);
+        ctx.lineTo(endX - radius, y);
+        ctx.arcTo(endX, y, endX, y + radius, radius);
+        ctx.lineTo(endX, y + barH - radius);
+        ctx.arcTo(endX, y + barH, endX - radius, y + barH, radius);
+        ctx.lineTo(startX + radius, y + barH);
+        ctx.arcTo(startX, y + barH, startX, y + barH - radius, radius);
+        ctx.lineTo(startX, y + radius);
+        ctx.arcTo(startX, y, startX + radius, y, radius);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.fillRect(startX, y, w, barH);
       }
 
-      // Name label — show if bar is wide enough or if hovered
-      if (barWidth > 60 || isHovered) {
-        ctx.fillStyle = isHovered ? '#000000' : '#333333';
-        ctx.font = isHovered
-          ? 'bold 11px ui-sans-serif, system-ui, sans-serif'
-          : '11px ui-sans-serif, system-ui, sans-serif';
+      // Hover outline
+      if (isHovered) {
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 1;
+        ctx.strokeRect(startX - 0.5, y - 0.5, w + 1, barH + 1);
+      }
+
+      ctx.globalAlpha = 1;
+
+      // Name label
+      const fontSize = Math.min(11, Math.max(8, barH - 2));
+      ctx.font = isHovered
+        ? `bold ${fontSize}px ui-sans-serif, system-ui, sans-serif`
+        : `${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+      ctx.textBaseline = 'middle';
+
+      const labelFitsInside = w > 50;
+
+      if (labelFitsInside) {
+        // White text inside the bar with a subtle shadow for contrast
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0.5;
+        ctx.fillStyle = isHovered ? '#ffffff' : 'rgba(255,255,255,0.95)';
         ctx.textAlign = 'left';
 
-        const labelX = Math.max(startX + 4, LEFT_GUTTER + 4);
-        const displayName = figure.name.length > 30 ? figure.name.slice(0, 28) + '...' : figure.name;
-        ctx.fillText(displayName, labelX, y - 1);
+        const maxChars = Math.floor((w - 8) / (fontSize * 0.55));
+        const displayName = figure.name.length > maxChars
+          ? figure.name.slice(0, maxChars - 1) + '\u2026'
+          : figure.name;
+
+        ctx.fillText(displayName, startX + 4, y + barH / 2 + 0.5);
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+      } else if (w > 6) {
+        // Overflow label — show name to the right of short bars
+        ctx.fillStyle = isHovered ? '#1a1a1a' : '#7A7565';
+        ctx.textAlign = 'left';
+        const overflowName = figure.name.length > 20
+          ? figure.name.slice(0, 19) + '\u2026'
+          : figure.name;
+        ctx.fillText(overflowName, endX + 4, y + barH / 2 + 0.5);
       }
     });
 
-    // Draw "now" line if in view
+    // "Now" line
     const currentYear = new Date().getFullYear();
     if (currentYear >= viewStart && currentYear <= viewEnd) {
       const nowX = yearToX(currentYear);
-      ctx.strokeStyle = '#EF4444';
+      ctx.strokeStyle = '#C0392B';
       ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
+      ctx.setLineDash([3, 3]);
       ctx.beginPath();
-      ctx.moveTo(nowX, TOP_PADDING - 10);
-      ctx.lineTo(nowX, totalHeight);
+      ctx.moveTo(nowX, TOP_PADDING - 6);
+      ctx.lineTo(nowX, actualCanvasHeight - BOTTOM_PADDING);
       ctx.stroke();
       ctx.setLineDash([]);
     }
 
-  }, [sortedFigures, events, viewStart, viewEnd, canvasWidth, totalHeight, yearToX, hoveredFigure]);
+  }, [packedFigures, events, viewStart, viewEnd, canvasWidth, canvasHeight, actualCanvasHeight, yearToX, hoveredFigure, laneHeight, barH, figureAreaTop, laneCount]);
 
-  // Mouse interaction handlers
+  // --- Hit testing ---
+  const hitTest = useCallback((x: number, y: number): { figure?: TimelineFigure; event?: HistoricalEvent } => {
+    // Check events
+    const eventY = TOP_PADDING;
+    if (y >= eventY - 6 && y <= eventY + EVENT_MARKER_HEIGHT) {
+      const year = xToYear(x);
+      const tolerance = (viewEnd - viewStart) * 0.01;
+      const hitEvent = events.find(ev => {
+        if (ev.start_year == null) return false;
+        const evEnd = ev.end_year ?? ev.start_year;
+        return year >= ev.start_year - tolerance && year <= evEnd + tolerance;
+      });
+      if (hitEvent) return { event: hitEvent };
+    }
+
+    // Check packed figures
+    for (const { figure, lane } of packedFigures) {
+      const barY = figureAreaTop + lane * laneHeight + LANE_PADDING;
+      if (y < barY || y > barY + barH) continue;
+
+      const startX = yearToX(figure.birth_year);
+      const endX = yearToX(figure.death_year);
+      if (x >= startX - 2 && x <= endX + 2) {
+        return { figure };
+      }
+    }
+
+    return {};
+  }, [packedFigures, events, yearToX, xToYear, viewStart, viewEnd, figureAreaTop, laneHeight, barH]);
+
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -245,43 +391,11 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
 
     setMousePos({ x: e.clientX, y: e.clientY });
 
-    // Check events
-    const eventY = TOP_PADDING;
-    if (y >= eventY - 8 && y <= eventY + EVENT_MARKER_HEIGHT) {
-      const year = xToYear(x);
-      const hitEvent = events.find(ev => {
-        if (ev.start_year == null) return false;
-        const evEnd = ev.end_year ?? ev.start_year;
-        const tolerance = (viewEnd - viewStart) * 0.01;
-        return year >= ev.start_year - tolerance && year <= evEnd + tolerance;
-      });
-      setHoveredEvent(hitEvent || null);
-      setHoveredFigure(null);
-      canvas.style.cursor = hitEvent ? 'pointer' : 'default';
-      return;
-    }
-
-    // Check figures
-    const figureStartY = TOP_PADDING + EVENT_MARKER_HEIGHT + 20;
-    const rowIndex = Math.floor((y - figureStartY) / ROW_HEIGHT);
-
-    if (rowIndex >= 0 && rowIndex < sortedFigures.length) {
-      const figure = sortedFigures[rowIndex];
-      const startX = yearToX(figure.birth_year);
-      const endX = yearToX(figure.death_year);
-
-      if (x >= startX - 5 && x <= endX + 5) {
-        setHoveredFigure(figure);
-        setHoveredEvent(null);
-        canvas.style.cursor = 'pointer';
-        return;
-      }
-    }
-
-    setHoveredFigure(null);
-    setHoveredEvent(null);
-    canvas.style.cursor = 'default';
-  }, [sortedFigures, events, yearToX, xToYear, viewStart, viewEnd]);
+    const hit = hitTest(x, y);
+    setHoveredFigure(hit.figure || null);
+    setHoveredEvent(hit.event || null);
+    canvas.style.cursor = (hit.figure || hit.event) ? 'pointer' : 'grab';
+  }, [hitTest]);
 
   const handleClick = useCallback(() => {
     if (hoveredFigure) {
@@ -289,29 +403,39 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
     }
   }, [hoveredFigure, router]);
 
-  // Zoom via scroll wheel
-  const handleWheel = useCallback((e: React.WheelEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
+  // Zoom — use native listener so preventDefault works (React onWheel is passive)
+  const viewRef = useRef({ viewStart, viewEnd, xToYear });
+  viewRef.current = { viewStart, viewEnd, xToYear };
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseYear = xToYear(mouseX);
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      const { viewStart: vs, viewEnd: ve, xToYear: x2y } = viewRef.current;
 
-    const zoomFactor = e.deltaY > 0 ? 1.15 : 0.87;
-    const range = viewEnd - viewStart;
-    const newRange = Math.max(20, Math.min(range * zoomFactor, 8000));
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseYear = x2y(mouseX);
 
-    const ratio = (mouseYear - viewStart) / range;
-    const newStart = mouseYear - ratio * newRange;
-    const newEnd = mouseYear + (1 - ratio) * newRange;
+      const zoomFactor = e.deltaY > 0 ? 1.15 : 0.87;
+      const range = ve - vs;
+      const newRange = Math.max(20, Math.min(range * zoomFactor, 8000));
 
-    setViewStart(Math.round(newStart));
-    setViewEnd(Math.round(newEnd));
-  }, [viewStart, viewEnd, xToYear]);
+      const ratio = (mouseYear - vs) / range;
+      const newStart = mouseYear - ratio * newRange;
+      const newEnd = mouseYear + (1 - ratio) * newRange;
 
-  // Pan via drag
+      setViewStart(Math.round(newStart));
+      setViewEnd(Math.round(newEnd));
+    };
+
+    canvas.addEventListener('wheel', handler, { passive: false });
+    return () => canvas.removeEventListener('wheel', handler);
+  }, []);
+
+  // Pan
   const isDragging = useRef(false);
   const lastDragX = useRef(0);
 
@@ -334,7 +458,7 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
     lastDragX.current = e.clientX;
 
     const range = viewEnd - viewStart;
-    const yearDelta = (dx / (canvasWidth - LEFT_GUTTER - RIGHT_PADDING)) * range;
+    const yearDelta = (dx / canvasWidth) * range;
 
     setViewStart(prev => Math.round(prev - yearDelta));
     setViewEnd(prev => Math.round(prev - yearDelta));
@@ -343,24 +467,31 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
   const formatYear = (year: number) => year < 0 ? `${Math.abs(year)} BCE` : `${year} CE`;
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+    <div ref={containerRef} style={{
+      position: 'relative',
+      width: '100%',
+      height: 'calc(100vh - 220px)',
+      minHeight: '400px',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       {/* Controls */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '12px 0',
-          borderBottom: '1px solid var(--color-border)',
-          marginBottom: '8px',
+          padding: '8px 0',
+          flexShrink: 0,
         }}
       >
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-gray)' }}>
-          {stats.total_figures} figures
+          {stats.total_figures} figures across {laneCount} lanes
           {stats.total_events > 0 && ` / ${stats.total_events} events`}
           {' '} | {formatYear(viewStart)} to {formatYear(viewEnd)}
+          {overflows && ' | Zoom in to see detail'}
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
           <button
             onClick={() => {
               const mid = (viewStart + viewEnd) / 2;
@@ -370,14 +501,14 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
             }}
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              padding: '4px 12px',
+              fontSize: '10px',
+              padding: '3px 10px',
               border: '1px solid var(--color-border)',
               background: 'white',
               cursor: 'pointer',
             }}
           >
-            Zoom In
+            +
           </button>
           <button
             onClick={() => {
@@ -388,14 +519,14 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
             }}
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              padding: '4px 12px',
+              fontSize: '10px',
+              padding: '3px 10px',
               border: '1px solid var(--color-border)',
               background: 'white',
               cursor: 'pointer',
             }}
           >
-            Zoom Out
+            −
           </button>
           <button
             onClick={() => {
@@ -404,8 +535,8 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
             }}
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              padding: '4px 12px',
+              fontSize: '10px',
+              padding: '3px 10px',
               border: '1px solid var(--color-border)',
               background: 'white',
               cursor: 'pointer',
@@ -416,26 +547,30 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
         </div>
       </div>
 
-      {/* Canvas */}
-      <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: `${canvasWidth}px`,
-            height: `${totalHeight}px`,
-            cursor: 'grab',
-          }}
-          onMouseMove={handleDragMove}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={() => {
-            handleMouseUp();
-            setHoveredFigure(null);
-            setHoveredEvent(null);
-          }}
-          onClick={handleClick}
-          onWheel={handleWheel}
-        />
+      {/* Canvas — fills remaining space; scrolls vertically when lanes overflow */}
+      <div style={{
+        flex: 1,
+        overflow: overflows ? 'auto' : 'hidden',
+        borderRadius: '2px',
+      }}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%',
+          height: overflows ? actualCanvasHeight : '100%',
+          cursor: 'grab',
+          display: 'block',
+        }}
+        onMouseMove={handleDragMove}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={() => {
+          handleMouseUp();
+          setHoveredFigure(null);
+          setHoveredEvent(null);
+        }}
+        onClick={handleClick}
+      />
       </div>
 
       {/* Tooltip */}
@@ -461,7 +596,7 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
             <div style={{ color: '#aaa', fontSize: '11px' }}>{hoveredFigure.title}</div>
           )}
           <div style={{ color: '#aaa', fontSize: '11px', marginTop: '2px' }}>
-            {formatYear(hoveredFigure.birth_year)} - {formatYear(hoveredFigure.death_year)}
+            {formatYear(hoveredFigure.birth_year)} – {formatYear(hoveredFigure.death_year)}
           </div>
           {hoveredFigure.portrayal_count > 0 && (
             <div style={{ color: '#888', fontSize: '10px', marginTop: '2px' }}>
@@ -488,7 +623,7 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
             pointerEvents: 'none',
             zIndex: 100,
             maxWidth: '300px',
-            border: '1px solid #EF4444',
+            border: '1px solid #C0392B',
           }}
         >
           <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>{hoveredEvent.name}</div>
@@ -498,7 +633,7 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
           <div style={{ color: '#aaa', fontSize: '11px', marginTop: '2px' }}>
             {hoveredEvent.start_year && formatYear(hoveredEvent.start_year)}
             {hoveredEvent.end_year && hoveredEvent.end_year !== hoveredEvent.start_year && (
-              <> - {formatYear(hoveredEvent.end_year)}</>
+              <> – {formatYear(hoveredEvent.end_year)}</>
             )}
           </div>
           {hoveredEvent.location && (
@@ -507,20 +642,19 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
         </div>
       )}
 
-      {/* Legend */}
+      {/* Footer hint */}
       <div
         style={{
-          display: 'flex',
-          gap: '16px',
-          padding: '12px 0',
-          borderTop: '1px solid var(--color-border)',
-          marginTop: '8px',
-          flexWrap: 'wrap',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '10px',
+          color: '#A09880',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          padding: '6px 0 0',
+          flexShrink: 0,
         }}
       >
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          Scroll to zoom / Drag to pan / Click figure to view
-        </div>
+        Scroll to zoom · Drag to pan · Click a bar to view figure
       </div>
     </div>
   );
