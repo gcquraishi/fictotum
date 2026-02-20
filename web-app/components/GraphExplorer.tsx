@@ -1957,6 +1957,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               const label = node?.name || '';
               if (!label || !ctx || typeof node.x !== 'number' || typeof node.y !== 'number') return;
 
+              // FIC-121: Dim non-hovered nodes when a node is hovered
+              const isHovered = hoveredNode && node.id === hoveredNode.node.id;
+              const dimFactor = (hoveredNode && !isHovered) ? 0.3 : 1;
+
               const fontSize = 12 / globalScale;
               ctx.font = `${fontSize}px Sans-Serif`;
               ctx.textAlign = 'center';
@@ -1977,6 +1981,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               }
               if (isHighlighted) {
                 nodeSize *= HIGHLIGHTED_SIZE_MULTIPLIER;
+              }
+              // FIC-121: Scale up hovered node
+              if (isHovered) {
+                nodeSize *= 1.3;
               }
 
               // Era-based color for figures, warm muted tone for media (Fisk palette)
@@ -2001,17 +2009,17 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 // Glow effect (center node gets stronger gold glow)
                 if (isCenterNode) {
                   ctx.fillStyle = CENTER_NODE_GLOW_COLOR;
-                  ctx.globalAlpha = 0.4;
+                  ctx.globalAlpha = 0.4 * dimFactor;
                 } else {
                   ctx.fillStyle = nodeColor;
-                  ctx.globalAlpha = isLoading ? 0.1 : 0.3;
+                  ctx.globalAlpha = (isLoading ? 0.1 : 0.3) * dimFactor;
                 }
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
                 ctx.fill();
 
                 // Main node
-                ctx.globalAlpha = 1;
+                ctx.globalAlpha = 1 * dimFactor;
                 ctx.fillStyle = nodeColor;
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
@@ -2023,16 +2031,26 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 ctx.stroke();
               } else {
                 // Regular nodes — translucent Fisk style
-                ctx.globalAlpha = 0.8;
+                ctx.globalAlpha = 0.8 * dimFactor;
                 ctx.fillStyle = nodeColor;
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
                 ctx.fill();
+                ctx.globalAlpha = 1 * dimFactor;
+              }
+
+              // FIC-121: Draw highlight ring on hovered node
+              if (isHovered) {
                 ctx.globalAlpha = 1;
+                ctx.strokeStyle = CENTER_NODE_GLOW_COLOR;
+                ctx.lineWidth = 3 / globalScale;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, nodeSize + 2 / globalScale, 0, 2 * Math.PI, false);
+                ctx.stroke();
               }
 
               // Draw label with halo for readability
-              ctx.globalAlpha = 1;
+              ctx.globalAlpha = dimFactor;
               ctx.font = `bold ${fontSize}px Sans-Serif`;
               ctx.strokeStyle = GRAPH_PALETTE.CREAM_BG;
               ctx.lineWidth = 3 / globalScale;
@@ -2077,7 +2095,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 ctx.lineTo(badgeX + linkSize, badgeY);
                 ctx.stroke();
               }
+              // FIC-121: Reset alpha after node render
+              ctx.globalAlpha = 1;
             } catch (e) {
+              ctx.globalAlpha = 1;
               // Silently fail if canvas rendering has issues (only log in development)
               if (process.env.NODE_ENV === 'development') {
                 console.warn('Canvas rendering error:', e);
@@ -2109,6 +2130,12 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 handleNodeHover(null);
               }}
             >
+              {/* FIC-121: Node name label */}
+              <div className="text-center mb-1 pointer-events-none">
+                <span className="px-2 py-0.5 bg-stone-900/90 text-amber-200 text-[10px] font-mono rounded truncate inline-block max-w-[180px]">
+                  {hoveredNode.node.name}
+                </span>
+              </div>
               <div className="flex gap-2 pointer-events-auto">
                 {/* View Details Button */}
                 <button
