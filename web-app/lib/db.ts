@@ -429,6 +429,7 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
           type: 'figure',
           canonical_id: figureNode.properties.canonical_id,
           is_fictional: figureNode.properties.is_fictional || false,
+          temporal: extractTemporalMetadata(figureNode, 'figure'),
         });
         nodeIds.add(figureId);
       }
@@ -446,6 +447,7 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
               wikidata_id: conn.media.properties.wikidata_id,
               media_type: conn.media.properties.media_type,
               sentiment: conn.sentiment || 'Complex',
+              temporal: extractTemporalMetadata(conn.media, 'media'),
             });
             nodeIds.add(mediaId);
           }
@@ -469,6 +471,7 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
             type: 'figure',
             canonical_id: otherFigure.properties.canonical_id,
             is_fictional: otherFigure.properties.is_fictional || false,
+            temporal: extractTemporalMetadata(otherFigure, 'figure'),
           });
           nodeIds.add(otherId);
         }
@@ -582,27 +585,26 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
     
     // Let's assume the figure exists if we are asking for it.
     // We'll grab the name from the first result of either query.
-    let centralFigureName = "";
-    
+    let centralFigureNode: any = null;
+
     if (mediaResult.records.length > 0) {
-      centralFigureName = mediaResult.records[0].get('f').properties.name;
+      centralFigureNode = mediaResult.records[0].get('f');
     } else if (socialResult.records.length > 0) {
-      centralFigureName = socialResult.records[0].get('f').properties.name;
+      centralFigureNode = socialResult.records[0].get('f');
     } else {
-        // Fallback or fetch specifically if needed, but likely no graph if no connections
-        // We can do a quick check to get the name if both are empty
         const figureCheck = await session.run(`MATCH (f:HistoricalFigure {canonical_id: $canonicalId}) RETURN f`, {canonicalId});
         if (figureCheck.records.length > 0) {
-            centralFigureName = figureCheck.records[0].get('f').properties.name;
+            centralFigureNode = figureCheck.records[0].get('f');
         }
     }
 
-    if (centralFigureName) {
+    if (centralFigureNode) {
         const figureId = `figure-${canonicalId}`;
         nodes.push({
             id: figureId,
-            name: centralFigureName,
+            name: centralFigureNode.properties.name,
             type: 'figure',
+            temporal: extractTemporalMetadata(centralFigureNode, 'figure'),
         });
         nodeIds.add(figureId);
     }
@@ -620,6 +622,7 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
           name: mediaNode.properties.title,
           type: 'media',
           sentiment: relationship.properties.sentiment || 'Complex',
+          temporal: extractTemporalMetadata(mediaNode, 'media'),
         });
         nodeIds.add(mediaId);
       }
@@ -636,13 +639,13 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
     socialResult.records.forEach(record => {
       const otherFigure = record.get('h');
       const otherId = `figure-${otherFigure.properties.canonical_id}`;
-      
+
       if (!nodeIds.has(otherId)) {
         nodes.push({
           id: otherId,
           name: otherFigure.properties.name,
-          type: 'figure', // It's another figure
-          // Optional: we could distinguish 'central' vs 'other' via ID or another property
+          type: 'figure',
+          temporal: extractTemporalMetadata(otherFigure, 'figure'),
         });
         nodeIds.add(otherId);
       }
@@ -841,6 +844,7 @@ export async function getHighDegreeNetwork(limit: number = 50): Promise<{ nodes:
           id: figureId,
           name: figureNode.properties.name,
           type: 'figure',
+          temporal: extractTemporalMetadata(figureNode, 'figure'),
         });
         nodeIds.add(figureId);
       }
@@ -859,6 +863,7 @@ export async function getHighDegreeNetwork(limit: number = 50): Promise<{ nodes:
             name: connectedNode.properties.title,
             type: 'media',
             sentiment: relationship.properties.sentiment || 'Complex',
+            temporal: extractTemporalMetadata(connectedNode, 'media'),
           });
           nodeIds.add(connectedId);
         }
@@ -871,6 +876,7 @@ export async function getHighDegreeNetwork(limit: number = 50): Promise<{ nodes:
             id: connectedId,
             name: connectedNode.properties.name,
             type: 'figure',
+            temporal: extractTemporalMetadata(connectedNode, 'figure'),
           });
           nodeIds.add(connectedId);
         }

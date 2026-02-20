@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { TimelineFigure, HistoricalEvent } from '@/lib/types';
+import { getEraColor, GRAPH_PALETTE } from '@/lib/colors';
 
 interface TimelineProps {
   figures: TimelineFigure[];
@@ -13,39 +14,6 @@ interface TimelineProps {
     total_figures: number;
     total_events: number;
   };
-}
-
-// Fisk-inspired palette — muted, watercolor-like era tones
-const ERA_COLORS: Record<string, string> = {
-  'Ancient': '#B8860B',
-  'Classical Antiquity': '#CD853F',
-  'Ancient Rome': '#A0522D',
-  'Ancient Greece': '#6B8E23',
-  'Ancient Egypt': '#DAA520',
-  'Medieval': '#556B2F',
-  'Middle Ages': '#556B2F',
-  'Renaissance': '#6A5ACD',
-  'Tudor': '#8B4513',
-  'Early Modern': '#4682B4',
-  'Enlightenment': '#B8860B',
-  'Victorian Era': '#8B4513',
-  'Napoleonic': '#4169E1',
-  'Modern': '#2F4F4F',
-  'Contemporary': '#36454F',
-  'World War': '#8B0000',
-};
-
-function getEraColor(era?: string): string {
-  if (!era) return '#8B7355';
-  for (const [key, color] of Object.entries(ERA_COLORS)) {
-    if (era.toLowerCase().includes(key.toLowerCase())) return color;
-  }
-  let hash = 0;
-  for (let i = 0; i < era.length; i++) {
-    hash = era.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 30%, 42%)`;
 }
 
 // --- Row packing: greedy first-fit algorithm ---
@@ -182,14 +150,14 @@ export default function Timeline({ figures, events, stats }: TimelineProps) {
     ctx.scale(dpr, dpr);
 
     // Cream background (Fisk-inspired)
-    ctx.fillStyle = '#FAF8F0';
+    ctx.fillStyle = GRAPH_PALETTE.CREAM_BG;
     ctx.fillRect(0, 0, canvasWidth, actualCanvasHeight);
 
     // Alternating lane shading — subtle zebra stripes for row tracking
     for (let i = 0; i < laneCount; i++) {
       if (i % 2 === 1) {
         const rowY = figureAreaTop + i * laneHeight;
-        ctx.fillStyle = '#F2EDE0';
+        ctx.fillStyle = GRAPH_PALETTE.LANE_ALT_BG;
         ctx.fillRect(0, rowY, canvasWidth, laneHeight);
       }
     }

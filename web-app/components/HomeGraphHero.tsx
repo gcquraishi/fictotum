@@ -3,20 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GraphNode, GraphLink } from '@/lib/types';
+import { getEraColor, GRAPH_PALETTE } from '@/lib/colors';
 
 let ForceGraph2D: any = null;
 if (typeof window !== 'undefined') {
   ForceGraph2D = require('react-force-graph-2d').default;
 }
-
-const SENTIMENT_COLORS: Record<string, string> = {
-  Heroic: '#22c55e',
-  Villainous: '#ef4444',
-  Complex: '#eab308',
-};
-
-const FIGURE_COLOR = '#4169E1';
-const MEDIA_COLOR = '#94a3b8';
 
 interface HomeGraphHeroProps {
   /** List of canonical_ids to randomly pick from */
@@ -113,11 +105,8 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
   };
 
   const getNodeColor = (node: GraphNode) => {
-    if (node.type === 'figure') return FIGURE_COLOR;
-    if (node.sentiment && SENTIMENT_COLORS[node.sentiment]) {
-      return SENTIMENT_COLORS[node.sentiment];
-    }
-    return MEDIA_COLOR;
+    if (node.type === 'figure') return getEraColor(node.temporal?.era);
+    return GRAPH_PALETTE.MEDIA_NODE_COLOR;
   };
 
   const getNodeSize = (node: GraphNode) => {
@@ -189,7 +178,7 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
             nodeVal={(node: GraphNode) => getNodeSize(node)}
             nodeColor={(node: GraphNode) => getNodeColor(node)}
             nodeLabel={() => ''}
-            linkColor={() => 'rgba(0,0,0,0.08)'}
+            linkColor={() => GRAPH_PALETTE.LINK_COLOR}
             linkWidth={1}
             onNodeClick={handleNodeClick}
             onNodeHover={(node: GraphNode | null) => setHoveredNode(node?.id || null)}
@@ -216,13 +205,13 @@ export default function HomeGraphHero({ figureIds }: HomeGraphHeroProps) {
               const yOffset = (isCenterNode ? 10 : 7) / globalScale;
 
               // Halo effect for readability
-              ctx.strokeStyle = '#ffffff';
+              ctx.strokeStyle = GRAPH_PALETTE.CREAM_BG;
               ctx.lineWidth = 3 / globalScale;
               ctx.lineJoin = 'round';
               ctx.strokeText(label, node.x, node.y + yOffset);
 
               // Text
-              ctx.fillStyle = isCenterNode ? '#8B2635' : '#1A1A1A';
+              ctx.fillStyle = isCenterNode ? '#8B2635' : GRAPH_PALETTE.LABEL_COLOR;
               ctx.fillText(label, node.x, node.y + yOffset);
             }}
           />

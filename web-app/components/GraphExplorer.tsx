@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { GraphNode, GraphLink, PathVisualization } from '@/lib/types';
+import { getEraColor, GRAPH_PALETTE } from '@/lib/colors';
 import { devLog, devWarn, devError } from '@/utils/devLog';
 import ImpressionisticTimeline from '@/components/graph/ImpressionisticTimeline';
 
@@ -1929,13 +1930,13 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             return '#f97316'; // Orange for media works
           }}
           nodeRelSize={12}  // CHR-22: Increased from 7 for better visibility and legibility
-          linkColor={(link: any) => link.featured ? '#3b82f6' : '#d1d5db'}
+          linkColor={(link: any) => link.featured ? GRAPH_PALETTE.LINK_FEATURED_COLOR : GRAPH_PALETTE.LINK_COLOR}
           linkWidth={(link: any) => link.featured ? 3 : 1.5}
           linkLabel={(link: any) => {
             const relType = link.relationshipType || 'connected';
             return `${relType} (${link.sentiment})`;
           }}
-          backgroundColor="#f9fafb"
+          backgroundColor={GRAPH_PALETTE.CREAM_BG}
           onNodeClick={((node: any, event: MouseEvent) => handleNodeClick(node, event)) as any}
           onNodeHover={handleNodeHover as any}
           // CHR-22: Tighter force simulation for compact initial view (user can zoom out to explore)
@@ -1978,13 +1979,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 nodeSize *= HIGHLIGHTED_SIZE_MULTIPLIER;
               }
 
+              // Era-based color for figures, warm muted tone for media (Fisk palette)
+              const nodeColor = isBaconNode(node.id)
+                ? BACON_COLOR
+                : node.type === 'figure'
+                  ? getEraColor(node.temporal?.era)
+                  : GRAPH_PALETTE.MEDIA_NODE_COLOR;
+
               // Draw node with glow effect for Bacon nodes, highlighted nodes, loading nodes, or center node
               if (isBaconNode(node.id) || isHighlighted || isLoading || isCenterNode) {
-                // Determine color based on node type
-                const nodeColor = isBaconNode(node.id)
-                  ? BACON_COLOR
-                  : (node.type === 'figure' ? '#3b82f6' : '#f97316'); // Blue for figures, orange for media
-
                 // Determine border color (center node gets gold border)
                 let borderColor = '#1e40af';
                 if (isCenterNode) {
@@ -2019,22 +2022,23 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 ctx.lineWidth = isLoading ? 3 / globalScale : 2 / globalScale;
                 ctx.stroke();
               } else {
-                // Regular nodes
-                const color = node.type === 'figure' ? '#3b82f6' : '#f97316'; // Blue for figures, orange for media
-                ctx.fillStyle = color;
+                // Regular nodes — translucent Fisk style
+                ctx.globalAlpha = 0.8;
+                ctx.fillStyle = nodeColor;
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
                 ctx.fill();
+                ctx.globalAlpha = 1;
               }
 
               // Draw label with halo for readability
               ctx.globalAlpha = 1;
               ctx.font = `bold ${fontSize}px Sans-Serif`;
-              ctx.strokeStyle = '#ffffff';
+              ctx.strokeStyle = GRAPH_PALETTE.CREAM_BG;
               ctx.lineWidth = 3 / globalScale;
               ctx.lineJoin = 'round';
               ctx.strokeText(label, node.x, node.y + nodeSize + 12);
-              ctx.fillStyle = '#1f2937';
+              ctx.fillStyle = GRAPH_PALETTE.LABEL_COLOR;
               ctx.fillText(label, node.x, node.y + nodeSize + 12);
 
               // Draw series badge for media nodes that are part of a series
