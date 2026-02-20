@@ -33,9 +33,14 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 ## Current State
 _Last updated: 2026-02-20_
 
-Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — web app graph exploration UX significantly improved with bloom-mode expansion, dual-click behavior, and label readability fixes.
+Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan.
 
 ### Recent Completions
+- **Fisk color unification (FIC-117)**: Shared `lib/colors.ts` module with `ERA_COLORS`, `getEraColor()`, and `GRAPH_PALETTE` constants. Era-based node coloring, cream backgrounds, warm translucent links across GraphExplorer, HomeGraphHero, and Timeline. Graph legend updated to match (FIC-122).
+- **Timeline readability overhaul**: Row-packing algorithm (greedy first-fit) condenses figures into minimal lanes within a single viewport. Minimum 10px bar height with scroll overflow. White text with drop shadow on bars, overflow labels for short bars, alternating zebra-stripe lane shading. Inspired by Harold Fisk's Mississippi River meander maps.
+- **Graph API temporal metadata**: `getGraphData()`, `getLandingGraphData()`, `getHighDegreeNetwork()` now populate `temporal.era` on figure nodes (was already in `getNodeNeighbors()`).
+- **Mini-timeline overlap fix**: ImpressionisticTimeline labels no longer overlap in dense graphs — greedy row stagger with dashed connector lines, dynamic container height.
+- **Wheel zoom fix**: Canvas wheel handler uses native `addEventListener` with `{ passive: false }` so `preventDefault()` works correctly.
 - `:HistoricalEvent` and `:Source` node types: full schema (models, constraints, indexes in `schema.py`), JSON batch import schema, batch_import.py support (validation, dedup, import, reporting), TypeScript types
 - Timeline view: canvas-based zoomable/pannable timeline at `/explore/timeline` with API route, era filtering, figure lifespan bars, event markers, click-to-navigate. Navbar updated with Timeline link.
 - Competitive research: Historio (historio.app) analysis informed roadmap updates
@@ -52,7 +57,7 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 ### Active Work
 - **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
 - Data enrichment and population via batch imports (now supports events + sources)
-- Web app graph exploration and visualization improvements
+- **FIC-121**: Improve hover clarity on dense graphs (node targeting ambiguity)
 
 ### Known Issues
 - Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
@@ -61,14 +66,12 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 ## Roadmap
 ### Immediate (This Sprint)
 - Continue data population via batch imports
-- Web app improvements for graph exploration
-- `:HistoricalEvent` node type + schema design (canonical_id, wikidata_id, date/date_precision, start_date/end_date, location, era) with `PARTICIPATED_IN`, `DEPICTED_IN`, `LED_TO` relationships
-- Source provenance: `:Source` node type to track where data came from (wikipedia_article, book, documentary) with `SOURCED_FROM` relationships
+- Dense graph UX: improve hover clarity and node targeting (FIC-121)
+- Apply Neo4j constraints for HistoricalEvent and Source node types
 
 ### Next (2-4 weeks)
 - Illustration system (AI-generated via Gemini)
 - Public-facing graph visualization
-- Timeline view: zoomable chronological visualization complementing graph explorer (contemporaries lifespans + event markers), using vis-timeline or TimelineJS
 - Gemini extraction pipeline: AI-powered structured data extraction from Wikipedia/source texts → entity resolution → batch-import JSON → human review via dry-run
 
 ### Future (Backlog)
