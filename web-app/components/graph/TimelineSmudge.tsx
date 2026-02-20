@@ -15,24 +15,33 @@ interface TimelineSmudgeProps {
   maxYear: number;
   isActive: boolean;
   zIndex: number;
+  labelRow: number;
   onClick: () => void;
 }
+
+const BASE_LABEL_Y = 85;
+const LABEL_ROW_HEIGHT = 14;
 
 export default function TimelineSmudge({
   data,
   minYear,
   maxYear,
   isActive,
+  labelRow,
   onClick
 }: TimelineSmudgeProps) {
   const yearRange = maxYear - minYear;
   const getX = (year: number) => ((year - minYear) / yearRange) * 100;
+
+  const labelY = BASE_LABEL_Y + labelRow * LABEL_ROW_HEIGHT;
+  const truncatedName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
 
   // Render figure as gradient bar
   if (data.type === 'figure' && data.startYear && data.endYear) {
     const x1 = getX(data.startYear);
     const x2 = getX(data.endYear);
     const blur = data.precision === 'era' ? 4 : data.precision === 'decade' ? 2 : 0;
+    const labelX = (x1 + x2) / 2;
 
     return (
       <g
@@ -56,14 +65,26 @@ export default function TimelineSmudge({
           filter={blur > 0 ? `blur(${blur}px)` : undefined}
           rx="4"
         />
+        {/* Connector line when label is staggered */}
+        {labelRow > 0 && (
+          <line
+            x1={`${labelX}%`}
+            y1="70"
+            x2={`${labelX}%`}
+            y2={labelY - 10}
+            stroke="#A8A29E"
+            strokeWidth="0.5"
+            strokeDasharray="2 2"
+          />
+        )}
         <text
-          x={`${(x1 + x2) / 2}%`}
-          y="85"
+          x={`${labelX}%`}
+          y={labelY}
           textAnchor="middle"
           className="text-xs font-mono fill-stone-700"
           style={{ pointerEvents: 'none' }}
         >
-          {data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name}
+          {truncatedName}
         </text>
       </g>
     );
@@ -72,7 +93,8 @@ export default function TimelineSmudge({
   // Render figure with only birth year (fade right)
   if (data.type === 'figure' && data.startYear && !data.endYear) {
     const x = getX(data.startYear);
-    const fadeWidth = Math.min(10, (100 - x) / 2); // Fade 10% or half remaining space
+    const fadeWidth = Math.min(10, (100 - x) / 2);
+    const labelX = x + fadeWidth / 2;
 
     return (
       <g
@@ -95,14 +117,25 @@ export default function TimelineSmudge({
           fill={`url(#gradient-fade-${data.id})`}
           rx="4"
         />
+        {labelRow > 0 && (
+          <line
+            x1={`${labelX}%`}
+            y1="70"
+            x2={`${labelX}%`}
+            y2={labelY - 10}
+            stroke="#A8A29E"
+            strokeWidth="0.5"
+            strokeDasharray="2 2"
+          />
+        )}
         <text
-          x={`${x + fadeWidth / 2}%`}
-          y="85"
+          x={`${labelX}%`}
+          y={labelY}
           textAnchor="middle"
           className="text-xs font-mono fill-stone-700"
           style={{ pointerEvents: 'none' }}
         >
-          {data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name}
+          {truncatedName}
         </text>
       </g>
     );
@@ -111,6 +144,8 @@ export default function TimelineSmudge({
   // Render media work as vertical tick
   if (data.type === 'media' && data.startYear) {
     const x = getX(data.startYear);
+    // Extend tick line down to meet staggered label
+    const tickEndY = labelRow > 0 ? labelY - 10 : 70;
 
     return (
       <g
@@ -122,19 +157,32 @@ export default function TimelineSmudge({
           x1={`${x}%`}
           y1="30"
           x2={`${x}%`}
-          y2="70"
+          y2={tickEndY}
           stroke="#D97706"
           strokeWidth="3"
           filter="drop-shadow(0 0 4px rgba(217, 119, 6, 0.4))"
         />
+        {/* Thin connector from tick to staggered label */}
+        {labelRow > 0 && (
+          <line
+            x1={`${x}%`}
+            y1="70"
+            x2={`${x}%`}
+            y2={labelY - 10}
+            stroke="#D97706"
+            strokeWidth="1"
+            strokeOpacity="0.4"
+            strokeDasharray="2 2"
+          />
+        )}
         <text
           x={`${x}%`}
-          y="85"
+          y={labelY}
           textAnchor="middle"
           className="text-xs font-mono fill-amber-700"
           style={{ pointerEvents: 'none' }}
         >
-          {data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name}
+          {truncatedName}
         </text>
       </g>
     );
@@ -168,7 +216,7 @@ export default function TimelineSmudge({
         </text>
         <text
           x="5%"
-          y="85"
+          y={labelY}
           textAnchor="middle"
           className="text-xs font-mono fill-stone-500"
           style={{ pointerEvents: 'none' }}

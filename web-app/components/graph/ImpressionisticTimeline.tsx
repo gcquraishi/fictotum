@@ -21,6 +21,11 @@ interface TimelineData {
   precision?: 'exact' | 'decade' | 'era' | 'unknown';
 }
 
+// Minimum x-% gap before we consider labels as overlapping
+const LABEL_OVERLAP_THRESHOLD = 8;
+const LABEL_ROW_HEIGHT = 14;
+const BASE_HEIGHT = 120;
+
 export default function ImpressionisticTimeline({
   explorationPath,
   nodes,
@@ -45,12 +50,12 @@ export default function ImpressionisticTimeline({
       .filter((y): y is number => y !== undefined);
 
     if (years.length === 0) {
-      return { minYear: 1800, maxYear: 2000 }; // Default range
+      return { minYear: 1800, maxYear: 2000 };
     }
 
     const min = Math.min(...years);
     const max = Math.max(...years);
-    const padding = (max - min) * 0.1 || 50; // 10% padding or 50 years minimum
+    const padding = (max - min) * 0.1 || 50;
 
     return {
       minYear: Math.floor(min - padding),
@@ -58,9 +63,60 @@ export default function ImpressionisticTimeline({
     };
   }, [timelineData]);
 
+  // Compute label x-positions and assign stagger rows to avoid overlap
+  const { labelRows, maxLabelRow } = useMemo(() => {
+    const yearRange = maxYear - minYear;
+    if (yearRange === 0) return { labelRows: new Map<string, number>(), maxLabelRow: 0 };
+
+    const getXPercent = (year: number) => ((year - minYear) / yearRange) * 100;
+
+    // For each item, compute the x-% where its label sits
+    const items = timelineData.map(d => {
+      let labelX: number;
+      if (d.type === 'figure' && d.startYear && d.endYear) {
+        // Figure bar — label centered between start and end
+        labelX = (getXPercent(d.startYear) + getXPercent(d.endYear)) / 2;
+      } else if (d.startYear) {
+        labelX = getXPercent(d.startYear);
+      } else {
+        labelX = 5; // fallback "?" items at 5%
+      }
+      return { id: d.id, labelX };
+    });
+
+    // Sort by label x-position
+    const sorted = [...items].sort((a, b) => a.labelX - b.labelX);
+
+    // Greedy first-fit row assignment
+    // Each row tracks the rightmost x-edge of the last label placed
+    const rowEnds: number[] = [];
+    const rows = new Map<string, number>();
+
+    for (const item of sorted) {
+      let assignedRow = -1;
+      for (let i = 0; i < rowEnds.length; i++) {
+        if (item.labelX >= rowEnds[i] + LABEL_OVERLAP_THRESHOLD) {
+          assignedRow = i;
+          break;
+        }
+      }
+      if (assignedRow === -1) {
+        assignedRow = rowEnds.length;
+        rowEnds.push(-Infinity);
+      }
+      rowEnds[assignedRow] = item.labelX;
+      rows.set(item.id, assignedRow);
+    }
+
+    const maxRow = rowEnds.length > 0 ? rowEnds.length - 1 : 0;
+    return { labelRows: rows, maxLabelRow: maxRow };
+  }, [timelineData, minYear, maxYear]);
+
+  const containerHeight = BASE_HEIGHT + maxLabelRow * LABEL_ROW_HEIGHT;
+
   if (timelineData.length === 0) {
     return (
-      <div className="w-full h-[120px] bg-stone-50 border-t-2 border-stone-300 flex items-center justify-center">
+      <div className="w-full bg-stone-50 border-t-2 border-stone-300 flex items-center justify-center" style={{ height: `${BASE_HEIGHT}px` }}>
         <p className="text-sm text-stone-500 font-mono">
           No temporal data available for current path
         </p>
@@ -69,7 +125,10 @@ export default function ImpressionisticTimeline({
   }
 
   return (
-    <div className="w-full h-[120px] bg-stone-50 border-t-2 border-stone-300 relative overflow-hidden">
+    <div
+      className="w-full bg-stone-50 border-t-2 border-stone-300 relative overflow-hidden"
+      style={{ height: `${containerHeight}px` }}
+    >
       {/* Year axis */}
       <TimelineAxisRenderer minYear={minYear} maxYear={maxYear} />
 
@@ -83,6 +142,7 @@ export default function ImpressionisticTimeline({
             maxYear={maxYear}
             isActive={data.id === centerNodeId}
             zIndex={idx}
+            labelRow={labelRows.get(data.id) ?? 0}
             onClick={() => onNodeClick(data.id)}
           />
         ))}
@@ -96,7 +156,6 @@ function extractTemporalInfo(node: GraphNode): TimelineData | null {
   const temporal = node.temporal;
 
   if (!temporal) {
-    // No temporal metadata
     return {
       id: node.id,
       name: node.name,
@@ -106,7 +165,6 @@ function extractTemporalInfo(node: GraphNode): TimelineData | null {
   }
 
   if (node.type === 'figure') {
-    // Historical figure
     if (temporal.birth_year || temporal.death_year) {
       return {
         id: node.id,
@@ -118,7 +176,6 @@ function extractTemporalInfo(node: GraphNode): TimelineData | null {
       };
     }
   } else if (node.type === 'media') {
-    // Media work
     if (temporal.release_year) {
       return {
         id: node.id,
@@ -130,7 +187,6 @@ function extractTemporalInfo(node: GraphNode): TimelineData | null {
     }
   }
 
-  // Has temporal metadata but no usable years
   return {
     id: node.id,
     name: node.name,
