@@ -1801,19 +1801,19 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       )}
 
       {/* Inline Legend - Bottom Left */}
-      <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4">
+      <div className="absolute bottom-4 left-4 z-10 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4" style={{ background: 'rgba(250,248,240,0.95)' }}>
         <div className="flex flex-col gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-amber-600"></div>
-            <span className="text-stone-700">Historical Figure</span>
+            <div className="w-3 h-3 rounded-full" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>
+            <span style={{ color: GRAPH_PALETTE.LABEL_COLOR }}>Historical Figure <span className="text-stone-400">(colored by era)</span></span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-            <span className="text-stone-700">Media Work</span>
+            <div className="w-3 h-3 rounded-full" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
+            <span style={{ color: GRAPH_PALETTE.LABEL_COLOR }}>Media Work</span>
           </div>
         </div>
-        <div className="mt-2 pt-2 border-t border-stone-300 text-xs text-stone-500 italic">
-          Drag to pan • Scroll to zoom • Click nodes
+        <div className="mt-2 pt-2 border-t border-stone-300 text-xs italic" style={{ color: '#A09880' }}>
+          Drag to pan · Scroll to zoom · Click nodes
         </div>
       </div>
 
