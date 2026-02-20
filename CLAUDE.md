@@ -33,9 +33,10 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 ## Current State
 _Last updated: 2026-02-20_
 
-Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan.
+Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references).
 
 ### Recent Completions
+- **Dense graph hover clarity (FIC-121)**: Node name label above action buttons, 1.3x scale-up with gold ring on hovered node, 0.3 opacity dimming of non-hovered nodes via `dimFactor` multiplier in `nodeCanvasObject`.
 - **Fisk color unification (FIC-117)**: Shared `lib/colors.ts` module with `ERA_COLORS`, `getEraColor()`, and `GRAPH_PALETTE` constants. Era-based node coloring, cream backgrounds, warm translucent links across GraphExplorer, HomeGraphHero, and Timeline. Graph legend updated to match (FIC-122).
 - **Timeline readability overhaul**: Row-packing algorithm (greedy first-fit) condenses figures into minimal lanes within a single viewport. Minimum 10px bar height with scroll overflow. White text with drop shadow on bars, overflow labels for short bars, alternating zebra-stripe lane shading. Inspired by Harold Fisk's Mississippi River meander maps.
 - **Graph API temporal metadata**: `getGraphData()`, `getLandingGraphData()`, `getHighDegreeNetwork()` now populate `temporal.era` on figure nodes (was already in `getNodeNeighbors()`).
@@ -57,7 +58,12 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 ### Active Work
 - **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
 - Data enrichment and population via batch imports (now supports events + sources)
-- **FIC-121**: Improve hover clarity on dense graphs (node targeting ambiguity)
+- **FIC-120 → FIC-118**: Connection quality scoring (FIC-120) then discovery agent (FIC-118). See Linear tickets for full specs from 2026-02-20 exploration session. Key decisions:
+  - On-demand per entity (not batch), surfaces "Discover Connections" section on figure detail pages
+  - Pipeline: Cypher candidates → FIC-120 graph-only scoring → Sonnet 4.6 narration
+  - Model: Claude Sonnet 4.6 (requires `ANTHROPIC_API_KEY` in `.env.local`)
+  - No embeddings — graph-only signals (hop distance, cross-era surprise, sentiment divergence, property completeness)
+  - FIC-119 (narrative timeline summaries) deferred as potential bloat
 
 ### Known Issues
 - Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
@@ -66,8 +72,9 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 ## Roadmap
 ### Immediate (This Sprint)
 - Continue data population via batch imports
-- Dense graph UX: improve hover clarity and node targeting (FIC-121)
 - Apply Neo4j constraints for HistoricalEvent and Source node types
+- **FIC-120**: Connection quality scoring — `lib/connection-scoring.ts` with graph-only signals (internal, not user-visible)
+- **FIC-118**: Discovery agent — on-demand "Discover Connections" section on figure detail pages, Sonnet 4.6 powered
 
 ### Next (2-4 weeks)
 - Illustration system (AI-generated via Gemini)
