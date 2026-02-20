@@ -58,14 +58,20 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 ### Immediate (This Sprint)
 - Continue data population via batch imports
 - Web app improvements for graph exploration
+- `:HistoricalEvent` node type + schema design (canonical_id, wikidata_id, date/date_precision, start_date/end_date, location, era) with `PARTICIPATED_IN`, `DEPICTED_IN`, `LED_TO` relationships
+- Source provenance: `:Source` node type to track where data came from (wikipedia_article, book, documentary) with `SOURCED_FROM` relationships
 
 ### Next (2-4 weeks)
 - Illustration system (AI-generated via Gemini)
 - Public-facing graph visualization
+- Timeline view: zoomable chronological visualization complementing graph explorer (contemporaries lifespans + event markers), using vis-timeline or TimelineJS
+- Gemini extraction pipeline: AI-powered structured data extraction from Wikipedia/source texts → entity resolution → batch-import JSON → human review via dry-run
 
 ### Future (Backlog)
 - API for external consumers
 - Advanced graph queries and analytics
+- Dual-researcher pattern: two Gemini agents (high-precision + high-recall) with reconciliation step for data quality
+- User collections / curated paths: saveable sets of connected nodes as shareable explorations
 - Community contributions
 
 ## Conventions
