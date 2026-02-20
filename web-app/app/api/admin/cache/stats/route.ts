@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // file: web-app/app/api/admin/cache/stats/route.ts
 import 'server-only';
 import { NextResponse } from 'next/server';

@@ -10,7 +10,10 @@ export function getDriver(): Driver {
     const password = process.env.NEO4J_PASSWORD;
 
     if (!uri || !username || !password) {
-      throw new Error('Missing Neo4j environment variables');
+      throw new Error(
+        'Missing Neo4j environment variables (NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD). ' +
+        'This is expected during `next build` if env vars are not available.'
+      );
     }
 
     // Configuration for Neo4j Aura with proper SSL/TLS handling

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // file: web-app/app/api/wikidata/enrich/route.ts
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';

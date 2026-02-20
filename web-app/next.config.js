@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Increase static page data collection timeout.
+  // All API routes and dynamic pages are force-dynamic, but Next.js still
+  // evaluates modules during build. Neo4j Aura cold starts can be slow.
+  staticPageGenerationTimeout: 180,
   images: {
     minimumCacheTTL: 2592000, // 30 days — AI illustrations rarely change
     remotePatterns: [

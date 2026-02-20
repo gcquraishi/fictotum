@@ -50,7 +50,6 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 - Enhanced name similarity scoring (70% lexical + 30% phonetic)
 
 ### Active Work
-- **Needs verification**: Run `npm run build` in `web-app/` to confirm timeline + schema changes compile (TypeScript type-check passed, full build not yet verified)
 - **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
 - Data enrichment and population via batch imports (now supports events + sources)
 - Web app graph exploration and visualization improvements

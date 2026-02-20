@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { UserCircle, BookOpen, TrendingUp } from 'lucide-react';

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getGraphData } from '@/lib/db';
