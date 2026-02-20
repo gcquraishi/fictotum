@@ -96,6 +96,10 @@ class BatchImporter:
             "works_created": 0,
             "works_skipped_duplicate": 0,
             "works_updated": 0,
+            "events_created": 0,
+            "events_skipped_duplicate": 0,
+            "sources_created": 0,
+            "sources_skipped_duplicate": 0,
             "relationships_created": 0,
             "errors": [],
             "warnings": []
@@ -104,6 +108,8 @@ class BatchImporter:
         # Validation results
         self.duplicate_figures: List[Dict] = []
         self.duplicate_works: List[Dict] = []
+        self.duplicate_events: List[Dict] = []
+        self.duplicate_sources: List[Dict] = []
         self.invalid_qids: List[Dict] = []
 
     def close(self):
@@ -171,6 +177,24 @@ class BatchImporter:
                     work_errors = self._validate_work_schema(work, idx)
                     errors.extend(work_errors)
 
+        # Validate events array (if present)
+        if "events" in data:
+            if not isinstance(data["events"], list):
+                errors.append("'events' must be an array")
+            else:
+                for idx, event in enumerate(data["events"]):
+                    event_errors = self._validate_event_schema(event, idx)
+                    errors.extend(event_errors)
+
+        # Validate sources array (if present)
+        if "sources" in data:
+            if not isinstance(data["sources"], list):
+                errors.append("'sources' must be an array")
+            else:
+                for idx, source in enumerate(data["sources"]):
+                    source_errors = self._validate_source_schema(source, idx)
+                    errors.extend(source_errors)
+
         # Validate relationships array (if present)
         if "relationships" in data:
             if not isinstance(data["relationships"], list):
@@ -180,9 +204,9 @@ class BatchImporter:
                     rel_errors = self._validate_relationship_schema(rel, idx)
                     errors.extend(rel_errors)
 
-        # Must have at least figures or works
-        if "figures" not in data and "works" not in data:
-            errors.append("Must provide at least 'figures' or 'works' array")
+        # Must have at least one data array
+        if not any(key in data for key in ["figures", "works", "events", "sources", "relationships"]):
+            errors.append("Must provide at least one of: 'figures', 'works', 'events', 'sources', or 'relationships'")
 
         return len(errors) == 0, errors
 
@@ -245,6 +269,61 @@ class BatchImporter:
 
         return errors
 
+    def _validate_event_schema(self, event: Dict, idx: int) -> List[str]:
+        """Validate a single historical event object."""
+        errors = []
+        prefix = f"events[{idx}]"
+
+        if "name" not in event:
+            errors.append(f"{prefix}.name is required")
+
+        has_event_id = "event_id" in event and event["event_id"]
+        has_wikidata = "wikidata_id" in event and event["wikidata_id"]
+
+        if not has_event_id and not has_wikidata:
+            errors.append(f"{prefix}: must provide either 'event_id' or 'wikidata_id'")
+
+        for year_field in ["start_year", "end_year"]:
+            if year_field in event and event[year_field] is not None:
+                if not isinstance(event[year_field], int):
+                    errors.append(f"{prefix}.{year_field} must be an integer")
+
+        if has_wikidata:
+            qid = event["wikidata_id"]
+            if not qid.startswith("Q") or not qid[1:].isdigit():
+                errors.append(f"{prefix}.wikidata_id has invalid format: {qid}")
+
+        valid_event_types = ["battle", "treaty", "coronation", "revolution", "discovery", "founding", "assassination", "other"]
+        if "event_type" in event and event["event_type"] not in valid_event_types:
+            errors.append(f"{prefix}.event_type must be one of: {valid_event_types}")
+
+        valid_precisions = ["day", "month", "year", "decade", "century"]
+        if "date_precision" in event and event["date_precision"] not in valid_precisions:
+            errors.append(f"{prefix}.date_precision must be one of: {valid_precisions}")
+
+        return errors
+
+    def _validate_source_schema(self, source: Dict, idx: int) -> List[str]:
+        """Validate a single source object."""
+        errors = []
+        prefix = f"sources[{idx}]"
+
+        if "title" not in source:
+            errors.append(f"{prefix}.title is required")
+
+        valid_source_types = ["wikipedia_article", "book", "documentary", "academic_paper", "database"]
+        if "source_type" not in source:
+            errors.append(f"{prefix}.source_type is required")
+        elif source["source_type"] not in valid_source_types:
+            errors.append(f"{prefix}.source_type must be one of: {valid_source_types}")
+
+        if "wikidata_id" in source and source["wikidata_id"]:
+            qid = source["wikidata_id"]
+            if not qid.startswith("Q") or not qid[1:].isdigit():
+                errors.append(f"{prefix}.wikidata_id has invalid format: {qid}")
+
+        return errors
+
     def _validate_relationship_schema(self, rel: Dict, idx: int) -> List[str]:
         """Validate a single relationship object."""
         errors = []
@@ -257,7 +336,7 @@ class BatchImporter:
                 errors.append(f"{prefix}.{field} is required")
 
         # Validate node types
-        valid_types = ["HistoricalFigure", "MediaWork", "FictionalCharacter"]
+        valid_types = ["HistoricalFigure", "MediaWork", "FictionalCharacter", "HistoricalEvent", "Source"]
         if "from_type" in rel and rel["from_type"] not in valid_types:
             errors.append(f"{prefix}.from_type must be one of: {valid_types}")
         if "to_type" in rel and rel["to_type"] not in valid_types:
@@ -266,7 +345,9 @@ class BatchImporter:
         # Validate relationship type
         valid_rels = [
             "APPEARS_IN", "PORTRAYED_IN", "INTERACTED_WITH",
-            "BASED_ON", "FICTIONAL_PROXY", "CONTEMPORARY"
+            "BASED_ON", "FICTIONAL_PROXY", "CONTEMPORARY",
+            "NEMESIS_OF", "SUBJECT_OF",
+            "PARTICIPATED_IN", "DEPICTED_IN", "LED_TO", "SOURCED_FROM"
         ]
         if "rel_type" in rel and rel["rel_type"] not in valid_rels:
             errors.append(f"{prefix}.rel_type must be one of: {valid_rels}")
@@ -785,6 +866,271 @@ class BatchImporter:
         # Create CREATED_BY relationships
         self._create_agent_relationships(session, "MediaWork", works_to_import)
 
+    def detect_duplicate_events(self, events: List[Dict]):
+        """Check for duplicate events in database using Q-ID and name similarity."""
+        print("\n🔍 Checking for duplicate events...")
+
+        with self.driver.session() as session:
+            for event in events:
+                name = event["name"]
+                event_id = event.get("event_id")
+                wikidata_id = event.get("wikidata_id")
+
+                # Check 1: Exact event_id match
+                if event_id:
+                    query = """
+                    MATCH (ev:HistoricalEvent)
+                    WHERE ev.event_id = $event_id
+                    RETURN ev.event_id AS event_id, ev.name AS name,
+                           ev.wikidata_id AS wikidata_id
+                    LIMIT 1
+                    """
+                    result = session.run(query, event_id=event_id)
+                    record = result.single()
+                    if record:
+                        self.duplicate_events.append({
+                            "input_event": event,
+                            "existing_event": dict(record),
+                            "match_type": "exact_event_id",
+                            "confidence": "high"
+                        })
+                        continue
+
+                # Check 2: Exact Q-ID match
+                if wikidata_id and wikidata_id.startswith("Q"):
+                    query = """
+                    MATCH (ev:HistoricalEvent)
+                    WHERE ev.wikidata_id = $qid
+                    RETURN ev.event_id AS event_id, ev.name AS name,
+                           ev.wikidata_id AS wikidata_id
+                    LIMIT 1
+                    """
+                    result = session.run(query, qid=wikidata_id)
+                    record = result.single()
+                    if record:
+                        self.duplicate_events.append({
+                            "input_event": event,
+                            "existing_event": dict(record),
+                            "match_type": "exact_qid",
+                            "confidence": "high"
+                        })
+                        continue
+
+                # Check 3: Name similarity
+                name_part = name.split()[0] if name else ""
+                query = """
+                MATCH (ev:HistoricalEvent)
+                WHERE toLower(ev.name) CONTAINS toLower($name_part)
+                   OR toLower($name_part) CONTAINS toLower(ev.name)
+                RETURN ev.event_id AS event_id, ev.name AS name,
+                       ev.wikidata_id AS wikidata_id,
+                       ev.start_year AS start_year
+                LIMIT 10
+                """
+                result = session.run(query, name_part=name_part)
+
+                for record in result:
+                    similarity = self._calculate_enhanced_similarity(name, record["name"])
+                    if similarity >= 0.9:
+                        self.duplicate_events.append({
+                            "input_event": event,
+                            "existing_event": dict(record),
+                            "match_type": "name_similarity",
+                            "confidence": "high" if similarity >= 0.95 else "medium",
+                            "similarity_score": similarity
+                        })
+                        break
+
+        if self.duplicate_events:
+            print(f"⚠️  Found {len(self.duplicate_events)} potential duplicate events")
+        else:
+            print("✅ No duplicate events detected")
+
+    def detect_duplicate_sources(self, sources: List[Dict]):
+        """Check for duplicate sources in database."""
+        print("\n🔍 Checking for duplicate sources...")
+
+        with self.driver.session() as session:
+            for source in sources:
+                source_id = source.get("source_id")
+
+                if source_id:
+                    query = """
+                    MATCH (s:Source)
+                    WHERE s.source_id = $source_id
+                    RETURN s.source_id AS source_id, s.title AS title
+                    LIMIT 1
+                    """
+                    result = session.run(query, source_id=source_id)
+                    record = result.single()
+                    if record:
+                        self.duplicate_sources.append({
+                            "input_source": source,
+                            "existing_source": dict(record),
+                            "match_type": "exact_source_id",
+                            "confidence": "high"
+                        })
+
+        if self.duplicate_sources:
+            print(f"⚠️  Found {len(self.duplicate_sources)} potential duplicate sources")
+        else:
+            print("✅ No duplicate sources detected")
+
+    def import_events(self, events: List[Dict], metadata: Dict):
+        """Import historical events into database."""
+        if not events:
+            return
+
+        print(f"\n📥 Importing {len(events)} historical events...")
+
+        # Filter out duplicates
+        events_to_import = []
+        for event in events:
+            is_duplicate = any(
+                dup["input_event"] == event
+                for dup in self.duplicate_events
+            )
+            if is_duplicate:
+                self.stats["events_skipped_duplicate"] += 1
+                print(f"   ⏭️  Skipping duplicate: {event['name']}")
+            else:
+                events_to_import.append(event)
+
+        if not events_to_import:
+            print("   No new events to import")
+            return
+
+        # Add metadata to each event
+        for event in events_to_import:
+            if "ingestion_batch" not in event:
+                event["ingestion_batch"] = self.batch_id
+            if "ingestion_source" not in event:
+                event["ingestion_source"] = self.source_name
+            if "created_by" not in event:
+                event["created_by"] = self.agent_name
+
+            # Generate event_id if not provided
+            if "event_id" not in event or not event["event_id"]:
+                if event.get("wikidata_id") and event["wikidata_id"].startswith("Q"):
+                    event["event_id"] = event["wikidata_id"]
+                else:
+                    slug = event["name"].lower().replace(" ", "-").replace("'", "")
+                    timestamp = int(time.time() * 1000)
+                    event["event_id"] = f"event-{slug}-{timestamp}"
+
+        if self.dry_run:
+            print(f"   [DRY RUN] Would import {len(events_to_import)} events")
+            for ev in events_to_import[:5]:
+                print(f"      - {ev['name']} ({ev['event_id']})")
+            if len(events_to_import) > 5:
+                print(f"      ... and {len(events_to_import) - 5} more")
+            self.stats["events_created"] = len(events_to_import)
+            return
+
+        with self.driver.session() as session:
+            for i in range(0, len(events_to_import), self.batch_size):
+                batch = events_to_import[i:i + self.batch_size]
+
+                query = """
+                UNWIND $events AS event_data
+                MERGE (ev:HistoricalEvent {event_id: event_data.event_id})
+                ON CREATE SET
+                    ev += event_data,
+                    ev.created_at = datetime()
+                ON MATCH SET
+                    ev += event_data,
+                    ev.updated_at = datetime()
+                RETURN COUNT(*) AS count
+                """
+
+                try:
+                    result = session.run(query, events=batch)
+                    count = result.single()["count"]
+                    self.stats["events_created"] += count
+                    print(f"   ✅ Imported batch {i // self.batch_size + 1}: {count} events")
+                except Exception as e:
+                    error_msg = f"Failed to import event batch {i // self.batch_size + 1}: {e}"
+                    self.stats["errors"].append(error_msg)
+                    print(f"   ❌ {error_msg}")
+
+        # Create CREATED_BY relationships
+        self._create_agent_relationships(session, "HistoricalEvent", events_to_import)
+
+    def import_sources(self, sources: List[Dict], metadata: Dict):
+        """Import source documents into database."""
+        if not sources:
+            return
+
+        print(f"\n📥 Importing {len(sources)} sources...")
+
+        # Filter out duplicates
+        sources_to_import = []
+        for source in sources:
+            is_duplicate = any(
+                dup["input_source"] == source
+                for dup in self.duplicate_sources
+            )
+            if is_duplicate:
+                self.stats["sources_skipped_duplicate"] += 1
+                print(f"   ⏭️  Skipping duplicate: {source['title']}")
+            else:
+                sources_to_import.append(source)
+
+        if not sources_to_import:
+            print("   No new sources to import")
+            return
+
+        # Add metadata to each source
+        for source in sources_to_import:
+            if "ingestion_batch" not in source:
+                source["ingestion_batch"] = self.batch_id
+            if "created_by" not in source:
+                source["created_by"] = self.agent_name
+
+            # Generate source_id if not provided
+            if "source_id" not in source or not source["source_id"]:
+                slug = source["title"].lower().replace(" ", "-").replace("'", "")[:50]
+                timestamp = int(time.time() * 1000)
+                source["source_id"] = f"src-{slug}-{timestamp}"
+
+        if self.dry_run:
+            print(f"   [DRY RUN] Would import {len(sources_to_import)} sources")
+            for src in sources_to_import[:5]:
+                print(f"      - {src['title']} ({src['source_id']})")
+            if len(sources_to_import) > 5:
+                print(f"      ... and {len(sources_to_import) - 5} more")
+            self.stats["sources_created"] = len(sources_to_import)
+            return
+
+        with self.driver.session() as session:
+            for i in range(0, len(sources_to_import), self.batch_size):
+                batch = sources_to_import[i:i + self.batch_size]
+
+                query = """
+                UNWIND $sources AS source_data
+                MERGE (s:Source {source_id: source_data.source_id})
+                ON CREATE SET
+                    s += source_data,
+                    s.created_at = datetime()
+                ON MATCH SET
+                    s += source_data,
+                    s.updated_at = datetime()
+                RETURN COUNT(*) AS count
+                """
+
+                try:
+                    result = session.run(query, sources=batch)
+                    count = result.single()["count"]
+                    self.stats["sources_created"] += count
+                    print(f"   ✅ Imported batch {i // self.batch_size + 1}: {count} sources")
+                except Exception as e:
+                    error_msg = f"Failed to import source batch {i // self.batch_size + 1}: {e}"
+                    self.stats["errors"].append(error_msg)
+                    print(f"   ❌ {error_msg}")
+
+        # Create CREATED_BY relationships
+        self._create_agent_relationships(session, "Source", sources_to_import)
+
     def import_relationships(self, relationships: List[Dict]):
         """Import relationships between entities."""
         if not relationships:
@@ -847,7 +1193,9 @@ class BatchImporter:
         id_map = {
             "MediaWork": "wikidata_id",
             "HistoricalFigure": "canonical_id",
-            "FictionalCharacter": "char_id"
+            "FictionalCharacter": "char_id",
+            "HistoricalEvent": "event_id",
+            "Source": "source_id"
         }
         return id_map.get(node_type, "id")
 
@@ -893,6 +1241,10 @@ class BatchImporter:
             f.write(f"- **Figures Skipped (Duplicate):** {self.stats['figures_skipped_duplicate']}\n")
             f.write(f"- **Works Created:** {self.stats['works_created']}\n")
             f.write(f"- **Works Skipped (Duplicate):** {self.stats['works_skipped_duplicate']}\n")
+            f.write(f"- **Events Created:** {self.stats['events_created']}\n")
+            f.write(f"- **Events Skipped (Duplicate):** {self.stats['events_skipped_duplicate']}\n")
+            f.write(f"- **Sources Created:** {self.stats['sources_created']}\n")
+            f.write(f"- **Sources Skipped (Duplicate):** {self.stats['sources_skipped_duplicate']}\n")
             f.write(f"- **Relationships Created:** {self.stats['relationships_created']}\n")
             f.write(f"- **Errors:** {len(self.stats['errors'])}\n")
             f.write(f"- **Warnings:** {len(self.stats['warnings'])}\n\n")
@@ -957,6 +1309,10 @@ class BatchImporter:
         print(f"Figures Skipped (Duplicate): {self.stats['figures_skipped_duplicate']}")
         print(f"Works Created: {self.stats['works_created']}")
         print(f"Works Skipped (Duplicate): {self.stats['works_skipped_duplicate']}")
+        print(f"Events Created: {self.stats['events_created']}")
+        print(f"Events Skipped (Duplicate): {self.stats['events_skipped_duplicate']}")
+        print(f"Sources Created: {self.stats['sources_created']}")
+        print(f"Sources Skipped (Duplicate): {self.stats['sources_skipped_duplicate']}")
         print(f"Relationships Created: {self.stats['relationships_created']}")
 
         if self.stats['errors']:
@@ -1032,6 +1388,16 @@ Examples:
         "--works-only",
         action="store_true",
         help="Import only works, skip figures and relationships"
+    )
+    parser.add_argument(
+        "--events-only",
+        action="store_true",
+        help="Import only events, skip figures, works, and relationships"
+    )
+    parser.add_argument(
+        "--sources-only",
+        action="store_true",
+        help="Import only sources, skip figures, works, and relationships"
     )
     parser.add_argument(
         "--skip-duplicate-check",
@@ -1129,6 +1495,10 @@ Examples:
                 importer.detect_duplicate_figures(data["figures"])
             if "works" in data and not args.figures_only:
                 importer.detect_duplicate_works(data["works"])
+            if "events" in data:
+                importer.detect_duplicate_events(data["events"])
+            if "sources" in data:
+                importer.detect_duplicate_sources(data["sources"])
 
         # Step 4: Wikidata validation
         if not args.skip_wikidata_validation:
@@ -1153,6 +1523,12 @@ Examples:
 
         if "works" in data and not args.figures_only:
             importer.import_works(data["works"], metadata)
+
+        if "events" in data:
+            importer.import_events(data["events"], metadata)
+
+        if "sources" in data:
+            importer.import_sources(data["sources"], metadata)
 
         if "relationships" in data and not args.figures_only and not args.works_only:
             importer.import_relationships(data["relationships"])

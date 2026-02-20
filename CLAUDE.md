@@ -31,11 +31,14 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-18_
+_Last updated: 2026-02-20_
 
 Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — web app graph exploration UX significantly improved with bloom-mode expansion, dual-click behavior, and label readability fixes.
 
 ### Recent Completions
+- `:HistoricalEvent` and `:Source` node types: full schema (models, constraints, indexes in `schema.py`), JSON batch import schema, batch_import.py support (validation, dedup, import, reporting), TypeScript types
+- Timeline view: canvas-based zoomable/pannable timeline at `/explore/timeline` with API route, era filtering, figure lifespan bars, event markers, click-to-navigate. Navbar updated with Timeline link.
+- Competitive research: Historio (historio.app) analysis informed roadmap updates
 - Graph Explorer UX overhaul: suppressed duplicate HTML tooltips, added label text halos, increased zoomToFit padding, always-on bloom-mode expansion
 - Dual-click behavior: click node circle = expand/re-center, click label text = navigate to detail page
 - Homepage graph hero (HomeGraphHero) ported with same label fixes and halo effects
@@ -47,7 +50,9 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 - Enhanced name similarity scoring (70% lexical + 30% phonetic)
 
 ### Active Work
-- Data enrichment and population via batch imports
+- **Needs verification**: Run `npm run build` in `web-app/` to confirm timeline + schema changes compile (TypeScript type-check passed, full build not yet verified)
+- **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
+- Data enrichment and population via batch imports (now supports events + sources)
 - Web app graph exploration and visualization improvements
 
 ### Known Issues

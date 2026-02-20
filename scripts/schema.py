@@ -108,6 +108,42 @@ class FictionalCharacter(BaseModel):
     role_type: Optional[str] = Field(default=None, description="Type of role (e.g., 'Protagonist', 'Antagonist', 'Supporting')")
 
 
+class HistoricalEvent(BaseModel):
+    """
+    A historical event that figures participated in and media works depict.
+    Uses Wikidata Q-ID for canonical entity resolution.
+    """
+    event_id: str = Field(description="Unique identifier (Wikidata Q-ID preferred, e.g., 'Q48314' for Battle of Waterloo)")
+    wikidata_id: Optional[str] = Field(default=None, description="Wikidata Q-ID for entity resolution")
+    name: str = Field(description="Display name of the event")
+    description: Optional[str] = Field(default=None, description="Brief description of the event")
+    date: Optional[str] = Field(default=None, description="Primary date (ISO 8601 or year, e.g., '1815-06-18' or '1815')")
+    date_precision: Optional[str] = Field(default=None, description="Precision level: 'day', 'month', 'year', 'decade', 'century'")
+    start_date: Optional[str] = Field(default=None, description="Start date for spanning events (wars, reigns)")
+    end_date: Optional[str] = Field(default=None, description="End date for spanning events")
+    start_year: Optional[int] = Field(default=None, description="Start year (negative for BCE)")
+    end_year: Optional[int] = Field(default=None, description="End year (negative for BCE)")
+    location: Optional[str] = Field(default=None, description="Primary location of the event")
+    era: Optional[str] = Field(default=None, description="Historical era")
+    event_type: Optional[str] = Field(default=None, description="Type: 'battle', 'treaty', 'coronation', 'revolution', 'discovery', 'founding', 'assassination', 'other'")
+
+
+class Source(BaseModel):
+    """
+    A source document from which data was extracted.
+    Tracks provenance of information beyond CREATED_BY agent attribution.
+    """
+    source_id: str = Field(description="Unique identifier (e.g., 'src-wikipedia-napoleon')")
+    source_type: str = Field(description="Type: 'wikipedia_article', 'book', 'documentary', 'academic_paper', 'database'")
+    title: str = Field(description="Title of the source")
+    url: Optional[str] = Field(default=None, description="URL for online sources")
+    author: Optional[str] = Field(default=None, description="Author or contributor")
+    publication_year: Optional[int] = Field(default=None, description="Year of publication")
+    accessed_date: Optional[str] = Field(default=None, description="Date the source was accessed (ISO 8601)")
+    wikidata_id: Optional[str] = Field(default=None, description="Wikidata Q-ID if the source itself has one")
+    description: Optional[str] = Field(default=None, description="Brief description of the source")
+
+
 class Agent(BaseModel):
     """Represents the user or AI agent creating the data."""
     name: str = Field(description="Unique name of the agent (e.g., 'Claude', 'Gemini', 'GCQ')")
@@ -197,6 +233,14 @@ FOR (l:Location) REQUIRE l.location_id IS UNIQUE;
 CREATE CONSTRAINT era_unique IF NOT EXISTS
 FOR (e:Era) REQUIRE e.era_id IS UNIQUE;
 
+// Ensure unique historical events by event_id
+CREATE CONSTRAINT event_unique IF NOT EXISTS
+FOR (ev:HistoricalEvent) REQUIRE ev.event_id IS UNIQUE;
+
+// Ensure unique sources by source_id
+CREATE CONSTRAINT source_unique IF NOT EXISTS
+FOR (s:Source) REQUIRE s.source_id IS UNIQUE;
+
 // Index for efficient lookups
 CREATE INDEX figure_name_idx IF NOT EXISTS FOR (f:HistoricalFigure) ON (f.name);
 CREATE INDEX media_title_idx IF NOT EXISTS FOR (m:MediaWork) ON (m.title);
@@ -207,6 +251,15 @@ CREATE INDEX location_type_idx IF NOT EXISTS FOR (l:Location) ON (l.location_typ
 CREATE INDEX era_name_idx IF NOT EXISTS FOR (e:Era) ON (e.name);
 CREATE INDEX era_years_idx IF NOT EXISTS FOR (e:Era) ON (e.start_year, e.end_year);
 
+// Historical Event indexes
+CREATE INDEX event_name_idx IF NOT EXISTS FOR (ev:HistoricalEvent) ON (ev.name);
+CREATE INDEX event_year_idx IF NOT EXISTS FOR (ev:HistoricalEvent) ON (ev.start_year, ev.end_year);
+CREATE INDEX event_type_idx IF NOT EXISTS FOR (ev:HistoricalEvent) ON (ev.event_type);
+
+// Source indexes
+CREATE INDEX source_title_idx IF NOT EXISTS FOR (s:Source) ON (s.title);
+CREATE INDEX source_type_idx IF NOT EXISTS FOR (s:Source) ON (s.source_type);
+
 // Composite indexes for efficient filtering and discovery
 CREATE INDEX location_type_name_idx IF NOT EXISTS FOR (l:Location) ON (l.location_type, l.name);
 CREATE INDEX era_type_name_idx IF NOT EXISTS FOR (e:Era) ON (e.era_type, e.name);
@@ -216,6 +269,8 @@ CREATE INDEX era_type_name_idx IF NOT EXISTS FOR (e:Era) ON (e.era_type, e.name)
 NODE_LABELS = {
     "figure": "HistoricalFigure",
     "media": "MediaWork",
+    "event": "HistoricalEvent",
+    "source": "Source",
     "location": "Location",
     "era": "Era",
 }
@@ -237,4 +292,10 @@ RELATIONSHIP_TYPES = {
     "set_in_era": "SET_IN_ERA",      # MediaWork -> Era (with era_setting_type: contemporary|historical|alternate)
     "lived_in": "LIVED_IN",          # HistoricalFigure -> Location (with period: birth|primary_residence|active|death)
     "lived_in_era": "LIVED_IN_ERA",  # HistoricalFigure -> Era (with era_type: lived_through|primarily_active|associated_with)
+    # Event relationships:
+    "participated_in": "PARTICIPATED_IN",  # HistoricalFigure -> HistoricalEvent (with role: commander|participant|victim|witness|instigator)
+    "depicted_in": "DEPICTED_IN",          # HistoricalEvent -> MediaWork (with accuracy: faithful|dramatized|fictionalized)
+    "led_to": "LED_TO",                    # HistoricalEvent -> HistoricalEvent (causal chain)
+    # Source provenance relationships:
+    "sourced_from": "SOURCED_FROM",        # Any entity -> Source (with extraction_date, confidence)
 }

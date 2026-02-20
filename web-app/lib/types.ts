@@ -356,6 +356,75 @@ export interface DiscoveryBrowseResult {
   };
 }
 
+// Historical Event Types
+
+export interface HistoricalEvent {
+  event_id: string;
+  wikidata_id?: string;
+  name: string;
+  description?: string;
+  date?: string;
+  date_precision?: 'day' | 'month' | 'year' | 'decade' | 'century';
+  start_date?: string;
+  end_date?: string;
+  start_year?: number | null;
+  end_year?: number | null;
+  location?: string;
+  era?: string;
+  event_type?: 'battle' | 'treaty' | 'coronation' | 'revolution' | 'discovery' | 'founding' | 'assassination' | 'other';
+}
+
+export interface HistoricalEventWithParticipants extends HistoricalEvent {
+  participants: {
+    canonical_id: string;
+    name: string;
+    role?: string;
+  }[];
+  depicted_in: {
+    media_id: string;
+    title: string;
+    media_type?: string;
+    accuracy?: 'faithful' | 'dramatized' | 'fictionalized';
+  }[];
+}
+
+// Source Provenance Types
+
+export interface Source {
+  source_id: string;
+  source_type: 'wikipedia_article' | 'book' | 'documentary' | 'academic_paper' | 'database';
+  title: string;
+  url?: string;
+  author?: string;
+  publication_year?: number;
+  accessed_date?: string;
+  wikidata_id?: string;
+  description?: string;
+}
+
+// Timeline Types
+
+export interface TimelineFigure {
+  canonical_id: string;
+  name: string;
+  birth_year: number;
+  death_year: number;
+  era?: string;
+  title?: string;
+  portrayal_count: number;
+}
+
+export interface TimelineData {
+  figures: TimelineFigure[];
+  events: HistoricalEvent[];
+  stats: {
+    total_figures: number;
+    total_events: number;
+    earliest_year: number;
+    latest_year: number;
+  };
+}
+
 // Temporal Coverage Visualization Types
 
 export interface TimeBucket {

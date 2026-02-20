@@ -80,6 +80,21 @@ export default function Navbar() {
         >
           Graph
         </Link>
+        <Link
+          href="/explore/timeline"
+          style={{
+            fontSize: '12px',
+            textTransform: 'uppercase' as const,
+            textDecoration: 'none',
+            color: 'var(--color-text)',
+            marginLeft: '24px',
+            letterSpacing: '1px',
+            fontFamily: 'var(--font-mono)',
+          }}
+          className="hover:opacity-70 transition-opacity"
+        >
+          Timeline
+        </Link>
         {session ? (
           <button
             onClick={() => signOut()}
@@ -187,6 +202,20 @@ export default function Navbar() {
               }}
             >
               Graph
+            </Link>
+            <Link
+              href="/explore/timeline"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                fontSize: '12px',
+                textTransform: 'uppercase' as const,
+                textDecoration: 'none',
+                color: 'var(--color-text)',
+                letterSpacing: '1px',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              Timeline
             </Link>
           </nav>
         </div>

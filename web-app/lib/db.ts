@@ -1,6 +1,6 @@
 import { getSession } from './neo4j';
 import neo4j from 'neo4j-driver';
-import { HistoricalFigure, FigureProfile, Portrayal, SentimentDistribution, GraphNode, GraphLink, SeriesRelationship, SeriesMetadata, CharacterAppearance, Location, LocationWithStats, Era, EraWithStats, LocationWorks, EraWorks, DiscoveryBrowseResult, TemporalCoverageData, TimeBucket, PeriodDetail } from './types';
+import { HistoricalFigure, FigureProfile, Portrayal, SentimentDistribution, GraphNode, GraphLink, SeriesRelationship, SeriesMetadata, CharacterAppearance, Location, LocationWithStats, Era, EraWithStats, LocationWorks, EraWorks, DiscoveryBrowseResult, TemporalCoverageData, TimeBucket, PeriodDetail, TimelineFigure, TimelineData, HistoricalEvent } from './types';
 
 // Helper function to extract temporal metadata from Neo4j nodes
 function extractTemporalMetadata(node: any, nodeType: 'figure' | 'media'): GraphNode['temporal'] {
@@ -1985,6 +1985,125 @@ export async function getTemporalCoverageDetails(
         figureCount: figures.length,
         mediaTypeBreakdown,
         topCreators,
+      },
+    };
+  } finally {
+    await session.close();
+  }
+}
+
+// Timeline data query
+
+export async function getTimelineData(
+  startYear?: number,
+  endYear?: number,
+  era?: string
+): Promise<TimelineData> {
+  const session = await getSession();
+  try {
+    // Build WHERE clause for filtering
+    const conditions: string[] = [
+      'f.birth_year IS NOT NULL',
+      'f.death_year IS NOT NULL',
+    ];
+    const params: Record<string, any> = {};
+
+    if (startYear !== undefined) {
+      conditions.push('f.death_year >= $startYear');
+      params.startYear = neo4j.int(startYear);
+    }
+    if (endYear !== undefined) {
+      conditions.push('f.birth_year <= $endYear');
+      params.endYear = neo4j.int(endYear);
+    }
+    if (era) {
+      conditions.push('f.era = $era');
+      params.era = era;
+    }
+
+    const whereClause = conditions.length > 0
+      ? `WHERE ${conditions.join(' AND ')}`
+      : '';
+
+    // Get figures with lifespan data and portrayal count
+    const figureResult = await session.run(
+      `MATCH (f:HistoricalFigure)
+       ${whereClause}
+       OPTIONAL MATCH (f)-[:APPEARS_IN]->(m:MediaWork)
+       WITH f, count(m) AS portrayal_count
+       RETURN f.canonical_id AS canonical_id,
+              f.name AS name,
+              f.birth_year AS birth_year,
+              f.death_year AS death_year,
+              f.era AS era,
+              f.title AS title,
+              portrayal_count
+       ORDER BY f.birth_year ASC
+       LIMIT 500`,
+      params
+    );
+
+    const figures: TimelineFigure[] = figureResult.records.map(record => ({
+      canonical_id: record.get('canonical_id'),
+      name: record.get('name'),
+      birth_year: neo4j.int(record.get('birth_year')).toNumber(),
+      death_year: neo4j.int(record.get('death_year')).toNumber(),
+      era: record.get('era') || undefined,
+      title: record.get('title') || undefined,
+      portrayal_count: neo4j.int(record.get('portrayal_count')).toNumber(),
+    }));
+
+    // Get events if any exist
+    const eventResult = await session.run(
+      `MATCH (ev:HistoricalEvent)
+       WHERE ev.start_year IS NOT NULL
+       ${startYear !== undefined ? 'AND ev.start_year >= $startYear' : ''}
+       ${endYear !== undefined ? 'AND ev.start_year <= $endYear' : ''}
+       RETURN ev.event_id AS event_id,
+              ev.wikidata_id AS wikidata_id,
+              ev.name AS name,
+              ev.description AS description,
+              ev.date AS date,
+              ev.date_precision AS date_precision,
+              ev.start_year AS start_year,
+              ev.end_year AS end_year,
+              ev.location AS location,
+              ev.era AS era,
+              ev.event_type AS event_type
+       ORDER BY ev.start_year ASC
+       LIMIT 200`,
+      params
+    );
+
+    const events: HistoricalEvent[] = eventResult.records.map(record => ({
+      event_id: record.get('event_id'),
+      wikidata_id: record.get('wikidata_id') || undefined,
+      name: record.get('name'),
+      description: record.get('description') || undefined,
+      date: record.get('date') || undefined,
+      date_precision: record.get('date_precision') || undefined,
+      start_year: record.get('start_year') ? neo4j.int(record.get('start_year')).toNumber() : undefined,
+      end_year: record.get('end_year') ? neo4j.int(record.get('end_year')).toNumber() : undefined,
+      location: record.get('location') || undefined,
+      era: record.get('era') || undefined,
+      event_type: record.get('event_type') || undefined,
+    }));
+
+    // Calculate stats
+    const allYears = [
+      ...figures.map(f => f.birth_year),
+      ...figures.map(f => f.death_year),
+      ...events.filter(e => e.start_year != null).map(e => e.start_year!),
+    ];
+
+    return {
+      figures,
+      events,
+      stats: {
+        total_figures: figures.length,
+        total_events: events.length,
+        earliest_year: allYears.length > 0 ? Math.min(...allYears) : 0,
+        latest_year: allYears.length > 0 ? Math.max(...allYears) : 2000,
       },
     };
   } finally {
