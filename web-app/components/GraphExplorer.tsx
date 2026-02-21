@@ -2173,7 +2173,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       </ForceGraphErrorBoundary>
 
       {/* Option A: Legend row — below canvas */}
-      <div className="flex items-center gap-5 pt-2.5" role="list" aria-label="Graph legend">
+      <div className="flex items-center gap-5 pt-2.5 pb-2" role="list" aria-label="Graph legend">
         <span className="font-mono text-[9px] uppercase tracking-wider mr-1.5" style={{ color: '#A09880' }}>Legend</span>
         <div className="flex items-center gap-1.5" role="listitem">
           <div className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>

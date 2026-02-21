@@ -14,7 +14,7 @@ function toNumber(value: any): number {
   return Number(value);
 }
 
-function generateMediaId(title: string, year: number): string {
+function generateMediaId(title: string, year: number | null): string {
   // Create a slug-based ID: lowercase, replace spaces with hyphens, remove special chars
   const slug = title
     .toLowerCase()
@@ -22,7 +22,7 @@ function generateMediaId(title: string, year: number): string {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .trim();
-  return `${slug}-${year}`;
+  return year ? `${slug}-${year}` : `${slug}-${Date.now()}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const year = releaseYear ? parseInt(releaseYear) : 0;
+    const year = releaseYear ? parseInt(releaseYear) : null;
     const mediaId = generateMediaId(title, year);
 
     /**
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         const wikidataResult = await searchWikidataForWork({
           title,
           creator,
-          year: year > 0 ? year : undefined,
+          year: year || undefined,
           mediaType,
         });
 

@@ -105,7 +105,7 @@ function PortrayalContent() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced work search
+  // Debounced work search — uses dedicated media search API for better results
   const searchWorks = useCallback(async (query: string) => {
     if (query.length < 2) {
       setWorkResults([]);
@@ -113,15 +113,14 @@ function PortrayalContent() {
     }
     setWorkSearching(true);
     try {
-      const response = await fetch(`/api/search/universal?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/media/search?q=${encodeURIComponent(query)}`);
       const data = await response.json();
-      const results = (data.results || data || [])
-        .filter((r: any) => r.type === 'media' || r.type === 'work')
+      const results = (data.works || [])
         .map((r: any) => ({
-          id: r.id || r.media_id,
-          name: r.label || r.name || r.title,
+          id: r.media_id || r.wikidata_id,
+          name: r.title,
           type: 'media' as const,
-          subtitle: r.meta || [r.media_type, r.release_year].filter(Boolean).join(' · '),
+          subtitle: [r.media_type, r.year].filter(Boolean).join(' · '),
         }));
       setWorkResults(results);
     } catch {

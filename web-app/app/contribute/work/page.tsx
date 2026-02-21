@@ -75,9 +75,10 @@ export default function AddWorkPage() {
 
       if (response.status === 409) {
         const data = await response.json();
+        const existing = data.existingMedia || data.existing;
         setCreatedWork({
-          media_id: data.existing?.media_id || data.media_id,
-          title: data.existing?.title || title.trim(),
+          media_id: existing?.media_id || data.media_id,
+          title: existing?.title || title.trim(),
         });
         return;
       }
@@ -88,7 +89,8 @@ export default function AddWorkPage() {
       }
 
       const data = await response.json();
-      setCreatedWork({ media_id: data.media_id, title: data.title || title.trim() });
+      const media = data.media || data;
+      setCreatedWork({ media_id: media.media_id, title: media.title || title.trim() });
     } catch (err: any) {
       setError(err.message || 'Failed to create work');
     } finally {

@@ -87,131 +87,14 @@ export default async function SearchPage({
       {/* Content Wrapper */}
       <div
         style={{
-          display: 'flex',
           flex: 1,
-          maxWidth: '1440px',
+          maxWidth: '960px',
           margin: '0 auto',
           width: '100%',
         }}
       >
-        {/* Sidebar Filters */}
-        <aside
-          style={{
-            width: '280px',
-            borderRight: '1px solid var(--color-border)',
-            padding: '40px',
-            flexShrink: 0,
-          }}
-          className="hidden md:block"
-        >
-          {/* Era Filter */}
-          <div style={{ marginBottom: '40px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginBottom: '16px',
-                display: 'block',
-                color: 'var(--color-gray)',
-                borderBottom: '1px solid var(--color-border)',
-                paddingBottom: '4px',
-              }}
-            >
-              Era
-            </span>
-            {['Ancient', 'Medieval', 'Renaissance', 'Modern'].map((era) => (
-              <label
-                key={era}
-                style={{
-                  display: 'block',
-                  marginBottom: '10px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '12px',
-                  color: 'var(--color-text)',
-                  cursor: 'pointer',
-                }}
-              >
-                <input type="checkbox" style={{ marginRight: '10px' }} />
-                {era}
-              </label>
-            ))}
-          </div>
-
-          {/* Medium Filter */}
-          <div style={{ marginBottom: '40px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginBottom: '16px',
-                display: 'block',
-                color: 'var(--color-gray)',
-                borderBottom: '1px solid var(--color-border)',
-                paddingBottom: '4px',
-              }}
-            >
-              Medium
-            </span>
-            {['Novel', 'Film', 'Television'].map((medium) => (
-              <label
-                key={medium}
-                style={{
-                  display: 'block',
-                  marginBottom: '10px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '12px',
-                  color: 'var(--color-text)',
-                  cursor: 'pointer',
-                }}
-              >
-                <input type="checkbox" style={{ marginRight: '10px' }} />
-                {medium}
-              </label>
-            ))}
-          </div>
-
-          {/* Sentiment Filter */}
-          <div style={{ marginBottom: '40px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginBottom: '16px',
-                display: 'block',
-                color: 'var(--color-gray)',
-                borderBottom: '1px solid var(--color-border)',
-                paddingBottom: '4px',
-              }}
-            >
-              Sentiment
-            </span>
-            {['Heroic', 'Neutral', 'Villainous'].map((sentiment) => (
-              <label
-                key={sentiment}
-                style={{
-                  display: 'block',
-                  marginBottom: '10px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '12px',
-                  color: 'var(--color-text)',
-                  cursor: 'pointer',
-                }}
-              >
-                <input type="checkbox" style={{ marginRight: '10px' }} />
-                {sentiment}
-              </label>
-            ))}
-          </div>
-        </aside>
-
         {/* Results Area */}
-        <main style={{ flex: 1, padding: '40px 60px' }}>
+        <main style={{ padding: '40px 60px' }}>
           {query && (
             <>
               {/* Results Header */}

@@ -19,9 +19,11 @@ export default function ImportCreatorWorksPage() {
     }
     setSearching(true);
     try {
-      const response = await fetch(
-        `/api/wikidata/enrich?name=${encodeURIComponent(query)}&entityType=figure`
-      );
+      const response = await fetch('/api/wikidata/enrich', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityType: 'figure', searchQuery: query }),
+      });
       const data = await response.json();
       // Filter for entities that look like creators (have works)
       const matches = (data.matches || data.results || []).filter(
