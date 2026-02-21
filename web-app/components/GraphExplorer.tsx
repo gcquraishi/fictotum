@@ -957,13 +957,13 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         // If container has width, use it; otherwise use a sensible default
         const width = containerWidth > 0 ? Math.max(containerWidth - 4, 800) : 1200;
 
-        // CHR-22: Responsive height - fits above fold on 13" MacBook
-        // Mobile: min(50vh, 450px) | Desktop: min(60vh, 600px)
+        // Responsive height — wider layout gets taller canvas
+        // Mobile: min(50vh, 450px) | Desktop: min(70vh, 700px)
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
         const height = isMobile
           ? Math.min(viewportHeight * 0.5, 450)  // Mobile: 50vh max 450px
-          : Math.min(viewportHeight * 0.6, 600); // Desktop: 60vh max 600px
+          : Math.min(viewportHeight * 0.7, 700); // Desktop: 70vh max 700px
 
         setDimensions({ width, height });
         setDimensionsReady(true);
@@ -984,12 +984,12 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     const fallbackTimer = setTimeout(() => {
       if (!hasSetDimensions) {
         // Fallback: container measurement failed, using defaults
-        // CHR-22: Use responsive fallback height
+        // Use responsive fallback height
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
         const height = isMobile
           ? Math.min(viewportHeight * 0.5, 450)
-          : Math.min(viewportHeight * 0.6, 600);
+          : Math.min(viewportHeight * 0.7, 700);
         setDimensions({ width: 1200, height });
         setDimensionsReady(true);
         hasSetDimensions = true;
@@ -1676,10 +1676,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         </div>
       )}
 
-      {/* Phase 3.1.1: Breadcrumb Trail */}
+      {/* Option A: Breadcrumb above canvas — page-level text */}
       {isBloomMode && navigationHistory.length > 0 && (
-        <div className="absolute top-4 left-4 right-4 z-10 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-3 overflow-x-auto">
-          <nav aria-label="Exploration breadcrumb" className="flex items-center gap-2 flex-nowrap min-w-0">
+        <div className="mb-3 overflow-x-auto">
+          <nav aria-label="Exploration breadcrumb" className="flex items-center gap-1.5 flex-nowrap min-w-0">
             {navigationHistory.slice(0, historyIndex + 1).map((nodeId, index) => {
               const isLast = index === historyIndex;
               const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -1691,14 +1691,17 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                     <React.Fragment key={nodeId}>
                       <button
                         onClick={() => navigateToHistoryIndex(index)}
-                        className="text-sm font-mono text-stone-600 hover:text-amber-600 hover:underline transition-colors whitespace-nowrap flex-shrink-0"
+                        className="text-xs font-mono uppercase tracking-wider whitespace-nowrap flex-shrink-0 transition-colors"
+                        style={{ color: '#A09880' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#B8860B'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#A09880'}
                         title={truncateNodeName(nodeId, 100)}
                       >
                         {truncateNodeName(nodeId, 15)}
                       </button>
-                      <span className="text-stone-400 flex-shrink-0" aria-hidden="true">›</span>
-                      <span className="text-stone-400 text-sm flex-shrink-0">...</span>
-                      <span className="text-stone-400 flex-shrink-0" aria-hidden="true">›</span>
+                      <span className="flex-shrink-0 text-sm" style={{ color: '#D6D0C4' }} aria-hidden="true">›</span>
+                      <span className="flex-shrink-0 text-xs" style={{ color: '#A09880' }}>…</span>
+                      <span className="flex-shrink-0 text-sm" style={{ color: '#D6D0C4' }} aria-hidden="true">›</span>
                     </React.Fragment>
                   );
                 }
@@ -1709,7 +1712,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 <React.Fragment key={nodeId}>
                   {isLast ? (
                     <span
-                      className="text-sm font-mono font-semibold text-amber-600 whitespace-nowrap flex-shrink-0"
+                      className="text-xs font-mono font-semibold uppercase tracking-wider whitespace-nowrap flex-shrink-0"
+                      style={{ color: '#1C1917' }}
                       aria-current="location"
                       title={truncateNodeName(nodeId, 100)}
                     >
@@ -1719,12 +1723,15 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                     <>
                       <button
                         onClick={() => navigateToHistoryIndex(index)}
-                        className="text-sm font-mono text-stone-600 hover:text-amber-600 hover:underline transition-colors whitespace-nowrap flex-shrink-0"
+                        className="text-xs font-mono uppercase tracking-wider whitespace-nowrap flex-shrink-0 transition-colors"
+                        style={{ color: '#A09880' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#B8860B'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#A09880'}
                         title={truncateNodeName(nodeId, 100)}
                       >
                         {truncateNodeName(nodeId, 20)}
                       </button>
-                      <span className="text-stone-400 flex-shrink-0" aria-hidden="true">›</span>
+                      <span className="flex-shrink-0 text-sm" style={{ color: '#D6D0C4' }} aria-hidden="true">›</span>
                     </>
                   )}
                 </React.Fragment>
@@ -1733,95 +1740,6 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           </nav>
         </div>
       )}
-
-      {/* Task 2.3 & 2.4 & 3.1.2 & 3.1.3: Navigation Controls - Top Left (moved down to avoid overlap with breadcrumbs) */}
-      {isBloomMode && (
-        <div className="absolute top-20 left-4 z-10 flex gap-2">
-          <button
-            onClick={navigateBack}
-            disabled={historyIndex === 0}
-            className={`px-3 py-2 rounded-lg text-sm font-medium font-mono shadow-lg transition-all flex items-center gap-2 ${
-              activeShortcut === 'back' ? 'ring-2 ring-amber-400 ring-offset-1' : ''
-            } ${
-              historyIndex === 0
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 hover:border-amber-400'
-            }`}
-            title={historyIndex === 0 ? 'At beginning of exploration' : 'Go back in exploration history (B or ←)'}
-            aria-label="Navigate back"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span className="hidden sm:inline">Back</span>
-          </button>
-          <button
-            onClick={navigateForward}
-            disabled={historyIndex >= navigationHistory.length - 1}
-            className={`px-3 py-2 rounded-lg text-sm font-medium font-mono shadow-lg transition-all flex items-center gap-2 ${
-              activeShortcut === 'forward' ? 'ring-2 ring-amber-400 ring-offset-1' : ''
-            } ${
-              historyIndex >= navigationHistory.length - 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 hover:border-amber-400'
-            }`}
-            title={historyIndex >= navigationHistory.length - 1 ? 'At most recent position' : 'Go forward in exploration history (F or →)'}
-            aria-label="Navigate forward"
-          >
-            <span className="hidden sm:inline">Forward</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-          <button
-            onClick={resetView}
-            className={`px-3 py-2 rounded-lg text-sm font-medium font-mono shadow-lg transition-all flex items-center gap-2 ${
-              activeShortcut === 'reset' ? 'ring-2 ring-amber-400 ring-offset-1' : ''
-            } bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 hover:border-amber-400`}
-            title="Reset to starting view (R)"
-            aria-label="Reset view"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span className="hidden sm:inline">Reset</span>
-          </button>
-          {/* Phase 3.1.3: Keyboard shortcuts help button */}
-          <button
-            onClick={() => setShowKeyboardHelp(prev => !prev)}
-            className={`px-3 py-2 rounded-lg text-sm font-medium font-mono shadow-lg transition-all flex items-center gap-2 ${
-              showKeyboardHelp
-                ? 'bg-amber-100 text-amber-800 border border-amber-400'
-                : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 hover:border-amber-400'
-            }`}
-            title="Show keyboard shortcuts (? or H)"
-            aria-label="Toggle keyboard shortcuts help"
-            aria-expanded={showKeyboardHelp}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="hidden sm:inline">Help</span>
-          </button>
-        </div>
-      )}
-
-      {/* Inline Legend - Top Left (below toolbar) */}
-      <div className="absolute top-16 left-4 z-10 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4" style={{ background: 'rgba(250,248,240,0.95)' }}>
-        <div className="flex flex-col gap-2 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>
-            <span style={{ color: GRAPH_PALETTE.LABEL_COLOR }}>Historical Figure <span className="text-stone-400">(colored by era)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
-            <span style={{ color: GRAPH_PALETTE.LABEL_COLOR }}>Media Work</span>
-          </div>
-        </div>
-        <div className="mt-2 pt-2 border-t border-stone-300 text-xs italic" style={{ color: '#A09880' }}>
-          Drag to pan · Scroll to zoom · Click nodes
-        </div>
-      </div>
 
       {/* Phase 3.1.3: Keyboard Shortcuts Help Panel */}
       {showKeyboardHelp && (
@@ -1920,7 +1838,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
       {/* Full-Bleed Graph */}
       <ForceGraphErrorBoundary>
-        <div ref={containerRef} className="bg-stone-100 rounded-lg border border-stone-300 w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab' }}>
+        <div ref={containerRef} className="w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab', border: '1px solid #D6D0C4', borderRadius: '3px', background: GRAPH_PALETTE.CREAM_BG }}>
           {mounted && ForceGraph2D && (
           <div style={{ width: '100%', height: '100%' }}>
           <ForceGraph2D
@@ -2190,8 +2108,105 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               </div>
             </div>
           )}
+
+          {/* Option A: Ghost toolbar — floating bottom-right, fades in on hover */}
+          {isBloomMode && (
+            <div
+              className="absolute bottom-5 right-5 z-10 flex gap-1 transition-opacity duration-200"
+              style={{ opacity: 0.15 }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '0.15'}
+              role="toolbar"
+              aria-label="Graph controls"
+            >
+              <button
+                onClick={navigateBack}
+                disabled={historyIndex === 0}
+                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
+                style={{
+                  background: GRAPH_PALETTE.CREAM_BG,
+                  borderColor: '#D6D0C4',
+                  color: historyIndex === 0 ? '#D6D0C4' : '#57534E',
+                }}
+                onMouseEnter={(e) => { if (historyIndex > 0) { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}}
+                onMouseLeave={(e) => { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = historyIndex === 0 ? '#D6D0C4' : '#57534E'; }}
+                title="Navigate back (← or B)"
+                aria-label="Navigate back"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </button>
+              <button
+                onClick={navigateForward}
+                disabled={historyIndex >= navigationHistory.length - 1}
+                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
+                style={{
+                  background: GRAPH_PALETTE.CREAM_BG,
+                  borderColor: '#D6D0C4',
+                  color: historyIndex >= navigationHistory.length - 1 ? '#D6D0C4' : '#57534E',
+                }}
+                onMouseEnter={(e) => { if (historyIndex < navigationHistory.length - 1) { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}}
+                onMouseLeave={(e) => { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = historyIndex >= navigationHistory.length - 1 ? '#D6D0C4' : '#57534E'; }}
+                title="Navigate forward (→ or F)"
+                aria-label="Navigate forward"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+              <button
+                onClick={resetView}
+                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
+                style={{
+                  background: GRAPH_PALETTE.CREAM_BG,
+                  borderColor: '#D6D0C4',
+                  color: '#57534E',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = '#57534E'; }}
+                title="Reset view (R)"
+                aria-label="Reset view"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setShowKeyboardHelp(prev => !prev)}
+                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
+                style={{
+                  background: showKeyboardHelp ? '#FEF3C7' : GRAPH_PALETTE.CREAM_BG,
+                  borderColor: showKeyboardHelp ? '#F59E0B' : '#D6D0C4',
+                  color: showKeyboardHelp ? '#92400E' : '#57534E',
+                }}
+                onMouseEnter={(e) => { if (!showKeyboardHelp) { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}}
+                onMouseLeave={(e) => { if (!showKeyboardHelp) { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = '#57534E'; }}}
+                title="Keyboard shortcuts (? or H)"
+                aria-label="Toggle keyboard shortcuts help"
+                aria-expanded={showKeyboardHelp}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </ForceGraphErrorBoundary>
+
+      {/* Option A: Legend row — below canvas */}
+      <div className="flex items-center gap-5 pt-2.5" role="list" aria-label="Graph legend">
+        <span className="font-mono text-[9px] uppercase tracking-wider mr-1.5" style={{ color: '#A09880' }}>Legend</span>
+        <div className="flex items-center gap-1.5" role="listitem">
+          <div className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>
+          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Historical Figure</span>
+        </div>
+        <div className="flex items-center gap-1.5" role="listitem">
+          <div className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
+          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Media Work</span>
+        </div>
+      </div>
 
       {/* Impressionistic Timeline - Shows temporal context for exploration path */}
       {mounted && (

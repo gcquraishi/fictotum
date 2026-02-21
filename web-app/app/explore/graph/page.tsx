@@ -49,7 +49,7 @@ function GraphContent() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 40px' }}>
+      <div style={{ padding: '32px 32px' }}>
         {/* Header */}
         <div style={{ marginBottom: '40px' }}>
           <h1
@@ -173,28 +173,6 @@ function GraphContent() {
           </div>
         )}
 
-        {/* Info Note */}
-        <div
-          style={{
-            marginTop: '32px',
-            padding: '16px',
-            background: 'var(--color-section-bg)',
-            borderLeft: '4px solid var(--color-border-bold)',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--color-text)',
-              lineHeight: '1.6',
-            }}
-          >
-            <strong>Legend:</strong> A force-directed graph showing how the selected entity connects to
-            others. Blue nodes are figures, colored nodes are media works (green = heroic, red = villainous,
-            yellow = complex).
-          </p>
-        </div>
       </div>
     </div>
   );
