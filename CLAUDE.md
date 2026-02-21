@@ -31,11 +31,20 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-22_
+_Last updated: 2026-02-21_
 
-Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
+Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **FIC-129**: Graph legend bottom padding prevents overlap with mini-timeline.
+- **FIC-130**: Portrayal page work search now uses dedicated `/api/media/search` (limit 10) instead of universal search (limit 3).
+- **FIC-135**: Created Shakespeare (Q692) and Christopher Marlowe (Q28975) as HistoricalFigure nodes. Added Shakespeare in Love portrayals (Fiennes, Everett, Dench). Fixed missing `media_id` on Shakespeare in Love.
+- **FIC-136**: Year field truly optional in media create API — stores null instead of 0, uses timestamp fallback for ID generation. Fixed create work page response parsing bugs.
+- **FIC-138**: Fixed import creator page — was making GET request to POST-only `/api/wikidata/enrich` endpoint.
+- **FIC-143**: Removed non-functional sidebar filters from search page (checkboxes weren't wired to anything).
+- **FIC-124**: Removed center node amber halo from GraphExplorer.
+- **FIC-127**: Added `onEngineStop` zoomToFit callback for better initial graph framing.
+- **FIC-107**: Deduplicated 65 MediaWork nodes across 64 groups with different Wikidata Q-IDs for same work.
 - **FIC-140**: Series detail page now rolls up figures from child works via PART_OF traversal in `getMediaById()`. Fixed Wolf Hall Trilogy data: removed duplicate PART_OF rels (3 children appeared 6x), set creator to Hilary Mantel, removed fabricated `Q2657795-series` wikidata_id.
 - **FIC-125**: Merged duplicate Wolf Hall TV Series nodes (Q17060328=HyperTransport Consortium, Q18154901=Agents of SHIELD episode) into single node with correct Q-ID Q17039455. Cardinal Wolsey relationship preserved.
 - **FIC-137**: Renamed "Create a new work/figure" to "Add" on portrayal and work contribute pages.
@@ -86,10 +95,10 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 ### Immediate (This Sprint)
 - **FIC-148**: Fix Vercel deploy pipeline (BLOCKING — requires dashboard investigation)
 - **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done)
-- Continue data population via batch imports
-- Apply Neo4j constraints for HistoricalEvent and Source node types
 - **FIC-120**: Connection quality scoring — `lib/connection-scoring.ts` with graph-only signals (internal, not user-visible)
 - **FIC-118**: Discovery agent — on-demand "Discover Connections" section on figure detail pages, Sonnet 4.6 powered
+- Continue data population via batch imports
+- Apply Neo4j constraints for HistoricalEvent and Source node types
 
 ### Next (2-4 weeks)
 - **FIC-141/142**: Make navbar search functional / expandable magnifying glass icon
