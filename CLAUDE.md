@@ -36,9 +36,14 @@ _Last updated: 2026-02-22_
 Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **FIC-140**: Series detail page now rolls up figures from child works via PART_OF traversal in `getMediaById()`. Fixed Wolf Hall Trilogy data: removed duplicate PART_OF rels (3 children appeared 6x), set creator to Hilary Mantel, removed fabricated `Q2657795-series` wikidata_id.
+- **FIC-125**: Merged duplicate Wolf Hall TV Series nodes (Q17060328=HyperTransport Consortium, Q18154901=Agents of SHIELD episode) into single node with correct Q-ID Q17039455. Cardinal Wolsey relationship preserved.
+- **FIC-137**: Renamed "Create a new work/figure" to "Add" on portrayal and work contribute pages.
 - **FIC-146**: Removed confusing two-letter initials from MediaWork card thumbnails (WorkCard, PortrayalCard). Placeholders now show only the media type icon on a colored square.
 - **FIC-145**: Merged two duplicate Passion of the Christ nodes (wrong Wikidata IDs: Q356690=French tripe dish, Q165467=Jimmy Page) into single node with correct Q-ID Q51668.
 - **FIC-144**: Updated illustration `STYLE_PREAMBLE` in both `prompt-templates.ts` and admin regenerate-image API to require complete facial features (visible eyes, nose, mouth). Jesus (Q302) and Peter (Q33923) portraits need regeneration once Gemini quota resets.
+- **FIC-131**: Timeline era filter already pushes browser history (verified, no fix needed).
+- **FIC-134**: `/contribute/creator` 404 — no code generates these links (verified, no fix needed).
 - **Password protection (FIC-147)**: Cookie-based password gate via Next.js middleware. `SITE_PASSWORD` env var controls access. 30-day httpOnly cookie. Styled password page at `/password` with Fictotum visual identity. Middleware exempts `/password`, `/api/site-access`, `/api/auth`, and static assets. Disabled when env var is unset (dev mode).
 - **Domain setup (FIC-147)**: fictotum.com and www.fictotum.com pointed to Vercel. DNS: A record → 76.76.21.21, CNAME www → cname.vercel-dns.com (configured on Hover).
 - **Graph chrome simplification (Option A)**: Breadcrumb moved above canvas (page-level, not overlay). Ghost toolbar (bottom-right, borderless buttons, persistent #666 gray, no hover effects). Legend moved below canvas as tiny dot row. Canvas border removed — cream background bleeds into page with faint dashed outline. Full-width layout (removed 1100px max-width). Canvas height increased to 70vh/700px.
