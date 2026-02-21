@@ -18,6 +18,7 @@
     "@auth/neo4j-adapter": "^2.11.1",
     "@google/genai": "^1.40.0",
     "@google/generative-ai": "^0.24.1",
+    "@sentry/nextjs": "^10.39.0",
     "@vercel/blob": "^2.2.0",
     "d3": "^7.9.0",
     "double-metaphone": "^2.0.1",
