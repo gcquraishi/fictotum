@@ -200,11 +200,25 @@ export async function getMediaById(id: string) {
     const result = await session.run(
       `MATCH (m:MediaWork)
        WHERE m.wikidata_id = $id OR m.media_id = $id
+       // Direct portrayals on this work
        OPTIONAL MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m)
+       WITH m, collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description, sentiment_tags: r.sentiment_tags}) as directPortrayals
+       // Portrayals from child works (for series pages)
+       OPTIONAL MATCH (cf:HistoricalFigure)-[:APPEARS_IN]->(child_for_figs:MediaWork)-[:PART_OF]->(m)
+       WITH m, directPortrayals,
+            collect(DISTINCT {figure: cf, sentiment: null, role: null, sentiment_tags: null}) as childPortrayals
+       // Use direct portrayals if any, otherwise roll up from children
+       WITH m,
+            CASE WHEN size([p IN directPortrayals WHERE p.figure IS NOT NULL]) > 0
+                 THEN [p IN directPortrayals WHERE p.figure IS NOT NULL]
+                 ELSE [p IN childPortrayals WHERE p.figure IS NOT NULL]
+            END as portrayals
+       // Parent series
        OPTIONAL MATCH (m)-[pr:PART_OF]->(parent:MediaWork)
+       // Child works
        OPTIONAL MATCH (child:MediaWork)-[cr:PART_OF]->(m)
        RETURN m,
-              collect(DISTINCT {figure: f, sentiment: r.sentiment, role: r.role_description, sentiment_tags: r.sentiment_tags})[0..50] as portrayals,
+              portrayals[0..50] as portrayals,
               parent,
               pr,
               collect(DISTINCT {

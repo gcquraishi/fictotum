@@ -31,11 +31,14 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-21_
+_Last updated: 2026-02-22_
 
 Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **FIC-146**: Removed confusing two-letter initials from MediaWork card thumbnails (WorkCard, PortrayalCard). Placeholders now show only the media type icon on a colored square.
+- **FIC-145**: Merged two duplicate Passion of the Christ nodes (wrong Wikidata IDs: Q356690=French tripe dish, Q165467=Jimmy Page) into single node with correct Q-ID Q51668.
+- **FIC-144**: Updated illustration `STYLE_PREAMBLE` in both `prompt-templates.ts` and admin regenerate-image API to require complete facial features (visible eyes, nose, mouth). Jesus (Q302) and Peter (Q33923) portraits need regeneration once Gemini quota resets.
 - **Password protection (FIC-147)**: Cookie-based password gate via Next.js middleware. `SITE_PASSWORD` env var controls access. 30-day httpOnly cookie. Styled password page at `/password` with Fictotum visual identity. Middleware exempts `/password`, `/api/site-access`, `/api/auth`, and static assets. Disabled when env var is unset (dev mode).
 - **Domain setup (FIC-147)**: fictotum.com and www.fictotum.com pointed to Vercel. DNS: A record → 76.76.21.21, CNAME www → cname.vercel-dns.com (configured on Hover).
 - **Graph chrome simplification (Option A)**: Breadcrumb moved above canvas (page-level, not overlay). Ghost toolbar (bottom-right, borderless buttons, persistent #666 gray, no hover effects). Legend moved below canvas as tiny dot row. Canvas border removed — cream background bleeds into page with faint dashed outline. Full-width layout (removed 1100px max-width). Canvas height increased to 70vh/700px.
@@ -57,7 +60,8 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 - Wikidata-first canonical ID strategy with provisional ID fallback
 
 ### Active Work
-- **FIC-148 (BLOCKING)**: Vercel deploy pipeline not reflecting latest commits on fictotum.com. Root cause: `vercel --prod` was run from repo root instead of `web-app/` subdirectory, which may have confused project settings. GitHub-triggered builds use Root Directory = `web-app/` in Vercel dashboard. Need to verify dashboard settings and potentially redeploy.
+- **FIC-148 (BLOCKING)**: Vercel deploy pipeline not reflecting latest commits on fictotum.com. Requires manual Vercel dashboard investigation — see Linear comment for debugging checklist. Do NOT run `vercel --prod` from repo root.
+- **FIC-144 (pending regen)**: Prompt fix deployed. Regenerate Jesus (Q302) and Peter (Q33923) portraits via admin API once Gemini daily quota resets.
 - **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
 - Data enrichment and population via batch imports (now supports events + sources)
 - **FIC-120 → FIC-118**: Connection quality scoring (FIC-120) then discovery agent (FIC-118). See Linear tickets for full specs from 2026-02-20 exploration session. Key decisions:
@@ -75,10 +79,8 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 
 ## Roadmap
 ### Immediate (This Sprint)
-- **FIC-148**: Fix Vercel deploy pipeline (BLOCKING — code not reflecting on production)
-- **FIC-144**: Fix eyeless portraits (Jesus, Peter) and update illustration prompt
-- **FIC-145**: Fix duplicate Passion of the Christ entries with wrong Wikidata IDs
-- **FIC-146**: Remove initials from MediaWork card thumbnails
+- **FIC-148**: Fix Vercel deploy pipeline (BLOCKING — requires dashboard investigation)
+- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done)
 - Continue data population via batch imports
 - Apply Neo4j constraints for HistoricalEvent and Source node types
 - **FIC-120**: Connection quality scoring — `lib/connection-scoring.ts` with graph-only signals (internal, not user-visible)

@@ -383,7 +383,7 @@ export default function AddWorkPage() {
               cursor: isSubmitting || !title.trim() ? 'default' : 'pointer',
             }}
           >
-            {isSubmitting ? 'Creating...' : 'Add Work'}
+            {isSubmitting ? 'Adding...' : 'Add Work'}
           </button>
         </form>
       </div>

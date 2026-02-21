@@ -463,7 +463,7 @@ function PortrayalContent() {
                   padding: '8px 0',
                 }}
               >
-                Can&apos;t find it? Create a new work &rarr;
+                Can&apos;t find it? Add a new work &rarr;
               </button>
             ) : (
               <InlineWorkCreator
@@ -605,7 +605,7 @@ function PortrayalContent() {
                   padding: '8px 0',
                 }}
               >
-                Not in our database? Create a new figure &rarr;
+                Not in our database? Add a new figure &rarr;
               </button>
             ) : (
               <InlineFigureCreator
