@@ -1879,6 +1879,14 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             node.fx = node.x;
             node.fy = node.y;
           }}
+          onEngineStop={() => {
+            // FIC-127: Zoom to fit once simulation fully settles
+            try {
+              forceGraphRef.current?.zoomToFit?.(400, 40);
+            } catch (e) {
+              // ignore — graph may not be ready
+            }
+          }}
           enableZoomInteraction={true}
           enablePanInteraction={true}
           nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
@@ -1923,26 +1931,22 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                   ? getEraColor(node.temporal?.era)
                   : GRAPH_PALETTE.MEDIA_NODE_COLOR;
 
-              // Draw node with glow effect for Bacon nodes, highlighted nodes, loading nodes, or center node
-              if (isBaconNode(node.id) || isHighlighted || isLoading || isCenterNode) {
-                // Determine border color (center node gets gold border)
+              // Draw node with glow effect for Bacon nodes, highlighted nodes, or loading nodes
+              if (isBaconNode(node.id) || isHighlighted || isLoading) {
+                // Determine border color
                 let borderColor = '#1e40af';
-                if (isCenterNode) {
-                  borderColor = CENTER_NODE_GLOW_COLOR;
-                } else if (isLoading) {
+                if (isLoading) {
                   borderColor = '#f59e0b';
                 } else if (isBaconNode(node.id)) {
                   borderColor = '#7f1d1d';
                 }
 
-                // Glow effect (non-center nodes only — center node uses a border ring instead)
-                if (!isCenterNode) {
-                  ctx.fillStyle = nodeColor;
-                  ctx.globalAlpha = (isLoading ? 0.1 : 0.3) * dimFactor;
-                  ctx.beginPath();
-                  ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
-                  ctx.fill();
-                }
+                // Glow effect
+                ctx.fillStyle = nodeColor;
+                ctx.globalAlpha = (isLoading ? 0.1 : 0.3) * dimFactor;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
+                ctx.fill();
 
                 // Main node
                 ctx.globalAlpha = 1 * dimFactor;
