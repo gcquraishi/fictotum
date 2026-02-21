@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 const COOKIE_NAME = 'site_access';
 
 // Routes that bypass password protection
-const PUBLIC_PATHS = ['/password', '/api/site-access'];
+const PUBLIC_PATHS = ['/password', '/api/site-access', '/api/auth'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
