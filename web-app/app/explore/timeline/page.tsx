@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Timeline from '@/components/Timeline';
 import { TimelineData } from '@/lib/types';
 
@@ -38,10 +38,26 @@ function TimelineLoading() {
 
 function TimelineContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [data, setData] = useState<TimelineData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eraFilter, setEraFilter] = useState<string>(searchParams.get('era') || '');
+
+  // FIC-131: Push era filter to URL so browser back button works
+  const handleEraChange = useCallback((era: string) => {
+    setEraFilter(era);
+    const url = era ? `/explore/timeline?era=${encodeURIComponent(era)}` : '/explore/timeline';
+    router.push(url);
+  }, [router]);
+
+  // Sync filter state from URL when navigating back/forward
+  useEffect(() => {
+    const urlEra = searchParams.get('era') || '';
+    if (urlEra !== eraFilter) {
+      setEraFilter(urlEra);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps -- intentionally omits eraFilter to avoid sync loop
 
   useEffect(() => {
     async function fetchData() {
@@ -110,7 +126,7 @@ function TimelineContent() {
       {eras.length > 0 && (
         <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => setEraFilter('')}
+            onClick={() => handleEraChange('')}
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
@@ -128,7 +144,7 @@ function TimelineContent() {
           {eras.map(era => (
             <button
               key={era}
-              onClick={() => setEraFilter(era)}
+              onClick={() => handleEraChange(era)}
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '11px',

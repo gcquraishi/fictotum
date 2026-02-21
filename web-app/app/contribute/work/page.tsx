@@ -262,7 +262,7 @@ export default function AddWorkPage() {
                   type="number"
                   value={releaseYear}
                   onChange={(e) => setReleaseYear(e.target.value)}
-                  placeholder="2023"
+                  placeholder="e.g. 1964"
                   style={{
                     width: '100%',
                     padding: '12px 16px',

@@ -677,6 +677,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     // Clear node children tracking
     setNodeChildren(new Map());
 
+    // Unpin all dragged nodes so they participate in force layout again
+    nodes.forEach((n: any) => { n.fx = undefined; n.fy = undefined; });
+
     // Find the starting node from current nodes
     const startingNode = nodes.find(n => n.id === startingNodeId);
     if (!startingNode) {
@@ -869,23 +872,32 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     setMounted(true);
   }, []);
 
-  // CHR-22: Auto-zoom to fit after graph loads and instance is ready
+  // CHR-22 / FIC-127: Auto-zoom to fit after graph loads and instance is ready
   useEffect(() => {
     if (forceGraphRef.current && nodes.length > 0 && !isLoading && mounted) {
-      console.log('🎯 Graph ready, attempting auto-zoom. Nodes:', nodes.length);
-      // Delay to ensure layout has settled
+      // Delay to ensure force layout has settled, then zoom to fill viewport
+      const padding = 40;
       const zoomTimer = setTimeout(() => {
         try {
-          const padding = 150;
-          console.log('🔍 Calling zoomToFit with padding:', padding);
           forceGraphRef.current.zoomToFit?.(400, padding);
-          console.log('✅ zoomToFit completed successfully');
         } catch (e) {
-          console.error('❌ zoomToFit failed:', e);
+          // zoomToFit can fail if graph not ready — second pass will retry
         }
-      }, 1000); // Wait 1 second for layout to settle
+      }, 1000);
 
-      return () => clearTimeout(zoomTimer);
+      // Second pass after simulation fully stabilizes for reliable fit
+      const zoomTimer2 = setTimeout(() => {
+        try {
+          forceGraphRef.current.zoomToFit?.(400, padding);
+        } catch (e) {
+          // ignore
+        }
+      }, 3000);
+
+      return () => {
+        clearTimeout(zoomTimer);
+        clearTimeout(zoomTimer2);
+      };
     }
   }, [nodes.length, isLoading, mounted]);
 
@@ -957,13 +969,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         setDimensionsReady(true);
         hasSetDimensions = true;
 
-        console.log('✅ GraphExplorer dimensions set:', {
-          width,
-          height,
-          containerWidth,
-          containerOffsetWidth,
-          usedDefault: containerWidth === 0
-        });
+        // Dimensions resolved successfully
       }
     };
 
@@ -977,7 +983,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
     // Fallback: force dimensions ready after 500ms even if container measurement failed
     const fallbackTimer = setTimeout(() => {
       if (!hasSetDimensions) {
-        console.log('⚠️ Fallback: forcing dimensions ready with defaults');
+        // Fallback: container measurement failed, using defaults
         // CHR-22: Use responsive fallback height
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
@@ -1800,8 +1806,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         </div>
       )}
 
-      {/* Inline Legend - Bottom Left */}
-      <div className="absolute bottom-4 left-4 z-10 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4" style={{ background: 'rgba(250,248,240,0.95)' }}>
+      {/* Inline Legend - Top Left (below toolbar) */}
+      <div className="absolute top-16 left-4 z-10 backdrop-blur-sm rounded-lg border border-stone-300 shadow-lg p-4" style={{ background: 'rgba(250,248,240,0.95)' }}>
         <div className="flex flex-col gap-2 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>
@@ -1939,17 +1945,22 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           backgroundColor={GRAPH_PALETTE.CREAM_BG}
           onNodeClick={((node: any, event: MouseEvent) => handleNodeClick(node, event)) as any}
           onNodeHover={handleNodeHover as any}
-          // CHR-22: Tighter force simulation for compact initial view (user can zoom out to explore)
-          d3AlphaDecay={0.01}
-          d3VelocityDecay={0.3}
+          // FIC-128: Relaxed physics — less snappy, nodes stay near where dragged
+          d3AlphaDecay={0.04}
+          d3VelocityDecay={0.6}
           cooldownTicks={200}
           d3Force={{
-            charge: { strength: -3000, distanceMax: 800 },   // Reduced repulsion for tighter clustering
-            link: { distance: 200, strength: 0.9 },          // Shorter links, stronger pull
-            center: { strength: 0.15 },                      // Stronger centering
-            collision: { radius: 60, strength: 0.5 }         // Tighter packing allowed
+            charge: { strength: -2000, distanceMax: 600 },   // Moderate repulsion
+            link: { distance: 180, strength: 0.4 },          // Gentle link pull
+            center: { strength: 0.05 },                      // Light centering
+            collision: { radius: 60, strength: 0.5 }         // Prevent overlap
           }}
           enableNodeDrag={true}
+          onNodeDragEnd={(node: any) => {
+            // Pin node where it was dropped
+            node.fx = node.x;
+            node.fy = node.y;
+          }}
           enableZoomInteraction={true}
           enablePanInteraction={true}
           nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
@@ -2006,17 +2017,14 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                   borderColor = '#7f1d1d';
                 }
 
-                // Glow effect (center node gets stronger gold glow)
-                if (isCenterNode) {
-                  ctx.fillStyle = CENTER_NODE_GLOW_COLOR;
-                  ctx.globalAlpha = 0.4 * dimFactor;
-                } else {
+                // Glow effect (non-center nodes only — center node uses a border ring instead)
+                if (!isCenterNode) {
                   ctx.fillStyle = nodeColor;
                   ctx.globalAlpha = (isLoading ? 0.1 : 0.3) * dimFactor;
+                  ctx.beginPath();
+                  ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
+                  ctx.fill();
                 }
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, nodeSize * NODE_GLOW_RADIUS_MULTIPLIER, 0, 2 * Math.PI, false);
-                ctx.fill();
 
                 // Main node
                 ctx.globalAlpha = 1 * dimFactor;

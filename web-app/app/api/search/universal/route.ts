@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
         id: creator,
         label: creator,
         meta: 'Creator',
-        url: '/contribute/creator?name=' + creator
+        url: '/creator/' + encodeURIComponent(creator)
       } as result
       LIMIT 3
 

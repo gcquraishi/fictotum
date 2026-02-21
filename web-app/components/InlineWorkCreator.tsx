@@ -200,7 +200,7 @@ export default function InlineWorkCreator({ onCreated, onCancel, defaultTitle = 
               type="number"
               value={releaseYear}
               onChange={(e) => setReleaseYear(e.target.value)}
-              placeholder="2023"
+              placeholder="e.g. 1964"
               style={{
                 width: '100%',
                 padding: '8px 12px',
@@ -276,7 +276,7 @@ export default function InlineWorkCreator({ onCreated, onCancel, defaultTitle = 
             cursor: isSubmitting ? 'default' : 'pointer',
           }}
         >
-          {isSubmitting ? 'Creating...' : 'Create Work'}
+          {isSubmitting ? 'Adding...' : 'Add Work'}
         </button>
       </div>
     </form>
