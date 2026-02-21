@@ -1,7 +1,7 @@
 # Fictotum
 
 ## Identity
-- **Domain**: chronosgraph on Vercel
+- **Domain**: fictotum.com (+ www.fictotum.com, fictotum.vercel.app)
 - **Hosting**: Vercel (hobby)
 - **Linear Team**: CHR
 - **Root Config**: See ../CLAUDE.md for shared infrastructure
@@ -31,11 +31,15 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-20_
+_Last updated: 2026-02-21_
 
-Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references).
+Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **Password protection (FIC-147)**: Cookie-based password gate via Next.js middleware. `SITE_PASSWORD` env var controls access. 30-day httpOnly cookie. Styled password page at `/password` with Fictotum visual identity. Middleware exempts `/password`, `/api/site-access`, `/api/auth`, and static assets. Disabled when env var is unset (dev mode).
+- **Domain setup (FIC-147)**: fictotum.com and www.fictotum.com pointed to Vercel. DNS: A record → 76.76.21.21, CNAME www → cname.vercel-dns.com (configured on Hover).
+- **Graph chrome simplification (Option A)**: Breadcrumb moved above canvas (page-level, not overlay). Ghost toolbar (bottom-right, borderless buttons, persistent #666 gray, no hover effects). Legend moved below canvas as tiny dot row. Canvas border removed — cream background bleeds into page with faint dashed outline. Full-width layout (removed 1100px max-width). Canvas height increased to 70vh/700px.
+- **Search bar removed from graph page**: SearchInput component removed entirely from `/explore/graph`. Graph renders directly without search chrome. Navbar search trigger also removed.
 - **Sentry error monitoring**: @sentry/nextjs wired (client, server, edge). Error boundary, instrumentation hook, source map uploads. Sentry project: `fictotum` in `big-heavy` org.
 - **Dense graph hover clarity (FIC-121)**: Node name label above action buttons, 1.3x scale-up with gold ring on hovered node, 0.3 opacity dimming of non-hovered nodes via `dimFactor` multiplier in `nodeCanvasObject`.
 - **Fisk color unification (FIC-117)**: Shared `lib/colors.ts` module with `ERA_COLORS`, `getEraColor()`, and `GRAPH_PALETTE` constants. Era-based node coloring, cream backgrounds, warm translucent links across GraphExplorer, HomeGraphHero, and Timeline. Graph legend updated to match (FIC-122).
@@ -43,20 +47,17 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 - **Graph API temporal metadata**: `getGraphData()`, `getLandingGraphData()`, `getHighDegreeNetwork()` now populate `temporal.era` on figure nodes (was already in `getNodeNeighbors()`).
 - **Mini-timeline overlap fix**: ImpressionisticTimeline labels no longer overlap in dense graphs — greedy row stagger with dashed connector lines, dynamic container height.
 - **Wheel zoom fix**: Canvas wheel handler uses native `addEventListener` with `{ passive: false }` so `preventDefault()` works correctly.
-- `:HistoricalEvent` and `:Source` node types: full schema (models, constraints, indexes in `schema.py`), JSON batch import schema, batch_import.py support (validation, dedup, import, reporting), TypeScript types
-- Timeline view: canvas-based zoomable/pannable timeline at `/explore/timeline` with API route, era filtering, figure lifespan bars, event markers, click-to-navigate. Navbar updated with Timeline link.
-- Competitive research: Historio (historio.app) analysis informed roadmap updates
-- Graph Explorer UX overhaul: suppressed duplicate HTML tooltips, added label text halos, increased zoomToFit padding, always-on bloom-mode expansion
+- `:HistoricalEvent` and `:Source` node types: full schema, JSON batch import schema, batch_import.py support
+- Timeline view: canvas-based zoomable/pannable timeline at `/explore/timeline`
+- Graph Explorer UX overhaul: suppressed duplicate HTML tooltips, label text halos, always-on bloom-mode expansion
 - Dual-click behavior: click node circle = expand/re-center, click label text = navigate to detail page
 - Homepage graph hero (HomeGraphHero) ported with same label fixes and halo effects
-- SearchInput onSelect callback: graph page search now populates graph inline instead of navigating away
 - CHR-40: Batch import infrastructure (JSON validation, duplicate detection, dry-run mode)
 - Provenance tracking: 100% CREATED_BY coverage across all entity nodes
-- Database health monitoring script (`scripts/qa/neo4j_health_check.py`)
 - Wikidata-first canonical ID strategy with provisional ID fallback
-- Enhanced name similarity scoring (70% lexical + 30% phonetic)
 
 ### Active Work
+- **FIC-148 (BLOCKING)**: Vercel deploy pipeline not reflecting latest commits on fictotum.com. Root cause: `vercel --prod` was run from repo root instead of `web-app/` subdirectory, which may have confused project settings. GitHub-triggered builds use Root Directory = `web-app/` in Vercel dashboard. Need to verify dashboard settings and potentially redeploy.
 - **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
 - Data enrichment and population via batch imports (now supports events + sources)
 - **FIC-120 → FIC-118**: Connection quality scoring (FIC-120) then discovery agent (FIC-118). See Linear tickets for full specs from 2026-02-20 exploration session. Key decisions:
@@ -67,22 +68,32 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
   - FIC-119 (narrative timeline summaries) deferred as potential bloat
 
 ### Known Issues
+- **FIC-148**: Vercel deploys not reflecting latest code. Do NOT use `vercel --prod` from repo root — must deploy from `web-app/` or rely on GitHub integration. See FIC-148 for full debugging steps.
 - Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
+- Google Safe Browsing may flag `/api/auth/signin` on new domains — false positive that resolves in days
 - No automated CI/CD pipeline
 
 ## Roadmap
 ### Immediate (This Sprint)
+- **FIC-148**: Fix Vercel deploy pipeline (BLOCKING — code not reflecting on production)
+- **FIC-144**: Fix eyeless portraits (Jesus, Peter) and update illustration prompt
+- **FIC-145**: Fix duplicate Passion of the Christ entries with wrong Wikidata IDs
+- **FIC-146**: Remove initials from MediaWork card thumbnails
 - Continue data population via batch imports
 - Apply Neo4j constraints for HistoricalEvent and Source node types
 - **FIC-120**: Connection quality scoring — `lib/connection-scoring.ts` with graph-only signals (internal, not user-visible)
 - **FIC-118**: Discovery agent — on-demand "Discover Connections" section on figure detail pages, Sonnet 4.6 powered
 
 ### Next (2-4 weeks)
+- **FIC-141/142**: Make navbar search functional / expandable magnifying glass icon
+- **FIC-126**: Different shapes/icons for media types in graph
+- **FIC-139**: Collapse series and component works into single graph node
 - Illustration system (AI-generated via Gemini)
-- Public-facing graph visualization
 - Gemini extraction pipeline: AI-powered structured data extraction from Wikipedia/source texts → entity resolution → batch-import JSON → human review via dry-run
 
 ### Future (Backlog)
+- **FIC-132/133**: Location data population and filtering (timeline + map)
+- **FIC-143**: Search page sidebar filter improvements
 - API for external consumers
 - Advanced graph queries and analytics
 - Dual-researcher pattern: two Gemini agents (high-precision + high-recall) with reconciliation step for data quality
