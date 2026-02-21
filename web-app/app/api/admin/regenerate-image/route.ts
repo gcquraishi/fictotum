@@ -8,7 +8,7 @@ import { auth } from '@/lib/auth';
 const MODEL_NAME = 'gemini-2.5-flash-image';
 const ASPECT_RATIO = '3:4';
 
-const STYLE_PREAMBLE = `Simplified graphic illustration style. Bold flat color shapes with thick chunky dark charcoal outlines, like a rubber stamp or screen print. Minimal facial detail — simple lines for features, NOT photorealistic. NO shading, NO shadows, NO gradients, NO texture in hair. Every shape is a single flat color with hard edges. No crosshatching, no halftone dots. Flat solid color fills only. Die-cut sticker with thick white border following silhouette. Plain solid cream (#FEFEFE) background. Sticker floats freely within the frame, never touches edges. No drop shadow. No text, no labels, no watermarks.`;
+const STYLE_PREAMBLE = `Simplified graphic illustration style. Bold flat color shapes with thick chunky dark charcoal outlines, like a rubber stamp or screen print. Simplified but COMPLETE facial features — eyes must be clearly visible and expressive (simple dot or almond shapes), with nose and mouth indicated. NOT photorealistic, but faces must read as faces. NO shading, NO shadows, NO gradients, NO texture in hair. Every shape is a single flat color with hard edges. No crosshatching, no halftone dots. Flat solid color fills only. Die-cut sticker with thick white border following silhouette. Plain solid cream (#FEFEFE) background. Sticker floats freely within the frame, never touches edges. No drop shadow. No text, no labels, no watermarks.`;
 
 // ---------------------------------------------------------------------------
 // Color palette system (deterministic per figure)

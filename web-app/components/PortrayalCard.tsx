@@ -102,24 +102,11 @@ export default function PortrayalCard({
               height: '100%',
               backgroundColor: placeholder.backgroundColor,
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '4px',
             }}
           >
-            <MediaIcon size={16} color={placeholder.textColor} style={{ opacity: 0.5 }} />
-            <span
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '18px',
-                fontWeight: 300,
-                color: placeholder.textColor,
-                opacity: 0.5,
-              }}
-            >
-              {placeholder.initials}
-            </span>
+            <MediaIcon size={20} color={placeholder.textColor} style={{ opacity: 0.5 }} />
           </div>
         )}
       </div>

@@ -80,24 +80,11 @@ export default function WorkCard({
                 height: '100%',
                 backgroundColor: placeholder.backgroundColor,
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
               }}
             >
-              <MediaIcon size={24} color={placeholder.textColor} style={{ opacity: 0.5 }} />
-              <span
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '28px',
-                  fontWeight: 300,
-                  color: placeholder.textColor,
-                  opacity: 0.5,
-                }}
-              >
-                {placeholder.initials}
-              </span>
+              <MediaIcon size={28} color={placeholder.textColor} style={{ opacity: 0.5 }} />
             </div>
           )}
         </div>
@@ -178,24 +165,11 @@ export default function WorkCard({
               height: '100%',
               backgroundColor: placeholder.backgroundColor,
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '12px',
             }}
           >
-            <MediaIcon size={32} color={placeholder.textColor} style={{ opacity: 0.4 }} />
-            <span
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '48px',
-                fontWeight: 300,
-                color: placeholder.textColor,
-                opacity: 0.4,
-              }}
-            >
-              {placeholder.initials}
-            </span>
+            <MediaIcon size={40} color={placeholder.textColor} style={{ opacity: 0.4 }} />
           </div>
         )}
       </div>
