@@ -1838,7 +1838,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
       {/* Full-Bleed Graph */}
       <ForceGraphErrorBoundary>
-        <div ref={containerRef} className="w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab', border: '1px solid #D6D0C4', borderRadius: '3px', background: GRAPH_PALETTE.CREAM_BG }}>
+        <div ref={containerRef} className="w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab', background: GRAPH_PALETTE.CREAM_BG }}>
           {mounted && ForceGraph2D && (
           <div style={{ width: '100%', height: '100%' }}>
           <ForceGraph2D
@@ -2109,27 +2109,18 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             </div>
           )}
 
-          {/* Option A: Ghost toolbar — floating bottom-right, fades in on hover */}
+          {/* Ghost toolbar — floating bottom-right, persistent muted gray, no borders */}
           {isBloomMode && (
             <div
-              className="absolute bottom-5 right-5 z-10 flex gap-1 transition-opacity duration-200"
-              style={{ opacity: 0.15 }}
-              onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-              onMouseLeave={(e) => e.currentTarget.style.opacity = '0.15'}
+              className="absolute bottom-5 right-5 z-10 flex gap-1"
               role="toolbar"
               aria-label="Graph controls"
             >
               <button
                 onClick={navigateBack}
                 disabled={historyIndex === 0}
-                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
-                style={{
-                  background: GRAPH_PALETTE.CREAM_BG,
-                  borderColor: '#D6D0C4',
-                  color: historyIndex === 0 ? '#D6D0C4' : '#57534E',
-                }}
-                onMouseEnter={(e) => { if (historyIndex > 0) { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}}
-                onMouseLeave={(e) => { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = historyIndex === 0 ? '#D6D0C4' : '#57534E'; }}
+                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
+                style={{ background: 'transparent', border: 'none', color: historyIndex === 0 ? '#ccc' : '#666' }}
                 title="Navigate back (← or B)"
                 aria-label="Navigate back"
               >
@@ -2140,14 +2131,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               <button
                 onClick={navigateForward}
                 disabled={historyIndex >= navigationHistory.length - 1}
-                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
-                style={{
-                  background: GRAPH_PALETTE.CREAM_BG,
-                  borderColor: '#D6D0C4',
-                  color: historyIndex >= navigationHistory.length - 1 ? '#D6D0C4' : '#57534E',
-                }}
-                onMouseEnter={(e) => { if (historyIndex < navigationHistory.length - 1) { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}}
-                onMouseLeave={(e) => { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = historyIndex >= navigationHistory.length - 1 ? '#D6D0C4' : '#57534E'; }}
+                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
+                style={{ background: 'transparent', border: 'none', color: historyIndex >= navigationHistory.length - 1 ? '#ccc' : '#666' }}
                 title="Navigate forward (→ or F)"
                 aria-label="Navigate forward"
               >
@@ -2157,14 +2142,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               </button>
               <button
                 onClick={resetView}
-                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
-                style={{
-                  background: GRAPH_PALETTE.CREAM_BG,
-                  borderColor: '#D6D0C4',
-                  color: '#57534E',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = '#57534E'; }}
+                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
+                style={{ background: 'transparent', border: 'none', color: '#666' }}
                 title="Reset view (R)"
                 aria-label="Reset view"
               >
@@ -2174,14 +2153,8 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               </button>
               <button
                 onClick={() => setShowKeyboardHelp(prev => !prev)}
-                className="w-[34px] h-[34px] flex items-center justify-center rounded transition-all duration-150 border cursor-pointer"
-                style={{
-                  background: showKeyboardHelp ? '#FEF3C7' : GRAPH_PALETTE.CREAM_BG,
-                  borderColor: showKeyboardHelp ? '#F59E0B' : '#D6D0C4',
-                  color: showKeyboardHelp ? '#92400E' : '#57534E',
-                }}
-                onMouseEnter={(e) => { if (!showKeyboardHelp) { e.currentTarget.style.background = '#1C1917'; e.currentTarget.style.borderColor = '#1C1917'; e.currentTarget.style.color = GRAPH_PALETTE.CREAM_BG; }}}
-                onMouseLeave={(e) => { if (!showKeyboardHelp) { e.currentTarget.style.background = GRAPH_PALETTE.CREAM_BG; e.currentTarget.style.borderColor = '#D6D0C4'; e.currentTarget.style.color = '#57534E'; }}}
+                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
+                style={{ background: 'transparent', border: 'none', color: '#666' }}
                 title="Keyboard shortcuts (? or H)"
                 aria-label="Toggle keyboard shortcuts help"
                 aria-expanded={showKeyboardHelp}

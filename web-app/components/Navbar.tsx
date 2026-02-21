@@ -2,11 +2,16 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Hide navbar on password gate page
+  if (pathname === '/password') return null;
 
   return (
     <header
