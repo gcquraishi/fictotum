@@ -1838,7 +1838,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
 
       {/* Full-Bleed Graph */}
       <ForceGraphErrorBoundary>
-        <div ref={containerRef} className="w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab', background: GRAPH_PALETTE.CREAM_BG }}>
+        <div ref={containerRef} className="w-full relative" style={{ height: `${dimensions.height}px`, overflow: 'hidden', cursor: 'grab', background: GRAPH_PALETTE.CREAM_BG, border: '1px dashed #D6D0C4', borderRadius: '3px' }}>
           {mounted && ForceGraph2D && (
           <div style={{ width: '100%', height: '100%' }}>
           <ForceGraph2D

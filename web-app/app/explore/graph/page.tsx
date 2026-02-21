@@ -42,7 +42,7 @@ function GraphContent() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>
-      <div style={{ padding: '16px 32px 32px' }}>
+      <div style={{ padding: '32px 32px 32px' }}>
         {selectedId ? (
           <GraphExplorer canonicalId={selectedId} />
         ) : (

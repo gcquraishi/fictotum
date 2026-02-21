@@ -36,23 +36,6 @@ export default function Navbar() {
         Fictotum
       </Link>
 
-      {/* Search Trigger (desktop) */}
-      <Link
-        href="/search"
-        className="hidden md:block hover:opacity-70 transition-opacity"
-        style={{
-          fontSize: '12px',
-          textTransform: 'uppercase' as const,
-          border: '1px solid var(--color-border)',
-          padding: '8px 16px',
-          color: 'var(--color-gray)',
-          textDecoration: 'none',
-          fontFamily: 'var(--font-mono)',
-        }}
-      >
-        Search Figures or Works...
-      </Link>
-
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center">
         <Link
