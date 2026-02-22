@@ -36,6 +36,7 @@ _Last updated: 2026-02-21_
 Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **FIC-139**: Series collapsing in graph — component works collapse into parent series node in `getGraphData` and `getNodeNeighbors`. Expanding a series node shows figures from all child works via PART_OF traversal. Removed obsolete seriesMetadata badge. Link deduplication prevents multiple edges from same figure to same series.
 - **FIC-141/142**: Navbar search — expandable magnifying glass icon on right side, inline search input with grouped results dropdown (figures, works, series, creators, actors). Closes on Escape, click outside, or route change.
 - **FIC-126**: Media type shapes in graph — rounded rects for films, diamonds for books/plays, squares for TV, hexagons for other. Figures remain circles. Legend updated. Fixed missing `media_type` propagation in 3 graph data functions.
 - **Sentry filter**: `NEXT_NOT_FOUND` and `NEXT_REDIRECT` errors now filtered in `sentry.server.config.ts` — these are intentional Next.js control-flow, not bugs.
@@ -104,15 +105,11 @@ Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relat
 - Apply Neo4j constraints for HistoricalEvent and Source node types
 
 ### Next (2-4 weeks)
-- **FIC-141/142**: Make navbar search functional / expandable magnifying glass icon
-- **FIC-126**: Different shapes/icons for media types in graph
-- **FIC-139**: Collapse series and component works into single graph node
 - Illustration system (AI-generated via Gemini)
 - Gemini extraction pipeline: AI-powered structured data extraction from Wikipedia/source texts → entity resolution → batch-import JSON → human review via dry-run
 
 ### Future (Backlog)
 - **FIC-132/133**: Location data population and filtering (timeline + map)
-- **FIC-143**: Search page sidebar filter improvements
 - API for external consumers
 - Advanced graph queries and analytics
 - Dual-researcher pattern: two Gemini agents (high-precision + high-recall) with reconciliation step for data quality
@@ -158,4 +155,10 @@ python3 scripts/import/batch_import.py data/batch.json --dry-run
 python3 scripts/import/batch_import.py data/batch.json --execute
 ```
 
-**Maintenance**: Agents should update `## Current State` at the end of significant work sessions. Bump the `_Last updated_` date.
+## Session Close Protocol
+
+Before ending a work session:
+1. Update `## Current State` with what was accomplished
+2. Bump `_Last updated_` date
+3. Commit changes with a descriptive message
+4. If blocked, document the blocker under Known Issues
