@@ -575,14 +575,15 @@ export async function findShortestPath(startId: string, endId: string) {
 export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   const session = await getSession();
   try {
-    // 1. Fetch Media Appearances
-    const mediaResult = await session.run(
+    // FIC-139: Fetch media links with optional series parent for collapsing
+    const mediaWithSeriesResult = await session.run(
       `MATCH (f:HistoricalFigure {canonical_id: $canonicalId})-[r:APPEARS_IN]->(m:MediaWork)
-       RETURN f, r, m`,
+       OPTIONAL MATCH (m)-[:PART_OF]->(series:MediaWork)
+       RETURN f, r, m, series`,
       { canonicalId }
     );
 
-    // 2. Fetch Social Interactions (Human-to-Human)
+    // Fetch Social Interactions (Human-to-Human)
     const socialResult = await session.run(
       `MATCH (f:HistoricalFigure {canonical_id: $canonicalId})-[r:INTERACTED_WITH]-(h:HistoricalFigure)
        RETURN f, r, h`,
@@ -593,17 +594,11 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
     const links: GraphLink[] = [];
     const nodeIds = new Set<string>();
 
-    // Helper to add the central figure if not present
-    // (We do this from the first result that has it, or explicit check)
-    // Actually, let's just use the first record from either result if available.
-    // Ideally we should just fetch the figure first.
-    
-    // Let's assume the figure exists if we are asking for it.
-    // We'll grab the name from the first result of either query.
+    // Extract central figure node from available results
     let centralFigureNode: any = null;
 
-    if (mediaResult.records.length > 0) {
-      centralFigureNode = mediaResult.records[0].get('f');
+    if (mediaWithSeriesResult.records.length > 0) {
+      centralFigureNode = mediaWithSeriesResult.records[0].get('f');
     } else if (socialResult.records.length > 0) {
       centralFigureNode = socialResult.records[0].get('f');
     } else {
@@ -624,31 +619,47 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
         nodeIds.add(figureId);
     }
 
-    // Process Media Links
-    mediaResult.records.forEach(record => {
-      const mediaNode = record.get('m');
-      const relationship = record.get('r');
-      const wikidataId = mediaNode.properties.wikidata_id;
-      const mediaId = `media-${wikidataId}`;
+    // FIC-139: Track collapsed series nodes and their work counts
+    const seriesWorkCounts = new Map<string, number>();
 
-      if (!nodeIds.has(mediaId)) {
-        nodes.push({
-          id: mediaId,
-          name: mediaNode.properties.title,
-          type: 'media',
-          media_type: mediaNode.properties.media_type,
-          sentiment: relationship.properties.sentiment || 'Complex',
-          temporal: extractTemporalMetadata(mediaNode, 'media'),
-        });
-        nodeIds.add(mediaId);
+    // Process Media Links — collapse component works into series
+    mediaWithSeriesResult.records.forEach(record => {
+      const mediaNode = record.get('m');
+      const seriesNode = record.get('series');
+      const relationship = record.get('r');
+
+      // FIC-139: If this work is part of a series, use the series node instead
+      const targetNode = seriesNode || mediaNode;
+      const targetWikidataId = targetNode.properties.wikidata_id;
+      const targetMediaId = `media-${targetWikidataId}`;
+
+      if (seriesNode) {
+        seriesWorkCounts.set(targetMediaId, (seriesWorkCounts.get(targetMediaId) || 0) + 1);
       }
 
-      links.push({
-        source: `figure-${canonicalId}`,
-        target: mediaId,
-        sentiment: relationship.properties.sentiment || 'Complex',
-        relationshipType: 'APPEARS_IN',
-      });
+      if (!nodeIds.has(targetMediaId)) {
+        nodes.push({
+          id: targetMediaId,
+          name: targetNode.properties.title,
+          type: 'media',
+          media_type: targetNode.properties.media_type,
+          sentiment: relationship.properties.sentiment || 'Complex',
+          temporal: extractTemporalMetadata(targetNode, 'media'),
+        });
+        nodeIds.add(targetMediaId);
+      }
+
+      // Avoid duplicate links to same series from same figure
+      const linkKey = `figure-${canonicalId}->${targetMediaId}`;
+      if (!nodeIds.has(linkKey)) {
+        links.push({
+          source: `figure-${canonicalId}`,
+          target: targetMediaId,
+          sentiment: relationship.properties.sentiment || 'Complex',
+          relationshipType: 'APPEARS_IN',
+        });
+        nodeIds.add(linkKey);
+      }
     });
 
     // Process Social Links
@@ -691,10 +702,16 @@ export async function getNodeNeighbors(
     const nodeIds = new Set<string>();
 
     if (nodeType === 'media') {
-      // For media nodes, fetch all figures that appear in this media
+      // FIC-139: For media nodes (including collapsed series), fetch figures from
+      // this work AND any component works that are PART_OF this series
       const result = await session.run(
-        `MATCH (m:MediaWork {wikidata_id: $nodeId})<-[r:APPEARS_IN]-(f:HistoricalFigure)
-         RETURN f, r
+        `MATCH (m:MediaWork {wikidata_id: $nodeId})
+         OPTIONAL MATCH (child:MediaWork)-[:PART_OF]->(m)
+         WITH m, collect(child) AS children
+         WITH m, children, CASE WHEN size(children) > 0 THEN children ELSE [m] END AS targets
+         UNWIND targets AS target
+         MATCH (target)<-[r:APPEARS_IN]-(f:HistoricalFigure)
+         RETURN DISTINCT f, r
          LIMIT 50`,
         { nodeId }
       );
@@ -722,72 +739,49 @@ export async function getNodeNeighbors(
         });
       });
     } else {
-      // For figure nodes, fetch connected media works and other figures
+      // FIC-139: For figure nodes, fetch connected media works with series collapsing
       const mediaResult = await session.run(
         `MATCH (f:HistoricalFigure {canonical_id: $nodeId})-[r:APPEARS_IN]->(m:MediaWork)
-         RETURN m, r
+         OPTIONAL MATCH (m)-[:PART_OF]->(series:MediaWork)
+         RETURN m, r, series
          LIMIT 50`,
         { nodeId }
       );
 
-      // Collect media node IDs for batch series lookup
-      const mediaNodeIds: string[] = [];
-
       mediaResult.records.forEach(record => {
         const mediaNode = record.get('m');
+        const seriesNode = record.get('series');
         const relationship = record.get('r');
-        const wikidataId = mediaNode.properties.wikidata_id;
-        const mediaId = `media-${wikidataId}`;
 
-        if (!nodeIds.has(mediaId)) {
+        // FIC-139: If this work is part of a series, use the series node instead
+        const targetNode = seriesNode || mediaNode;
+        const targetWikidataId = targetNode.properties.wikidata_id;
+        const targetMediaId = `media-${targetWikidataId}`;
+
+        if (!nodeIds.has(targetMediaId)) {
           nodes.push({
-            id: mediaId,
-            name: mediaNode.properties.title,
+            id: targetMediaId,
+            name: targetNode.properties.title,
             type: 'media',
-            media_type: mediaNode.properties.media_type,
+            media_type: targetNode.properties.media_type,
             sentiment: relationship.properties.sentiment || 'Complex',
-            temporal: extractTemporalMetadata(mediaNode, 'media'),
+            temporal: extractTemporalMetadata(targetNode, 'media'),
           });
-          nodeIds.add(mediaId);
-          mediaNodeIds.push(wikidataId);
+          nodeIds.add(targetMediaId);
         }
 
-        links.push({
-          source: `figure-${nodeId}`,
-          target: mediaId,
-          sentiment: relationship.properties.sentiment || 'Complex',
-          relationshipType: 'APPEARS_IN',
-        });
+        // Avoid duplicate links to same series from same figure
+        const linkKey = `figure-${nodeId}->${targetMediaId}`;
+        if (!nodeIds.has(linkKey)) {
+          links.push({
+            source: `figure-${nodeId}`,
+            target: targetMediaId,
+            sentiment: relationship.properties.sentiment || 'Complex',
+            relationshipType: 'APPEARS_IN',
+          });
+          nodeIds.add(linkKey);
+        }
       });
-
-      // Batch lookup series relationships for all media nodes
-      if (mediaNodeIds.length > 0) {
-        const seriesResult = await session.run(
-          `UNWIND $mediaIds AS mediaId
-           MATCH (m:MediaWork {wikidata_id: mediaId})-[:PART_OF]->(series:MediaWork)
-           RETURN mediaId, series.wikidata_id AS seriesId, series.title AS seriesTitle,
-                  COUNT { (series)<-[:PART_OF]-() } AS workCount`,
-          { mediaIds: mediaNodeIds }
-        );
-
-        // Apply series metadata to nodes
-        seriesResult.records.forEach(record => {
-          const mediaId = `media-${record.get('mediaId')}`;
-          const seriesId = record.get('seriesId');
-          const seriesTitle = record.get('seriesTitle');
-          const workCount = record.get('workCount')?.toNumber?.() || record.get('workCount');
-
-          const node = nodes.find(n => n.id === mediaId);
-          if (node) {
-            node.seriesMetadata = {
-              seriesId,
-              seriesTitle,
-              isPartOfSeries: true,
-              workCount,
-            };
-          }
-        });
-      }
 
       // Also fetch social interactions
       const socialResult = await session.run(

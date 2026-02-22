@@ -2037,42 +2037,6 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
               ctx.fillStyle = GRAPH_PALETTE.LABEL_COLOR;
               ctx.fillText(label, node.x, node.y + nodeSize + 12);
 
-              // Draw series badge for media nodes that are part of a series
-              if (node.type === 'media' && node.seriesMetadata?.isPartOfSeries) {
-                const badgeSize = 8 / globalScale;
-                const badgeX = node.x + nodeSize - badgeSize / 2;
-                const badgeY = node.y - nodeSize + badgeSize / 2;
-
-                // Badge background (dark with amber border)
-                ctx.fillStyle = '#292524'; // stone-800
-                ctx.strokeStyle = '#f59e0b'; // amber-500
-                ctx.lineWidth = 1.5 / globalScale;
-                ctx.beginPath();
-                ctx.arc(badgeX, badgeY, badgeSize, 0, 2 * Math.PI, false);
-                ctx.fill();
-                ctx.stroke();
-
-                // Chain link icon (simplified)
-                ctx.strokeStyle = '#fbbf24'; // amber-400
-                ctx.lineWidth = 1.2 / globalScale;
-                ctx.lineCap = 'round';
-
-                // Draw two small circles connected (chain link representation)
-                const linkSize = badgeSize * 0.3;
-                ctx.beginPath();
-                ctx.arc(badgeX - linkSize, badgeY, linkSize, 0, 2 * Math.PI, false);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(badgeX + linkSize, badgeY, linkSize, 0, 2 * Math.PI, false);
-                ctx.stroke();
-
-                // Connection line between circles
-                ctx.beginPath();
-                ctx.moveTo(badgeX - linkSize, badgeY);
-                ctx.lineTo(badgeX + linkSize, badgeY);
-                ctx.stroke();
-              }
               // FIC-121: Reset alpha after node render
               ctx.globalAlpha = 1;
             } catch (e) {

@@ -103,13 +103,6 @@ export interface GraphNode {
   is_fictional?: boolean;
   media_type?: string;
   mediaCategory?: MediaCategory; // Only applicable to media nodes
-  seriesMetadata?: {
-    seriesId: string;
-    seriesTitle: string;
-    isPartOfSeries: boolean;
-    workCount?: number; // Total works in the series
-  };
-
   // Temporal metadata for timeline visualization
   temporal?: {
     // For figures
