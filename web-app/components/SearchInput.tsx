@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 
 interface SearchResult {
@@ -25,12 +25,14 @@ interface SearchInputProps {
 
 export default function SearchInput({ onSelect }: SearchInputProps) {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const userHasTyped = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,6 +51,7 @@ export default function SearchInput({ onSelect }: SearchInputProps) {
   }, []);
 
   useEffect(() => {
+    if (!userHasTyped.current) return;
     const delayDebounceFn = setTimeout(async () => {
       if (searchTerm.length >= 2) {
         setLoading(true);
@@ -106,7 +109,7 @@ export default function SearchInput({ onSelect }: SearchInputProps) {
           type="text"
           name="q"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => { userHasTyped.current = true; setSearchTerm(e.target.value); }}
           onFocus={() => searchTerm.length >= 2 && setShowResults(true)}
           placeholder="Search figures, works, creators..."
           autoFocus
