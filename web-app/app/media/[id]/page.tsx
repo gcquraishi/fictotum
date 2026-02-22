@@ -535,124 +535,159 @@ export default async function MediaPage({
               </div>
             </div>
 
-            <div
-              style={{
-                display: 'grid',
-                gap: '1px',
-                background: 'var(--color-border)',
-                border: '1px solid var(--color-border)',
-              }}
-            >
-              {media.portrayals.map((p: any) => {
-                const sentimentColor = getSentimentColor(p.sentiment);
-                const figPlaceholder = getPlaceholderStyle('figure', p.figure.name, p.figure.historicity_status);
+            {/* FIC-73: Group portrayals by sentiment/narrative role */}
+            {(() => {
+              const sentimentOrder = ['Heroic', 'Complex', 'Villainous', 'Sympathetic', 'Comedic', 'Tragic'];
+              const grouped = media.portrayals.reduce((acc: Record<string, any[]>, p: any) => {
+                const key = p.sentiment || 'Complex';
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(p);
+                return acc;
+              }, {} as Record<string, any[]>);
+              const sortedKeys = Object.keys(grouped).sort((a, b) => {
+                const ai = sentimentOrder.indexOf(a);
+                const bi = sentimentOrder.indexOf(b);
+                return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+              });
 
-                return (
-                  <Link
-                    key={p.figure.canonical_id}
-                    href={`/figure/${p.figure.canonical_id}`}
+              return sortedKeys.map((sentiment) => (
+                <div key={sentiment} style={{ marginBottom: '16px' }}>
+                  <div
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '16px',
-                      padding: '16px',
-                      background: 'var(--color-bg)',
-                      textDecoration: 'none',
-                      color: 'var(--color-text)',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1.5px',
+                      color: getSentimentColor(sentiment),
+                      padding: '6px 0',
+                      borderBottom: `1px solid ${getSentimentColor(sentiment)}20`,
+                      marginBottom: '1px',
                     }}
-                    className="hover:opacity-70 transition-opacity"
                   >
-                    {/* Mini Portrait */}
-                    <div
-                      style={{
-                        width: '44px',
-                        height: '44px',
-                        flexShrink: 0,
-                        overflow: 'hidden',
-                        position: 'relative',
-                      }}
-                    >
-                      {isValidImageUrl(p.figure.image_url) ? (
-                        <Image
-                          src={p.figure.image_url}
-                          alt={p.figure.name}
-                          fill
-                          sizes="44px"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <div
+                    {sentiment} ({grouped[sentiment].length})
+                  </div>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gap: '1px',
+                      background: 'var(--color-border)',
+                      border: '1px solid var(--color-border)',
+                      borderTop: 'none',
+                    }}
+                  >
+                    {grouped[sentiment].map((p: any) => {
+                      const sentimentColor = getSentimentColor(p.sentiment);
+                      const figPlaceholder = getPlaceholderStyle('figure', p.figure.name, p.figure.historicity_status);
+
+                      return (
+                        <Link
+                          key={p.figure.canonical_id}
+                          href={`/figure/${p.figure.canonical_id}`}
                           style={{
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: figPlaceholder.backgroundColor,
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            gap: '16px',
+                            padding: '16px',
+                            background: 'var(--color-bg)',
+                            textDecoration: 'none',
+                            color: 'var(--color-text)',
                           }}
+                          className="hover:opacity-70 transition-opacity"
                         >
-                          <span
+                          {/* Mini Portrait */}
+                          <div
                             style={{
-                              fontFamily: 'var(--font-serif)',
-                              fontSize: '16px',
-                              fontWeight: 300,
-                              color: figPlaceholder.textColor,
-                              opacity: 0.5,
+                              width: '44px',
+                              height: '44px',
+                              flexShrink: 0,
+                              overflow: 'hidden',
+                              position: 'relative',
                             }}
                           >
-                            {figPlaceholder.initials}
+                            {isValidImageUrl(p.figure.image_url) ? (
+                              <Image
+                                src={p.figure.image_url}
+                                alt={p.figure.name}
+                                fill
+                                sizes="44px"
+                                style={{ objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  backgroundColor: figPlaceholder.backgroundColor,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontFamily: 'var(--font-serif)',
+                                    fontSize: '16px',
+                                    fontWeight: 300,
+                                    color: figPlaceholder.textColor,
+                                    opacity: 0.5,
+                                  }}
+                                >
+                                  {figPlaceholder.initials}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Name + Role */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p
+                              style={{
+                                fontFamily: 'var(--font-serif)',
+                                fontSize: '16px',
+                                fontWeight: 400,
+                              }}
+                            >
+                              {p.figure.name}
+                            </p>
+                            {p.role && (
+                              <p
+                                style={{
+                                  fontFamily: 'var(--font-serif)',
+                                  fontSize: '13px',
+                                  color: 'var(--color-gray)',
+                                  fontStyle: 'italic',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {p.role}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Sentiment Badge */}
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '10px',
+                              textTransform: 'uppercase',
+                              letterSpacing: '1px',
+                              padding: '3px 8px',
+                              border: `1px solid ${sentimentColor}`,
+                              color: sentimentColor,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {p.sentiment}
                           </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Name + Role */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontFamily: 'var(--font-serif)',
-                          fontSize: '16px',
-                          fontWeight: 400,
-                        }}
-                      >
-                        {p.figure.name}
-                      </p>
-                      {p.role && (
-                        <p
-                          style={{
-                            fontFamily: 'var(--font-serif)',
-                            fontSize: '13px',
-                            color: 'var(--color-gray)',
-                            fontStyle: 'italic',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {p.role}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Sentiment Badge */}
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '10px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px',
-                        padding: '3px 8px',
-                        border: `1px solid ${sentimentColor}`,
-                        color: sentimentColor,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {p.sentiment}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ));
+            })()}
           </div>
         )}
 

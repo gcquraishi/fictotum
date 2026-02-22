@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 import { getFigureById } from '@/lib/db';
-import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, isValidImageUrl } from '@/lib/card-utils';
+import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, getSentimentColor, isValidImageUrl } from '@/lib/card-utils';
 import PortrayalFilters from '@/components/PortrayalFilters';
 import ConnectedFigures from '@/components/ConnectedFigures';
 
@@ -23,10 +23,17 @@ export default async function FigurePage({
   // Compute stats
   const totalPortrayals = figure.portrayals.length;
   const mediaTypeCounts: Record<string, number> = {};
+  const sentimentCounts: Record<string, number> = {};
   figure.portrayals.forEach((p) => {
     const type = p.media.media_type || 'Unknown';
     mediaTypeCounts[type] = (mediaTypeCounts[type] || 0) + 1;
+    const sentiment = p.sentiment || 'Complex';
+    sentimentCounts[sentiment] = (sentimentCounts[sentiment] || 0) + 1;
   });
+
+  // Dominant sentiment for figure
+  const dominantSentiment = Object.entries(sentimentCounts)
+    .sort((a, b) => b[1] - a[1])[0]?.[0];
 
   const lifespan = formatLifespan(figure.birth_year, figure.death_year);
   const placeholder = getPlaceholderStyle('figure', figure.name, figure.historicity_status);
@@ -311,6 +318,62 @@ export default async function FigurePage({
               </div>
             ))}
         </div>
+
+        {/* Sentiment Distribution Bar */}
+        {totalPortrayals > 0 && (
+          <div style={{ marginBottom: '32px' }}>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                color: 'var(--color-gray)',
+                marginBottom: '6px',
+              }}
+            >
+              Portrayal Sentiment {dominantSentiment && `— Predominantly ${dominantSentiment}`}
+            </div>
+            <div style={{ display: 'flex', height: '6px', gap: '2px' }}>
+              {Object.entries(sentimentCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([sentiment, count]) => (
+                  <div
+                    key={sentiment}
+                    title={`${sentiment}: ${count}`}
+                    style={{
+                      flex: count,
+                      backgroundColor: getSentimentColor(sentiment),
+                      opacity: 0.7,
+                    }}
+                  />
+                ))}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: '16px',
+                marginTop: '6px',
+                flexWrap: 'wrap',
+              }}
+            >
+              {Object.entries(sentimentCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([sentiment, count]) => (
+                  <span
+                    key={sentiment}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      color: getSentimentColor(sentiment),
+                    }}
+                  >
+                    {sentiment} {count}
+                  </span>
+                ))}
+            </div>
+          </div>
+        )}
 
         {/* ================================================================
             DOCUMENTED APPEARANCES
