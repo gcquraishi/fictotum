@@ -234,7 +234,7 @@ export default async function MediaPage({
         {/* View in Graph link */}
         <div style={{ marginBottom: '16px' }}>
           <Link
-            href={`/explore/graph?id=${encodeURIComponent(media.media_id)}`}
+            href={`/explore/graph?id=${encodeURIComponent(media.wikidata_id || media.media_id)}`}
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
