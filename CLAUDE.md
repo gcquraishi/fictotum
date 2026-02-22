@@ -31,11 +31,14 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-21_
+_Last updated: 2026-02-21 (session 2)_
 
-Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
+Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **Search flow improvements**: Filter-only browsing works (search page shows results when era/type filter active without text query). Homepage era links now properly route to search with `tab=figures`. Enter key navigates to full search page from HomepageSearch and Navbar search. Search link added to desktop navbar. Homepage explore section expanded to 4 items (Graph, Timeline, Search, Pathfinder).
+- **WorkCard fix**: WorkCard now links to `/media/[id]` detail page instead of graph explorer (was using stale `/explore/graph?focus=` links). Homepage departments section deduplicated (replaced duplicate Pathfinder with Timeline).
+- **FIC-49**: Advanced search with Figures/Works tabs, era filter chips, media type filter chips, active filter indicator. `searchFigures` and `searchMedia` support optional filters. Increased search limit from 10 to 50.
 - **FIC-73**: Portrayals grouped by sentiment on media detail page (Heroic, Complex, Villainous sections with colored headers and counts). Figure detail page gains sentiment distribution bar showing portrayal breakdown with dominant sentiment label.
 - **FIC-128**: Graph physics tuning verified done — relaxed forces, node pinning on drag end already implemented.
 - **FIC-123**: Graph entrypoint on figure/media detail pages verified done — "View in Graph" links already present.
@@ -89,7 +92,7 @@ Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relat
   - No embeddings — graph-only signals (hop distance, cross-era surprise, sentiment divergence, property completeness)
 - **FIC-108**: Orphan figure connection — 147 true orphans remain, Wikidata link builder available
 - Data enrichment and population via batch imports (now supports events + sources)
-- **Linear cleanup**: 28 tickets bulk-closed (FIC-107 through FIC-147). Backlog trimmed to feature work only.
+- **Linear cleanup**: 29 tickets bulk-closed (FIC-107 through FIC-147, FIC-146). Backlog trimmed to feature work only.
 
 ### Known Issues
 - **FIC-148**: Vercel deploys not reflecting latest code. Do NOT use `vercel --prod` from repo root — must deploy from `web-app/` or rely on GitHub integration. See FIC-148 for full debugging steps.
