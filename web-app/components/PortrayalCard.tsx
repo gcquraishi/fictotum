@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import Image from 'next/image';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import {
@@ -114,7 +115,8 @@ export default function PortrayalCard({
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* Title + Year + Type + Creator */}
-        <h4
+        <Link
+          href={media.wikidataId ? `/media/${media.wikidataId}` : media.mediaId ? `/media/${media.mediaId}` : '#'}
           style={{
             fontFamily: 'var(--font-serif)',
             fontSize: '18px',
@@ -122,10 +124,14 @@ export default function PortrayalCard({
             fontStyle: 'italic',
             lineHeight: 1.3,
             marginBottom: '4px',
+            display: 'block',
+            textDecoration: 'none',
+            color: 'var(--color-text)',
           }}
+          className="hover:opacity-70 transition-opacity"
         >
           {media.title}
-        </h4>
+        </Link>
 
         <div
           style={{
