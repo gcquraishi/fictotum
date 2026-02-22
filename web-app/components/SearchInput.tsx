@@ -90,25 +90,38 @@ export default function SearchInput({ onSelect }: SearchInputProps) {
 
   return (
     <div style={{ position: 'relative' }}>
-      <input
-        ref={inputRef}
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onFocus={() => searchTerm.length >= 2 && setShowResults(true)}
-        placeholder="Search figures, works, creators..."
-        autoFocus
-        style={{
-          width: '100%',
-          padding: '24px',
-          fontFamily: 'var(--font-serif)',
-          fontSize: '32px',
-          border: '2px solid var(--color-border-bold)',
-          outline: 'none',
-          textAlign: 'center',
-          background: '#fff',
+      <form
+        action="/search"
+        method="get"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (searchTerm.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+            setShowResults(false);
+          }
         }}
-      />
+      >
+        <input
+          ref={inputRef}
+          type="text"
+          name="q"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => searchTerm.length >= 2 && setShowResults(true)}
+          placeholder="Search figures, works, creators..."
+          autoFocus
+          style={{
+            width: '100%',
+            padding: '24px',
+            fontFamily: 'var(--font-serif)',
+            fontSize: '32px',
+            border: '2px solid var(--color-border-bold)',
+            outline: 'none',
+            textAlign: 'center',
+            background: '#fff',
+          }}
+        />
+      </form>
 
       {showResults && (
         <div

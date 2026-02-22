@@ -36,15 +36,28 @@ function extractTemporalMetadata(node: any, nodeType: 'figure' | 'media'): Graph
   return undefined;
 }
 
-export async function searchFigures(query: string): Promise<HistoricalFigure[]> {
+export async function searchFigures(query: string, options?: { era?: string; historicity?: string }): Promise<HistoricalFigure[]> {
   const session = await getSession();
   try {
+    let whereClause = 'WHERE toLower(f.name) CONTAINS toLower($query)';
+    const params: Record<string, string> = { query };
+
+    if (options?.era) {
+      whereClause += ' AND f.era = $era';
+      params.era = options.era;
+    }
+    if (options?.historicity) {
+      whereClause += ' AND f.historicity_status = $historicity';
+      params.historicity = options.historicity;
+    }
+
     const result = await session.run(
       `MATCH (f:HistoricalFigure)
-       WHERE toLower(f.name) CONTAINS toLower($query)
+       ${whereClause}
        RETURN f
-       LIMIT 10`,
-      { query }
+       ORDER BY f.name
+       LIMIT 50`,
+      params
     );
 
     return result.records.map(record => {
@@ -57,6 +70,58 @@ export async function searchFigures(query: string): Promise<HistoricalFigure[]> 
         era: node.properties.era,
       };
     });
+  } finally {
+    await session.close();
+  }
+}
+
+export async function searchMedia(query: string, options?: { mediaType?: string }): Promise<Array<{ media_id: string; title: string; media_type: string; release_year: number | null; creator: string | null; wikidata_id: string | null }>> {
+  const session = await getSession();
+  try {
+    let whereClause = 'WHERE toLower(m.title) CONTAINS toLower($query)';
+    const params: Record<string, string> = { query };
+
+    if (options?.mediaType) {
+      whereClause += ' AND m.media_type = $mediaType';
+      params.mediaType = options.mediaType;
+    }
+
+    const result = await session.run(
+      `MATCH (m:MediaWork)
+       ${whereClause}
+       RETURN m
+       ORDER BY m.title
+       LIMIT 50`,
+      params
+    );
+
+    return result.records.map(record => {
+      const node = record.get('m');
+      return {
+        media_id: node.properties.media_id,
+        title: node.properties.title,
+        media_type: node.properties.media_type || 'Unknown',
+        release_year: node.properties.release_year ? neo4j.int(node.properties.release_year).toNumber() : null,
+        creator: node.properties.creator || null,
+        wikidata_id: node.properties.wikidata_id || null,
+      };
+    });
+  } finally {
+    await session.close();
+  }
+}
+
+export async function getSearchFilterOptions(): Promise<{ eras: string[]; mediaTypes: string[] }> {
+  const session = await getSession();
+  try {
+    const [eraResult, mediaTypeResult] = await Promise.all([
+      session.run(`MATCH (f:HistoricalFigure) WHERE f.era IS NOT NULL RETURN DISTINCT f.era AS era ORDER BY era`),
+      session.run(`MATCH (m:MediaWork) WHERE m.media_type IS NOT NULL RETURN DISTINCT m.media_type AS mt ORDER BY mt`),
+    ]);
+    return {
+      eras: eraResult.records.map(r => r.get('era')),
+      mediaTypes: mediaTypeResult.records.map(r => r.get('mt')),
+    };
   } finally {
     await session.close();
   }
