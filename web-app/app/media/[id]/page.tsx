@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,6 +13,21 @@ import {
   getSentimentColor,
   isValidImageUrl,
 } from '@/lib/card-utils';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const media = await getMediaById(id);
+  if (!media) return { title: 'Work Not Found — Fictotum' };
+  const creator = media.creator ? ` by ${media.creator}` : '';
+  return {
+    title: `${media.title} — Fictotum`,
+    description: `${media.title}${creator} (${media.media_type || 'Media'}, ${media.release_year || 'Unknown year'}) — ${media.portrayals.length} historical figures portrayed.`,
+  };
+}
 
 export default async function MediaPage({
   params,

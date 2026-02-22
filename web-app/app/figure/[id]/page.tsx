@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -7,6 +8,20 @@ import { getFigureById } from '@/lib/db';
 import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, getSentimentColor, isValidImageUrl } from '@/lib/card-utils';
 import PortrayalFilters from '@/components/PortrayalFilters';
 import ConnectedFigures from '@/components/ConnectedFigures';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const figure = await getFigureById(id);
+  if (!figure) return { title: 'Figure Not Found — Fictotum' };
+  return {
+    title: `${figure.name} — Fictotum`,
+    description: figure.description || `${figure.name} in the Fictotum archive — ${figure.portrayals.length} media portrayals documented.`,
+  };
+}
 
 export default async function FigurePage({
   params,

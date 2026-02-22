@@ -1,8 +1,14 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { searchFigures, searchMedia, getSearchFilterOptions } from '@/lib/db';
 import SearchInput from '@/components/SearchInput';
+
+export const metadata: Metadata = {
+  title: 'Search — Fictotum',
+  description: 'Search the Fictotum archive of historical figures and media works.',
+};
 
 export default async function SearchPage({
   searchParams,
