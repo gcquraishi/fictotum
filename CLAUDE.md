@@ -36,6 +36,9 @@ _Last updated: 2026-02-21_
 Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **FIC-73**: Portrayals grouped by sentiment on media detail page (Heroic, Complex, Villainous sections with colored headers and counts). Figure detail page gains sentiment distribution bar showing portrayal breakdown with dominant sentiment label.
+- **FIC-128**: Graph physics tuning verified done — relaxed forces, node pinning on drag end already implemented.
+- **FIC-123**: Graph entrypoint on figure/media detail pages verified done — "View in Graph" links already present.
 - **FIC-139**: Series collapsing in graph — component works collapse into parent series node in `getGraphData` and `getNodeNeighbors`. Expanding a series node shows figures from all child works via PART_OF traversal. Removed obsolete seriesMetadata badge. Link deduplication prevents multiple edges from same figure to same series.
 - **FIC-141/142**: Navbar search — expandable magnifying glass icon on right side, inline search input with grouped results dropdown (figures, works, series, creators, actors). Closes on Escape, click outside, or route change.
 - **FIC-126**: Media type shapes in graph — rounded rects for films, diamonds for books/plays, squares for TV, hexagons for other. Figures remain circles. Legend updated. Fixed missing `media_type` propagation in 3 graph data functions.
@@ -79,15 +82,14 @@ Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relat
 
 ### Active Work
 - **FIC-148 (BLOCKING)**: Vercel deploy pipeline not reflecting latest commits on fictotum.com. Requires manual Vercel dashboard investigation — see Linear comment for debugging checklist. Do NOT run `vercel --prod` from repo root.
-- **FIC-144 (pending regen)**: Prompt fix deployed. Regenerate Jesus (Q302) and Peter (Q33923) portraits via admin API once Gemini daily quota resets.
-- **Needs verification**: Apply new Neo4j constraints by running `schema.py` or batch importer against live DB
-- Data enrichment and population via batch imports (now supports events + sources)
 - **FIC-120 → FIC-118**: Connection quality scoring (FIC-120) then discovery agent (FIC-118). See Linear tickets for full specs from 2026-02-20 exploration session. Key decisions:
   - On-demand per entity (not batch), surfaces "Discover Connections" section on figure detail pages
   - Pipeline: Cypher candidates → FIC-120 graph-only scoring → Sonnet 4.6 narration
   - Model: Claude Sonnet 4.6 (requires `ANTHROPIC_API_KEY` in `.env.local`)
   - No embeddings — graph-only signals (hop distance, cross-era surprise, sentiment divergence, property completeness)
-  - FIC-119 (narrative timeline summaries) deferred as potential bloat
+- **FIC-108**: Orphan figure connection — 147 true orphans remain, Wikidata link builder available
+- Data enrichment and population via batch imports (now supports events + sources)
+- **Linear cleanup**: 28 tickets bulk-closed (FIC-107 through FIC-147). Backlog trimmed to feature work only.
 
 ### Known Issues
 - **FIC-148**: Vercel deploys not reflecting latest code. Do NOT use `vercel --prod` from repo root — must deploy from `web-app/` or rely on GitHub integration. See FIC-148 for full debugging steps.
