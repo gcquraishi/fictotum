@@ -1931,6 +1931,56 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                   ? getEraColor(node.temporal?.era)
                   : GRAPH_PALETTE.MEDIA_NODE_COLOR;
 
+              // FIC-126: Shape helper — different shapes for media types
+              const drawNodeShape = (x: number, y: number, size: number) => {
+                if (node.type === 'media') {
+                  const mt = (node.media_type || '').toLowerCase();
+                  if (mt.includes('film') || mt.includes('documentary') || mt.includes('short')) {
+                    // Rounded rectangle for films
+                    const w = size * 1.6, h = size * 1.2, r = size * 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(x - w/2 + r, y - h/2);
+                    ctx.lineTo(x + w/2 - r, y - h/2);
+                    ctx.quadraticCurveTo(x + w/2, y - h/2, x + w/2, y - h/2 + r);
+                    ctx.lineTo(x + w/2, y + h/2 - r);
+                    ctx.quadraticCurveTo(x + w/2, y + h/2, x + w/2 - r, y + h/2);
+                    ctx.lineTo(x - w/2 + r, y + h/2);
+                    ctx.quadraticCurveTo(x - w/2, y + h/2, x - w/2, y + h/2 - r);
+                    ctx.lineTo(x - w/2, y - h/2 + r);
+                    ctx.quadraticCurveTo(x - w/2, y - h/2, x - w/2 + r, y - h/2);
+                    ctx.closePath();
+                  } else if (mt.includes('book') || mt.includes('novel') || mt.includes('play') || mt.includes('comic')) {
+                    // Diamond for books/literary works
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - size * 1.2);
+                    ctx.lineTo(x + size, y);
+                    ctx.lineTo(x, y + size * 1.2);
+                    ctx.lineTo(x - size, y);
+                    ctx.closePath();
+                  } else if (mt.includes('tv') || mt.includes('series') || mt.includes('television')) {
+                    // Square for TV series
+                    const s = size * 1.1;
+                    ctx.beginPath();
+                    ctx.rect(x - s, y - s, s * 2, s * 2);
+                  } else {
+                    // Default: hexagon for other media (games, podcasts, etc.)
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                      const angle = (Math.PI / 3) * i - Math.PI / 6;
+                      const px = x + size * Math.cos(angle);
+                      const py = y + size * Math.sin(angle);
+                      if (i === 0) ctx.moveTo(px, py);
+                      else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                  }
+                } else {
+                  // Figures remain circles
+                  ctx.beginPath();
+                  ctx.arc(x, y, size, 0, 2 * Math.PI, false);
+                }
+              };
+
               // Draw node with glow effect for Bacon nodes, highlighted nodes, or loading nodes
               if (isBaconNode(node.id) || isHighlighted || isLoading) {
                 // Determine border color
@@ -1951,8 +2001,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 // Main node
                 ctx.globalAlpha = 1 * dimFactor;
                 ctx.fillStyle = nodeColor;
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
+                drawNodeShape(node.x, node.y, nodeSize);
                 ctx.fill();
 
                 // Border
@@ -1963,8 +2012,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
                 // Regular nodes — translucent Fisk style
                 ctx.globalAlpha = 0.8 * dimFactor;
                 ctx.fillStyle = nodeColor;
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, nodeSize, 0, 2 * Math.PI, false);
+                drawNodeShape(node.x, node.y, nodeSize);
                 ctx.fill();
                 ctx.globalAlpha = 1 * dimFactor;
               }
@@ -2172,16 +2220,24 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         </div>
       </ForceGraphErrorBoundary>
 
-      {/* Option A: Legend row — below canvas */}
-      <div className="flex items-center gap-5 pt-2.5 pb-2" role="list" aria-label="Graph legend">
-        <span className="font-mono text-[9px] uppercase tracking-wider mr-1.5" style={{ color: '#A09880' }}>Legend</span>
+      {/* Option A: Legend row — below canvas with FIC-126 media type shapes */}
+      <div className="flex items-center gap-4 pt-2.5 pb-2 flex-wrap" role="list" aria-label="Graph legend">
+        <span className="font-mono text-[9px] uppercase tracking-wider mr-1" style={{ color: '#A09880' }}>Legend</span>
         <div className="flex items-center gap-1.5" role="listitem">
           <div className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>
-          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Historical Figure</span>
+          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Figure</span>
         </div>
         <div className="flex items-center gap-1.5" role="listitem">
-          <div className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
-          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Media Work</span>
+          <div className="w-[11px] h-[8px] rounded-sm flex-shrink-0" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
+          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Film</span>
+        </div>
+        <div className="flex items-center gap-1.5" role="listitem">
+          <div className="w-[9px] h-[9px] flex-shrink-0" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR, transform: 'rotate(45deg)', transformOrigin: 'center' }}></div>
+          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>Book</span>
+        </div>
+        <div className="flex items-center gap-1.5" role="listitem">
+          <div className="w-[9px] h-[9px] flex-shrink-0" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
+          <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>TV</span>
         </div>
       </div>
 

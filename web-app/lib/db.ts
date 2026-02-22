@@ -323,6 +323,7 @@ export async function getMediaGraphData(id: string): Promise<{ nodes: GraphNode[
         id: mediaId,
         name: mediaNode.properties.title,
         type: 'media',
+        media_type: mediaNode.properties.media_type,
         sentiment: 'Complex'
       });
       nodeIds.add(mediaId);
@@ -635,6 +636,7 @@ export async function getGraphData(canonicalId: string): Promise<{ nodes: GraphN
           id: mediaId,
           name: mediaNode.properties.title,
           type: 'media',
+          media_type: mediaNode.properties.media_type,
           sentiment: relationship.properties.sentiment || 'Complex',
           temporal: extractTemporalMetadata(mediaNode, 'media'),
         });
@@ -742,6 +744,7 @@ export async function getNodeNeighbors(
             id: mediaId,
             name: mediaNode.properties.title,
             type: 'media',
+            media_type: mediaNode.properties.media_type,
             sentiment: relationship.properties.sentiment || 'Complex',
             temporal: extractTemporalMetadata(mediaNode, 'media'),
           });
