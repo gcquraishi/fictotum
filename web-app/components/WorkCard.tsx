@@ -39,8 +39,7 @@ export default function WorkCard({
   const accentColor = getMediaTypeColor(mediaType);
   const MediaIcon = getMediaTypeIcon(mediaType);
   const placeholder = getPlaceholderStyle('work', title, mediaType);
-  // No work detail page yet -- link to graph explorer focused on this entity
-  const href = `/explore/graph?focus=${encodeURIComponent(mediaId)}`;
+  const href = wikidataId ? `/media/${wikidataId}` : `/media/${mediaId}`;
 
   if (variant === 'compact') {
     return (

@@ -399,9 +399,9 @@ export default async function HomePage() {
               href: '/contribute',
             },
             {
-              title: 'Pathfinder',
-              desc: 'Discover connections between any two historical figures.',
-              href: '/explore/pathfinder',
+              title: 'Timeline',
+              desc: 'Explore historical figures across time with an interactive timeline.',
+              href: '/explore/timeline',
             },
           ].map((dept) => (
             <Link
