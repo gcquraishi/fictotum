@@ -36,6 +36,9 @@ _Last updated: 2026-02-21_
 Database has ~1,600 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **FIC-141/142**: Navbar search — expandable magnifying glass icon on right side, inline search input with grouped results dropdown (figures, works, series, creators, actors). Closes on Escape, click outside, or route change.
+- **FIC-126**: Media type shapes in graph — rounded rects for films, diamonds for books/plays, squares for TV, hexagons for other. Figures remain circles. Legend updated. Fixed missing `media_type` propagation in 3 graph data functions.
+- **Sentry filter**: `NEXT_NOT_FOUND` and `NEXT_REDIRECT` errors now filtered in `sentry.server.config.ts` — these are intentional Next.js control-flow, not bugs.
 - **FIC-129**: Graph legend bottom padding prevents overlap with mini-timeline.
 - **FIC-130**: Portrayal page work search now uses dedicated `/api/media/search` (limit 10) instead of universal search (limit 3).
 - **FIC-135**: Created Shakespeare (Q692) and Christopher Marlowe (Q28975) as HistoricalFigure nodes. Added Shakespeare in Love portrayals (Fiennes, Everett, Dench). Fixed missing `media_id` on Shakespeare in Love.
