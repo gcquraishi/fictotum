@@ -34,7 +34,7 @@ export default function NotFound() {
               color: 'var(--color-text)',
             }}
           >
-            Figure Not Found
+            Work Not Found
           </h1>
           <p
             style={{
@@ -46,7 +46,7 @@ export default function NotFound() {
               marginBottom: '32px',
             }}
           >
-            The historical figure you&apos;re looking for doesn&apos;t exist in the archive.
+            The media work you&apos;re looking for doesn&apos;t exist in the archive.
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <Link
