@@ -264,7 +264,7 @@ export default async function HomePage() {
           {data.eras.map((era) => (
             <Link
               key={era.name}
-              href={`/search?era=${encodeURIComponent(era.name)}`}
+              href={`/search?tab=figures&era=${encodeURIComponent(era.name)}`}
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '11px',
@@ -329,12 +329,14 @@ export default async function HomePage() {
           margin: '0 auto',
           padding: '48px 40px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           gap: '20px',
         }}
       >
         {[
           { label: 'Graph', sub: 'Visual Connections', href: '/explore/graph' },
+          { label: 'Timeline', sub: 'Chronological Explorer', href: '/explore/timeline' },
+          { label: 'Search', sub: 'Full Archive Search', href: '/search' },
           { label: 'Pathfinder', sub: 'Six Degrees of Separation', href: '/explore/pathfinder' },
         ].map((btn) => (
           <Link

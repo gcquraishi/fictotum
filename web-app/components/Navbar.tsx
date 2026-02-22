@@ -106,6 +106,11 @@ export default function Navbar() {
       setSearchOpen(false);
       setSearchTerm('');
       setResults([]);
+    } else if (e.key === 'Enter' && searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchOpen(false);
+      setSearchTerm('');
+      setResults([]);
     }
   };
 
@@ -297,6 +302,9 @@ export default function Navbar() {
           )}
         </div>
 
+        <Link href="/search" style={navLinkStyle} className="hover:opacity-70 transition-opacity">
+          Search
+        </Link>
         <Link href="/contribute" style={navLinkStyle} className="hover:opacity-70 transition-opacity">
           Contribute
         </Link>

@@ -15,9 +15,12 @@ export default async function SearchPage({
   const eraFilter = params.era || '';
   const typeFilter = params.type || '';
 
+  const hasFilters = !!(eraFilter || typeFilter);
+  const shouldSearch = !!(query || hasFilters);
+
   const [figureResults, mediaResults, filterOptions] = await Promise.all([
-    query ? searchFigures(query, { era: eraFilter || undefined }) : Promise.resolve([]),
-    query ? searchMedia(query, { mediaType: typeFilter || undefined }) : Promise.resolve([]),
+    shouldSearch ? searchFigures(query, { era: eraFilter || undefined }) : Promise.resolve([]),
+    shouldSearch ? searchMedia(query, { mediaType: typeFilter || undefined }) : Promise.resolve([]),
     getSearchFilterOptions(),
   ]);
 
@@ -120,7 +123,7 @@ export default async function SearchPage({
       >
         {/* Results Area */}
         <main style={{ padding: '40px 60px' }}>
-          {query && (
+          {shouldSearch && (
             <>
               {/* Filter Chips */}
               {tab === 'figures' && filterOptions.eras.length > 0 && (
@@ -236,7 +239,7 @@ export default async function SearchPage({
                 }}
               >
                 <span>
-                  {results.length} result{results.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
+                  {results.length} result{results.length !== 1 ? 's' : ''}{query ? <> for &ldquo;{query}&rdquo;</> : ''}
                 </span>
                 <span>Sorted by: Name</span>
               </div>
@@ -309,7 +312,7 @@ export default async function SearchPage({
                   ) : (
                     <div style={{ textAlign: 'center', padding: '80px 0' }}>
                       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', fontWeight: 300, color: 'var(--color-gray)', fontStyle: 'italic' }}>
-                        No figures found matching &ldquo;{query}&rdquo;{eraFilter && ` in ${eraFilter}`}
+                        No figures found{query ? <> matching &ldquo;{query}&rdquo;</> : ''}{eraFilter && ` in ${eraFilter}`}
                       </p>
                       <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)', marginTop: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                         {eraFilter ? 'Try clearing the era filter' : 'Try a different search term'}
@@ -389,7 +392,7 @@ export default async function SearchPage({
                   ) : (
                     <div style={{ textAlign: 'center', padding: '80px 0' }}>
                       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', fontWeight: 300, color: 'var(--color-gray)', fontStyle: 'italic' }}>
-                        No works found matching &ldquo;{query}&rdquo;{typeFilter && ` of type ${typeFilter}`}
+                        No works found{query ? <> matching &ldquo;{query}&rdquo;</> : ''}{typeFilter && ` of type ${typeFilter}`}
                       </p>
                       <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-gray)', marginTop: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                         {typeFilter ? 'Try clearing the type filter' : 'Try a different search term'}
@@ -401,7 +404,7 @@ export default async function SearchPage({
             </>
           )}
 
-          {!query && (
+          {!shouldSearch && (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <p
                 style={{

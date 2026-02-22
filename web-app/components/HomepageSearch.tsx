@@ -53,8 +53,20 @@ export default function HomepageSearch() {
 
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
+      <form
+        action="/search"
+        method="get"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (query.trim()) {
+            router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+            setOpen(false);
+          }
+        }}
+      >
       <input
         type="text"
+        name="q"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => results.length > 0 && setOpen(true)}
@@ -76,6 +88,7 @@ export default function HomepageSearch() {
           (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)';
         }}
       />
+      </form>
 
       {open && (results.length > 0 || loading) && (
         <div

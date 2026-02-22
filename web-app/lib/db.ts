@@ -39,17 +39,26 @@ function extractTemporalMetadata(node: any, nodeType: 'figure' | 'media'): Graph
 export async function searchFigures(query: string, options?: { era?: string; historicity?: string }): Promise<HistoricalFigure[]> {
   const session = await getSession();
   try {
-    let whereClause = 'WHERE toLower(f.name) CONTAINS toLower($query)';
-    const params: Record<string, string> = { query };
+    const conditions: string[] = [];
+    const params: Record<string, string> = {};
 
+    if (query) {
+      conditions.push('toLower(f.name) CONTAINS toLower($query)');
+      params.query = query;
+    }
     if (options?.era) {
-      whereClause += ' AND f.era = $era';
+      conditions.push('f.era = $era');
       params.era = options.era;
     }
     if (options?.historicity) {
-      whereClause += ' AND f.historicity_status = $historicity';
+      conditions.push('f.historicity_status = $historicity');
       params.historicity = options.historicity;
     }
+
+    // Need at least one condition to avoid returning everything
+    if (conditions.length === 0) return [];
+
+    const whereClause = 'WHERE ' + conditions.join(' AND ');
 
     const result = await session.run(
       `MATCH (f:HistoricalFigure)
@@ -78,13 +87,22 @@ export async function searchFigures(query: string, options?: { era?: string; his
 export async function searchMedia(query: string, options?: { mediaType?: string }): Promise<Array<{ media_id: string; title: string; media_type: string; release_year: number | null; creator: string | null; wikidata_id: string | null }>> {
   const session = await getSession();
   try {
-    let whereClause = 'WHERE toLower(m.title) CONTAINS toLower($query)';
-    const params: Record<string, string> = { query };
+    const conditions: string[] = [];
+    const params: Record<string, string> = {};
 
+    if (query) {
+      conditions.push('toLower(m.title) CONTAINS toLower($query)');
+      params.query = query;
+    }
     if (options?.mediaType) {
-      whereClause += ' AND m.media_type = $mediaType';
+      conditions.push('m.media_type = $mediaType');
       params.mediaType = options.mediaType;
     }
+
+    // Need at least one condition to avoid returning everything
+    if (conditions.length === 0) return [];
+
+    const whereClause = 'WHERE ' + conditions.join(' AND ');
 
     const result = await session.run(
       `MATCH (m:MediaWork)
