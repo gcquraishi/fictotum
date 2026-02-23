@@ -8,6 +8,7 @@ import { getFigureById } from '@/lib/db';
 import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, getSentimentColor, isValidImageUrl } from '@/lib/card-utils';
 import PortrayalFilters from '@/components/PortrayalFilters';
 import ConnectedFigures from '@/components/ConnectedFigures';
+import DiscoverConnections from '@/components/DiscoverConnections';
 
 export async function generateMetadata({
   params,
@@ -421,6 +422,13 @@ export default async function FigurePage({
             ================================================================ */}
         <div style={{ marginTop: '48px' }}>
           <ConnectedFigures figureId={figure.canonical_id} />
+        </div>
+
+        {/* ================================================================
+            DISCOVER CONNECTIONS
+            ================================================================ */}
+        <div style={{ marginTop: '48px' }}>
+          <DiscoverConnections figureId={figure.canonical_id} />
         </div>
 
         {/* ================================================================
