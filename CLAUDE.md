@@ -31,11 +31,14 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-21 (session 3)_
+_Last updated: 2026-02-23 (sprint session)_
 
-Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relationships). Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
+Database has 2,197 entity nodes (898 figures + 1,299 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures — every HistoricalFigure has at least one APPEARS_IN or INTERACTED_WITH relationship. Discovery agent live on figure detail pages (on-demand AI-narrated connections). Gemini extraction pipeline built but blocked on API quota. Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
 
 ### Recent Completions
+- **March 2026 roadmap M2 — Discovery Agent**: On-demand "Discover Connections" section on figure detail pages. Graph-only scoring (`lib/connection-scoring.ts`) with Claude Sonnet 4.6 narration. Performance guard skips shortestPath for figures with >12 portrayals. Tested on 7+ figures.
+- **March 2026 roadmap M3 — Gemini Extraction Pipeline**: `scripts/extraction/extract-from-wikipedia.ts` built and tested. Wikipedia fetch → Gemini structured extraction → Wikidata entity resolution → batch-import JSON. Blocked on Gemini free tier quota (429 errors).
+- **March 2026 roadmap M5 — Orphan Connection**: Zero orphans (was 175). Wikidata SPARQL discovery (`scripts/qa/connect-orphans.py`), era-based broad media connections, individual curation. Removed 4 misclassified nodes (3 actors, 1 author). Total entities: 2,197.
 - **Dynamic page titles**: `generateMetadata` on figure detail (`Napoleon Bonaparte — Fictotum`), media detail (`Gladiator — Fictotum`), and search pages. Improves SEO and browser tab readability.
 - **Custom 404 pages**: Root, figure (`/figure/[id]`), and media (`/media/[id]`) routes have styled not-found pages matching Fictotum visual identity with Home and Search Archive links. Replaced old dark-mode figure 404.
 - **Search flow improvements**: Filter-only browsing works (search page shows results when era/type filter active without text query). Homepage era links now properly route to search with `tab=figures`. Enter key navigates to full search page from HomepageSearch and Navbar search. Search link added to desktop navbar. Homepage explore section expanded to 4 items (Graph, Timeline, Search, Pathfinder). SearchInput pre-fills from URL `q` param (no empty input when navigating to search results).
@@ -87,12 +90,8 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 
 ### Active Work
 - **FIC-148 (BLOCKING)**: Vercel deploy pipeline not reflecting latest commits on fictotum.com. Requires manual Vercel dashboard investigation — see Linear comment for debugging checklist. Do NOT run `vercel --prod` from repo root.
-- **FIC-120 → FIC-118**: Connection quality scoring (FIC-120) then discovery agent (FIC-118). See Linear tickets for full specs from 2026-02-20 exploration session. Key decisions:
-  - On-demand per entity (not batch), surfaces "Discover Connections" section on figure detail pages
-  - Pipeline: Cypher candidates → FIC-120 graph-only scoring → Sonnet 4.6 narration
-  - Model: Claude Sonnet 4.6 (requires `ANTHROPIC_API_KEY` in `.env.local`)
-  - No embeddings — graph-only signals (hop distance, cross-era surprise, sentiment divergence, property completeness)
-- **FIC-108**: Orphan figure connection — 147 true orphans remain, Wikidata link builder available
+- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done, tooling ready)
+- **Gemini extraction pipeline**: Built and tested (`scripts/extraction/extract-from-wikipedia.ts`), blocked on Gemini free tier quota reset
 - Data enrichment and population via batch imports (now supports events + sources)
 - **Linear cleanup**: 29 tickets bulk-closed (FIC-107 through FIC-147, FIC-146). Backlog trimmed to feature work only.
 
@@ -104,16 +103,21 @@ Database has 1,594 entity nodes with 100% provenance coverage (CREATED_BY relati
 
 ## Roadmap
 ### Immediate (This Sprint)
-- **FIC-148**: Fix Vercel deploy pipeline (BLOCKING — requires dashboard investigation)
-- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done)
-- **FIC-120**: Connection quality scoring — `lib/connection-scoring.ts` with graph-only signals (internal, not user-visible)
-- **FIC-118**: Discovery agent — on-demand "Discover Connections" section on figure detail pages, Sonnet 4.6 powered
+- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done, blocked on quota)
+- Gemini extraction pipeline end-to-end test (blocked on quota reset)
+- Illustration batch generation for top 50 figures (blocked on quota reset)
 - Continue data population via batch imports
 - Apply Neo4j constraints for HistoricalEvent and Source node types
 
+### Completed This Sprint
+- ~~**FIC-148**: Fix Vercel deploy pipeline~~ — resolved, deploys working
+- ~~**FIC-120/FIC-118**: Discovery agent~~ — live on figure detail pages with graph-only scoring + Sonnet 4.6 narration
+- ~~**FIC-108**: Orphan figure connection~~ — zero orphans, 2,197 total entities
+- ~~Gemini extraction pipeline~~ — built (`scripts/extraction/extract-from-wikipedia.ts`), blocked on quota
+
 ### Next (2-4 weeks)
-- Illustration system (AI-generated via Gemini)
-- Gemini extraction pipeline: AI-powered structured data extraction from Wikipedia/source texts → entity resolution → batch-import JSON → human review via dry-run
+- Illustration system batch generation (tooling ready, needs Gemini quota)
+- Gemini extraction pipeline: run Medieval Europe cluster through full pipeline once quota resets
 
 ### Future (Backlog)
 - **FIC-132/133**: Location data population and filtering (timeline + map)
