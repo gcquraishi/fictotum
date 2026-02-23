@@ -149,9 +149,10 @@ export async function findConnectionCandidates(
     }
 
     // Step 4: Find 3+ hop connections for surprise factor
+    // Neo4j shortestPath requires min length 0 or 1, so we filter by length after
     const distantResult = await session.run(
       `MATCH (source:HistoricalFigure {canonical_id: $canonicalId})
-       MATCH path = shortestPath((source)-[*2..6]-(target:HistoricalFigure))
+       MATCH path = shortestPath((source)-[*..6]-(target:HistoricalFigure))
        WHERE target.canonical_id <> $canonicalId
          AND ALL(rel IN relationships(path) WHERE type(rel) IN ['APPEARS_IN', 'INTERACTED_WITH', 'CONTEMPORARY', 'NEMESIS_OF'])
          AND length(path) >= 3
