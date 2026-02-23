@@ -1,0 +1,2120 @@
+{
+  "metadata": {
+    "source": "Wikidata SPARQL (orphan connection)",
+    "curator": "connect-orphans-script",
+    "date": "2026-02-23",
+    "description": "Media works discovered for 158 orphan figures via Wikidata"
+  },
+  "works": [
+    {
+      "title": "Poetry and the Gods",
+      "wikidata_id": "Q19039106",
+      "media_type": "BOOK",
+      "release_year": 1920
+    },
+    {
+      "title": "Johannes Wienand: Jerusalem in Braunschweig: Zur Darstellung der Kreuzrestitution in den mittelalterlichen Wandmalereien des Doms St. Blasii, in: K. Soennecken et al. (eds.): Through the Ages, Gütersloh 2023, 629–669",
+      "wikidata_id": "Q135671740",
+      "media_type": "BOOK",
+      "release_year": 2023
+    },
+    {
+      "title": "Plus ultra",
+      "wikidata_id": "Q130945392",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Souvenirs entomologiques",
+      "wikidata_id": "Q839435",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "On Conan Doyle; or, The Whole Art of Storytelling",
+      "wikidata_id": "Q30593439",
+      "media_type": "BOOK",
+      "release_year": 2011
+    },
+    {
+      "title": "The Bronte Sisters",
+      "wikidata_id": "Q2080614",
+      "media_type": "FILM",
+      "release_year": 1979,
+      "creator": "André Téchiné"
+    },
+    {
+      "title": "How Do You Live?",
+      "wikidata_id": "Q50706388",
+      "media_type": "BOOK",
+      "release_year": 1937
+    },
+    {
+      "title": "Andrew Carnegie",
+      "wikidata_id": "Q123738850",
+      "media_type": "BOOK",
+      "release_year": 1922
+    },
+    {
+      "title": "The Bonhoeffer Reader",
+      "wikidata_id": "Q122095302",
+      "media_type": "BOOK",
+      "release_year": 2013
+    },
+    {
+      "title": "With the Black Prince",
+      "wikidata_id": "Q111899723",
+      "media_type": "BOOK",
+      "release_year": 1898
+    },
+    {
+      "title": "The Lances of Lynwood",
+      "wikidata_id": "Q111901880",
+      "media_type": "BOOK",
+      "release_year": 1864
+    },
+    {
+      "title": "Columbeidos libri priores duo",
+      "wikidata_id": "Q130945350",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Ashoka, the Beloved of the Gods",
+      "wikidata_id": "Q134340715",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Devotion",
+      "wikidata_id": "Q1056467",
+      "media_type": "FILM",
+      "release_year": 1946,
+      "creator": "Curtis Bernhardt"
+    },
+    {
+      "title": "Dante, la divine politique",
+      "wikidata_id": "Q132732504",
+      "media_type": "FILM",
+      "release_year": 2021
+    },
+    {
+      "title": "The Secret Society",
+      "wikidata_id": "Q21775881",
+      "media_type": "BOOK",
+      "release_year": 2015
+    },
+    {
+      "title": "The Ladder of Vision",
+      "wikidata_id": "Q104543161",
+      "media_type": "BOOK",
+      "release_year": 1960
+    },
+    {
+      "title": "Dante: Inferno to Paradise",
+      "wikidata_id": "Q124958502",
+      "media_type": "TV_SERIES",
+      "creator": "Ric Burns"
+    },
+    {
+      "title": "Alexander and Chandragupta the Great",
+      "wikidata_id": "Q47008687",
+      "media_type": "BOOK",
+      "release_year": 2011
+    },
+    {
+      "title": "Columbus",
+      "wikidata_id": "Q19048858",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Ashoka – Buddha's Warrior",
+      "wikidata_id": "Q51541037",
+      "media_type": "FILM",
+      "release_year": 2009,
+      "creator": "Stephan Koester"
+    },
+    {
+      "title": "Saints and Villains",
+      "wikidata_id": "Q101245828",
+      "media_type": "BOOK",
+      "release_year": 1998
+    },
+    {
+      "title": "Itala antologio",
+      "wikidata_id": "Q15733485",
+      "media_type": "BOOK",
+      "release_year": 1987
+    },
+    {
+      "title": "Anonymous Life of Aeschylus",
+      "wikidata_id": "Q87763334",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Firmament",
+      "wikidata_id": "Q105582867",
+      "media_type": "GAME",
+      "release_year": 2023
+    },
+    {
+      "title": "Chandragupta Maurya",
+      "wikidata_id": "Q47089206",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Dante: Physician",
+      "wikidata_id": "Q19861128",
+      "media_type": "BOOK",
+      "release_year": 1908
+    },
+    {
+      "title": "Emperor Chandragupta",
+      "wikidata_id": "Q47008577",
+      "media_type": "BOOK",
+      "release_year": 2016
+    },
+    {
+      "title": "Pastwatch: The Redemption of Christopher Columbus",
+      "wikidata_id": "Q2064987",
+      "media_type": "BOOK",
+      "release_year": 1996
+    },
+    {
+      "title": "Great Power in Great Fist",
+      "wikidata_id": "Q21449371",
+      "media_type": "COMIC",
+      "release_year": 1929
+    },
+    {
+      "title": "Arthur Conan Doyle",
+      "wikidata_id": "Q13471093",
+      "media_type": "FILM",
+      "release_year": 1927
+    },
+    {
+      "title": "Origo Constantini imperatoris",
+      "wikidata_id": "Q12901306",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Calculating Ada: The Countess of computing",
+      "wikidata_id": "Q79221527",
+      "media_type": "FILM",
+      "release_year": 2015,
+      "creator": "Nat Sharman"
+    },
+    {
+      "title": "Chandragupta Maurya and His Times",
+      "wikidata_id": "Q47008530",
+      "media_type": "BOOK",
+      "release_year": 1966
+    },
+    {
+      "title": "Ashoka the Great",
+      "wikidata_id": "Q4805802",
+      "media_type": "BOOK",
+      "release_year": 2011
+    },
+    {
+      "title": "Cesare : il Creatore che ha distrutto",
+      "wikidata_id": "Q3665579",
+      "media_type": "FILM",
+      "release_year": 2006
+    },
+    {
+      "title": "Annie Besant: en moderne pioner",
+      "wikidata_id": "Q56887356",
+      "media_type": "BOOK",
+      "release_year": 1927
+    },
+    {
+      "title": "Bonhoeffer",
+      "wikidata_id": "Q97032398",
+      "media_type": "FILM",
+      "release_year": 2003,
+      "creator": "Martin Doblmeier"
+    },
+    {
+      "title": "Prayer of Columbus",
+      "wikidata_id": "Q16965571",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Compilatio assisiensis",
+      "wikidata_id": "Q3685130",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Karl Marx",
+      "wikidata_id": "Q60153543",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Zombie Capitalism",
+      "wikidata_id": "Q123363140",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Joanna Aurelianensis Galliae Amazon",
+      "wikidata_id": "Q130946269",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Karl Marx in Kalbadevi",
+      "wikidata_id": "Q100696009",
+      "media_type": "BOOK",
+      "creator": "Manoj Shah"
+    },
+    {
+      "title": "The Butchering Art",
+      "wikidata_id": "Q72045754",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Karl Marx: The Story of His Life",
+      "wikidata_id": "Q6372067",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Han Wu Da Di",
+      "wikidata_id": "Q5646701",
+      "media_type": "TV_SERIES",
+      "creator": "Hu Mei"
+    },
+    {
+      "title": "Mediation Dreams of Peace: Learning from Averroes, Maimonides, Aquinas, Confucius, Buddha, Bhagavad Gita Krishna, and Laozi",
+      "wikidata_id": "Q137671006",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Boccaccio",
+      "wikidata_id": "Q888976",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Seraphicae",
+      "wikidata_id": "Q130945035",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Seraphis",
+      "wikidata_id": "Q130945050",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Karl Marx",
+      "wikidata_id": "Q122050872",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Joan of Arc: Her Story",
+      "wikidata_id": "Q16880173",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Blessèd",
+      "wikidata_id": "Q39805057",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Existentialistische Marx-Interpretation",
+      "wikidata_id": "Q17416765",
+      "media_type": "BOOK",
+      "release_year": 1973
+    },
+    {
+      "title": "Civilization VI",
+      "wikidata_id": "Q24050047",
+      "media_type": "GAME",
+      "release_year": 2016,
+      "creator": "Sid Meier"
+    },
+    {
+      "title": "An Essay on Marxian Economics",
+      "wikidata_id": "Q4749928",
+      "media_type": "BOOK",
+      "release_year": 1942
+    },
+    {
+      "title": "The Minority of Henry the Third",
+      "wikidata_id": "Q66372760",
+      "media_type": "BOOK",
+      "release_year": 1912
+    },
+    {
+      "title": "On the Abolition of All Political Parties",
+      "wikidata_id": "Q16575396",
+      "media_type": "BOOK",
+      "release_year": 1950
+    },
+    {
+      "title": "Main Currents of Marxism",
+      "wikidata_id": "Q6735963",
+      "media_type": "BOOK",
+      "release_year": 1978
+    },
+    {
+      "title": "The Young Hegelians and Karl Marx",
+      "wikidata_id": "Q7776754",
+      "media_type": "BOOK",
+      "release_year": 1969
+    },
+    {
+      "title": "Marx after Sraffa",
+      "wikidata_id": "Q6778602",
+      "media_type": "BOOK",
+      "release_year": 1977
+    },
+    {
+      "title": "Marx and Modern Economics",
+      "wikidata_id": "Q6778604",
+      "media_type": "BOOK",
+      "release_year": 1968
+    },
+    {
+      "title": "Marx in Soho",
+      "wikidata_id": "Q6778608",
+      "media_type": "BOOK",
+      "release_year": 1999
+    },
+    {
+      "title": "The Passion of Saint Joan of Arc",
+      "wikidata_id": "Q112177884",
+      "media_type": "FILM",
+      "release_year": 2020
+    },
+    {
+      "title": "Karl Marx, the Evolution of His Thought",
+      "wikidata_id": "Q123068095",
+      "media_type": "BOOK",
+      "release_year": 1964
+    },
+    {
+      "title": "Marx's Revenge",
+      "wikidata_id": "Q11881386",
+      "media_type": "BOOK",
+      "release_year": 2002
+    },
+    {
+      "title": "Marx's Theory of Ideology",
+      "wikidata_id": "Q6778587",
+      "media_type": "BOOK",
+      "release_year": 1982
+    },
+    {
+      "title": "Analyzing Marx",
+      "wikidata_id": "Q4751166",
+      "media_type": "BOOK",
+      "release_year": 1984
+    },
+    {
+      "title": "Joan of Arc: A Military Leader",
+      "wikidata_id": "Q85607534",
+      "media_type": "BOOK",
+      "release_year": 1999
+    },
+    {
+      "title": "Joan of Arc: The Warrior Saint",
+      "wikidata_id": "Q85607944",
+      "media_type": "BOOK",
+      "release_year": 2003
+    },
+    {
+      "title": "Saint Joan the Maid",
+      "wikidata_id": "Q28419369",
+      "media_type": "FILM",
+      "release_year": 1929,
+      "creator": "Marco de Gastyne"
+    },
+    {
+      "title": "Saint Joan of Arc",
+      "wikidata_id": "Q7401419",
+      "media_type": "BOOK",
+      "release_year": 1936
+    },
+    {
+      "title": "The Theoretical System of Karl Marx",
+      "wikidata_id": "Q131149389",
+      "media_type": "BOOK",
+      "release_year": 1907
+    },
+    {
+      "title": "Newton for Beginners",
+      "wikidata_id": "Q29601528",
+      "media_type": "BOOK",
+      "release_year": 1993
+    },
+    {
+      "title": "Making Sense of Marx",
+      "wikidata_id": "Q6739639",
+      "media_type": "BOOK",
+      "release_year": 1985
+    },
+    {
+      "title": "The Reign of Henry III",
+      "wikidata_id": "Q43755199",
+      "media_type": "BOOK",
+      "release_year": 1996
+    },
+    {
+      "title": "The Physicists",
+      "wikidata_id": "Q260824",
+      "media_type": "BOOK",
+      "release_year": 1962
+    },
+    {
+      "title": "Studies on Marx and Hegel",
+      "wikidata_id": "Q7628090",
+      "media_type": "BOOK",
+      "release_year": 1955
+    },
+    {
+      "title": "The Concept of Nature in Marx",
+      "wikidata_id": "Q7727273",
+      "media_type": "BOOK",
+      "release_year": 1971
+    },
+    {
+      "title": "Galileo",
+      "wikidata_id": "Q3094738",
+      "media_type": "FILM",
+      "release_year": 1975,
+      "creator": "Joseph Losey"
+    },
+    {
+      "title": "The Logic of Marx",
+      "wikidata_id": "Q123204961",
+      "media_type": "BOOK",
+      "release_year": 1962
+    },
+    {
+      "title": "Building Accounts of King Henry III",
+      "wikidata_id": "Q65666020",
+      "media_type": "BOOK",
+      "release_year": 1971
+    },
+    {
+      "title": "The Social and Political Thought of Karl Marx",
+      "wikidata_id": "Q7765080",
+      "media_type": "BOOK",
+      "release_year": 1968
+    },
+    {
+      "title": "The Cambridge Companion to Marx",
+      "wikidata_id": "Q7721051",
+      "media_type": "BOOK",
+      "release_year": 1991
+    },
+    {
+      "title": "Young Wilhelm: the Kaiser's early life, 1859-1888",
+      "wikidata_id": "Q113556198",
+      "media_type": "BOOK",
+      "release_year": 1993
+    },
+    {
+      "title": "The Formation of the Economic Thought of Karl Marx",
+      "wikidata_id": "Q7734863",
+      "media_type": "BOOK",
+      "release_year": 1967
+    },
+    {
+      "title": "Giovanni Boccaccio",
+      "wikidata_id": "Q60323093",
+      "media_type": "FILM",
+      "release_year": 1973,
+      "creator": "Uwe Belz"
+    },
+    {
+      "title": "Francis Bacon",
+      "wikidata_id": "Q3750911",
+      "media_type": "FILM",
+      "release_year": 1988,
+      "creator": "David Hinton"
+    },
+    {
+      "title": "Karl Marx: His Life and Environment",
+      "wikidata_id": "Q6372066",
+      "media_type": "BOOK",
+      "release_year": 1939
+    },
+    {
+      "title": "Karl Marx's Theory of Revolution",
+      "wikidata_id": "Q6372064",
+      "media_type": "BOOK",
+      "release_year": 1977
+    },
+    {
+      "title": "Karl Marx: His Life and Thought",
+      "wikidata_id": "Q6372065",
+      "media_type": "BOOK",
+      "release_year": 1973
+    },
+    {
+      "title": "Karl Marx and the Close of His System",
+      "wikidata_id": "Q6372070",
+      "media_type": "BOOK",
+      "release_year": 1896
+    },
+    {
+      "title": "Autobiography",
+      "wikidata_id": "Q19053628",
+      "media_type": "BOOK",
+      "release_year": 1874
+    },
+    {
+      "title": "God's pauper: St Francis of Assisi",
+      "wikidata_id": "Q20723586",
+      "media_type": "BOOK",
+      "release_year": 1954
+    },
+    {
+      "title": "Joan the Woman",
+      "wikidata_id": "Q1516837",
+      "media_type": "FILM",
+      "release_year": 1916,
+      "creator": "Cecil B. DeMille"
+    },
+    {
+      "title": "Finance Capital",
+      "wikidata_id": "Q1167856",
+      "media_type": "BOOK",
+      "release_year": 1910
+    },
+    {
+      "title": "La vie et epistres Pierres Abaelart et Heloys sa fame",
+      "wikidata_id": "Q118130056",
+      "media_type": "FILM"
+    },
+    {
+      "title": "The Cambridge Companion to Abelard",
+      "wikidata_id": "Q98768287",
+      "media_type": "BOOK",
+      "release_year": 2006
+    },
+    {
+      "title": "The Last of the Tsars: Nicholas II and the Russian Revolution",
+      "wikidata_id": "Q100361967",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Gesta Innocentii Papae III",
+      "wikidata_id": "Q12900068",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Correspondance avec le roi de Prusse Frédéric II",
+      "wikidata_id": "Q19150125",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Colonel Roosevelt",
+      "wikidata_id": "Q5148173",
+      "media_type": "BOOK",
+      "release_year": 2010
+    },
+    {
+      "title": "Roosevelt and the National Psychology",
+      "wikidata_id": "Q123738860",
+      "media_type": "BOOK",
+      "release_year": 1922
+    },
+    {
+      "title": "Last Stop on Market Street",
+      "wikidata_id": "Q24965396",
+      "media_type": "BOOK",
+      "release_year": 2015
+    },
+    {
+      "title": "Septimius Severus: The African Emperor",
+      "wikidata_id": "Q97515680",
+      "media_type": "FILM",
+      "release_year": 1988
+    },
+    {
+      "title": "Tamerlane: sword of Islam, conqueror of the world",
+      "wikidata_id": "Q123995880",
+      "media_type": "BOOK",
+      "release_year": 2006
+    },
+    {
+      "title": "Carmen de morte Francisci Petrarce",
+      "wikidata_id": "Q136723024",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "The Philosophers",
+      "wikidata_id": "Q116811300",
+      "media_type": "FILM",
+      "creator": "Roberto Rossellini"
+    },
+    {
+      "title": "Epitaphius Petri Abailardi",
+      "wikidata_id": "Q136806931",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Elogium Petri",
+      "wikidata_id": "Q136806938",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Cartesius",
+      "wikidata_id": "Q3660915",
+      "media_type": "TV_SERIES",
+      "release_year": 1974,
+      "creator": "Roberto Rossellini"
+    },
+    {
+      "title": "Thucydides and Herodotus",
+      "wikidata_id": "Q102104602",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Un vaincu — vanquished yet great",
+      "wikidata_id": "Q52425633",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Harry Potter and the Methods of Rationality",
+      "wikidata_id": "Q22162553",
+      "media_type": "BOOK",
+      "release_year": 2015
+    },
+    {
+      "title": "Severus",
+      "wikidata_id": "Q87775475",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Elkhorn",
+      "wikidata_id": "Q125020357",
+      "media_type": "TV_SERIES"
+    },
+    {
+      "title": "Jhansi Ki Rani",
+      "wikidata_id": "Q6190909",
+      "media_type": "TV_SERIES"
+    },
+    {
+      "title": "Descartes's Gambit",
+      "wikidata_id": "Q136733925",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Voltaire",
+      "wikidata_id": "Q115397603",
+      "media_type": "GAME"
+    },
+    {
+      "title": "Heretic",
+      "wikidata_id": "Q31185298",
+      "media_type": "FILM",
+      "release_year": 1986,
+      "creator": "Andrej Stojan"
+    },
+    {
+      "title": "Robert E. Lee: The Complete Man (1861-1870)",
+      "wikidata_id": "Q123362413",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Robert E. Lee",
+      "wikidata_id": "Q60147848",
+      "media_type": "BOOK"
+    },
+    {
+      "title": "Civilization V",
+      "wikidata_id": "Q2385",
+      "media_type": "GAME",
+      "release_year": 2010,
+      "creator": "Sid Meier"
+    },
+    {
+      "title": "The Volunteer",
+      "wikidata_id": "Q85808807",
+      "media_type": "BOOK",
+      "release_year": 2019
+    },
+    {
+      "title": "Empress",
+      "wikidata_id": "Q5374452",
+      "media_type": "BOOK",
+      "release_year": 2003
+    },
+    {
+      "title": "In the Evening of his Days; a study of Mr. Gladstone in retirement",
+      "wikidata_id": "Q114011522",
+      "media_type": "BOOK",
+      "release_year": 1896
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q19039106",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q8413",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q135671740",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7322",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q130945392",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q839435",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q35610",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q30593439",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q44520",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q2080614",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1290",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q50706388",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q484265",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123738850",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q76326",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q122095302",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q184854",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q111899723",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q184854",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q111901880",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7322",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q130945350",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q8589",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q134340715",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q44520",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1056467",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q132732504",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q19825",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q21775881",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q104543161",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q124958502",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q188541",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q47008687",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7322",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q19048858",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q8589",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q51541037",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q76326",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q101245828",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q15733485",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1290",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3640833",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q40939",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q87763334",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q484265",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q105582867",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q188541",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q47089206",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1067",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q19861128",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q188541",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q47008577",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7322",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q2064987",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q16574",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q21449371",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q35610",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q13471093",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q8413",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q12901306",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7259",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q79221527",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q188541",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q47008530",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q8589",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q4805802",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7322",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3665579",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q464318",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q56887356",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q76326",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q97032398",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7322",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q16965571",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q676555",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3685130",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q60153543",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123363140",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q130946269",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q100696009",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q155768",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q72045754",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6372067",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7225",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q5646701",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q127398",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q137671006",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1402",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q888976",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q676555",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q130945035",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q676555",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q130945050",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q122050872",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q16880173",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q39805057",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q17416765",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q203647",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q24050047",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q154340",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q2297818",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q4749928",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q160311",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q66372760",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7278",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q16575396",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6735963",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7776754",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6778602",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6778604",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6778608",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q112177884",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123068095",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q11881386",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6778587",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q4751166",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q85607534",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q85607944",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q28419369",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7401419",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q131149389",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q935",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q29601528",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6739639",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q160311",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q43755199",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q935",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q260824",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1402",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q15733485",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7628090",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7727273",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q307",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3094738",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123204961",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q160311",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q65666020",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7765080",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7721051",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q2677",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q113556198",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q7734863",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q105582867",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1402",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q60323093",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q154340",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3750911",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6372066",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6372064",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6372065",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6372070",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q50020",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q19053628",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q676555",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q20723586",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q7226",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1516837",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9061",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1167856",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q4295",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q118130056",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9438",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q137671006",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1442",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q839435",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q4295",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q98768287",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q40787",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q100361967",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1425",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q24050047",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q128076",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q12900068",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9068",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q19150125",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q33866",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q5148173",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q33866",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123738860",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q5638",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q24965396",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q33866",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q24050047",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1442",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q97515680",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q8462",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123995880",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q5669",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3665579",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1401",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q15733485",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1401",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q136723024",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9191",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q116811300",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q4295",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q136806931",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q4295",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q136806938",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9191",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3660915",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q41683",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q102104602",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q165557",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q52425633",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q154224",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q22162553",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q1442",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q87775475",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q33866",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q125020357",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q181878",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q6190909",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9191",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q136733925",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9068",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q115397603",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q156902",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q31185298",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q165557",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q123362413",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q165557",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q60147848",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9738",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q2385",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q315691",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q85808807",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q9738",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q5374452",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    },
+    {
+      "from_id": "Q160852",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q114011522",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Wikidata SPARQL discovery for orphan connection"
+      }
+    }
+  ]
+}
