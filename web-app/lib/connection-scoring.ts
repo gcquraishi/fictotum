@@ -149,8 +149,11 @@ export async function findConnectionCandidates(
     }
 
     // Step 4: Find 3+ hop connections for surprise factor
+    // Skip for highly connected figures (>12 portrayals) — shortestPath is expensive
+    // and the shared-media candidates already cover these well.
     // Neo4j shortestPath requires min length 0 or 1, so we filter by length after
-    const distantResult = await session.run(
+    const skipDistant = source.portrayalCount > 12;
+    const distantResult = skipDistant ? { records: [] } : await session.run(
       `MATCH (source:HistoricalFigure {canonical_id: $canonicalId})
        MATCH path = shortestPath((source)-[*..6]-(target:HistoricalFigure))
        WHERE target.canonical_id <> $canonicalId
