@@ -293,7 +293,7 @@ async function extractFromArticle(
   genai: GoogleGenerativeAI,
   article: { title: string; extract: string },
 ): Promise<ExtractionResult> {
-  const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const model = genai.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   const prompt = `You are a historian extracting structured data from a Wikipedia article for a knowledge graph database called Fictotum. Extract historical figures, media works that portray them, and their relationships.
 

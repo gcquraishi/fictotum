@@ -116,7 +116,7 @@ def call_gemini_api(prompt):
     Raises exception after 5 failed attempts.
     """
     response = client.models.generate_content(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type='application/json'
