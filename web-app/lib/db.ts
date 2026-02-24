@@ -2202,3 +2202,88 @@ export async function getTimelineData(
     await session.close();
   }
 }
+
+export interface PortrayalTimelineFigure {
+  canonical_id: string;
+  name: string;
+  birth_year: number;
+  death_year: number;
+  era?: string;
+  portrayals: Array<{
+    media_id: string;
+    title: string;
+    release_year: number;
+    media_type: string;
+    sentiment?: string;
+  }>;
+}
+
+export async function getPortrayalTimelineData(options?: {
+  era?: string;
+  mediaType?: string;
+  minPortrayals?: number;
+}): Promise<PortrayalTimelineFigure[]> {
+  const session = await getSession();
+  try {
+    const conditions: string[] = [
+      'f.birth_year IS NOT NULL',
+      'f.death_year IS NOT NULL',
+    ];
+    const params: Record<string, any> = {};
+
+    if (options?.era) {
+      conditions.push('f.era = $era');
+      params.era = options.era;
+    }
+
+    const mediaCondition = options?.mediaType
+      ? 'AND m.media_type = $mediaType'
+      : '';
+    if (options?.mediaType) {
+      params.mediaType = options.mediaType;
+    }
+
+    const minPortrayals = options?.minPortrayals ?? 2;
+
+    const result = await session.run(
+      `MATCH (f:HistoricalFigure)
+       WHERE ${conditions.join(' AND ')}
+       MATCH (f)-[r:APPEARS_IN]->(m:MediaWork)
+       WHERE m.release_year IS NOT NULL ${mediaCondition}
+       WITH f, collect({
+         media_id: COALESCE(m.media_id, m.wikidata_id),
+         title: m.title,
+         release_year: m.release_year,
+         media_type: COALESCE(m.media_type, 'Unknown'),
+         sentiment: r.sentiment
+       })[0..100] AS portrayals
+       WHERE size(portrayals) >= $minPortrayals
+       RETURN f.canonical_id AS canonical_id,
+              f.name AS name,
+              f.birth_year AS birth_year,
+              f.death_year AS death_year,
+              f.era AS era,
+              portrayals
+       ORDER BY size(portrayals) DESC, f.birth_year ASC
+       LIMIT 200`,
+      { ...params, minPortrayals: neo4j.int(minPortrayals) }
+    );
+
+    return result.records.map(record => ({
+      canonical_id: record.get('canonical_id'),
+      name: record.get('name'),
+      birth_year: neo4j.int(record.get('birth_year')).toNumber(),
+      death_year: neo4j.int(record.get('death_year')).toNumber(),
+      era: record.get('era') || undefined,
+      portrayals: (record.get('portrayals') || []).map((p: any) => ({
+        media_id: p.media_id,
+        title: p.title,
+        release_year: typeof p.release_year === 'object' ? p.release_year.toNumber() : Number(p.release_year),
+        media_type: p.media_type,
+        sentiment: p.sentiment || undefined,
+      })),
+    }));
+  } finally {
+    await session.close();
+  }
+}
