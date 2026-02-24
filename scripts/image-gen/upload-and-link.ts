@@ -244,8 +244,8 @@ async function main() {
       fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
 
       uploaded++;
-    } catch (err: any) {
-      console.error(`  ERROR: ${err.message}`);
+    } catch (err: unknown) {
+      console.error(`  ERROR: ${err instanceof Error ? err.message : String(err)}`);
       failed++;
     }
   }
