@@ -72,17 +72,15 @@ export default function FigureDossier({ dossier }: FigureDossierProps) {
               )}
             </div>
           </div>
-          {dossier.historicity_status && (
-            <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              dossier.historicity_status === 'Historical'
-                ? 'bg-green-900/30 text-green-400 border border-green-700'
-                : dossier.historicity_status === 'Fictional'
-                ? 'bg-purple-900/30 text-purple-400 border border-purple-700'
-                : 'bg-yellow-900/30 text-yellow-400 border border-yellow-700'
-            }`}>
-              {dossier.historicity_status}
-            </div>
-          )}
+          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            dossier.historicity_status === 'Historical'
+              ? 'bg-green-900/30 text-green-400 border border-green-700'
+              : dossier.historicity_status === 'Fictional'
+              ? 'bg-purple-900/30 text-purple-400 border border-purple-700'
+              : 'bg-yellow-900/30 text-yellow-400 border border-yellow-700'
+          }`}>
+            {dossier.historicity_status}
+          </div>
         </div>
         <div className="mt-4 text-gray-400 text-sm">
           <span className="font-semibold">Canonical ID:</span> {dossier.canonical_id}

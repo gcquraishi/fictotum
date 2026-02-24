@@ -1,18 +1,16 @@
 import { HistoricalFigure } from "@/lib/types";
 
 interface Props {
-  status?: 'Historical' | 'Fictional' | 'Disputed';
-  isFictional?: boolean; // Fallback
+  status?: 'Historical' | 'Fictional' | 'Legendary';
 }
 
-export default function HistoricityBadge({ status, isFictional }: Props) {
-  // Normalize status
-  const finalStatus = status || (isFictional ? 'Fictional' : 'Historical');
+export default function HistoricityBadge({ status }: Props) {
+  const finalStatus = status || 'Historical';
 
   const styles = {
     Historical: "bg-green-50 text-green-800 border-green-600",
     Fictional: "bg-purple-50 text-purple-800 border-purple-600",
-    Disputed: "bg-yellow-50 text-yellow-800 border-yellow-600",
+    Legendary: "bg-yellow-50 text-yellow-800 border-yellow-600",
   };
 
   return (

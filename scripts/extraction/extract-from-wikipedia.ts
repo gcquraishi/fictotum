@@ -34,7 +34,7 @@ interface ExtractedFigure {
   title?: string;
   era?: string;
   description?: string;
-  historicity_status?: 'historical' | 'legendary' | 'mythological' | 'fictional';
+  historicity_status?: 'Historical' | 'Fictional' | 'Legendary';
 }
 
 interface ExtractedWork {
@@ -312,7 +312,7 @@ Extract the following and return as JSON:
    - title: Primary title/role (e.g., "King of England")
    - era: Historical era (e.g., "Medieval", "Renaissance", "Victorian Era")
    - description: 1-2 sentence description
-   - historicity_status: "historical", "legendary", "mythological", or "fictional"
+   - historicity_status: "Historical", "Fictional", or "Legendary"
 
 2. **works**: Media works (films, books, TV series, plays, games) that portray these figures. For each:
    - title: Official title

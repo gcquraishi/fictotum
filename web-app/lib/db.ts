@@ -74,8 +74,7 @@ export async function searchFigures(query: string, options?: { era?: string; his
       return {
         canonical_id: node.properties.canonical_id,
         name: node.properties.name,
-        is_fictional: node.properties.is_fictional || false,
-        historicity_status: node.properties.historicity_status || (node.properties.is_fictional ? 'Fictional' : 'Historical'),
+        historicity_status: node.properties.historicity_status || 'Historical',
         era: node.properties.era,
       };
     });
@@ -214,8 +213,7 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
       canonical_id: fp.canonical_id,
       wikidata_id: fp.wikidata_id,
       name: fp.name,
-      is_fictional: fp.is_fictional || false,
-      historicity_status: fp.historicity_status || (fp.is_fictional ? 'Fictional' : 'Historical'),
+      historicity_status: fp.historicity_status || 'Historical',
       era: fp.era,
       birth_year: fp.birth_year?.toNumber?.() ?? (fp.birth_year != null ? Number(fp.birth_year) : null),
       death_year: fp.death_year?.toNumber?.() ?? (fp.death_year != null ? Number(fp.death_year) : null),
@@ -267,8 +265,7 @@ export async function getAllFigures(): Promise<HistoricalFigure[]> {
       return {
         canonical_id: node.properties.canonical_id,
         name: node.properties.name,
-        is_fictional: node.properties.is_fictional || false,
-        historicity_status: node.properties.historicity_status || (node.properties.is_fictional ? 'Fictional' : 'Historical'),
+        historicity_status: node.properties.historicity_status || 'Historical',
         era: node.properties.era,
       };
     });
@@ -348,8 +345,7 @@ export async function getMediaById(id: string) {
           canonical_id: p.figure.properties.canonical_id,
           name: p.figure.properties.name,
           image_url: p.figure.properties.image_url || null,
-          is_fictional: p.figure.properties.is_fictional,
-          historicity_status: p.figure.properties.historicity_status || (p.figure.properties.is_fictional ? 'Fictional' : 'Historical'),
+          historicity_status: p.figure.properties.historicity_status || 'Historical',
         },
         sentiment: p.sentiment,
         sentiment_tags: p.sentiment_tags || [],
@@ -470,7 +466,7 @@ export async function getConflictingPortrayals() {
           era: figureNode.properties.era,
           title: figureNode.properties.title,
           historicity_status: figureNode.properties.historicity_status || 'Historical',
-        },
+        } as const,
         portrayals: portrayals.map((p: any) => ({
           media: {
             media_id: p.media.properties.media_id,
@@ -526,7 +522,6 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
           name: figureNode.properties.name,
           type: 'figure',
           canonical_id: figureNode.properties.canonical_id,
-          is_fictional: figureNode.properties.is_fictional || false,
           temporal: extractTemporalMetadata(figureNode, 'figure'),
         });
         nodeIds.add(figureId);
@@ -568,7 +563,6 @@ export async function getLandingGraphData(): Promise<{ nodes: GraphNode[]; links
             name: otherFigure.properties.name,
             type: 'figure',
             canonical_id: otherFigure.properties.canonical_id,
-            is_fictional: otherFigure.properties.is_fictional || false,
             temporal: extractTemporalMetadata(otherFigure, 'figure'),
           });
           nodeIds.add(otherId);
@@ -1374,8 +1368,7 @@ export async function getWorksInLocation(
       figures: figuresData.map((f: any) => ({
         canonical_id: f.properties.canonical_id,
         name: f.properties.name,
-        is_fictional: f.properties.is_fictional || false,
-        historicity_status: f.properties.historicity_status,
+        historicity_status: f.properties.historicity_status || 'Historical',
         era: f.properties.era,
       })),
       stats: {
@@ -1520,8 +1513,7 @@ export async function getWorksInEra(
       figures: figuresData.map((f: any) => ({
         canonical_id: f.properties.canonical_id,
         name: f.properties.name,
-        is_fictional: f.properties.is_fictional || false,
-        historicity_status: f.properties.historicity_status,
+        historicity_status: f.properties.historicity_status || 'Historical',
         era: f.properties.era,
       })),
       timeline,
@@ -2040,8 +2032,7 @@ export async function getTemporalCoverageDetails(
       return {
         canonical_id: node.properties.canonical_id,
         name: node.properties.name,
-        is_fictional: node.properties.is_fictional || false,
-        historicity_status: node.properties.historicity_status || (node.properties.is_fictional ? 'Fictional' : 'Historical'),
+        historicity_status: node.properties.historicity_status || 'Historical',
         era: node.properties.era,
         wikidata_id: node.properties.wikidata_id,
       };

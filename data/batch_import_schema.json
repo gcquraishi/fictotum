@@ -121,7 +121,7 @@
         },
         "historicity_status": {
           "type": "string",
-          "enum": ["historical", "legendary", "mythological", "fictional"],
+          "enum": ["Historical", "Fictional", "Legendary"],
           "description": "Level of historical authenticity"
         }
       },

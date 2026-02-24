@@ -43,7 +43,7 @@ export const SENTIMENT_COLORS: Record<string, string> = {
 export const FIGURE_TYPE_COLORS: Record<string, string> = {
   Historical: '#2C2C2C',
   Fictional:  '#5D4E6D',
-  Disputed:   '#8B6914',
+  Legendary:  '#8B6914',
   default:    '#2C2C2C',
 };
 

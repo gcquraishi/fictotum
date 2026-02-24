@@ -10,7 +10,7 @@ interface ConnectedFigure {
   birth_year?: number;
   death_year?: number;
   image_url?: string | null;
-  historicity_status?: 'Historical' | 'Fictional' | 'Disputed';
+  historicity_status?: 'Historical' | 'Fictional' | 'Legendary';
   sharedWorks: number;
 }
 

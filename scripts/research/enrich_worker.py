@@ -177,7 +177,7 @@ Rules:
             work["historical_figures"].append({
                 "canonical_id": slug,
                 "name": char["name"],
-                "is_fictional": char["is_fictional"]
+                "historicity_status": "Fictional" if char.get("is_fictional") else "Historical"
             })
 
             work["portrayals"].append({

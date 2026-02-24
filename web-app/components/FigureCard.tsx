@@ -20,7 +20,7 @@ export interface FigureCardProps {
   imageUrl?: string | null;
   portrayalCount?: number;
   portrayalLabel?: string;
-  historicityStatus?: 'Historical' | 'Fictional' | 'Disputed';
+  historicityStatus?: 'Historical' | 'Fictional' | 'Legendary';
   variant?: 'standard' | 'compact';
 }
 

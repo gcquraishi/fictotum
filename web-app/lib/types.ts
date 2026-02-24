@@ -18,8 +18,7 @@ export interface HistoricalFigure {
   wikidata_id?: string;
 
   name: string;
-  is_fictional: boolean;
-  historicity_status?: 'Historical' | 'Fictional' | 'Disputed';
+  historicity_status: 'Historical' | 'Fictional' | 'Legendary';
   era?: string;
   birth_year?: number | null;
   death_year?: number | null;
@@ -100,7 +99,6 @@ export interface GraphNode {
   sentiment?: string;
   canonical_id?: string;
   wikidata_id?: string;
-  is_fictional?: boolean;
   media_type?: string;
   mediaCategory?: MediaCategory; // Only applicable to media nodes
   // Temporal metadata for timeline visualization
@@ -169,7 +167,7 @@ export interface FigureDossier {
   death_year?: number;
   title?: string;
   era?: string;
-  historicity_status?: 'Historical' | 'Fictional' | 'Disputed';
+  historicity_status: 'Historical' | 'Fictional' | 'Legendary';
   portrayals: DetailedPortrayal[];
   scholarly_works: ScholarlyWork[];
 }
@@ -197,7 +195,7 @@ export interface ConflictingFigure {
     name: string;
     era?: string;
     title?: string;
-    historicity_status?: 'Historical' | 'Fictional' | 'Disputed';
+    historicity_status: 'Historical' | 'Fictional' | 'Legendary';
   };
   portrayals: ConflictPortrayal[];
 }

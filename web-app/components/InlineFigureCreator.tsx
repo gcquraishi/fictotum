@@ -19,7 +19,7 @@ export default function InlineFigureCreator({ onCreated, onCancel, defaultName =
   const [name, setName] = useState(defaultName);
   const [birthYear, setBirthYear] = useState('');
   const [deathYear, setDeathYear] = useState('');
-  const [historicity, setHistoricity] = useState<'Historical' | 'Fictional' | 'Disputed'>('Historical');
+  const [historicity, setHistoricity] = useState<'Historical' | 'Fictional' | 'Legendary'>('Historical');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -223,7 +223,7 @@ export default function InlineFigureCreator({ onCreated, onCancel, defaultName =
             Historicity *
           </label>
           <div style={{ display: 'flex', gap: '8px' }}>
-            {(['Historical', 'Fictional', 'Disputed'] as const).map((h) => (
+            {(['Historical', 'Fictional', 'Legendary'] as const).map((h) => (
               <button
                 key={h}
                 type="button"

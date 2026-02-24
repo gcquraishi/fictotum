@@ -226,7 +226,7 @@ export default async function HomePage() {
               imageUrl={figure.image_url}
               portrayalCount={figure.portrayalCount}
               historicityStatus={
-                (figure.historicity_status as 'Historical' | 'Fictional' | 'Disputed') || 'Historical'
+                (figure.historicity_status as 'Historical' | 'Fictional' | 'Legendary') || 'Historical'
               }
             />
           ))}
