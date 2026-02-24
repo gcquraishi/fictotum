@@ -33,10 +33,14 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 ## Current State
 _Last updated: 2026-02-24_
 
-Database has 2,195 entity nodes (896 figures + 1,299 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures — every HistoricalFigure has at least one APPEARS_IN or INTERACTED_WITH relationship. Historicity classification normalized: canonical enum (`Historical`, `Fictional`, `Legendary`) with 100% coverage on `historicity_status`; stale `historicity` property removed. `is_fictional` removed. Discovery agent live on figure detail pages (on-demand AI-narrated connections). Gemini extraction pipeline built but blocked on API quota. Batch import infrastructure is complete. Wikidata-first canonical ID strategy is implemented. Pre-beta — unified Fisk-inspired visual language across Timeline, Graph Explorer, and Homepage. Timeline features row-packed single-viewport layout with zoom/pan. Linear team key is `FIC` (not CHR as in some older references). Site is live at fictotum.com behind a password gate (pre-beta access).
+Database has 2,195 entity nodes (896 figures + 1,299 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Historicity classification normalized. Discovery agent live on figure detail pages. Gemini extraction pipeline built but blocked on API quota. Pre-beta at fictotum.com behind password gate. April roadmap: 4 of 5 milestones complete (M1 production hardening, M3 portrayal timeline, M4 creator analytics, M5 polish). M2 (Gemini unblock + content growth) awaiting decision on plan upgrade. All API write endpoints authenticated. Middleware hardened (timing-safe, open redirect prevention). React component bugs fixed. Neo4j driver tuned for serverless. Admin routes gated. Production console.logs removed.
 
 ### Recent Completions
-- **FIC-149 — Historicity normalization**: Canonical enum (`Historical`, `Fictional`, `Legendary`) with 100% coverage across 898 figures. Migration script (`scripts/migration/normalize-historicity.py`) normalized 198 inconsistent values, classified 317 via Wikidata P31 SPARQL, defaulted 243 to Historical. Removed `is_fictional` boolean from Neo4j (70 nodes) and all TypeScript code. Updated types, db.ts (13 locations), 5 components, batch import schema, extraction pipeline, and enrich worker.
+- **April 2026 roadmap M1 — Production Hardening**: All API write endpoints authenticated (FIC-150). Middleware hardened: timing-safe password comparison, segment-bounded path matching, open redirect prevention (FIC-151). Navbar hooks violation fixed, GraphExplorer 404 resolved, HomeGraphHero memory leaks plugged (FIC-152). Neo4j driver tuned for serverless: pool 10, 30s acquisition timeout, 15s connection timeout. Missing LIMIT clauses added to 4 unbounded queries (FIC-153).
+- **April 2026 roadmap M3 — Global Portrayal Timeline (FIC-112)**: Canvas-based visualization at `/explore/portrayal-timeline`. Figure lifespan bars with media work dots overlaid by release year. Era and media type filters with URL sync. Fisk visual language. Hover tooltips and click-to-navigate.
+- **April 2026 roadmap M4 — Creator Analytics Suite**: TemporalObsessionMap (FIC-75) shows which eras creators gravitate toward. SentimentSignature (FIC-77) shows portrayal tone distribution. CastRepertoryCompany (FIC-76) was already implemented. Analytics section hidden for creators with <3 works.
+- **April 2026 roadmap M5 — Production Polish (FIC-154)**: Console.logs removed from production code (auth, cache, wikidata, forms). Admin routes gated behind auth via layout.tsx. Shared Neo4j driver used in health and analytics endpoints. FIC-148, FIC-149 tickets closed.
+- **FIC-149 — Historicity normalization**: Canonical enum (`Historical`, `Fictional`, `Legendary`) with 100% coverage across 898 figures.
 - **March 2026 roadmap M2 — Discovery Agent**: On-demand "Discover Connections" section on figure detail pages. Graph-only scoring (`lib/connection-scoring.ts`) with Claude Sonnet 4.6 narration. Performance guard skips shortestPath for figures with >12 portrayals. Tested on 7+ figures.
 - **March 2026 roadmap M3 — Gemini Extraction Pipeline**: `scripts/extraction/extract-from-wikipedia.ts` built and tested. Wikipedia fetch → Gemini structured extraction → Wikidata entity resolution → batch-import JSON. Blocked on Gemini free tier quota (429 errors).
 - **March 2026 roadmap M5 — Orphan Connection**: Zero orphans (was 175). Wikidata SPARQL discovery (`scripts/qa/connect-orphans.py`), era-based broad media connections, individual curation. Removed 4 misclassified nodes (3 actors, 1 author). Total entities: 2,197.
@@ -90,35 +94,31 @@ Database has 2,195 entity nodes (896 figures + 1,299 works) with 100% provenance
 - Wikidata-first canonical ID strategy with provisional ID fallback
 
 ### Active Work
-- **FIC-148 (BLOCKING)**: Vercel deploy pipeline not reflecting latest commits on fictotum.com. Requires manual Vercel dashboard investigation — see Linear comment for debugging checklist. Do NOT run `vercel --prod` from repo root.
+- **April 2026 roadmap M2 — Gemini Unblock + Content Growth**: Awaiting decision to upgrade Gemini plan or switch providers. Pipeline code and illustration tooling are ready. Target: Medieval Europe cluster (50+ figures), 2,500+ total entities.
 - **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done, tooling ready)
-- **Gemini extraction pipeline**: Built and tested (`scripts/extraction/extract-from-wikipedia.ts`), blocked on Gemini free tier quota reset
-- Data enrichment and population via batch imports (now supports events + sources)
-- **Linear cleanup**: 29 tickets bulk-closed (FIC-107 through FIC-147, FIC-146). Backlog trimmed to feature work only.
+- Data enrichment and population via batch imports (supports figures, works, events, sources)
 
 ### Known Issues
-- **FIC-148**: Vercel deploys not reflecting latest code. Do NOT use `vercel --prod` from repo root — must deploy from `web-app/` or rely on GitHub integration. See FIC-148 for full debugging steps.
+- Gemini free tier API quota exhausted — blocks extraction pipeline (M2) and illustration generation (FIC-144)
 - Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
 - Google Safe Browsing may flag `/api/auth/signin` on new domains — false positive that resolves in days
 - No automated CI/CD pipeline
 
 ## Roadmap
 ### Immediate (This Sprint)
-- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done, blocked on quota)
-- Gemini extraction pipeline end-to-end test (blocked on quota reset)
-- Illustration batch generation for top 50 figures (blocked on quota reset)
-- Continue data population via batch imports
+- **M2**: Unblock Gemini + Content Growth — upgrade plan, run Medieval Europe cluster, illustrations for top 50 figures
+- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets
 - Apply Neo4j constraints for HistoricalEvent and Source node types
 
 ### Completed This Sprint
-- ~~**FIC-148**: Fix Vercel deploy pipeline~~ — resolved, deploys working
-- ~~**FIC-120/FIC-118**: Discovery agent~~ — live on figure detail pages with graph-only scoring + Sonnet 4.6 narration
-- ~~**FIC-108**: Orphan figure connection~~ — zero orphans, 2,197 total entities
-- ~~Gemini extraction pipeline~~ — built (`scripts/extraction/extract-from-wikipedia.ts`), blocked on quota
+- ~~**M1**: Production Hardening~~ — FIC-150/151/152/153 all resolved
+- ~~**M3**: Global Portrayal Timeline~~ — FIC-112, live at `/explore/portrayal-timeline`
+- ~~**M4**: Creator Analytics Suite~~ — FIC-75/76/77, temporal obsession + sentiment signature + cast repertory
+- ~~**M5**: Production Polish~~ — FIC-154, console.logs removed, admin gated, shared drivers
 
 ### Next (2-4 weeks)
 - Illustration system batch generation (tooling ready, needs Gemini quota)
-- Gemini extraction pipeline: run Medieval Europe cluster through full pipeline once quota resets
+- Gemini extraction pipeline: run Medieval Europe cluster through full pipeline
 
 ### Future (Backlog)
 - **FIC-132/133**: Location data population and filtering (timeline + map)
