@@ -33,10 +33,10 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 ## Current State
 _Last updated: 2026-02-24_
 
-Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Historicity classification normalized. Discovery agent live on figure detail pages. Gemini extraction pipeline tested end-to-end (new API key, model refs updated to gemini-2.5-flash). batch_import.py session bug fixed. Pre-beta at fictotum.com behind password gate. April roadmap: all 5 milestones complete (M1 production hardening, M2 content growth to 2,500+, M3 portrayal timeline, M4 creator analytics, M5 polish). Only remaining M2 sub-item: illustration batch generation blocked on Gemini free tier billing. All API write endpoints authenticated. Middleware hardened. Neo4j driver tuned for serverless. Admin routes gated.
+Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Historicity classification normalized. Discovery agent live on figure detail pages. Gemini extraction pipeline tested end-to-end (new API key, model refs updated to gemini-2.5-flash). batch_import.py session bug fixed. Pre-beta at fictotum.com behind password gate. April roadmap: all 5 milestones complete (M1 production hardening, M2 content growth to 2,500+, M3 portrayal timeline, M4 creator analytics, M5 polish). Illustration pipeline: 1,008 images generated (50 new this session), transparent PNGs with background removal. All API write endpoints authenticated. Middleware hardened. Neo4j driver tuned for serverless. Admin routes gated.
 
 ### Recent Completions
-- **April 2026 roadmap M2 — Unblock Gemini + Content Growth (FIC-113, FIC-35, FIC-88)**: New Gemini API key created, model refs updated to gemini-2.5-flash across 4 files. Fixed batch_import.py session bug (CREATED_BY called outside closed session). Medieval Europe cluster ingested (76 figures via research-compiled batch plus Crusades 14, Wars of Roses 11, Renaissance 59, supplemental global figures). Total entities: 2,501 (1,065 figures + 1,436 works), zero orphans. Illustration generation still blocked on Gemini free tier (user needs to enable GCP billing).
+- **April 2026 roadmap M2 — Unblock Gemini + Content Growth (FIC-113, FIC-35, FIC-88)**: New Gemini API key created, GCP billing enabled, model refs updated to gemini-2.5-flash across 4 files. Fixed batch_import.py session bug (CREATED_BY called outside closed session). Medieval Europe cluster ingested (76 figures via research-compiled batch plus Crusades 14, Wars of Roses 11, Renaissance 59, supplemental global figures). Total entities: 2,501 (1,065 figures + 1,436 works), zero orphans. Illustration batch: 50 figures generated (0 failures), transparent PNGs with background removal, manifest at 1,008 total images.
 - **April 2026 roadmap M1 — Production Hardening**: All API write endpoints authenticated (FIC-150). Middleware hardened: timing-safe password comparison, segment-bounded path matching, open redirect prevention (FIC-151). Navbar hooks violation fixed, GraphExplorer 404 resolved, HomeGraphHero memory leaks plugged (FIC-152). Neo4j driver tuned for serverless: pool 10, 30s acquisition timeout, 15s connection timeout. Missing LIMIT clauses added to 4 unbounded queries (FIC-153).
 - **April 2026 roadmap M3 — Global Portrayal Timeline (FIC-112)**: Canvas-based visualization at `/explore/portrayal-timeline`. Figure lifespan bars with media work dots overlaid by release year. Era and media type filters with URL sync. Fisk visual language. Hover tooltips and click-to-navigate.
 - **April 2026 roadmap M4 — Creator Analytics Suite**: TemporalObsessionMap (FIC-75) shows which eras creators gravitate toward. SentimentSignature (FIC-77) shows portrayal tone distribution. CastRepertoryCompany (FIC-76) was already implemented. Analytics section hidden for creators with <3 works.
@@ -95,31 +95,25 @@ Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenan
 - Wikidata-first canonical ID strategy with provisional ID fallback
 
 ### Active Work
-- **April 2026 roadmap M2 — Gemini Unblock + Content Growth**: Awaiting decision to upgrade Gemini plan or switch providers. Pipeline code and illustration tooling are ready. Target: Medieval Europe cluster (50+ figures), 2,500+ total entities.
-- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets (prompt fix done, tooling ready)
 - Data enrichment and population via batch imports (supports figures, works, events, sources)
+- Upload generated illustrations to cloud storage and link to Neo4j nodes (1,008 images ready)
 
 ### Known Issues
-- Gemini free tier API quota exhausted — blocks extraction pipeline (M2) and illustration generation (FIC-144)
 - Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
 - Google Safe Browsing may flag `/api/auth/signin` on new domains — false positive that resolves in days
 - No automated CI/CD pipeline
 
 ## Roadmap
-### Immediate (This Sprint)
-- **M2**: Unblock Gemini + Content Growth — upgrade plan, run Medieval Europe cluster, illustrations for top 50 figures
-- **FIC-144**: Regenerate Jesus + Peter portraits once Gemini quota resets
-- Apply Neo4j constraints for HistoricalEvent and Source node types
-
 ### Completed This Sprint
 - ~~**M1**: Production Hardening~~ — FIC-150/151/152/153 all resolved
+- ~~**M2**: Unblock Gemini + Content Growth~~ — 2,501 entities, 50 illustrations generated, GCP billing enabled
 - ~~**M3**: Global Portrayal Timeline~~ — FIC-112, live at `/explore/portrayal-timeline`
 - ~~**M4**: Creator Analytics Suite~~ — FIC-75/76/77, temporal obsession + sentiment signature + cast repertory
 - ~~**M5**: Production Polish~~ — FIC-154, console.logs removed, admin gated, shared drivers
 
 ### Next (2-4 weeks)
-- Illustration system batch generation (tooling ready, needs Gemini quota)
-- Gemini extraction pipeline: run Medieval Europe cluster through full pipeline
+- Upload + link illustrations to Neo4j nodes (upload-and-link.ts ready)
+- Apply Neo4j constraints for HistoricalEvent and Source node types
 
 ### Future (Backlog)
 - **FIC-132/133**: Location data population and filtering (timeline + map)
