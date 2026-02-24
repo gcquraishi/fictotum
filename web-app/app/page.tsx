@@ -336,6 +336,7 @@ export default async function HomePage() {
         {[
           { label: 'Graph', sub: 'Visual Connections', href: '/explore/graph' },
           { label: 'Timeline', sub: 'Chronological Explorer', href: '/explore/timeline' },
+          { label: 'Portrayals', sub: 'Lifespans vs Media', href: '/explore/portrayal-timeline' },
           { label: 'Search', sub: 'Full Archive Search', href: '/search' },
           { label: 'Pathfinder', sub: 'Six Degrees of Separation', href: '/explore/pathfinder' },
         ].map((btn) => (
