@@ -132,8 +132,8 @@ export async function getSearchFilterOptions(): Promise<{ eras: string[]; mediaT
   const session = await getSession();
   try {
     const [eraResult, mediaTypeResult] = await Promise.all([
-      session.run(`MATCH (f:HistoricalFigure) WHERE f.era IS NOT NULL RETURN DISTINCT f.era AS era ORDER BY era`),
-      session.run(`MATCH (m:MediaWork) WHERE m.media_type IS NOT NULL RETURN DISTINCT m.media_type AS mt ORDER BY mt`),
+      session.run(`MATCH (f:HistoricalFigure) WHERE f.era IS NOT NULL RETURN DISTINCT f.era AS era ORDER BY era LIMIT 200`),
+      session.run(`MATCH (m:MediaWork) WHERE m.media_type IS NOT NULL RETURN DISTINCT m.media_type AS mt ORDER BY mt LIMIT 100`),
     ]);
     return {
       eras: eraResult.records.map(r => r.get('era')),
@@ -1061,7 +1061,8 @@ export async function getSeriesWorks(seriesWikidataId: string): Promise<SeriesRe
       `MATCH (series:MediaWork {wikidata_id: $seriesWikidataId})
        MATCH (child:MediaWork)-[r:PART_OF]->(series)
        RETURN child, r
-       ORDER BY r.season_number, r.sequence_number, r.episode_number, child.release_year`,
+       ORDER BY r.season_number, r.sequence_number, r.episode_number, child.release_year
+       LIMIT 500`,
       { seriesWikidataId }
     );
 
@@ -1856,7 +1857,7 @@ export async function getTemporalCoverage(
        WITH bucketStart,
             count(m) as workCount,
             collect(DISTINCT m.media_type) as mediaTypes,
-            collect(m) as works
+            collect(m)[0..200] as works
        ORDER BY bucketStart
        RETURN bucketStart,
               bucketStart + ${bucketSize} - 1 as bucketEnd,
