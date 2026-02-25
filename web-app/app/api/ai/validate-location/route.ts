@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 // file: web-app/app/api/ai/validate-location/route.ts
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // ============================================================================
@@ -32,6 +33,11 @@ interface ValidationResponse {
 }
 
 export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body: ValidationRequest = await request.json();
     const { name, wikidataId, workTitle, workYear, notes } = body;
@@ -101,7 +107,6 @@ ${workYear ? `- Work setting year: ${workYear}` : ''}
 - "London" for "Harry Potter" → valid: true, confidence: 1.0, wikidataId: "Q84"`;
 
     // Call Gemini AI
-    console.log(`[AI Validate Location] Validating "${name}" for "${workTitle}"...`);
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
@@ -118,19 +123,13 @@ ${workYear ? `- Work setting year: ${workYear}` : ''}
     } catch (parseError) {
       console.error('[AI Validate Location] Failed to parse AI response:', text);
       return NextResponse.json(
-        {
-          error: 'AI validation failed to return valid response',
-          rawResponse: text
-        },
+        { error: 'AI validation failed to return valid response' },
         { status: 500 }
       );
     }
 
     // Ensure confidence is within bounds
     validationResult.confidence = Math.max(0, Math.min(1, validationResult.confidence));
-
-    // Log result
-    console.log(`[AI Validate Location] Result: valid=${validationResult.valid}, confidence=${validationResult.confidence}, wikidataId=${validationResult.wikidataId}`);
 
     return NextResponse.json(validationResult, { status: 200 });
 

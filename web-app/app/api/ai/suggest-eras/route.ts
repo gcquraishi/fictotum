@@ -160,12 +160,16 @@ Guidelines:
 
       if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
         return parsed.suggestions
-          .filter((s: any) => s.name && typeof s.confidence === 'number')
-          .map((s: any) => ({
+          .filter((s: unknown): s is { name: string; confidence: number } => {
+            if (typeof s !== 'object' || s === null) return false;
+            const obj = s as Record<string, unknown>;
+            return typeof obj.name === 'string' && typeof obj.confidence === 'number';
+          })
+          .map((s) => ({
             name: s.name,
-            confidence: Math.max(0, Math.min(1, s.confidence)), // Clamp to 0-1
+            confidence: Math.max(0, Math.min(1, s.confidence)),
           }))
-          .slice(0, 5); // Limit to 5 suggestions
+          .slice(0, 5);
       }
     } catch (parseError) {
       console.error('[AI Era Suggest] Failed to parse AI response:', parseError);

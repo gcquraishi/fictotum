@@ -820,12 +820,16 @@ class BatchImporter:
                 timestamp = int(time.time() * 1000)
                 work["media_id"] = f"media-{slug}-{timestamp}"
 
-            # Ensure wikidata_id is present
+        # Filter out works missing wikidata_id (required per entity resolution protocol)
+        filtered = []
+        for work in works_to_import:
             if "wikidata_id" not in work or not work["wikidata_id"]:
                 error_msg = f"MediaWork '{work['title']}' has no wikidata_id - REQUIRED per entity resolution protocol"
                 self.stats["errors"].append(error_msg)
                 print(f"   ❌ {error_msg}")
-                works_to_import.remove(work)
+            else:
+                filtered.append(work)
+        works_to_import = filtered
 
         if self.dry_run:
             print(f"   [DRY RUN] Would import {len(works_to_import)} works")
