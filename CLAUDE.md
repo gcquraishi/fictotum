@@ -129,6 +129,7 @@ Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenan
 - **Provenance**: Every node MUST have a `CREATED_BY` relationship to an `:Agent` node
 - **Batch imports**: Always dry-run first, then execute with `--execute` flag
 - **Safety**: Never touch files outside `/Documents/big-heavy/fictotum`
+- **Vercel deploy**: Always deploy from the repo root (`/fictotum/`), never from `web-app/`. The Vercel project is linked at the root via `.vercel/project.json`. Deploying from `web-app/` creates a separate project.
 
 ## Protocols
 
