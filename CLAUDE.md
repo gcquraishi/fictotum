@@ -31,11 +31,12 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-02-24_
+_Last updated: 2026-02-26_
 
 Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Historicity classification normalized. Discovery agent live on figure detail pages. Gemini extraction pipeline tested end-to-end (new API key, model refs updated to gemini-2.5-flash). batch_import.py session bug fixed. Pre-beta at fictotum.com behind password gate. April roadmap: all 5 milestones complete (M1 production hardening, M2 content growth to 2,500+, M3 portrayal timeline, M4 creator analytics, M5 polish). Illustration pipeline: 1,008 images generated (50 new this session), transparent PNGs with background removal. All API write endpoints authenticated. Middleware hardened. Neo4j driver tuned for serverless. Admin routes gated.
 
 ### Recent Completions
+- **Git hygiene triage**: Committed 416 previously untracked source files (web-app, scripts, docs, schemas, tests, .github). Comprehensive .gitignore added covering data files, session artifact markdown, IDE state (.claude/, .cursor/), and credentials (.mcp.json). Caught plaintext Neo4j password in .mcp.json that was not being gitignored.
 - **April 2026 roadmap M2 — Unblock Gemini + Content Growth (FIC-113, FIC-35, FIC-88)**: New Gemini API key created, GCP billing enabled, model refs updated to gemini-2.5-flash across 4 files. Fixed batch_import.py session bug (CREATED_BY called outside closed session). Medieval Europe cluster ingested (76 figures via research-compiled batch plus Crusades 14, Wars of Roses 11, Renaissance 59, supplemental global figures). Total entities: 2,501 (1,065 figures + 1,436 works), zero orphans. Illustration batch: 50 figures generated (0 failures), transparent PNGs with background removal, manifest at 1,008 total images.
 - **April 2026 roadmap M1 — Production Hardening**: All API write endpoints authenticated (FIC-150). Middleware hardened: timing-safe password comparison, segment-bounded path matching, open redirect prevention (FIC-151). Navbar hooks violation fixed, GraphExplorer 404 resolved, HomeGraphHero memory leaks plugged (FIC-152). Neo4j driver tuned for serverless: pool 10, 30s acquisition timeout, 15s connection timeout. Missing LIMIT clauses added to 4 unbounded queries (FIC-153).
 - **April 2026 roadmap M3 — Global Portrayal Timeline (FIC-112)**: Canvas-based visualization at `/explore/portrayal-timeline`. Figure lifespan bars with media work dots overlaid by release year. Era and media type filters with URL sync. Fisk visual language. Hover tooltips and click-to-navigate.
