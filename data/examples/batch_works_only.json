@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "source": "IMDb Dataset",
+    "curator": "Film Curator",
+    "date": "2026-02-01",
+    "description": "Example batch import file with media works only"
+  },
+  "works": [
+    {
+      "title": "Gladiator",
+      "wikidata_id": "Q128518",
+      "media_type": "FILM",
+      "release_year": 2000,
+      "creator": "Ridley Scott",
+      "description": "Epic historical drama film directed by Ridley Scott",
+      "setting": "Ancient Rome, 180 AD"
+    },
+    {
+      "title": "Spartacus",
+      "wikidata_id": "Q186927",
+      "media_type": "FILM",
+      "release_year": 1960,
+      "creator": "Stanley Kubrick",
+      "description": "American epic historical drama film directed by Stanley Kubrick"
+    },
+    {
+      "title": "Ben-Hur",
+      "wikidata_id": "Q180098",
+      "media_type": "FILM",
+      "release_year": 1959,
+      "creator": "William Wyler",
+      "description": "American epic historical drama film directed by William Wyler"
+    },
+    {
+      "title": "The Ides of March",
+      "wikidata_id": "Q747662",
+      "media_type": "FILM",
+      "release_year": 2011,
+      "creator": "George Clooney",
+      "description": "American political drama film directed by George Clooney"
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+# Unified Contribute Page - Visual Guide
+
+## ASCII Wireframes
+
+### Step 1: Search Interface (Desktop)
+```
+┌───────────────────────────────────────────────────────────────────┐
+│  🎯 Add to Fictotum                                           │
+│  Unified hub for contributing historical figures and media works  │
+└───────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────┐
+│                                                                   │
+│  What would you like to add?                                     │
+│  Search for a historical figure or media work to add...          │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ 🔍 Search by name or title...                               │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  [        🔍 Search Fictotum & Wikidata                    ]  │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ 💾 Already in Fictotum                                   │ │
+│  ├─────────────────────────────────────────────────────────────┤ │
+│  │ Henry VIII                           [Figure]          →    │ │
+│  │ 1491                                                         │ │
+│  ├─────────────────────────────────────────────────────────────┤ │
+│  │ The Tudors (2007)                    [Work]            →    │ │
+│  │ TV Series                                                    │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ 🌍 Add from Wikidata                                         │ │
+│  ├─────────────────────────────────────────────────────────────┤ │
+│  │ Wolf Hall (Q7430037)                 [Work]            →    │ │
+│  │ Novel by Hilary Mantel                                      │ │
+│  │ 2009                                                         │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  ╔═════════════════════════════════════════════════════════════╗ │
+│  ║ ➕ Not found? Add manually                                  ║ │
+│  ║ Create a new entry without Wikidata enrichment              ║ │
+│  ╚═════════════════════════════════════════════════════════════╝ │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+
+Tip: Use Tab to navigate, Enter to select, and Escape to go back
+```
+
+### Step 2: Settings Interface (Desktop - Work Package 2B)
+```
+Step 2 of 3                                              66% complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌───────────────────────────────────────────────────────────────────┐
+│  ← Back                                                           │
+│                                                                   │
+│  Configure Settings                                               │
+│  Add locations and era tags for this media work                  │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                     ⚙️                                       │ │
+│  │                                                               │ │
+│  │  Settings panel components will be implemented               │ │
+│  │  in Work Package 2B                                          │ │
+│  │                                                               │ │
+│  │  Location picker, era tag selector, custom fields            │ │
+│  │                                                               │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ ✨ AI Suggestions Loaded                                     │ │
+│  │ 3 locations, 2 era tags                                      │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  [  Back  ]                                [  Continue  →  ]     │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+### Step 3: Confirm Interface (Desktop)
+```
+Step 3 of 3                                             100% complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌───────────────────────────────────────────────────────────────────┐
+│                                                                   │
+│  Confirm & Create                                                 │
+│  Review the details before adding to Fictotum                 │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ 🎬                                                            │ │
+│  │ WORK                                                          │ │
+│  │ Wolf Hall                                                     │ │
+│  │                                                               │ │
+│  │ 🌍 Wikidata ID: Q7430037                                     │ │
+│  │ 📍 3 location(s)                                              │ │
+│  │ 📅 2 era tag(s)                                               │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  [  Back  ]                        [  ✓ Confirm & Create  ]      │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+### Step 4: Creating State
+```
+┌───────────────────────────────────────────────────────────────────┐
+│                                                                   │
+│                                                                   │
+│                          ⊙                                        │
+│                       (spinning)                                  │
+│                                                                   │
+│                     Creating Entity...                            │
+│           Please wait while we add this to Fictotum          │
+│                                                                   │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Mobile Layout (375px width)
+
+### Search Step (Mobile)
+```
+┌──────────────────────────┐
+│ 🎯 Add to Fictotum   │
+│ Unified hub for contrib  │
+│ uting...                 │
+└──────────────────────────┘
+
+┌──────────────────────────┐
+│                          │
+│ What would you like to   │
+│ add?                     │
+│                          │
+│ ┌──────────────────────┐ │
+│ │ 🔍 Search...         │ │
+│ └──────────────────────┘ │
+│                          │
+│ ┌──────────────────────┐ │
+│ │     🔍 Search        │ │
+│ │   Fictotum &     │ │
+│ │     Wikidata         │ │
+│ └──────────────────────┘ │
+│                          │
+│ 💾 Already in ChronosGr  │
+│ aph                      │
+│ ┌──────────────────────┐ │
+│ │ Henry VIII    [Fig]  │ │
+│ │ 1491                 │ │
+│ └──────────────────────┘ │
+│                          │
+│ 🌍 Add from Wikidata     │
+│ ┌──────────────────────┐ │
+│ │ Wolf Hall  [Work]    │ │
+│ │ Novel by Hilary...   │ │
+│ │ 2009                 │ │
+│ └──────────────────────┘ │
+│                          │
+│ ╔════════════════════╗   │
+│ ║ ➕ Add manually    ║   │
+│ ║ Create new entry   ║   │
+│ ╚════════════════════╝   │
+│                          │
+└──────────────────────────┘
+```
+
+### Buttons Stack Vertically
+```
+┌──────────────────────────┐
+│ ┌──────────────────────┐ │
+│ │       Back           │ │ ← 48px min height
+│ └──────────────────────┘ │
+│                          │
+│ ┌──────────────────────┐ │
+│ │    Continue  →       │ │ ← 48px min height
+│ └──────────────────────┘ │
+└──────────────────────────┘
+```
+
+---
+
+## Color Palette Visualization
+
+### Brand Primary (#5D7A8A)
+```
+████████████████████  Muted Blue
+Used for: Headings, section icons, borders
+Contrast on white: 6.2:1 (AAA)
+```
+
+### Brand Accent (#C6470F)
+```
+████████████████████  Burnt Orange
+Used for: CTAs, hover states, progress bar
+Contrast on white: 5.1:1 (AAA)
+```
+
+### Background (#F5F5F5)
+```
+░░░░░░░░░░░░░░░░░░░░  Light Gray
+Used for: Page background
+```
+
+### Foreground (#37474F)
+```
+████████████████████  Dark Slate
+Used for: Body text
+Contrast on white: 9.8:1 (AAA)
+```
+
+---
+
+## Interactive States
+
+### Button States
+```
+Normal:     [  Search Fictotum  ]
+Hover:      [  Search Fictotum  ]  ← Slightly darker
+Active:     [  Search Fictotum  ]  ← Pressed effect
+Disabled:   [  Search Fictotum  ]  ← Grayed out, no cursor
+
+Loading:    [  ⊙ Searching...       ]  ← Spinner + text
+```
+
+### Card States
+```
+Normal:
+┌────────────────────────┐
+│ Henry VIII       [Fig] │
+│ 1491                   │
+└────────────────────────┘
+
+Hover:
+┌════════════════════════┐  ← Border accent color
+│ Henry VIII       [Fig]→│  ← Arrow appears
+│ 1491                   │
+└════════════════════════┘
+        ↓ Shadow increases
+
+Active/Selected:
+┌════════════════════════┐
+│ ✓ Selected: Henry VIII │  ← Success badge
+└════════════════════════┘
+```
+
+### Loading Skeleton
+```
+┌────────────────────────┐
+│ ▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░ │  ← Pulsing animation
+│ ▓▓▓▓▓░░░░░░░░░░░░░░░░░ │
+└────────────────────────┘
+```
+
+---
+
+## Icon System
+
+### Icon Sizes
+```
+Small:   w-4 h-4  (16px) - Used in buttons, labels
+Medium:  w-5 h-5  (20px) - Used in section headers
+Large:   w-8 h-8  (32px) - Used in page header
+XLarge:  w-12 h-12 (48px) - Used in empty states
+```
+
+### Icon Mapping
+| Icon | Component | Color | Usage |
+|------|-----------|-------|-------|
+| 🎯 PlusCircle | Header | Accent | Page identifier |
+| 🔍 Search | Input | Muted | Search action |
+| 💾 Database | Results | Primary | Existing entities |
+| 🌍 Globe | Results | Accent | Wikidata entities |
+| ➕ PlusCircle | Manual | Accent | Create manually |
+| ⚙️ Settings | Step 2 | Primary | Configuration |
+| ✓ CheckCircle | Step 3 | Accent | Confirm action |
+| ⊙ Loader2 | Loading | Accent | Processing |
+| 📍 MapPin | Preview | Primary | Locations |
+| 📅 Calendar | Preview | Primary | Eras |
+| ✨ Sparkles | Success | Blue | AI suggestions |
+| ⚠️ AlertCircle | Error | Red | Error states |
+| ← ArrowLeft | Navigation | Primary | Back action |
+| → ArrowRight | Navigation | Accent | Forward action |
+
+---
+
+## Spacing Rhythm
+
+### Vertical Spacing Pattern
+```
+Page Header:       mb-6 (24px) on mobile, mb-8 (32px) on desktop
+Section Headers:   mb-3 (12px)
+Card Stack:        space-y-2 (8px between cards)
+Form Fields:       space-y-4 (16px between fields)
+Button Groups:     gap-3 (12px)
+```
+
+### Horizontal Spacing Pattern
+```
+Container:         px-4 (16px) on all viewports
+Card Padding:      p-4 (16px) mobile, p-8 (32px) desktop
+Icon + Text:       gap-2 (8px) for small, gap-3 (12px) for large
+```
+
+---
+
+## Typography Scale
+
+### Desktop
+```
+H1: 3xl (30px) font-bold text-brand-primary
+    Add to Fictotum
+
+H2: 2xl (24px) font-bold text-brand-primary
+    What would you like to add?
+
+H3: lg (18px) font-semibold text-brand-primary
+    Already in Fictotum
+
+Body: base (16px) text-brand-text/70
+    Unified hub for contributing...
+
+Small: sm (14px) text-brand-text/60
+    Tip: Use Tab to navigate...
+```
+
+### Mobile
+```
+H1: 2xl (24px) font-bold
+H2: xl (20px) font-bold
+H3: base (16px) font-semibold
+Body: sm (14px)
+Small: xs (12px)
+```
+
+---
+
+## Animation Timings
+
+```
+Fast:     150ms  - Color transitions, hover effects
+Medium:   300ms  - Card state changes
+Slow:     500ms  - Progress bar fill, page transitions
+
+Easing:
+- ease-out:  Natural deceleration (progress bar)
+- ease:      Standard transitions (default)
+```
+
+---
+
+## Accessibility Quick Reference
+
+### Focus Ring
+```
+Default Tailwind: ring-2 ring-blue-500 (fallback)
+Custom:           ring-2 ring-brand-accent
+```
+
+### Tab Order
+```
+1. Search input
+2. Search button
+3. Result card 1
+4. Result card 2
+5. ...
+6. Manual entry button
+7. Back button (if visible)
+8. Continue button
+```
+
+### Screen Reader Announcements
+```
+[Search initiated]
+→ "Searching Fictotum and Wikidata"
+
+[Results loaded]
+→ "Found 3 results in Fictotum, 2 from Wikidata"
+
+[Creating entity]
+→ "Creating entity, please wait"
+```
+
+---
+
+## Error State Examples
+
+### Search Error
+```
+┌─────────────────────────────────────┐
+│ ⚠️  Search failed. Please try again.│
+└─────────────────────────────────────┘
+Red background (#FEE2E2)
+Red border (#FCA5A5)
+Red text (#991B1B)
+```
+
+### Validation Error
+```
+┌─────────────────────────────────────┐
+│ ⚠️  Please enter at least 2         │
+│     characters to search            │
+└─────────────────────────────────────┘
+```
+
+### Creation Error
+```
+┌─────────────────────────────────────┐
+│ ⚠️  Failed to create entity         │
+│     [  Try Again  ]                 │
+└─────────────────────────────────────┘
+```
+
+---
+
+## Success State Examples
+
+### AI Suggestions Loaded
+```
+┌─────────────────────────────────────┐
+│ ✨ AI Suggestions Loaded            │
+│ 3 locations, 2 era tags             │
+└─────────────────────────────────────┘
+Blue background (#DBEAFE)
+Blue border (#93C5FD)
+Blue text (#1E3A8A)
+```
+
+### Entity Selected
+```
+┌─────────────────────────────────────┐
+│ ✓ Selected: Wolf Hall               │
+└─────────────────────────────────────┘
+Green background (#D1FAE5)
+Green border (#6EE7B7)
+Green text (#065F46)
+```
+
+---
+
+**Visual Design Principles**:
+1. **Clarity First** - Every element has a clear purpose
+2. **Hierarchy Through Size** - Important elements are larger
+3. **Color as Signal** - Accent color draws attention to CTAs
+4. **Consistent Spacing** - Rhythm creates visual harmony
+5. **Subtle Feedback** - Hover states guide without overwhelming
+
+---
+
+**Next Designer Handoff**:
+When implementing child components (Work Package 2B+), maintain:
+- Icon sizes and colors
+- Spacing rhythm (gap-2, gap-3, etc.)
+- Border radius (rounded-lg)
+- Shadow depths (shadow-sm, shadow-md)
+- Transition timings (150ms, 500ms)
+
+**File**: `/web-app/app/contribute/VISUAL_GUIDE.md`
+**Version**: 1.0.0
+**Last Updated**: 2026-01-22

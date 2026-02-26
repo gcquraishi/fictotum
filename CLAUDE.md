@@ -3,7 +3,7 @@
 ## Identity
 - **Domain**: fictotum.com (+ www.fictotum.com, fictotum.vercel.app)
 - **Hosting**: Vercel (hobby)
-- **Linear Team**: CHR
+- **Ticket Prefix**: FIC
 - **Root Config**: See ../CLAUDE.md for shared infrastructure
 
 ## Overview

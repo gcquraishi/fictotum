@@ -1,0 +1,59 @@
+# Environment and secrets
+.env
+.env*.local
+.envrc
+.mcp.json
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# IDE / AI tools
+.claude/
+.cursor/
+
+# Vercel
+.vercel
+
+# Next.js
+.next/
+node_modules/
+
+# Temporary
+tmp/
+
+# Generated images (stored in cloud, not git)
+web-app/public/images/
+
+# Root-level session artifacts (reports, logs, summaries, plans)
+# Project docs belong in docs/ — these are ephemeral session outputs
+/*.md
+!/CLAUDE.md
+!/README.md
+!/CHANGELOG.md
+!/DEVELOPER_QUICKSTART.md
+/*.txt
+!/requirements.txt
+/prompt-claude.sh
+
+# Implementation plans (working docs)
+.plans/
+plans/
+
+# AI prompts
+prompts/
+
+# Design mockups (binary assets)
+mocks/
+
+# Data files (batch imports, caches, logs)
+# Schema examples in data/examples/ are tracked
+data/*.json
+data/*.log
+data/.ingestion-cache/
+data/.ingestion-history/
+data/archive/
+data/expansion/

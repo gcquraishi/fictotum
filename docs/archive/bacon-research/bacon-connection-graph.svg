@@ -1,0 +1,99 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="600" fill="#F5F5F5"/>
+
+  <!-- Title -->
+  <text x="600" y="35" font-size="28" font-weight="bold" text-anchor="middle" fill="#5D7A8A">
+    Four Degrees of Separation: Kevin Bacon to Francis Bacon
+  </text>
+
+  <!-- SVG Defs for styling -->
+  <defs>
+    <style>
+      .actor-node { fill: #3b82f6; stroke: #2563eb; stroke-width: 2; }
+      .media-node { fill: #22c55e; stroke: #16a34a; stroke-width: 2; }
+      .historical-node { fill: #f97316; stroke: #ea580c; stroke-width: 2; }
+      .node-label { font-size: 12; font-weight: bold; fill: white; text-anchor: middle; }
+      .connection-line { stroke: #9ca3af; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .media-label { font-size: 11; fill: #5D7A8A; text-anchor: middle; font-style: italic; }
+      .degree-label { font-size: 10; fill: #9ca3af; font-weight: bold; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#9ca3af" />
+    </marker>
+  </defs>
+
+  <!-- Degree 0: Kevin Bacon -->
+  <g>
+    <circle class="actor-node" cx="100" cy="300" r="45"/>
+    <text class="node-label" x="100" y="295">Kevin</text>
+    <text class="node-label" x="100" y="310">Bacon</text>
+    <text class="degree-label" x="100" y="355">DEGREE 0</text>
+  </g>
+
+  <!-- Connection 1: JFK Film -->
+  <line class="connection-line" x1="145" y1="300" x2="235" y2="300"/>
+  <rect x="185" y="285" width="55" height="30" fill="white" stroke="#9ca3af" stroke-width="1" rx="3"/>
+  <text class="media-label" x="212.5" y="300">JFK</text>
+  <text class="media-label" x="212.5" y="313">(1991)</text>
+
+  <!-- Degree 1: Jack Lemmon -->
+  <g>
+    <circle class="actor-node" cx="300" cy="300" r="45"/>
+    <text class="node-label" x="300" y="295">Jack</text>
+    <text class="node-label" x="300" y="310">Lemmon</text>
+    <text class="degree-label" x="300" y="355">DEGREE 1</text>
+  </g>
+
+  <!-- Connection 2: Hamlet Film -->
+  <line class="connection-line" x1="345" y1="300" x2="435" y2="300"/>
+  <rect x="380" y="285" width="55" height="30" fill="white" stroke="#9ca3af" stroke-width="1" rx="3"/>
+  <text class="media-label" x="407.5" y="300">Hamlet</text>
+  <text class="media-label" x="407.5" y="313">(1996)</text>
+
+  <!-- Degree 2: Derek Jacobi -->
+  <g>
+    <circle class="actor-node" cx="500" cy="300" r="45"/>
+    <text class="node-label" x="500" y="295">Derek</text>
+    <text class="node-label" x="500" y="310">Jacobi</text>
+    <text class="degree-label" x="500" y="355">DEGREE 2</text>
+  </g>
+
+  <!-- Connection 3: Love Is the Devil -->
+  <line class="connection-line" x1="545" y1="300" x2="635" y2="300"/>
+  <rect x="570" y="285" width="70" height="30" fill="white" stroke="#9ca3af" stroke-width="1" rx="3"/>
+  <text class="media-label" x="605" y="300">Love Is the</text>
+  <text class="media-label" x="605" y="313">Devil (1998)</text>
+
+  <!-- Degree 3: Francis Bacon (Painter) -->
+  <g>
+    <circle class="historical-node" cx="700" cy="300" r="45"/>
+    <text class="node-label" x="700" y="295">Francis</text>
+    <text class="node-label" x="700" y="310">Bacon</text>
+    <text class="degree-label" x="700" y="355">DEGREE 3</text>
+  </g>
+
+  <!-- Bottom Info Box -->
+  <rect x="50" y="420" width="1100" height="150" fill="white" stroke="#5D7A8A" stroke-width="2" rx="8"/>
+
+  <!-- Info text -->
+  <text x="600" y="450" font-size="16" font-weight="bold" text-anchor="middle" fill="#5D7A8A">
+    Connection Path Summary
+  </text>
+
+  <text x="70" y="480" font-size="12" fill="#37474F">
+    • Kevin Bacon appeared in JFK (1991) as Willie O'Keefe alongside Jack Lemmon
+  </text>
+
+  <text x="70" y="505" font-size="12" fill="#37474F">
+    • Jack Lemmon appeared in Kenneth Branagh's Hamlet (1996) as Marcellus, alongside Derek Jacobi as King Claudius
+  </text>
+
+  <text x="70" y="530" font-size="12" fill="#37474F">
+    • Derek Jacobi portrayed Francis Bacon in "Love Is the Devil" (1998), a biographical film about the 20th-century painter
+  </text>
+
+  <text x="70" y="555" font-size="11" fill="#C6470F" font-weight="bold">
+    Total Degrees of Separation: 4 | Media Works: 3 | Historical Figure: Francis Bacon (Painter, 1909-1992)
+  </text>
+</svg>

@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "source": "Enrichment Test Dataset",
+    "author": "Fictotum",
+    "created_at": "2026-02-02T19:00:00Z",
+    "version": "1.0.0"
+  },
+  "figures": [
+    {
+      "name": "Marcus Aurelius",
+      "wikidata_id": "Q1430"
+    },
+    {
+      "name": "Julius Caesar",
+      "wikidata_id": "Q1048"
+    }
+  ],
+  "media_works": [
+    {
+      "title": "Gladiator",
+      "wikidata_id": "Q174583",
+      "media_type": "Film"
+    }
+  ]
+}
