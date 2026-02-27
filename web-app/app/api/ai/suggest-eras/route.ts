@@ -165,7 +165,7 @@ Guidelines:
             const obj = s as Record<string, unknown>;
             return typeof obj.name === 'string' && typeof obj.confidence === 'number';
           })
-          .map((s) => ({
+          .map((s: { name: string; confidence: number }) => ({
             name: s.name,
             confidence: Math.max(0, Math.min(1, s.confidence)),
           }))
