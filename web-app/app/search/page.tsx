@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { searchFigures, searchMedia, getSearchFilterOptions } from '@/lib/db';
 import SearchInput from '@/components/SearchInput';
+import SearchThumbnail from '@/components/SearchThumbnail';
 
 export const metadata: Metadata = {
   title: 'Search — Fictotum',
@@ -260,16 +261,18 @@ export default async function SearchPage({
                         href={`/figure/${figure.canonical_id}`}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '100px 1fr 120px',
-                          padding: '24px 0',
+                          gridTemplateColumns: '40px 100px 1fr 120px',
+                          padding: '16px 0',
                           borderBottom: '1px solid var(--color-border)',
-                          alignItems: 'baseline',
+                          alignItems: 'center',
                           textDecoration: 'none',
                           color: 'inherit',
                           transition: 'background 0.1s',
+                          gap: '12px',
                         }}
                         className="hover:bg-[#fafafa]"
                       >
+                        <SearchThumbnail name={figure.name} imageUrl={figure.image_url} historicityStatus={figure.historicity_status} />
                         <span
                           style={{
                             fontFamily: 'var(--font-mono)',
