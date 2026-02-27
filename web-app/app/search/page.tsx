@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -6,6 +5,8 @@ import Image from 'next/image';
 import { searchFigures, searchMedia, getSearchFilterOptions } from '@/lib/db';
 import { isValidImageUrl, getPlaceholderStyle } from '@/lib/card-utils';
 import SearchInput from '@/components/SearchInput';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Search — Fictotum',
