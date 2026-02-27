@@ -76,6 +76,7 @@ export async function searchFigures(query: string, options?: { era?: string; his
         name: node.properties.name,
         historicity_status: node.properties.historicity_status || 'Historical',
         era: node.properties.era,
+        image_url: node.properties.image_url || null,
       };
     });
   } finally {

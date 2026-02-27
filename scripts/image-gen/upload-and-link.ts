@@ -101,6 +101,8 @@ async function uploadToBlob(
     access: 'public',
     contentType: 'image/png',
     cacheControlMaxAge: 31536000,
+    addRandomSuffix: false,
+    allowOverwrite: true,
   });
   return blob.url;
 }

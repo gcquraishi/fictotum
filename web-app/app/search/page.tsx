@@ -2,7 +2,9 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { searchFigures, searchMedia, getSearchFilterOptions } from '@/lib/db';
+import { isValidImageUrl, getPlaceholderStyle } from '@/lib/card-utils';
 import SearchInput from '@/components/SearchInput';
 
 export const metadata: Metadata = {
@@ -254,22 +256,68 @@ export default async function SearchPage({
               {tab === 'figures' && (
                 <>
                   {figureResults.length > 0 ? (
-                    figureResults.map((figure) => (
+                    figureResults.map((figure) => {
+                      const placeholder = getPlaceholderStyle('figure', figure.name, figure.historicity_status);
+                      return (
                       <Link
                         key={figure.canonical_id}
                         href={`/figure/${figure.canonical_id}`}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '100px 1fr 120px',
-                          padding: '24px 0',
+                          gridTemplateColumns: '40px 100px 1fr 120px',
+                          padding: '16px 0',
                           borderBottom: '1px solid var(--color-border)',
-                          alignItems: 'baseline',
+                          alignItems: 'center',
                           textDecoration: 'none',
                           color: 'inherit',
                           transition: 'background 0.1s',
+                          gap: '12px',
                         }}
                         className="hover:bg-[#fafafa]"
                       >
+                        {/* Thumbnail */}
+                        <div
+                          style={{
+                            width: '40px',
+                            height: '53px',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {isValidImageUrl(figure.image_url) ? (
+                            <Image
+                              src={figure.image_url!}
+                              alt={figure.name}
+                              fill
+                              sizes="40px"
+                              style={{ objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                backgroundColor: placeholder.backgroundColor,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: 'var(--font-serif)',
+                                  fontSize: '14px',
+                                  fontWeight: 300,
+                                  color: placeholder.textColor,
+                                  opacity: 0.5,
+                                }}
+                              >
+                                {placeholder.initials}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                         <span
                           style={{
                             fontFamily: 'var(--font-mono)',
@@ -314,7 +362,8 @@ export default async function SearchPage({
                           {figure.historicity_status}
                         </div>
                       </Link>
-                    ))
+                      );
+                    }))
                   ) : (
                     <div style={{ textAlign: 'center', padding: '80px 0' }}>
                       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', fontWeight: 300, color: 'var(--color-gray)', fontStyle: 'italic' }}>
