@@ -2,10 +2,9 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { searchFigures, searchMedia, getSearchFilterOptions } from '@/lib/db';
-import { isValidImageUrl, getPlaceholderStyle } from '@/lib/card-utils';
 import SearchInput from '@/components/SearchInput';
+import SearchThumbnail from '@/components/SearchThumbnail';
 
 export const metadata: Metadata = {
   title: 'Search — Fictotum',
@@ -256,80 +255,69 @@ export default async function SearchPage({
               {tab === 'figures' && (
                 <>
                   {figureResults.length > 0 ? (
-                    figureResults.map((figure) => {
-                      const ph = getPlaceholderStyle('figure', figure.name, figure.historicity_status);
-                      return (
-                        <Link
-                          key={figure.canonical_id}
-                          href={`/figure/${figure.canonical_id}`}
+                    figureResults.map((figure) => (
+                      <Link
+                        key={figure.canonical_id}
+                        href={`/figure/${figure.canonical_id}`}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '40px 100px 1fr 120px',
+                          padding: '16px 0',
+                          borderBottom: '1px solid var(--color-border)',
+                          alignItems: 'center',
+                          textDecoration: 'none',
+                          color: 'inherit',
+                          transition: 'background 0.1s',
+                          gap: '12px',
+                        }}
+                        className="hover:bg-[#fafafa]"
+                      >
+                        <SearchThumbnail name={figure.name} imageUrl={figure.image_url} historicityStatus={figure.historicity_status} />
+                        <span
                           style={{
-                            display: 'grid',
-                            gridTemplateColumns: '40px 100px 1fr 120px',
-                            padding: '16px 0',
-                            borderBottom: '1px solid var(--color-border)',
-                            alignItems: 'center',
-                            textDecoration: 'none',
-                            color: 'inherit',
-                            transition: 'background 0.1s',
-                            gap: '12px',
+                            fontFamily: 'var(--font-mono)',
+                            color: 'var(--color-accent)',
+                            fontSize: '16px',
                           }}
-                          className="hover:bg-[#fafafa]"
                         >
-                          <div style={{ width: 40, height: 53, position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-                            {isValidImageUrl(figure.image_url) ? (
-                              <Image src={figure.image_url!} alt={figure.name} fill sizes="40px" style={{ objectFit: 'cover' }} />
-                            ) : (
-                              <div style={{ width: '100%', height: '100%', backgroundColor: ph.backgroundColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ fontFamily: 'var(--font-serif)', fontSize: 14, fontWeight: 300, color: ph.textColor, opacity: 0.5 }}>{ph.initials}</span>
-                              </div>
-                            )}
-                          </div>
-                          <span
+                          {figure.era ? figure.era.split(' ')[0] : ''}
+                        </span>
+                        <div>
+                          <h3
                             style={{
-                              fontFamily: 'var(--font-mono)',
-                              color: 'var(--color-accent)',
-                              fontSize: '16px',
+                              fontFamily: 'var(--font-serif)',
+                              fontSize: '24px',
+                              fontWeight: 400,
+                              marginBottom: '4px',
                             }}
                           >
-                            {figure.era ? figure.era.split(' ')[0] : ''}
-                          </span>
-                          <div>
-                            <h3
-                              style={{
-                                fontFamily: 'var(--font-serif)',
-                                fontSize: '24px',
-                                fontWeight: 400,
-                                marginBottom: '4px',
-                              }}
-                            >
-                              {figure.name}
-                            </h3>
-                            <p
-                              style={{
-                                fontFamily: 'var(--font-serif)',
-                                fontSize: '14px',
-                                color: 'var(--color-gray)',
-                                fontStyle: 'italic',
-                              }}
-                            >
-                              {figure.era || 'Historical Figure'}
-                            </p>
-                          </div>
-                          <div
+                            {figure.name}
+                          </h3>
+                          <p
                             style={{
-                              textAlign: 'right',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: '11px',
+                              fontFamily: 'var(--font-serif)',
+                              fontSize: '14px',
                               color: 'var(--color-gray)',
-                              letterSpacing: '1px',
-                              textTransform: 'uppercase',
+                              fontStyle: 'italic',
                             }}
                           >
-                            {figure.historicity_status}
-                          </div>
-                        </Link>
-                      );
-                    }))
+                            {figure.era || 'Historical Figure'}
+                          </p>
+                        </div>
+                        <div
+                          style={{
+                            textAlign: 'right',
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '11px',
+                            color: 'var(--color-gray)',
+                            letterSpacing: '1px',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {figure.historicity_status}
+                        </div>
+                      </Link>
+                    )))
                   ) : (
                     <div style={{ textAlign: 'center', padding: '80px 0' }}>
                       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', fontWeight: 300, color: 'var(--color-gray)', fontStyle: 'italic' }}>
