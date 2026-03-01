@@ -111,7 +111,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   // CHR-22: Track client-side mount to avoid SSR issues with ForceGraph2D
   const [mounted, setMounted] = useState(false);
   // CHR-22: Responsive dimensions - fits above fold on 13" MacBook
-  const [dimensions, setDimensions] = useState({ width: 1200, height: 600 });
+  const [dimensions, setDimensions] = useState({ width: 1200, height: 700 });
   const [dimensionsReady, setDimensionsReady] = useState(false);
   const [nodes, setNodes] = useState<GraphNode[]>(initialNodes || []);
   const [links, setLinks] = useState<ForceGraphLink[]>(initialLinks || []);
@@ -1868,10 +1868,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           d3VelocityDecay={0.6}
           cooldownTicks={200}
           d3Force={{
-            charge: { strength: -2000, distanceMax: 600 },   // Moderate repulsion
-            link: { distance: 180, strength: 0.4 },          // Gentle link pull
+            charge: { strength: -4000, distanceMax: 800 },   // Stronger repulsion for spacing
+            link: { distance: 250, strength: 0.3 },          // Longer links, gentler pull
             center: { strength: 0.05 },                      // Light centering
-            collision: { radius: 60, strength: 0.5 }         // Prevent overlap
+            collision: { radius: 90, strength: 0.6 }         // Wider collision radius
           }}
           enableNodeDrag={true}
           onNodeDragEnd={(node: any) => {
