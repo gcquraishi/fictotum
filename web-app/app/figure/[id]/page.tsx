@@ -7,6 +7,7 @@ import { ExternalLink } from 'lucide-react';
 import { getFigureById } from '@/lib/db';
 import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, getSentimentColor, isValidImageUrl } from '@/lib/card-utils';
 import PortrayalFilters from '@/components/PortrayalFilters';
+import CharacterProfileMatrix from '@/components/CharacterProfileMatrix';
 import ConnectedFigures from '@/components/ConnectedFigures';
 import DiscoverConnections from '@/components/DiscoverConnections';
 
@@ -388,6 +389,15 @@ export default async function FigurePage({
                   </span>
                 ))}
             </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            CREATOR INTERPRETATION MATRIX
+            ================================================================ */}
+        {totalPortrayals >= 2 && (
+          <div style={{ marginBottom: '48px' }}>
+            <CharacterProfileMatrix portrayals={figure.portrayals} figureName={figure.name} />
           </div>
         )}
 
