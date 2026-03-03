@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { getSession } from '@/lib/neo4j';
-import { put } from '@vercel/blob';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { auth } from '@/lib/auth';
 
 const MODEL_NAME = 'gemini-2.5-flash-image';
@@ -210,22 +210,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No image data in response' }, { status: 500 });
     }
 
-    // Upload to Vercel Blob (or return base64 if no blob token)
+    // Upload to Cloudflare R2 (or return base64 if no R2 config)
     let imageUrl: string;
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const r2AccountId = process.env.R2_ACCOUNT_ID;
+    const r2PublicUrl = process.env.R2_PUBLIC_URL;
 
-    if (blobToken) {
+    if (r2AccountId && r2PublicUrl) {
       const subdir = entityType === 'figure' ? 'figures' : 'works';
       const safeId = entityId.replace(/[^a-zA-Z0-9_-]/g, '_');
-      const blobPath = `fictotum/${subdir}/${safeId}.png`;
-      const blob = await put(blobPath, imageBuffer, {
-        access: 'public',
-        contentType: 'image/png',
-        token: blobToken,
-        addRandomSuffix: false, // Overwrite existing — prevents orphaned blobs
-        cacheControlMaxAge: 31536000,
+      const key = `fictotum/${subdir}/${safeId}.png`;
+
+      const r2Client = new S3Client({
+        region: 'auto',
+        endpoint: `https://${r2AccountId}.r2.cloudflarestorage.com`,
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+        },
       });
-      imageUrl = blob.url;
+
+      await r2Client.send(
+        new PutObjectCommand({
+          Bucket: process.env.R2_BUCKET_NAME || 'big-heavy-assets',
+          Key: key,
+          Body: imageBuffer,
+          ContentType: 'image/png',
+          CacheControl: 'public, max-age=31536000',
+        })
+      );
+
+      imageUrl = `${r2PublicUrl}/${key}`;
     } else {
       imageUrl = `data:image/png;base64,${imageBuffer.toString('base64')}`;
     }

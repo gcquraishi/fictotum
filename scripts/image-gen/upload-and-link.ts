@@ -13,7 +13,7 @@
  *   npx tsx ../scripts/image-gen/upload-and-link.ts --local           # copy to public/ instead
  */
 
-import { put } from '@vercel/blob';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import neo4j, { Driver } from 'neo4j-driver';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -92,19 +92,37 @@ function createDriver(): Driver {
 // Upload strategies
 // ---------------------------------------------------------------------------
 
-async function uploadToBlob(
+function getR2Client(): S3Client {
+  return new S3Client({
+    region: 'auto',
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
+}
+
+async function uploadToR2(
   filePath: string,
-  blobPath: string,
+  key: string,
 ): Promise<string> {
   const fileBuffer = fs.readFileSync(filePath);
-  const blob = await put(blobPath, fileBuffer, {
-    access: 'public',
-    contentType: 'image/png',
-    cacheControlMaxAge: 31536000,
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
-  return blob.url;
+  const client = getR2Client();
+  const bucketName = process.env.R2_BUCKET_NAME || 'big-heavy-assets';
+  const publicUrl = process.env.R2_PUBLIC_URL!;
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Body: fileBuffer,
+      ContentType: 'image/png',
+      CacheControl: 'public, max-age=31536000',
+    })
+  );
+
+  return `${publicUrl}/${key}`;
 }
 
 function copyToPublic(filePath: string, entry: ManifestEntry): string {
@@ -164,16 +182,17 @@ async function main() {
   const args = parseArgs();
 
   console.log('\n=== Fictotum Image Upload & Link ===');
-  console.log(`Mode: ${args.local ? 'local (public/)' : 'Vercel Blob'}`);
+  console.log(`Mode: ${args.local ? 'local (public/)' : 'Cloudflare R2'}`);
   console.log(`Dry run: ${args.dryRun} | Force: ${args.force}\n`);
 
-  // Validate Vercel Blob token if not local mode
+  // Validate R2 credentials if not local mode
   if (!args.local && !args.dryRun) {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_PUBLIC_URL) {
       console.error(
-        'ERROR: BLOB_READ_WRITE_TOKEN not set.\n' +
+        'ERROR: R2 credentials not set.\n' +
+          'Required env vars: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_PUBLIC_URL\n' +
           'Either:\n' +
-          '  1. Set it in .env.local (get from Vercel dashboard > Storage > Blob)\n' +
+          '  1. Set them in .env.local\n' +
           '  2. Use --local flag to copy to public/ instead\n',
       );
       process.exit(1);
@@ -231,8 +250,8 @@ async function main() {
         imageUrl = copyToPublic(filePath, entry);
         console.log(`  Copied to: ${imageUrl}`);
       } else {
-        const blobPath = `fictotum/${entry.entityType === 'figure' ? 'figures' : 'works'}/${path.basename(entry.filename)}`;
-        imageUrl = await uploadToBlob(filePath, blobPath);
+        const r2Key = `fictotum/${entry.entityType === 'figure' ? 'figures' : 'works'}/${path.basename(entry.filename)}`;
+        imageUrl = await uploadToR2(filePath, r2Key);
         console.log(`  Uploaded: ${imageUrl}`);
       }
 
