@@ -111,7 +111,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
   // CHR-22: Track client-side mount to avoid SSR issues with ForceGraph2D
   const [mounted, setMounted] = useState(false);
   // CHR-22: Responsive dimensions - fits above fold on 13" MacBook
-  const [dimensions, setDimensions] = useState({ width: 1200, height: 700 });
+  const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
   const [dimensionsReady, setDimensionsReady] = useState(false);
   const [nodes, setNodes] = useState<GraphNode[]>(initialNodes || []);
   const [links, setLinks] = useState<ForceGraphLink[]>(initialLinks || []);
@@ -963,7 +963,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
         const height = isMobile
           ? Math.min(viewportHeight * 0.5, 450)  // Mobile: 50vh max 450px
-          : Math.min(viewportHeight * 0.7, 700); // Desktop: 70vh max 700px
+          : Math.min(viewportHeight * 0.75, 800); // Desktop: 70vh max 700px
 
         setDimensions({ width, height });
         setDimensionsReady(true);
@@ -989,7 +989,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
         const height = isMobile
           ? Math.min(viewportHeight * 0.5, 450)
-          : Math.min(viewportHeight * 0.7, 700);
+          : Math.min(viewportHeight * 0.75, 800);
         setDimensions({ width: 1200, height });
         setDimensionsReady(true);
         hasSetDimensions = true;
@@ -1868,10 +1868,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           d3VelocityDecay={0.6}
           cooldownTicks={200}
           d3Force={{
-            charge: { strength: -4000, distanceMax: 800 },   // Stronger repulsion for spacing
-            link: { distance: 250, strength: 0.3 },          // Longer links, gentler pull
+            charge: { strength: -6000, distanceMax: 1000 },  // FIC-23: Stronger repulsion to reduce clustering
+            link: { distance: 350, strength: 0.3 },          // FIC-23: Longer links for better spacing
             center: { strength: 0.05 },                      // Light centering
-            collision: { radius: 90, strength: 0.6 }         // Wider collision radius
+            collision: { radius: 110, strength: 0.6 }        // FIC-23: Wider collision to prevent label overlap
           }}
           enableNodeDrag={true}
           onNodeDragEnd={(node: any) => {
