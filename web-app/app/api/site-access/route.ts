@@ -11,12 +11,12 @@ function timingSafeCompare(a: string, b: string): boolean {
   return timingSafeEqual(bufA, bufB);
 }
 
-export function generateAccessToken(): string {
+function generateAccessToken(): string {
   const secret = process.env.SITE_PASSWORD || '';
   return createHmac('sha256', secret).update('site_access_granted').digest('hex');
 }
 
-export function verifyAccessToken(token: string): boolean {
+function verifyAccessToken(token: string): boolean {
   const expected = generateAccessToken();
   return timingSafeCompare(token, expected);
 }
