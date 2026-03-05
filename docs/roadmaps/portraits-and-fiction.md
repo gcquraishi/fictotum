@@ -25,7 +25,7 @@ Fictotum looks and feels like a curated visual encyclopedia of how history becom
   - [x] Search results visually distinguish historicity status (colored bordered badge using FIGURE_TYPE_COLORS)
   - [x] Figure detail pages display historicity status prominently (badge always shown, not just for non-Historical)
   - [ ] At least one curated "exhibit" or collection showcasing fictional/legendary figures — deferred to George (editorial decision, per sprint instructions)
-  - [ ] Audit: confirm we have enough fictional/legendary figures in the DB — blocked on Neo4j (database paused)
+  - [x] Audit: confirm we have enough fictional/legendary figures in the DB — 69 total (42 Fictional, 27 Legendary) after expansion batch of 53 figures from mythology, literature, and games
 - **Key files**: `web-app/app/page.tsx` (homepage), `web-app/app/search/page.tsx`, `web-app/app/figure/[id]/page.tsx`, `web-app/lib/db.ts`
 
 ### M3: The Collection Experience — Not Started
