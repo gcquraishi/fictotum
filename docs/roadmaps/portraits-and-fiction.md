@@ -5,17 +5,16 @@ Fictotum looks and feels like a curated visual encyclopedia of how history becom
 
 ## Milestones
 
-### M1: Illustrations in Production — Blocked
+### M1: Illustrations in Production — Complete
 - **Why it matters**: 1,008 AI-generated portraits sitting on disk are wasted. Uploading them transforms every figure page from a text record to a portrait gallery. This is the single highest-impact visual upgrade available.
-- **Blocker**: Neo4j Aura free tier database is paused (DNS NXDOMAIN for c78564a4.databases.neo4j.io as of 2026-03-05). Must resume from Neo4j Aura console before uploads can link to nodes. 818/1,008 already uploaded in prior session. R2 upload works, Neo4j linking blocked.
 - **Acceptance criteria**:
-  - [x] Figure detail pages display illustration as hero image (already implemented)
-  - [x] Browse/search results show illustration thumbnails where available (already implemented)
+  - [x] Figure detail pages display illustration as hero image
+  - [x] Browse/search results show illustration thumbnails where available
   - [x] Homepage features illustration examples (FigureCard grid uses image_url)
   - [x] Graceful fallback for figures without illustrations (placeholder behavior preserved)
-  - [x] `upload-and-link.ts` script confirmed working end-to-end (818 uploaded previously)
-  - [ ] All 1,008 illustrations uploaded to Cloudflare R2 with 1-year cache headers (818/1,008 done, 190 remaining — blocked on Neo4j)
-  - [ ] Neo4j HistoricalFigure nodes linked to illustration URLs (190 remaining — blocked on Neo4j)
+  - [x] `upload-and-link.ts` script confirmed working end-to-end
+  - [x] All 1,008 illustrations uploaded to Cloudflare R2 with 1-year cache headers (force re-uploaded 2026-03-05, 0 failures)
+  - [x] Neo4j HistoricalFigure nodes linked to illustration URLs (all 1,008 updated to R2 URLs)
 - **Key files**: `scripts/image-gen/upload-and-link.ts`, `web-app/app/figure/[id]/page.tsx`, `web-app/components/`, homepage components
 
 ### M2: Fictional Characters Get Their Due — In Progress
