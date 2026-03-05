@@ -42,6 +42,18 @@ async function getHomepageData() {
              figureCount
     `);
 
+    const fictionalResult = await session.run(`
+      MATCH (f:HistoricalFigure)-[r:APPEARS_IN]->(m:MediaWork)
+      WHERE f.historicity_status IN ['Fictional', 'Legendary']
+      WITH f, count(r) AS portrayalCount
+      ORDER BY portrayalCount DESC
+      LIMIT 8
+      RETURN f.canonical_id AS canonical_id, f.name AS name, f.era AS era,
+             f.birth_year AS birth_year, f.death_year AS death_year,
+             f.image_url AS image_url, f.historicity_status AS historicity_status,
+             portrayalCount
+    `);
+
     const erasResult = await session.run(`
       MATCH (f:HistoricalFigure)
       WITH f.era AS era, count(f) AS figureCount
@@ -80,6 +92,17 @@ async function getHomepageData() {
       figureCount: toNum(r.get('figureCount')) || 0,
     }));
 
+    const fictionalFigures = fictionalResult.records.map(r => ({
+      canonical_id: r.get('canonical_id') as string,
+      name: r.get('name') as string,
+      era: r.get('era') as string | null,
+      birth_year: toNum(r.get('birth_year')),
+      death_year: toNum(r.get('death_year')),
+      image_url: r.get('image_url') as string | null,
+      historicity_status: (r.get('historicity_status') as string) || 'Fictional',
+      portrayalCount: toNum(r.get('portrayalCount')) || 0,
+    }));
+
     const eras = erasResult.records.map(r => ({
       name: r.get('era') as string,
       figureCount: toNum(r.get('figureCount')) || 0,
@@ -92,11 +115,12 @@ async function getHomepageData() {
       portrayals: toNum(statsRecord.get('portrayalCount')) || 0,
     };
 
-    return { figures, works, eras, stats };
+    return { figures, fictionalFigures, works, eras, stats };
   } catch (error) {
     console.error('Homepage data error:', error);
     return {
       figures: [] as { canonical_id: string; name: string; era: string | null; birth_year: number | null; death_year: number | null; image_url: string | null; historicity_status: string; portrayalCount: number }[],
+      fictionalFigures: [] as { canonical_id: string; name: string; era: string | null; birth_year: number | null; death_year: number | null; image_url: string | null; historicity_status: string; portrayalCount: number }[],
       works: [] as { media_id: string; title: string; media_type: string | null; release_year: number | null; creator: string | null; image_url: string | null; wikidata_id: string | null; figureCount: number }[],
       eras: [] as { name: string; figureCount: number }[],
       stats: { figures: 0, works: 0, portrayals: 0 },
@@ -189,6 +213,58 @@ export default async function HomePage() {
           </div>
         ))}
       </div>
+
+      {/* ================================================================
+          BROWSE BY TYPE
+          ================================================================ */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 40px 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: 'var(--color-gray)',
+              marginRight: '8px',
+            }}
+          >
+            Browse
+          </span>
+          {[
+            { label: 'Historical', color: '#2C2C2C' },
+            { label: 'Fictional', color: '#5D4E6D' },
+            { label: 'Legendary', color: '#8B6914' },
+          ].map((type) => (
+            <Link
+              key={type.label}
+              href={`/search?tab=figures&historicity=${type.label}`}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                padding: '6px 14px',
+                border: `1px solid ${type.color}`,
+                textDecoration: 'none',
+                color: type.color,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              className="hover:opacity-70 transition-opacity"
+            >
+              {type.label}
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* ================================================================
           MOST PORTRAYED FIGURES
@@ -288,6 +364,62 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ================================================================
+          FICTIONAL & LEGENDARY
+          ================================================================ */}
+      {data.fictionalFigures.length > 0 && (
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 40px 0' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}
+          >
+            <div className="fsg-section-header" style={{ flex: 1 }}>
+              <span>Fictional &amp; Legendary</span>
+              <Link
+                href="/search?tab=figures&historicity=Fictional"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  textDecoration: 'none',
+                  color: 'var(--color-accent)',
+                }}
+                className="hover:opacity-70 transition-opacity"
+              >
+                Browse All
+              </Link>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '20px',
+            }}
+          >
+            {data.fictionalFigures.map((figure) => (
+              <FigureCard
+                key={figure.canonical_id}
+                canonicalId={figure.canonical_id}
+                name={figure.name}
+                birthYear={figure.birth_year}
+                deathYear={figure.death_year}
+                era={figure.era || undefined}
+                imageUrl={figure.image_url}
+                portrayalCount={figure.portrayalCount}
+                historicityStatus={
+                  (figure.historicity_status as 'Historical' | 'Fictional' | 'Legendary') || 'Fictional'
+                }
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ================================================================
           POPULAR WORKS

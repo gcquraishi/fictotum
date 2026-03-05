@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { searchFigures, searchMedia, getSearchFilterOptions } from '@/lib/db';
 import SearchInput from '@/components/SearchInput';
 import SearchThumbnail from '@/components/SearchThumbnail';
+import { getFigureTypeColor } from '@/lib/card-utils';
 
 export const metadata: Metadata = {
   title: 'Search — Fictotum',
@@ -14,25 +15,26 @@ export const metadata: Metadata = {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; tab?: string; era?: string; type?: string }>;
+  searchParams: Promise<{ q?: string; tab?: string; era?: string; type?: string; historicity?: string }>;
 }) {
   const params = await searchParams;
   const query = params.q || '';
   const tab = params.tab || 'figures';
   const eraFilter = params.era || '';
   const typeFilter = params.type || '';
+  const historicityFilter = params.historicity || '';
 
-  const hasFilters = !!(eraFilter || typeFilter);
+  const hasFilters = !!(eraFilter || typeFilter || historicityFilter);
   const shouldSearch = !!(query || hasFilters);
 
   const [figureResults, mediaResults, filterOptions] = await Promise.all([
-    shouldSearch ? searchFigures(query, { era: eraFilter || undefined }) : Promise.resolve([]),
+    shouldSearch ? searchFigures(query, { era: eraFilter || undefined, historicity: historicityFilter || undefined }) : Promise.resolve([]),
     shouldSearch ? searchMedia(query, { mediaType: typeFilter || undefined }) : Promise.resolve([]),
     getSearchFilterOptions(),
   ]);
 
   const results = tab === 'works' ? mediaResults : figureResults;
-  const activeFilters = tab === 'works' ? typeFilter : eraFilter;
+  const activeFilters = tab === 'works' ? typeFilter : [eraFilter, historicityFilter].filter(Boolean).join(', ');
 
   // Build filter URL helper
   const buildUrl = (overrides: Record<string, string>) => {
@@ -41,6 +43,7 @@ export default async function SearchPage({
     if (overrides.tab ?? params.tab) p.set('tab', overrides.tab ?? params.tab ?? 'figures');
     if (overrides.era !== undefined ? overrides.era : eraFilter) p.set('era', overrides.era !== undefined ? overrides.era : eraFilter);
     if (overrides.type !== undefined ? overrides.type : typeFilter) p.set('type', overrides.type !== undefined ? overrides.type : typeFilter);
+    if (overrides.historicity !== undefined ? overrides.historicity : historicityFilter) p.set('historicity', overrides.historicity !== undefined ? overrides.historicity : historicityFilter);
     return `/search?${p.toString()}`;
   };
 
@@ -102,7 +105,7 @@ export default async function SearchPage({
             Figures ({figureResults.length})
           </Link>
           <Link
-            href={buildUrl({ tab: 'works', era: '' })}
+            href={buildUrl({ tab: 'works', era: '', historicity: '' })}
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '12px',
@@ -173,6 +176,49 @@ export default async function SearchPage({
                 </div>
               )}
 
+              {tab === 'figures' && (
+                <div style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  <Link
+                    href={buildUrl({ historicity: '' })}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      padding: '4px 10px',
+                      border: '1px solid var(--color-border)',
+                      textDecoration: 'none',
+                      color: !historicityFilter ? 'var(--color-bg)' : 'var(--color-gray)',
+                      background: !historicityFilter ? 'var(--color-text)' : 'transparent',
+                    }}
+                  >
+                    All Types
+                  </Link>
+                  {(['Historical', 'Fictional', 'Legendary'] as const).map((h) => {
+                    const color = getFigureTypeColor(h);
+                    return (
+                      <Link
+                        key={h}
+                        href={buildUrl({ historicity: h })}
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '10px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          padding: '4px 10px',
+                          border: `1px solid ${historicityFilter === h ? color : 'var(--color-border)'}`,
+                          textDecoration: 'none',
+                          color: historicityFilter === h ? '#fff' : color,
+                          background: historicityFilter === h ? color : 'transparent',
+                        }}
+                      >
+                        {h}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+
               {tab === 'works' && filterOptions.mediaTypes.length > 0 && (
                 <div style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   <Link
@@ -224,7 +270,7 @@ export default async function SearchPage({
                   Filtered by: <strong style={{ color: 'var(--color-text)' }}>{activeFilters}</strong>
                   {' '}
                   <Link
-                    href={buildUrl({ era: '', type: '' })}
+                    href={buildUrl({ era: '', type: '', historicity: '' })}
                     style={{ color: 'var(--color-accent)', textDecoration: 'none' }}
                   >
                     Clear
@@ -307,14 +353,21 @@ export default async function SearchPage({
                         <div
                           style={{
                             textAlign: 'right',
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: '11px',
-                            color: 'var(--color-gray)',
-                            letterSpacing: '1px',
-                            textTransform: 'uppercase',
                           }}
                         >
-                          {figure.historicity_status}
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '10px',
+                              letterSpacing: '1px',
+                              textTransform: 'uppercase',
+                              padding: '2px 8px',
+                              border: `1px solid ${getFigureTypeColor(figure.historicity_status)}`,
+                              color: getFigureTypeColor(figure.historicity_status),
+                            }}
+                          >
+                            {figure.historicity_status}
+                          </span>
                         </div>
                       </Link>
                     ))

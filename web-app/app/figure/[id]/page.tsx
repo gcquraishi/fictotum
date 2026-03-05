@@ -217,7 +217,7 @@ export default async function FigurePage({
                   </span>
                 </>
               )}
-              {figure.historicity_status && figure.historicity_status !== 'Historical' && (
+              {figure.historicity_status && (
                 <>
                   <span style={{ color: 'var(--color-border)', fontSize: '12px' }}>&middot;</span>
                   <span
