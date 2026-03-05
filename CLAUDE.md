@@ -31,11 +31,12 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-03-03_
+_Last updated: 2026-03-05_
 
-Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Historicity classification normalized. Discovery agent live on figure detail pages. Gemini extraction pipeline tested end-to-end (new API key, model refs updated to gemini-2.5-flash). batch_import.py session bug fixed. Pre-beta at fictotum.com behind password gate. April roadmap: all 5 milestones complete. 818/1,008 illustrations uploaded to Cloudflare R2 and linked to Neo4j nodes (190 remaining, blocked by Cloudflare R2 free tier operation limit reset). Search results show portrait thumbnails. All API write endpoints authenticated. Middleware hardened. Neo4j driver tuned for serverless. Admin routes gated.
+Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Historicity classification normalized. Discovery agent live on figure detail pages. Gemini extraction pipeline tested end-to-end (new API key, model refs updated to gemini-2.5-flash). batch_import.py session bug fixed. Pre-beta at fictotum.com behind password gate. April roadmap: all 5 milestones complete. 818/1,008 illustrations uploaded to Cloudflare R2 and linked to Neo4j nodes (190 remaining — blocked by Neo4j Aura paused). Search results show portrait thumbnails. All API write endpoints authenticated. Middleware hardened. Neo4j driver tuned for serverless. Admin routes gated. Fictional/legendary figures now visible: dedicated homepage section, historicity browse chips, search filter + badges, figure detail always shows historicity badge.
 
 ### Recent Completions
+- **Fictional & Legendary visibility (portraits-and-fiction M2)**: Homepage now has dedicated "Fictional & Legendary" section showing top portrayed fictional/legendary figures. Browse chips (Historical/Fictional/Legendary) on homepage link to search with historicity filter. Search page has historicity filter chips with colored borders matching figure type colors. Search result badges use colored bordered pills instead of plain text. Figure detail pages now always show historicity badge (was previously hidden for Historical). Search URL supports `?historicity=` param.
 - **Character Profile Matrix (FIC-66)**: Sortable/filterable table on figure detail pages showing how different creators interpret the same historical figure. Columns: Work (title + year + type), Creator, Interpretation (sentiment badge + lead/conflict flags), Actor/Character. Sortable by year, sentiment, creator. Filterable by media type. Replaces the placeholder stub. Only shown for figures with 2+ portrayals.
 - **Graph node spacing fix (FIC-23)**: Increased charge from -4000 to -6000, link distance from 250 to 350, collision radius from 90 to 110. Canvas height increased to 800px/75vh.
 - **Illustrations in production (portraits-and-fiction M1)**: 818/1,008 illustrations uploaded to Cloudflare R2 and linked to Neo4j nodes (480 this session + 338 prior). Search results now show portrait thumbnails via new SearchThumbnail component. Fixed upload-and-link.ts blob options (`addRandomSuffix: false`, `allowOverwrite: true`). Added `image_url` to `searchFigures()` query. Fixed pre-existing suggest-eras TS error blocking Vercel builds. 190 remaining illustrations blocked by Cloudflare R2 free tier operation limit (2,000 ops/month).
@@ -103,6 +104,7 @@ Database has 2,501 entity nodes (1,065 figures + 1,436 works) with 100% provenan
 - Upload generated illustrations to cloud storage and link to Neo4j nodes (1,008 images ready)
 
 ### Known Issues
+- **Neo4j Aura database paused**: Free tier auto-pauses after 3 days inactivity. DNS returns NXDOMAIN for `c78564a4.databases.neo4j.io`. Must resume from Neo4j Aura console. Blocks: 190 remaining illustration uploads, fictional/legendary figure DB audit, and all queries.
 - Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
 - Google Safe Browsing may flag `/api/auth/signin` on new domains — false positive that resolves in days
 - No automated CI/CD pipeline

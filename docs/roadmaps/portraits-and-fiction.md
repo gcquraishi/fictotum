@@ -5,30 +5,29 @@ Fictotum looks and feels like a curated visual encyclopedia of how history becom
 
 ## Milestones
 
-### M1: Illustrations in Production — Not Started
+### M1: Illustrations in Production — Blocked
 - **Why it matters**: 1,008 AI-generated portraits sitting on disk are wasted. Uploading them transforms every figure page from a text record to a portrait gallery. This is the single highest-impact visual upgrade available.
+- **Blocker**: Neo4j Aura free tier database is paused (DNS NXDOMAIN for c78564a4.databases.neo4j.io as of 2026-03-05). Must resume from Neo4j Aura console before uploads can link to nodes. 818/1,008 already uploaded in prior session. R2 upload works, Neo4j linking blocked.
 - **Acceptance criteria**:
-  - [ ] All 1,008 illustrations uploaded to Vercel Blob (or equivalent CDN) with 1-year cache headers
-  - [ ] Neo4j HistoricalFigure nodes linked to illustration URLs (property or relationship)
-  - [ ] Figure detail pages display illustration as hero image
-  - [ ] Browse/search results show illustration thumbnails where available
-  - [ ] Homepage features illustration examples (gallery row, rotating portraits, or curated grid)
-  - [ ] Graceful fallback for figures without illustrations (current placeholder behavior preserved)
-  - [ ] `upload-and-link.ts` script confirmed working end-to-end
-- **Linear tickets**: Create new ticket for upload pipeline; close FIC-88 if illustration guardrails are addressed
+  - [x] Figure detail pages display illustration as hero image (already implemented)
+  - [x] Browse/search results show illustration thumbnails where available (already implemented)
+  - [x] Homepage features illustration examples (FigureCard grid uses image_url)
+  - [x] Graceful fallback for figures without illustrations (placeholder behavior preserved)
+  - [x] `upload-and-link.ts` script confirmed working end-to-end (818 uploaded previously)
+  - [ ] All 1,008 illustrations uploaded to Cloudflare R2 with 1-year cache headers (818/1,008 done, 190 remaining — blocked on Neo4j)
+  - [ ] Neo4j HistoricalFigure nodes linked to illustration URLs (190 remaining — blocked on Neo4j)
 - **Key files**: `scripts/image-gen/upload-and-link.ts`, `web-app/app/figure/[id]/page.tsx`, `web-app/components/`, homepage components
 
-### M2: Fictional Characters Get Their Due — Not Started
+### M2: Fictional Characters Get Their Due — In Progress
 - **Why it matters**: The product is called Fictotum. The homepage features only historical figures. Fictional and legendary characters (stored as HistoricalFigure nodes with `historicity_status = 'Fictional' | 'Legendary'`) are invisible — no dedicated browse path, no homepage presence, no navigation entry point. This is a product identity gap.
 - **Acceptance criteria**:
-  - [ ] Homepage surfaces fictional/legendary figures alongside historical ones — either a dedicated section ("Fictional & Legendary") or mixed into existing sections with visual distinction
-  - [ ] Navigation includes a path to browse by historicity (Historical / Fictional / Legendary) — could be tabs, filters, or a dedicated page
-  - [ ] Search results visually distinguish historicity status (badge, icon, or color)
-  - [ ] Figure detail pages display historicity status prominently (not buried in metadata)
-  - [ ] At least one curated "exhibit" or collection showcasing fictional/legendary figures (e.g., "Legendary Figures Across Cultures" — King Arthur, Robin Hood, Mulan)
-  - [ ] Audit: confirm we have enough fictional/legendary figures in the DB to make this meaningful. If not, identify and ingest a batch (10-20 key figures) as part of this milestone.
-- **Linear tickets**: Create new ticket(s)
-- **Key files**: `web-app/app/page.tsx` (homepage), `web-app/app/search/`, `web-app/lib/db.ts` (queries that filter by historicity), `web-app/lib/types.ts` (historicity_status type)
+  - [x] Homepage surfaces fictional/legendary figures alongside historical ones — dedicated "Fictional & Legendary" section with FigureCard grid
+  - [x] Navigation includes a path to browse by historicity (Historical / Fictional / Legendary) — Browse chips on homepage + filter chips on search page
+  - [x] Search results visually distinguish historicity status (colored bordered badge using FIGURE_TYPE_COLORS)
+  - [x] Figure detail pages display historicity status prominently (badge always shown, not just for non-Historical)
+  - [ ] At least one curated "exhibit" or collection showcasing fictional/legendary figures — deferred to George (editorial decision, per sprint instructions)
+  - [ ] Audit: confirm we have enough fictional/legendary figures in the DB — blocked on Neo4j (database paused)
+- **Key files**: `web-app/app/page.tsx` (homepage), `web-app/app/search/page.tsx`, `web-app/app/figure/[id]/page.tsx`, `web-app/lib/db.ts`
 
 ### M3: The Collection Experience — Not Started
 - **Why it matters**: Series pages exist and have good data (appearance matrix, character roster, stats). But are they *compelling*? Would someone share the Assassin's Creed page? This milestone is about making collections/series into destination pages that franchise fans want to explore and share.
@@ -39,7 +38,6 @@ Fictotum looks and feels like a curated visual encyclopedia of how history becom
   - [ ] Open Graph tags on series pages for social sharing (illustration + title + stats)
   - [ ] Series browse page (`/series`) enhanced with illustrations and richer cards
   - [ ] At least 3 well-populated series in the DB to showcase (e.g., Assassin's Creed, Civilization, Wolf Hall trilogy) — ingest data if needed
-- **Linear tickets**: Create new ticket(s)
 - **Key files**: `web-app/app/series/[seriesId]/page.tsx`, `web-app/app/series/page.tsx`, `web-app/lib/db.ts` (getSeriesMetadata)
 
 ## Deferred (explicitly not this roadmap)
@@ -56,6 +54,7 @@ Fictotum looks and feels like a curated visual encyclopedia of how history becom
 - M3 benefits from M1 and M2 (series pages need illustrations; fictional characters appear in series)
 
 ## Risks
+- **Neo4j Aura free tier pausing** — database auto-pauses after 3 days of inactivity. Must be resumed manually from console. This blocks M1 upload completion and M2 DB audit.
 - **Illustration quality variance** — some of the 1,008 images may not be hero-page quality. M1 should include a quick quality review pass.
 - **Fictional character data gap** — if the DB has very few Fictional/Legendary figures, M2 requires a data ingestion sub-task before the UI work is meaningful. Audit first.
 - **Editorial judgment in M2/M3** — "curated exhibits" and "portrayal highlights" require curatorial decisions, not just code. The sprint session should flag these as decision points for George rather than guessing.
