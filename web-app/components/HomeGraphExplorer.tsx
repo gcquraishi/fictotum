@@ -13,6 +13,25 @@ export default function HomeGraphExplorer({ figureIds }: HomeGraphExplorerProps)
     return figureIds[Math.floor(Math.random() * figureIds.length)];
   }, [figureIds]);
 
+  if (!selectedId) {
+    return (
+      <div
+        style={{
+          height: '600px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'var(--font-serif)',
+          fontSize: '18px',
+          color: 'var(--color-gray)',
+          fontStyle: 'italic',
+        }}
+      >
+        Loading graph&hellip;
+      </div>
+    );
+  }
+
   return (
     <div style={{ height: '600px', position: 'relative' }}>
       <GraphExplorer canonicalId={selectedId} />
