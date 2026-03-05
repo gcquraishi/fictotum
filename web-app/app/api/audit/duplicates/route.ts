@@ -4,6 +4,7 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
 import { isInt } from 'neo4j-driver';
+import { auth } from '@/lib/auth';
 import {
   calculateSimilarity,
   calculatePhoneticSimilarity,
@@ -76,6 +77,11 @@ interface DuplicatePair {
  * Returns array of duplicate pairs with similarity breakdown and metadata.
  */
 export async function GET(request: NextRequest) {
+  const authSession = await auth();
+  if (!authSession?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const searchParams = request.nextUrl.searchParams;
 

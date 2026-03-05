@@ -19,17 +19,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Creator name or Q-ID is required' }, { status: 400 });
   }
 
+  if (creatorQid && !/^Q\d+$/.test(creatorQid)) {
+    return NextResponse.json({ error: 'Invalid Q-ID format' }, { status: 400 });
+  }
+
   if (creatorName && creatorName.length < 2) {
     return NextResponse.json({ error: 'Creator name must be at least 2 characters' }, { status: 400 });
   }
 
   try {
     // Build SPARQL query to find works by creator
+    // Sanitize inputs to prevent SPARQL injection
     let creatorPattern = '';
     if (creatorQid) {
       creatorPattern = `BIND(wd:${creatorQid} AS ?creator)`;
     } else {
-      creatorPattern = `?creator rdfs:label "${creatorName}"@en .`;
+      const sanitizedName = creatorName!.replace(/[\\"]/g, '');
+      creatorPattern = `?creator rdfs:label "${sanitizedName}"@en .`;
     }
 
     const sparqlQuery = `

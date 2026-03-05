@@ -315,7 +315,7 @@ export interface CreatorWork {
 export async function fetchCreatorWorks(
   creatorQid: string
 ): Promise<CreatorWork[]> {
-  if (!creatorQid || !creatorQid.startsWith('Q')) {
+  if (!creatorQid || !/^Q\d+$/.test(creatorQid)) {
     throw new Error('Invalid creator Q-ID');
   }
 

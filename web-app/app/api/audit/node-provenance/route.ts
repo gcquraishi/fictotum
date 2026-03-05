@@ -4,6 +4,7 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
 import { isInt } from 'neo4j-driver';
+import { auth } from '@/lib/auth';
 
 function toNumber(value: any): number {
   if (isInt(value)) {
@@ -40,6 +41,11 @@ interface ProvenanceRecord {
  * - limit: Maximum number of results (default: 100, max: 1000)
  */
 export async function GET(request: NextRequest) {
+  const authSession = await auth();
+  if (!authSession?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const searchParams = request.nextUrl.searchParams;
     const entityId = searchParams.get('entity_id');
@@ -157,6 +163,11 @@ export async function GET(request: NextRequest) {
  * - Counts by creation method
  */
 export async function POST(request: NextRequest) {
+  const authSession = await auth();
+  if (!authSession?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const dbSession = await getSession();
 

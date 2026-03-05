@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { timingSafeEqual } from 'crypto';
+import { timingSafeEqual, createHmac } from 'crypto';
 
 function timingSafeCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) {
-    // Compare against self to keep constant time, then return false
     timingSafeEqual(bufA, bufA);
     return false;
   }
   return timingSafeEqual(bufA, bufB);
+}
+
+export function generateAccessToken(): string {
+  const secret = process.env.SITE_PASSWORD || '';
+  return createHmac('sha256', secret).update('site_access_granted').digest('hex');
+}
+
+export function verifyAccessToken(token: string): boolean {
+  const expected = generateAccessToken();
+  return timingSafeCompare(token, expected);
 }
 
 export async function POST(request: NextRequest) {
@@ -23,8 +32,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
   }
 
+  const token = generateAccessToken();
   const response = NextResponse.json({ success: true });
-  response.cookies.set('site_access', 'granted', {
+  response.cookies.set('site_access', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

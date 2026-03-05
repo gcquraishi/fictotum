@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 
 /**
  * CHR-44: Analytics Statistics API
@@ -35,6 +36,11 @@ interface AnalyticsStats {
 }
 
 export async function GET(request: Request) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('range') || '7d'; // 1d, 7d, 30d
