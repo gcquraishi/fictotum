@@ -55,6 +55,23 @@ export default async function MediaPage({
       : formatYear(media.setting_year)
     : null;
 
+  // Temporal Signature metrics
+  const timeDepth = (media.setting_year && media.release_year)
+    ? media.release_year - media.setting_year
+    : null;
+  const historicalSpan = (media.setting_year && media.setting_year_end)
+    ? media.setting_year_end - media.setting_year
+    : null;
+  const eraClassification = timeDepth !== null
+    ? timeDepth <= 20 ? 'Contemporary' : timeDepth <= 50 ? 'Recent Past' : timeDepth <= 100 ? 'Historical' : 'Ancient'
+    : null;
+  const eraClassColors: Record<string, string> = {
+    'Contemporary': '#4A5D5E',
+    'Recent Past': '#6B4423',
+    'Historical': '#8B2635',
+    'Ancient': '#5D4E6D',
+  };
+
   // Collect metadata details for the details grid
   const details: { label: string; value: string }[] = [];
   if (media.publisher) details.push({ label: 'Publisher', value: media.publisher });
@@ -340,6 +357,103 @@ export default async function MediaPage({
             </div>
           )}
         </div>
+
+        {/* ================================================================
+            TEMPORAL SIGNATURE
+            ================================================================ */}
+        {timeDepth !== null && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Temporal Signature</span>
+            </div>
+
+            {/* Timeline bar: setting year → release year */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-gray)' }}>
+                  Set {settingYearDisplay}
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-gray)' }}>
+                  Released {media.release_year}
+                </span>
+              </div>
+              <div style={{ height: '6px', background: 'var(--color-border)', position: 'relative' }}>
+                <div
+                  style={{
+                    height: '100%',
+                    background: eraClassColors[eraClassification!] || '#666',
+                    width: '100%',
+                    opacity: 0.6,
+                  }}
+                />
+                {historicalSpan !== null && historicalSpan > 0 && (
+                  <div
+                    title={`Narrative spans ${historicalSpan} years`}
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      height: '100%',
+                      width: `${Math.min(100, (historicalSpan / timeDepth) * 100)}%`,
+                      background: eraClassColors[eraClassification!] || '#666',
+                      opacity: 0.9,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Metrics grid */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: historicalSpan ? '1fr 1fr 1fr' : '1fr 1fr',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                  Time Depth
+                </p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300 }}>
+                  {timeDepth.toLocaleString()} <span style={{ fontSize: '12px', color: 'var(--color-gray)' }}>years</span>
+                </p>
+              </div>
+
+              {historicalSpan !== null && historicalSpan > 0 && (
+                <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                    Historical Span
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300 }}>
+                    {historicalSpan.toLocaleString()} <span style={{ fontSize: '12px', color: 'var(--color-gray)' }}>years</span>
+                  </p>
+                </div>
+              )}
+
+              <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                  Era Classification
+                </p>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    padding: '3px 8px',
+                    border: `1px solid ${eraClassColors[eraClassification!] || '#666'}`,
+                    color: eraClassColors[eraClassification!] || '#666',
+                  }}
+                >
+                  {eraClassification}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ================================================================
             PRODUCTION DETAILS
