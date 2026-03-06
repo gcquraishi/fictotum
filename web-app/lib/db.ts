@@ -43,7 +43,7 @@ export async function searchFigures(query: string, options?: { era?: string; his
     const params: Record<string, string> = {};
 
     if (query) {
-      conditions.push('toLower(f.name) CONTAINS toLower($query)');
+      conditions.push('(toLower(f.name) CONTAINS toLower($query) OR any(alt IN coalesce(f.alternate_names, []) WHERE toLower(alt) CONTAINS toLower($query)))');
       params.query = query;
     }
     if (options?.era) {
@@ -74,6 +74,7 @@ export async function searchFigures(query: string, options?: { era?: string; his
       return {
         canonical_id: node.properties.canonical_id,
         name: node.properties.name,
+        alternate_names: node.properties.alternate_names || undefined,
         historicity_status: node.properties.historicity_status || 'Historical',
         era: node.properties.era,
         image_url: node.properties.image_url || null,
@@ -214,6 +215,7 @@ export async function getFigureById(canonicalId: string): Promise<FigureProfile 
       canonical_id: fp.canonical_id,
       wikidata_id: fp.wikidata_id,
       name: fp.name,
+      alternate_names: fp.alternate_names || undefined,
       historicity_status: fp.historicity_status || 'Historical',
       era: fp.era,
       birth_year: fp.birth_year?.toNumber?.() ?? (fp.birth_year != null ? Number(fp.birth_year) : null),

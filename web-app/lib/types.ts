@@ -18,6 +18,7 @@ export interface HistoricalFigure {
   wikidata_id?: string;
 
   name: string;
+  alternate_names?: string[];
   historicity_status: 'Historical' | 'Fictional' | 'Legendary';
   era?: string;
   birth_year?: number | null;

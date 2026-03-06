@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 interface Figure {
   canonical_id: string;
   name: string;
+  alternate_names?: string[];
   era?: string;
 }
 
@@ -202,6 +203,18 @@ export default function FigureSearchInput({
                     >
                       {figure.name}
                     </p>
+                    {figure.alternate_names && figure.alternate_names.length > 0 && (
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '10px',
+                          color: 'var(--color-gray)',
+                          marginTop: '1px',
+                        }}
+                      >
+                        aka {figure.alternate_names.slice(0, 3).join(', ')}
+                      </p>
+                    )}
                     {figure.era && (
                       <p
                         style={{

@@ -165,6 +165,19 @@ export default async function FigurePage({
               {figure.name}
             </h1>
 
+            {figure.alternate_names && figure.alternate_names.length > 0 && (
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  color: 'var(--color-gray)',
+                  marginBottom: '8px',
+                }}
+              >
+                aka {figure.alternate_names.join(', ')}
+              </p>
+            )}
+
             {figure.title && (
               <p
                 style={{

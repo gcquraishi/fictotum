@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
       // 1. Historical Figures
       MATCH (f:HistoricalFigure)
       WHERE toLower(f.name) CONTAINS toLower($q)
+        OR any(alt IN coalesce(f.alternate_names, []) WHERE toLower(alt) CONTAINS toLower($q))
       RETURN {
         type: 'figure',
         id: f.canonical_id,
