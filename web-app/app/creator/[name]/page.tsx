@@ -5,6 +5,7 @@ import { UserCircle, BookOpen, TrendingUp } from 'lucide-react';
 import TemporalObsessionMap from '@/components/TemporalObsessionMap';
 import CastRepertoryCompany from '@/components/CastRepertoryCompany';
 import SentimentSignature from '@/components/SentimentSignature';
+import AccuracyReputation from '@/components/AccuracyReputation';
 
 interface CreatorWork {
   wikidata_id: string;
@@ -127,10 +128,11 @@ export default async function CreatorPage({
                   <span>■</span> Historiographical Analysis
                 </h2>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-stone-50 border-2 border-amber-600 border-t-0 p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 bg-stone-50 border-2 border-amber-600 border-t-0 p-6">
                 <TemporalObsessionMap creatorName={creator.name} />
                 <CastRepertoryCompany creatorName={creator.name} />
                 <SentimentSignature creatorName={creator.name} />
+                <AccuracyReputation creatorName={creator.name} />
               </div>
             </div>
           )}
