@@ -48,6 +48,24 @@ export default async function MediaPage({
   const placeholder = getPlaceholderStyle('work', media.title, media.media_type);
   const MediaIcon = getMediaTypeIcon(media.media_type);
 
+  // Historical Accuracy Spectrum
+  const historicalCount = media.portrayals.filter((p: any) => p.figure.historicity_status === 'Historical').length;
+  const fictionalCount = totalFigures - historicalCount;
+  const accuracyRatio = totalFigures > 0 ? (historicalCount / totalFigures) * 100 : null;
+  const accuracyLabel = accuracyRatio === null ? null
+    : accuracyRatio >= 80 ? 'High Historical Fidelity'
+    : accuracyRatio >= 60 ? 'Historically Grounded'
+    : accuracyRatio >= 40 ? 'Balanced Mix'
+    : accuracyRatio >= 20 ? 'Fictional-Heavy'
+    : 'Primarily Fictional';
+  const accuracyColor = accuracyRatio === null ? '#666'
+    : accuracyRatio >= 80 ? '#2D7D46'
+    : accuracyRatio >= 60 ? '#4682B4'
+    : accuracyRatio >= 40 ? '#B8860B'
+    : accuracyRatio >= 20 ? '#8B6914'
+    : '#8B2635';
+  const hasConflicts = media.historical_inaccuracies && media.historical_inaccuracies.length > 0;
+
   // Build setting year display
   const settingYearDisplay = media.setting_year
     ? media.setting_year_end
@@ -357,6 +375,111 @@ export default async function MediaPage({
             </div>
           )}
         </div>
+
+        {/* ================================================================
+            HISTORICAL ACCURACY SPECTRUM
+            ================================================================ */}
+        {accuracyRatio !== null && totalFigures >= 2 && (
+          <div style={{ marginBottom: '32px' }}>
+            <div className="fsg-section-header" style={{ marginBottom: '16px' }}>
+              <span>Historical Accuracy Spectrum</span>
+            </div>
+
+            {/* Spectrum bar */}
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Fictional
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Historical
+                </span>
+              </div>
+              <div style={{ height: '8px', background: 'var(--color-border)', position: 'relative' }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    height: '100%',
+                    width: `${accuracyRatio}%`,
+                    background: accuracyColor,
+                    opacity: 0.7,
+                    transition: 'width 0.3s ease',
+                  }}
+                />
+                {/* Indicator tick */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: `${accuracyRatio}%`,
+                    top: '-3px',
+                    width: '2px',
+                    height: '14px',
+                    background: accuracyColor,
+                    transform: 'translateX(-1px)',
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Metrics grid */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: hasConflicts ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                  Historical
+                </p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300 }}>
+                  {historicalCount} <span style={{ fontSize: '12px', color: 'var(--color-gray)' }}>figures</span>
+                </p>
+              </div>
+              <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                  Fictional / Legendary
+                </p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300 }}>
+                  {fictionalCount} <span style={{ fontSize: '12px', color: 'var(--color-gray)' }}>figures</span>
+                </p>
+              </div>
+              <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                  Classification
+                </p>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    padding: '3px 8px',
+                    border: `1px solid ${accuracyColor}`,
+                    color: accuracyColor,
+                  }}
+                >
+                  {accuracyLabel}
+                </span>
+              </div>
+              {hasConflicts && (
+                <div style={{ padding: '12px 16px', background: 'var(--color-bg)' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', marginBottom: '4px' }}>
+                    Inaccuracies
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: 300, color: '#8B2635' }}>
+                    {media.historical_inaccuracies.length} <span style={{ fontSize: '12px', color: 'var(--color-gray)' }}>flagged</span>
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ================================================================
             TEMPORAL SIGNATURE
