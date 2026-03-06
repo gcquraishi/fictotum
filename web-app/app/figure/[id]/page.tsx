@@ -8,6 +8,7 @@ import { getFigureById } from '@/lib/db';
 import { formatLifespan, formatMediaType, getPlaceholderStyle, getFigureTypeColor, getSentimentColor, isValidImageUrl } from '@/lib/card-utils';
 import PortrayalFilters from '@/components/PortrayalFilters';
 import CharacterProfileMatrix from '@/components/CharacterProfileMatrix';
+import PortrayalHeatmap from '@/components/PortrayalHeatmap';
 import ConnectedFigures from '@/components/ConnectedFigures';
 import DiscoverConnections from '@/components/DiscoverConnections';
 
@@ -402,6 +403,15 @@ export default async function FigurePage({
                   </span>
                 ))}
             </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            PORTRAYAL HEATMAP
+            ================================================================ */}
+        {totalPortrayals >= 4 && (
+          <div style={{ marginBottom: '48px' }}>
+            <PortrayalHeatmap portrayals={figure.portrayals} />
           </div>
         )}
 
