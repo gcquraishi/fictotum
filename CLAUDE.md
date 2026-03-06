@@ -31,11 +31,12 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - `data/` — JSON schemas, examples, CSV templates
 
 ## Current State
-_Last updated: 2026-03-06 (nightshift)_
+_Last updated: 2026-03-06 (nightshift 2)_
 
 Database has 2,621 entity nodes (1,150 figures + 1,471 works) with 100% provenance coverage (CREATED_BY relationships). Zero orphan figures. Discovery agent live on figure detail pages. Gemini extraction pipeline tested end-to-end. batch_import.py session bug fixed. Pre-beta at fictotum.com behind password gate. April roadmap: all 5 milestones complete. All 1,008 illustrations uploaded to Cloudflare R2. Search results show portrait thumbnails. All API write endpoints authenticated. Middleware hardened (Edge Runtime compatible). Neo4j driver tuned for serverless. Admin routes gated. Fictional/legendary figures visible with dedicated homepage section, historicity browse chips, search filter + badges.
 
 ### Recent Completions
+- **Nightshift batch 2 — FIC-70** (2026-03-06) — Historical Accuracy Spectrum on media work pages. Visual spectrum bar showing historical vs fictional/legendary figure ratio, character count breakdown, classification badge (High Historical Fidelity through Primarily Fictional), inaccuracy count when flagged. Only renders for works with 2+ figures. Computed from existing portrayal data.
 - **Nightshift batch — 4 analytics features** (2026-03-06) — FIC-24: alternate names (aka) support in types, DB queries, figure page, and search dropdown (gracefully hidden until data populated). FIC-69: Temporal Signature on media detail page showing Time Depth, Historical Span, and era classification badge (Contemporary/Recent Past/Historical/Ancient). FIC-67: Portrayal Heatmap on figure pages — CSS grid heatmap showing media format × decade with hover tooltips. FIC-78: Historical Accuracy Reputation on creator pages — aggregates conflict/anachronism flags, calculates accuracy score, assigns tier (Historical Purist through Historical Fantasy), shows percentile ranking.
 - **Historical fiction protagonists batch (BIG-51)**: Ingested 23 fictional protagonists (Bernie Gunther, Brother Cadfael, Matthew Shardlake, Amelia Peabody, Richard Sharpe, Jack Aubrey, Francis Crawford of Lymond, John Blackthorne, etc.) + 22 new historical figures + 12 new works + 59 APPEARS_IN relationships. Fixed 21 failed relationships from ID mismatches (different Wikidata Q-IDs in DB vs batch). Total entities: 2,621 (1,150 figures + 1,471 works).
 - **Security hardening**: Fixed SPARQL injection in Wikidata enrichment endpoint, added auth guards to all write APIs, HMAC cookie-based password gate, security headers (HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy), deleted test-db route.
