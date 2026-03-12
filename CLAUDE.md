@@ -120,24 +120,18 @@ Database has 2,621 entity nodes (1,150 figures + 1,471 works) with 100% provenan
 - No automated CI/CD pipeline
 
 ## Roadmap
-### Completed This Sprint
-- ~~**M1**: Production Hardening~~ — FIC-150/151/152/153 all resolved
-- ~~**M2**: Unblock Gemini + Content Growth~~ — 2,501 entities, 50 illustrations generated, GCP billing enabled
-- ~~**M3**: Global Portrayal Timeline~~ — FIC-112, live at `/explore/portrayal-timeline`
-- ~~**M4**: Creator Analytics Suite~~ — FIC-75/76/77, temporal obsession + sentiment signature + cast repertory
-- ~~**M5**: Production Polish~~ — FIC-154, console.logs removed, admin gated, shared drivers
+### Active: Open & Social (`docs/roadmaps/open-and-social.md`)
+- **M1: Open the Gates** — Remove password, public landing/about, OG tags, analytics (FIC-43, FIC-44)
+- **M2: User Identity + Collections** — OAuth (Google/GitHub), contribution tracking, curated paths (FIC-103, FIC-116)
+- **M3: The Collection Experience** — Series pages as shareable destination pages
+- **M4: Content Density Push** — Ancient Egypt (FIC-36), Tudor England (FIC-38), alternate names, target 3K+
 
-### Next (2-4 weeks)
-- Upload + link illustrations to Neo4j nodes (upload-and-link.ts ready)
-- Apply Neo4j constraints for HistoricalEvent and Source node types
-
-### Future (Backlog)
-- **FIC-132/133**: Location data population and filtering (timeline + map)
+### Backlog
+- **FIC-132/133**: Location data and map filtering
+- **FIC-119**: Narrative timeline summaries
+- **FIC-120**: Connection quality scoring
 - API for external consumers
-- Advanced graph queries and analytics
-- Dual-researcher pattern: two Gemini agents (high-precision + high-recall) with reconciliation step for data quality
-- User collections / curated paths: saveable sets of connected nodes as shareable explorations
-- Community contributions
+- Dual-researcher pattern for data quality
 
 ## Conventions
 - **Canonical IDs**: Wikidata Q-ID first (`Q517`), provisional fallback (`PROV:{slug}-{timestamp}`)
