@@ -1127,20 +1127,23 @@ export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | nu
   const session = await getSession();
   try {
     // Fetch series and all its works (dual-key lookup)
+    // Also fetch total portrayal count per figure (across all media, not just this series)
     const seriesResult = await session.run(
       `MATCH (series:MediaWork)
        WHERE series.wikidata_id = $id OR series.media_id = $id
        OPTIONAL MATCH (work:MediaWork)-[r:PART_OF]->(series)
        OPTIONAL MATCH (fig:HistoricalFigure)-[app:APPEARS_IN]->(work)
-       RETURN series,
-              collect(DISTINCT {
-                work: work,
-                relationship: r
-              })[0..500] as works,
-              collect(DISTINCT {
-                figure: fig,
-                work_index: r.sequence_number
-              })[0..1000] as character_appearances`,
+       WITH series,
+            collect(DISTINCT {
+              work: work,
+              relationship: r
+            })[0..500] as works,
+            collect(DISTINCT {
+              figure: fig,
+              work_id: work.media_id,
+              total_portrayals: CASE WHEN fig IS NOT NULL THEN size([(fig)-[:APPEARS_IN]->() | 1]) ELSE 0 END
+            })[0..1000] as character_appearances
+       RETURN series, works, character_appearances`,
       { id }
     );
 
@@ -1161,6 +1164,7 @@ export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | nu
       episode_number: w.relationship?.properties?.episode_number,
       is_main_series: w.relationship?.properties?.is_main_series || false,
       relationship_type: w.relationship?.properties?.relationship_type,
+      image_url: w.work.properties.image_url || null,
     }));
 
     // Build character roster with appearance matrix
@@ -1174,9 +1178,13 @@ export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | nu
 
     // Process character appearances
     characterAppearancesData.forEach((ca: any) => {
+      if (!ca.figure) return;
       const canonicalId = ca.figure.properties.canonical_id;
       const name = ca.figure.properties.name;
-      const workIdx = ca.work_index !== null ? ca.work_index : 0;
+      // Map work_id back to index position in sorted works array
+      const workId = ca.work_id;
+      const workIdx = workId ? (workIndexMap.get(workId) ?? 0) : 0;
+      const totalPortrayals = ca.total_portrayals?.toNumber?.() ?? Number(ca.total_portrayals ?? 0);
 
       if (!characterMap.has(canonicalId)) {
         characterMap.set(canonicalId, {
@@ -1184,11 +1192,19 @@ export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | nu
           name: name,
           appearances: 0,
           works: [],
+          image_url: ca.figure.properties.image_url || null,
+          total_portrayal_count: totalPortrayals,
+          era: ca.figure.properties.era || undefined,
+          historicity_status: ca.figure.properties.historicity_status || 'Historical',
         });
       }
 
       const char = characterMap.get(canonicalId)!;
       char.appearances += 1;
+      // Keep the highest known total_portrayal_count for this figure
+      if (totalPortrayals > (char.total_portrayal_count ?? 0)) {
+        char.total_portrayal_count = totalPortrayals;
+      }
       if (!char.works.includes(workIdx)) {
         char.works.push(workIdx);
       }
@@ -1231,6 +1247,11 @@ export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | nu
       }
     });
 
+    // Pick a hero image: series own image, else first work with an image
+    const heroImageUrl = seriesNode.properties.image_url
+      || works.find(w => w.image_url)?.image_url
+      || null;
+
     return {
       series: {
         title: seriesNode.properties.title,
@@ -1243,6 +1264,7 @@ export async function getSeriesMetadata(id: string): Promise<SeriesMetadata | nu
         translator: seriesNode.properties.translator,
         channel: seriesNode.properties.channel,
         production_studio: seriesNode.properties.production_studio,
+        image_url: heroImageUrl,
       },
       works,
       characters: {

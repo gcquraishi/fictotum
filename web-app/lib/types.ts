@@ -232,6 +232,9 @@ export interface SeriesRelationship {
   episode_number?: number;
   is_main_series: boolean;
   relationship_type: 'sequel' | 'prequel' | 'expansion' | 'episode' | 'part' | 'season';
+  image_url?: string | null;
+  /** Figure canonical IDs that appear in this work (for timeline overlay) */
+  figure_ids?: string[];
 }
 
 export interface MediaWorkWithSeries extends MediaWork {
@@ -252,6 +255,11 @@ export interface CharacterAppearance {
   name: string;
   appearances: number;
   works: number[];
+  image_url?: string | null;
+  /** Total portrayals across ALL media (not just this series) — used for "fame" ranking */
+  total_portrayal_count?: number;
+  era?: string;
+  historicity_status?: 'Historical' | 'Fictional' | 'Legendary';
 }
 
 export interface SeriesMetadata {
@@ -259,6 +267,7 @@ export interface SeriesMetadata {
     media_id: string;
     media_type: string;
     creator?: string;
+    image_url?: string | null;
   };
   works: SeriesRelationship[];
   characters: {
