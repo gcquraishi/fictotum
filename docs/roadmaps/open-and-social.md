@@ -17,15 +17,16 @@ Fictotum goes from a password-gated internal tool to a public product that peopl
 - **Tickets**: FIC-43, FIC-44
 - **Key files**: `web-app/middleware.ts`, `web-app/app/page.tsx` (homepage), `web-app/app/layout.tsx`, all `[id]/page.tsx` routes (metadata), new about/landing component
 
-### M2: User Identity + Collections — Not Started
+### M2: User Identity + Collections — Complete
 - **Why it matters**: Users who love the product have no way to save their explorations or track their contributions. OAuth social login gives them an identity; collections give them a reason to come back.
 - **Acceptance criteria**:
-  - [ ] OAuth social login (Google + GitHub) via NextAuth.js or Auth.js — sign up only if you want to; browsing is free
-  - [ ] User profile page showing contribution history (figures added, portrayals submitted, works created)
-  - [ ] Contribution attribution — contributed entities display the contributor's name/avatar
-  - [ ] User collections / curated paths — save sets of connected figures/works as named, shareable explorations (FIC-116)
-  - [ ] Collection detail page with a mini-graph of the collected entities
-  - [ ] Share collection via permalink (OG tags for social sharing)
+  - [x] OAuth social login (Google + GitHub) via NextAuth.js or Auth.js — sign up only if you want to; browsing is free
+  - [x] User profile page showing contribution history (figures added, portrayals submitted, works created)
+  - [x] Contribution attribution — contributed entities display the contributor's name/avatar
+  - [x] User collections / curated paths — save sets of connected figures/works as named, shareable explorations (FIC-116)
+  - [x] Collection detail page with a mini-graph of the collected entities
+  - [x] Share collection via permalink (OG tags for social sharing)
+- [x] Post-build review passed (CRITICAL: 0, HIGH: 0, MEDIUM: 0)
 - **Tickets**: FIC-103, FIC-116
 - **Key files**: `web-app/app/api/auth/`, `web-app/lib/auth.ts` (new), `web-app/app/profile/` (new), `web-app/app/collection/` (new), contribution API routes
 - **Dependencies**: M1 (site must be public before user sign-up makes sense)
