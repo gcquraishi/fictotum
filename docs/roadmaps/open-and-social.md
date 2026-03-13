@@ -5,14 +5,15 @@ Fictotum goes from a password-gated internal tool to a public product that peopl
 
 ## Milestones
 
-### M1: Open the Gates — Not Started
+### M1: Open the Gates — Complete
 - **Why it matters**: The product is feature-rich and visually compelling, but locked behind a password with no explanation of what it is. Nobody can find it, share it, or link to it. This is the prerequisite for everything else.
 - **Acceptance criteria**:
-  - [ ] Public landing/about experience — a new visitor understands what Fictotum is in 5 seconds and wants to explore (FIC-43)
-  - [ ] Password gate removed (SITE_PASSWORD env var unset or middleware bypassed) — browsing is fully open
-  - [ ] Open Graph meta tags on figure, media, creator, and series pages — shared links show illustration + title + stats on social/Slack/iMessage
-  - [ ] Privacy-first analytics wired up — page views, search queries, popular figures, referral sources (FIC-44)
-  - [ ] Sentry error monitoring verified working for public traffic (already wired, just confirm)
+  - [x] Public landing/about experience — a new visitor understands what Fictotum is in 5 seconds and wants to explore (FIC-43)
+  - [x] Password gate removed (SITE_PASSWORD env var unset or middleware bypassed) — browsing is fully open
+  - [x] Open Graph meta tags on figure, media, creator, and series pages — shared links show illustration + title + stats on social/Slack/iMessage
+  - [x] Privacy-first analytics wired up — page views, search queries, popular figures, referral sources (FIC-44)
+  - [x] Sentry error monitoring verified working for public traffic (already wired, just confirm)
+- [x] Post-build review passed (CRITICAL: 0, HIGH: 0, MEDIUM: 0)
 - **Tickets**: FIC-43, FIC-44
 - **Key files**: `web-app/middleware.ts`, `web-app/app/page.tsx` (homepage), `web-app/app/layout.tsx`, all `[id]/page.tsx` routes (metadata), new about/landing component
 
