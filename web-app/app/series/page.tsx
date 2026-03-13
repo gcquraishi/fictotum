@@ -1,49 +1,100 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { getMediaTypeColor, getMediaTypeIcon } from '@/lib/card-utils';
+import Image from 'next/image';
+import { getSession } from '@/lib/neo4j';
+import { getMediaTypeColor, getMediaTypeIcon, isValidImageUrl } from '@/lib/card-utils';
+
+export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Series Archive — Fictotum',
+  description:
+    'Browse all book, TV, film, and game series in the Fictotum archive — multi-work franchises featuring historical figures across centuries.',
+  openGraph: {
+    title: 'Series Archive — Fictotum',
+    description:
+      'Browse all book, TV, film, and game series in the Fictotum archive — multi-work franchises featuring historical figures across centuries.',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Series Archive — Fictotum',
+    description:
+      'Browse all book, TV, film, and game series in the Fictotum archive — multi-work franchises featuring historical figures across centuries.',
+  },
+};
 
 interface SeriesListItem {
   wikidata_id: string;
+  media_id: string;
   title: string;
   media_type: string;
   creator?: string;
+  image_url?: string | null;
   work_count: number;
   character_count: number;
+  year_range: [number, number] | null;
 }
 
-export default function SeriesBrowsePage() {
-  const [series, setSeries] = useState<SeriesListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredSeries, setFilteredSeries] = useState<SeriesListItem[]>([]);
-
-  useEffect(() => {
-    const fetchSeries = async () => {
-      try {
-        const response = await fetch('/api/series/browse');
-        if (!response.ok) throw new Error('Failed to fetch series');
-        const data = await response.json();
-        setSeries(data);
-        setFilteredSeries(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load series');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSeries();
-  }, []);
-
-  useEffect(() => {
-    const filtered = series.filter(s =>
-      s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (s.creator && s.creator.toLowerCase().includes(searchQuery.toLowerCase()))
+async function getAllSeries(): Promise<SeriesListItem[]> {
+  const session = await getSession();
+  try {
+    const result = await session.run(
+      `MATCH (series:MediaWork)
+       WHERE (series.media_type IN ['Book Series', 'Game Series'])
+       OR (series.media_type IN ['Book', 'Film', 'TV Series', 'Video Game'] AND (series)-[:PART_OF]->())
+       OPTIONAL MATCH (work:MediaWork)-[:PART_OF]->(series)
+       OPTIONAL MATCH (fig:HistoricalFigure)-[:APPEARS_IN]->(work)
+       WITH series,
+            count(DISTINCT work) as work_count,
+            count(DISTINCT fig) as character_count,
+            collect(DISTINCT work.release_year) as release_years,
+            collect(DISTINCT work.image_url)[0] as first_work_image
+       WHERE work_count > 0
+       RETURN series.wikidata_id as wikidata_id,
+              series.media_id as media_id,
+              series.title as title,
+              series.media_type as media_type,
+              series.creator as creator,
+              series.image_url as series_image_url,
+              first_work_image,
+              work_count,
+              character_count,
+              release_years
+       ORDER BY work_count DESC
+       LIMIT 100`
     );
-    setFilteredSeries(filtered);
-  }, [searchQuery, series]);
+
+    return result.records.map(record => {
+      const releaseYears: number[] = (record.get('release_years') || [])
+        .map((y: any) => y?.toNumber?.() ?? Number(y))
+        .filter((y: number) => y && y > 0);
+      const minYear = releaseYears.length > 0 ? Math.min(...releaseYears) : 0;
+      const maxYear = releaseYears.length > 0 ? Math.max(...releaseYears) : 0;
+      const seriesImageUrl = record.get('series_image_url');
+      const firstWorkImage = record.get('first_work_image');
+
+      return {
+        wikidata_id: record.get('wikidata_id'),
+        media_id: record.get('media_id'),
+        title: record.get('title'),
+        media_type: record.get('media_type'),
+        creator: record.get('creator'),
+        image_url: seriesImageUrl || firstWorkImage || null,
+        work_count: record.get('work_count')?.toNumber?.() ?? Number(record.get('work_count')),
+        character_count: record.get('character_count')?.toNumber?.() ?? Number(record.get('character_count')),
+        year_range: minYear > 0 ? [minYear, maxYear] : null,
+      };
+    });
+  } finally {
+    await session.close();
+  }
+}
+
+export default async function SeriesBrowsePage() {
+  const series = await getAllSeries();
+
+  // Top series by work count (for featured strip)
+  const featured = series.slice(0, 3);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
@@ -82,9 +133,14 @@ export default function SeriesBrowsePage() {
         </span>
       </div>
 
-      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '40px 24px 80px' }}>
-        {/* Page Header */}
-        <div style={{ marginBottom: '32px' }}>
+      {/* Page header */}
+      <div
+        style={{
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-section-bg)',
+        }}
+      >
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 40px 32px' }}>
           <p
             style={{
               fontFamily: 'var(--font-mono)',
@@ -100,7 +156,7 @@ export default function SeriesBrowsePage() {
           <h1
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '42px',
+              fontSize: '48px',
               fontWeight: 300,
               color: 'var(--color-text)',
               marginBottom: '8px',
@@ -111,166 +167,343 @@ export default function SeriesBrowsePage() {
           <p
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '16px',
+              fontSize: '17px',
               color: 'var(--color-gray)',
+              marginBottom: '0',
             }}
           >
-            Explore all book, TV, film, and game series in the archive.
+            Multi-work franchises featuring historical figures across centuries of storytelling.
           </p>
         </div>
+      </div>
 
-        {/* Search */}
-        <div style={{ marginBottom: '32px' }}>
-          <input
-            type="text"
-            placeholder="Search by series name or creator..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: '100%',
-              fontFamily: 'var(--font-serif)',
-              fontSize: '16px',
-              padding: '12px 16px',
-              border: '1px solid var(--color-border)',
-              background: 'var(--color-bg)',
-              color: 'var(--color-text)',
-              outline: 'none',
-            }}
-          />
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 40px 80px' }}>
+
+        {/* Summary stat */}
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            color: 'var(--color-gray)',
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+            marginBottom: '32px',
+          }}
+        >
+          {series.length} series in archive
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div style={{ padding: '80px 0', textAlign: 'center' }}>
+        {/* Featured strip — top 3 series */}
+        {featured.length > 0 && (
+          <div style={{ marginBottom: '48px' }}>
             <p
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
+                fontSize: '9px',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
                 color: 'var(--color-gray)',
+                marginBottom: '12px',
               }}
             >
-              Loading series...
+              Most populated
             </p>
-          </div>
-        )}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              {featured.map((s) => {
+                const accentColor = getMediaTypeColor(s.media_type);
+                const id = s.wikidata_id || s.media_id;
+                const hasImage = isValidImageUrl(s.image_url);
 
-        {/* Error */}
-        {error && (
-          <div
-            style={{
-              padding: '16px 20px',
-              border: '1px solid var(--color-accent)',
-              borderLeft: '4px solid var(--color-accent)',
-              marginBottom: '32px',
-            }}
-          >
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-accent)' }}>
-              {error}
-            </p>
-          </div>
-        )}
-
-        {/* Series Grid */}
-        {!loading && !error && filteredSeries.length > 0 && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-              gap: '1px',
-              background: 'var(--color-border)',
-              border: '1px solid var(--color-border)',
-            }}
-          >
-            {filteredSeries.map((s) => {
-              const accentColor = getMediaTypeColor(s.media_type);
-              const Icon = getMediaTypeIcon(s.media_type);
-
-              return (
-                <Link
-                  key={s.wikidata_id}
-                  href={`/series/${s.wikidata_id}`}
-                  style={{
-                    display: 'block',
-                    background: 'var(--color-bg)',
-                    padding: '20px',
-                    textDecoration: 'none',
-                    color: 'var(--color-text)',
-                    borderBottom: `2px solid transparent`,
-                  }}
-                  className="hover:opacity-80 transition-opacity"
-                >
-                  {/* Type Badge + Icon */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <Icon style={{ width: '20px', height: '20px', color: accentColor, opacity: 0.7 }} />
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '9px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px',
-                        padding: '2px 8px',
-                        border: `1px solid ${accentColor}`,
-                        color: accentColor,
-                      }}
-                    >
-                      {s.media_type}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h3
+                return (
+                  <Link
+                    key={id}
+                    href={`/series/${id}`}
                     style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontSize: '17px',
-                      fontWeight: 500,
+                      display: 'block',
+                      background: 'var(--color-bg)',
+                      textDecoration: 'none',
                       color: 'var(--color-text)',
-                      lineHeight: 1.3,
-                      marginBottom: '4px',
+                      position: 'relative',
+                      overflow: 'hidden',
                     }}
+                    className="hover:opacity-90 transition-opacity"
                   >
-                    {s.title}
-                  </h3>
-                  {s.creator && (
-                    <p
+                    {/* Cover image */}
+                    <div
                       style={{
-                        fontFamily: 'var(--font-serif)',
-                        fontSize: '13px',
-                        color: 'var(--color-gray)',
-                        marginBottom: '12px',
+                        height: '200px',
+                        position: 'relative',
+                        background: accentColor,
+                        overflow: 'hidden',
                       }}
                     >
-                      by {s.creator}
-                    </p>
-                  )}
+                      {hasImage ? (
+                        <Image
+                          src={s.image_url!}
+                          alt={s.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          style={{ objectFit: 'cover', objectPosition: 'top' }}
+                        />
+                      ) : (
+                        (() => {
+                          const Icon = getMediaTypeIcon(s.media_type);
+                          return (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Icon style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.4)' }} />
+                            </div>
+                          );
+                        })()
+                      )}
+                      {/* Dark gradient at bottom */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)',
+                        }}
+                        aria-hidden="true"
+                      />
+                      {/* Type badge */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '12px',
+                          left: '12px',
+                          padding: '3px 8px',
+                          background: 'rgba(0,0,0,0.5)',
+                          border: `1px solid ${accentColor}`,
+                          backdropFilter: 'blur(4px)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '8px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            color: accentColor,
+                          }}
+                        >
+                          {s.media_type}
+                        </span>
+                      </div>
+                    </div>
 
-                  {/* Stats */}
-                  <div
+                    {/* Card body */}
+                    <div style={{ padding: '16px 20px 20px' }}>
+                      <h3
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          fontSize: '20px',
+                          fontWeight: 500,
+                          lineHeight: 1.2,
+                          marginBottom: '4px',
+                        }}
+                      >
+                        {s.title}
+                      </h3>
+                      {s.creator && (
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '13px',
+                            color: 'var(--color-gray)',
+                            fontStyle: 'italic',
+                            marginBottom: '12px',
+                          }}
+                        >
+                          by {s.creator}
+                        </p>
+                      )}
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '20px',
+                          paddingTop: '12px',
+                          borderTop: '1px solid var(--color-border)',
+                        }}
+                      >
+                        <div>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)', marginBottom: '2px' }}>Works</p>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '22px', fontWeight: 600, color: accentColor, lineHeight: 1 }}>{s.work_count}</p>
+                        </div>
+                        <div>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)', marginBottom: '2px' }}>Figures</p>
+                          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '22px', fontWeight: 600, color: 'var(--color-text)', lineHeight: 1 }}>{s.character_count}</p>
+                        </div>
+                        {s.year_range && (
+                          <div>
+                            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)', marginBottom: '2px' }}>Span</p>
+                            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 500, color: 'var(--color-text)', lineHeight: 1, marginTop: '4px' }}>
+                              {s.year_range[0] === s.year_range[1] ? s.year_range[0] : `${s.year_range[0]}\u2009\u2013\u2009${s.year_range[1]}`}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================
+            FULL LIST — compact grid
+            ================================================================ */}
+        {series.length > 3 && (
+          <div>
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '9px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                color: 'var(--color-gray)',
+                marginBottom: '12px',
+              }}
+            >
+              All Series
+            </p>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                gap: '1px',
+                background: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              {series.slice(3).map((s) => {
+                const accentColor = getMediaTypeColor(s.media_type);
+                const Icon = getMediaTypeIcon(s.media_type);
+                const id = s.wikidata_id || s.media_id;
+                const hasImage = isValidImageUrl(s.image_url);
+
+                return (
+                  <Link
+                    key={id}
+                    href={`/series/${id}`}
                     style={{
                       display: 'flex',
-                      gap: '16px',
-                      paddingTop: '12px',
-                      borderTop: '1px solid var(--color-border)',
+                      alignItems: 'stretch',
+                      gap: 0,
+                      background: 'var(--color-bg)',
+                      textDecoration: 'none',
+                      color: 'var(--color-text)',
                     }}
+                    className="hover:opacity-80 transition-opacity"
                   >
-                    <div>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>Works</p>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 500, color: accentColor }}>{s.work_count}</p>
+                    {/* Thumbnail strip */}
+                    <div
+                      style={{
+                        width: '56px',
+                        flexShrink: 0,
+                        position: 'relative',
+                        background: accentColor,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {hasImage ? (
+                        <Image
+                          src={s.image_url!}
+                          alt={s.title}
+                          fill
+                          sizes="56px"
+                          style={{ objectFit: 'cover', objectPosition: 'top' }}
+                        />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80px' }}>
+                          <Icon style={{ width: '20px', height: '20px', color: 'rgba(255,255,255,0.4)' }} />
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>Figures</p>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 500, color: 'var(--color-text)' }}>{s.character_count}</p>
+
+                    {/* Card body */}
+                    <div style={{ flex: 1, padding: '14px 16px', borderLeft: `3px solid ${accentColor}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
+                        <h3
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '15px',
+                            fontWeight: 500,
+                            lineHeight: 1.3,
+                            flex: 1,
+                          }}
+                        >
+                          {s.title}
+                        </h3>
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '9px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            padding: '2px 6px',
+                            border: `1px solid ${accentColor}`,
+                            color: accentColor,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {s.media_type}
+                        </span>
+                      </div>
+
+                      {s.creator && (
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '12px',
+                            color: 'var(--color-gray)',
+                            fontStyle: 'italic',
+                            marginBottom: '8px',
+                          }}
+                        >
+                          {s.creator}
+                        </p>
+                      )}
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '16px',
+                          paddingTop: '8px',
+                          borderTop: '1px solid var(--color-border)',
+                        }}
+                      >
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'baseline' }}>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 600, color: accentColor }}>{s.work_count}</span>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>works</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'baseline' }}>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 600, color: 'var(--color-text)' }}>{s.character_count}</span>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>figures</span>
+                        </div>
+                        {s.year_range && s.year_range[0] !== s.year_range[1] && (
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-gray)', marginLeft: 'auto' }}>
+                            {s.year_range[0]}\u2013{s.year_range[1]}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
 
-        {/* Empty State */}
-        {!loading && !error && filteredSeries.length === 0 && (
+        {/* Empty state */}
+        {series.length === 0 && (
           <div
             style={{
               padding: '80px 0',
@@ -278,32 +511,14 @@ export default function SeriesBrowsePage() {
               border: '1px solid var(--color-border)',
             }}
           >
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-gray)', marginBottom: '8px' }}>
-              {searchQuery ? `No series found matching "${searchQuery}"` : 'No series available'}
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--color-gray)' }}>
+              No series available
             </p>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '2px',
-                  color: 'var(--color-accent)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  marginTop: '8px',
-                }}
-              >
-                Clear search
-              </button>
-            )}
           </div>
         )}
 
-        {/* Summary */}
-        {!error && series.length > 0 && !loading && (
+        {/* Footer summary */}
+        {series.length > 0 && (
           <div
             style={{
               marginTop: '32px',
@@ -321,7 +536,7 @@ export default function SeriesBrowsePage() {
                 letterSpacing: '2px',
               }}
             >
-              Showing {filteredSeries.length} of {series.length} series
+              {series.length} series &middot; Fictotum Archive
             </p>
           </div>
         )}
