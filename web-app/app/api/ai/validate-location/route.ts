@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for API key
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
       console.error('[AI Validate Location] GEMINI_API_KEY not configured');
       return NextResponse.json(

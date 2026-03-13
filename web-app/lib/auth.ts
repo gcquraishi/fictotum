@@ -57,12 +57,12 @@ async function upsertUserInNeo4j(user: any, account: any, profile: any) {
 export const { handlers, auth } = NextAuth({
   providers: [
     GitHub({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: process.env.GITHUB_ID!.trim(),
+      clientSecret: process.env.GITHUB_SECRET!.trim(),
     }),
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID!.trim(),
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!.trim(),
     }),
   ],
   session: {

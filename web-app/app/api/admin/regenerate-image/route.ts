@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
       : buildWorkPrompt(entityData as WorkData);
 
     // Generate image
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) {
       return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 500 });
     }
@@ -212,8 +212,8 @@ export async function POST(request: NextRequest) {
 
     // Upload to Cloudflare R2 (or return base64 if no R2 config)
     let imageUrl: string;
-    const r2AccountId = process.env.R2_ACCOUNT_ID;
-    const r2PublicUrl = process.env.R2_PUBLIC_URL;
+    const r2AccountId = process.env.R2_ACCOUNT_ID?.trim();
+    const r2PublicUrl = process.env.R2_PUBLIC_URL?.trim();
 
     if (r2AccountId && r2PublicUrl) {
       const subdir = entityType === 'figure' ? 'figures' : 'works';
@@ -224,14 +224,14 @@ export async function POST(request: NextRequest) {
         region: 'auto',
         endpoint: `https://${r2AccountId}.r2.cloudflarestorage.com`,
         credentials: {
-          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+          accessKeyId: process.env.R2_ACCESS_KEY_ID!.trim(),
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!.trim(),
         },
       });
 
       await r2Client.send(
         new PutObjectCommand({
-          Bucket: process.env.R2_BUCKET_NAME || 'big-heavy-assets',
+          Bucket: process.env.R2_BUCKET_NAME?.trim() || 'big-heavy-assets',
           Key: key,
           Body: imageBuffer,
           ContentType: 'image/png',

@@ -21,11 +21,29 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const media = await getMediaById(id);
-  if (!media) return { title: 'Work Not Found — Fictotum' };
+  if (!media) return { title: 'Work Not Found' };
+
   const creator = media.creator ? ` by ${media.creator}` : '';
+  const description = `${media.title}${creator} (${media.media_type || 'Media'}, ${media.release_year || 'Unknown year'}) — ${media.portrayals.length} historical figures portrayed.`;
+
+  const images = media.image_url
+    ? [{ url: media.image_url, width: 400, height: 400, alt: media.title }]
+    : [];
+
   return {
-    title: `${media.title} — Fictotum`,
-    description: `${media.title}${creator} (${media.media_type || 'Media'}, ${media.release_year || 'Unknown year'}) — ${media.portrayals.length} historical figures portrayed.`,
+    title: media.title,
+    description,
+    openGraph: {
+      title: `${media.title} — Fictotum`,
+      description,
+      images,
+    },
+    twitter: {
+      card: media.image_url ? 'summary_large_image' : 'summary',
+      title: `${media.title} — Fictotum`,
+      description,
+      images: media.image_url ? [media.image_url] : [],
+    },
   };
 }
 

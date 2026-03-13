@@ -2,10 +2,42 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import Navbar from "@/components/Navbar";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://fictotum.com";
 
 export const metadata: Metadata = {
-  title: "Fictotum - The Intersection of History & Fiction",
-  description: "Explore how historical figures are portrayed across fiction and history",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "Fictotum — Where History Meets Fiction",
+    template: "%s — Fictotum",
+  },
+  description:
+    "Explore 2,600+ historical figures and how they are portrayed across film, television, literature, and theatre. A knowledge graph at the intersection of history and fiction.",
+  openGraph: {
+    type: "website",
+    siteName: "Fictotum",
+    title: "Fictotum — Where History Meets Fiction",
+    description:
+      "Explore 2,600+ historical figures and how they are portrayed across film, television, literature, and theatre.",
+    url: BASE_URL,
+    images: [
+      {
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "Fictotum — Where History Meets Fiction",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fictotum — Where History Meets Fiction",
+    description:
+      "Explore 2,600+ historical figures and how they are portrayed across film, television, literature, and theatre.",
+    images: ["/og-default.png"],
+  },
 };
 
 export default function RootLayout({
@@ -28,6 +60,8 @@ export default function RootLayout({
           <Navbar />
           {children}
         </AuthProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -138,6 +138,47 @@ export default async function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+
+      {/* ================================================================
+          HERO INTRO — value proposition for first-time visitors
+          ================================================================ */}
+      <section
+        style={{
+          borderBottom: '1px solid var(--color-border)',
+          padding: '32px 40px 28px',
+          maxWidth: '1200px',
+          margin: '0 auto',
+        }}
+      >
+        <h1
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '40px',
+            fontWeight: 300,
+            lineHeight: 1.15,
+            color: 'var(--color-text)',
+            marginBottom: '12px',
+            maxWidth: '680px',
+          }}
+        >
+          Where history meets the stories we tell about it.
+        </h1>
+        <p
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '18px',
+            color: 'var(--color-gray)',
+            fontStyle: 'italic',
+            lineHeight: 1.6,
+            maxWidth: '560px',
+          }}
+        >
+          Fictotum is a knowledge graph mapping how real historical figures are
+          portrayed across film, television, literature, and theatre — and the
+          liberties taken along the way.
+        </p>
+      </section>
+
       {/* ================================================================
           GRAPH HERO
           ================================================================ */}

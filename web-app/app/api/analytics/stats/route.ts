@@ -56,8 +56,8 @@ export async function GET(request: Request) {
 
     const neo4j = require('neo4j-driver');
     const driver = neo4j.driver(
-      process.env.NEO4J_URI!,
-      neo4j.auth.basic(process.env.NEO4J_USERNAME!, process.env.NEO4J_PASSWORD!)
+      process.env.NEO4J_URI!.trim(),
+      neo4j.auth.basic(process.env.NEO4J_USERNAME!.trim(), process.env.NEO4J_PASSWORD!.trim())
     );
 
     const session = driver.session({ database: 'neo4j' });

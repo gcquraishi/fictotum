@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getSeriesMetadata } from '@/lib/db';
@@ -7,6 +8,40 @@ import {
   getMediaTypeIcon,
   getPlaceholderStyle,
 } from '@/lib/card-utils';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ seriesId: string }>;
+}): Promise<Metadata> {
+  const { seriesId } = await params;
+  const data = await getSeriesMetadata(seriesId);
+  if (!data) return { title: 'Series Not Found' };
+
+  const { series, works, characters } = data;
+  const creator = series.creator ? ` by ${series.creator}` : '';
+  const description = `${series.title}${creator} — ${works.length} works featuring ${characters.total} historical figures in the Fictotum archive.`;
+
+  const images = series.image_url
+    ? [{ url: series.image_url, width: 400, height: 400, alt: series.title }]
+    : [];
+
+  return {
+    title: series.title,
+    description,
+    openGraph: {
+      title: `${series.title} — Fictotum`,
+      description,
+      images,
+    },
+    twitter: {
+      card: series.image_url ? 'summary_large_image' : 'summary',
+      title: `${series.title} — Fictotum`,
+      description,
+      images: series.image_url ? [series.image_url] : [],
+    },
+  };
+}
 
 export default async function SeriesPage({
   params,

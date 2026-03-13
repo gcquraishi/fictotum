@@ -32,7 +32,7 @@ export async function GET(
     }
 
     // Step 2: Narrate with Claude (if API key available)
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
     if (!apiKey) {
       // Return scored candidates without narration
       return NextResponse.json({

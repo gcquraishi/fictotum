@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { UserCircle, BookOpen, TrendingUp } from 'lucide-react';
@@ -42,6 +43,33 @@ async function getCreatorProfile(name: string): Promise<CreatorProfile | null> {
     console.error('Error fetching creator profile:', error);
     return null;
   }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ name: string }>;
+}): Promise<Metadata> {
+  const { name } = await params;
+  const decodedName = decodeURIComponent(name);
+  const creator = await getCreatorProfile(decodedName);
+  if (!creator) return { title: 'Creator Not Found' };
+
+  const description = `${creator.name} — ${creator.works.length} works with ${creator.total_portrayals} historical figure portrayals in the Fictotum archive.`;
+
+  return {
+    title: creator.name,
+    description,
+    openGraph: {
+      title: `${creator.name} — Fictotum`,
+      description,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${creator.name} — Fictotum`,
+      description,
+    },
+  };
 }
 
 export default async function CreatorPage({

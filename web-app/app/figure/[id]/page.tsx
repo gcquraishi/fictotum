@@ -19,10 +19,30 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const figure = await getFigureById(id);
-  if (!figure) return { title: 'Figure Not Found — Fictotum' };
+  if (!figure) return { title: 'Figure Not Found' };
+
+  const description =
+    figure.description ||
+    `${figure.name} in the Fictotum archive — ${figure.portrayals.length} media portrayals documented.`;
+
+  const images = figure.image_url
+    ? [{ url: figure.image_url, width: 400, height: 400, alt: figure.name }]
+    : [];
+
   return {
-    title: `${figure.name} — Fictotum`,
-    description: figure.description || `${figure.name} in the Fictotum archive — ${figure.portrayals.length} media portrayals documented.`,
+    title: figure.name,
+    description,
+    openGraph: {
+      title: `${figure.name} — Fictotum`,
+      description,
+      images,
+    },
+    twitter: {
+      card: figure.image_url ? 'summary_large_image' : 'summary',
+      title: `${figure.name} — Fictotum`,
+      description,
+      images: figure.image_url ? [figure.image_url] : [],
+    },
   };
 }
 

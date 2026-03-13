@@ -104,7 +104,7 @@ async function getAISuggestions(
   settingYear?: number,
   wikidataEras?: string[]
 ): Promise<EraSuggestion[]> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
 
   if (!apiKey) {
     console.warn('[AI Era Suggest] GEMINI_API_KEY not configured, using fallback');
