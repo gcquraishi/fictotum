@@ -31,15 +31,16 @@ Fictotum goes from a password-gated internal tool to a public product that peopl
 - **Key files**: `web-app/app/api/auth/`, `web-app/lib/auth.ts` (new), `web-app/app/profile/` (new), `web-app/app/collection/` (new), contribution API routes
 - **Dependencies**: M1 (site must be public before user sign-up makes sense)
 
-### M3: The Collection Experience — Not Started
+### M3: The Collection Experience — Complete
 - **Why it matters**: Series pages exist and have good data (appearance matrix, character roster, stats). But they're not *compelling*. This milestone makes series pages into destination pages that franchise fans want to explore and share — the kind of page someone sends to their book club or posts in a subreddit.
 - **Acceptance criteria**:
-  - [ ] Series detail page visual redesign — illustrations integrated, stronger visual hierarchy, feels like a franchise retrospective
-  - [ ] Franchise timeline: show the series' works on a mini-timeline with the historical figures they portray, making the temporal span visible
-  - [ ] Portrayal highlights — standout or surprising historical figure appearances surfaced (e.g., "Did you know Assassin's Creed features Leonardo da Vinci?")
-  - [ ] Open Graph tags on series pages (illustration + title + stats)
-  - [ ] Series browse page (`/series`) enhanced with illustrations and richer cards
-  - [ ] At least 3 well-populated series in the DB to showcase (e.g., Assassin's Creed, Civilization, Wolf Hall trilogy) — ingest data if needed
+  - [x] Series detail page visual redesign — illustrations integrated, stronger visual hierarchy, feels like a franchise retrospective
+  - [x] Franchise timeline: show the series' works on a mini-timeline with the historical figures they portray, making the temporal span visible
+  - [x] Portrayal highlights — standout or surprising historical figure appearances surfaced (e.g., "Did you know Assassin's Creed features Leonardo da Vinci?")
+  - [x] Open Graph tags on series pages (illustration + title + stats)
+  - [x] Series browse page (`/series`) enhanced with illustrations and richer cards
+  - [x] At least 3 well-populated series in the DB to showcase (e.g., Assassin's Creed, Civilization, Wolf Hall trilogy) — ingest data if needed
+- [x] Post-build review passed (CRITICAL: 0, HIGH: 0, MEDIUM: 0)
 - **Tickets**: (carried from portraits-and-fiction M3)
 - **Key files**: `web-app/app/series/[seriesId]/page.tsx`, `web-app/app/series/page.tsx`, `web-app/lib/db.ts`
 - **Dependencies**: M1 (OG tags pattern established), benefits from M2 (users can save series to collections)
