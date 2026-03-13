@@ -315,18 +315,26 @@ export default function Navbar() {
           Timeline
         </Link>
         {session ? (
-          <button
-            onClick={() => signOut()}
-            style={{
-              ...navLinkStyle,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-            className="hover:opacity-70 transition-opacity"
-          >
-            Sign Out
-          </button>
+          <>
+            <Link href="/profile" style={navLinkStyle} className="hover:opacity-70 transition-opacity">
+              Profile
+            </Link>
+            <Link href="/collection" style={navLinkStyle} className="hover:opacity-70 transition-opacity">
+              Collections
+            </Link>
+            <button
+              onClick={() => signOut()}
+              style={{
+                ...navLinkStyle,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              className="hover:opacity-70 transition-opacity"
+            >
+              Sign Out
+            </button>
+          </>
         ) : (
           <Link href="/api/auth/signin" style={navLinkStyle} className="hover:opacity-70 transition-opacity">
             Sign In
@@ -419,6 +427,71 @@ export default function Navbar() {
             >
               Timeline
             </Link>
+            {session ? (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    fontSize: '12px',
+                    textTransform: 'uppercase' as const,
+                    textDecoration: 'none',
+                    color: 'var(--color-text)',
+                    letterSpacing: '1px',
+                    fontFamily: 'var(--font-mono)',
+                  }}
+                >
+                  Profile
+                </Link>
+                <Link
+                  href="/collection"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    fontSize: '12px',
+                    textTransform: 'uppercase' as const,
+                    textDecoration: 'none',
+                    color: 'var(--color-text)',
+                    letterSpacing: '1px',
+                    fontFamily: 'var(--font-mono)',
+                  }}
+                >
+                  Collections
+                </Link>
+                <button
+                  onClick={() => { signOut(); setMobileMenuOpen(false); }}
+                  style={{
+                    fontSize: '12px',
+                    textTransform: 'uppercase' as const,
+                    textDecoration: 'none',
+                    color: 'var(--color-text)',
+                    letterSpacing: '1px',
+                    fontFamily: 'var(--font-mono)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    padding: 0,
+                  }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/api/auth/signin"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  fontSize: '12px',
+                  textTransform: 'uppercase' as const,
+                  textDecoration: 'none',
+                  color: 'var(--color-text)',
+                  letterSpacing: '1px',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                Sign In
+              </Link>
+            )}
           </nav>
         </div>
       )}

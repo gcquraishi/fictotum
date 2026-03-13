@@ -3,26 +3,53 @@
 
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AuthButtons() {
   const { data: session, status } = useSession();
 
   if (status === 'loading') {
-    return <div className="w-24 h-8 bg-white/50 border border-brand-primary/20 rounded animate-pulse" />;
+    return <div style={{ width: '80px', height: '28px', background: 'var(--color-section-bg)', border: '1px solid var(--color-border)' }} />;
   }
 
   if (session) {
     return (
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 text-sm text-brand-text/70">
-            <UserIcon className="w-4 h-4" />
-            <span>{session.user?.name || session.user?.email}</span>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <Link
+          href="/profile"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            color: 'var(--color-gray)',
+            textDecoration: 'none',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+          }}
+        >
+          <UserIcon size={14} />
+          {session.user?.name?.split(' ')[0] || 'Profile'}
+        </Link>
         <button
           onClick={() => signOut()}
-          className="px-3 py-1.5 text-sm font-semibold text-white bg-brand-primary hover:bg-brand-accent rounded-md flex items-center gap-2 transition-colors shadow-sm"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            background: 'none',
+            border: '1px solid var(--color-border)',
+            padding: '4px 10px',
+            cursor: 'pointer',
+            color: 'var(--color-gray)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut size={12} />
           Sign Out
         </button>
       </div>
@@ -30,19 +57,45 @@ export default function AuthButtons() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <button
         onClick={() => signIn('google')}
-        className="px-3 py-1.5 text-sm font-semibold text-white bg-brand-accent hover:bg-brand-accent/90 rounded-md flex items-center gap-2 transition-colors shadow-sm"
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          background: 'none',
+          border: '1px solid var(--color-border)',
+          padding: '4px 10px',
+          cursor: 'pointer',
+          color: 'var(--color-text)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
       >
-        <LogIn className="w-4 h-4" />
+        <LogIn size={12} />
         Google
       </button>
       <button
         onClick={() => signIn('github')}
-        className="px-3 py-1.5 text-sm font-semibold text-white bg-brand-primary hover:bg-brand-primary/90 rounded-md flex items-center gap-2 transition-colors shadow-sm"
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          background: 'var(--color-text)',
+          border: '1px solid var(--color-text)',
+          padding: '4px 10px',
+          cursor: 'pointer',
+          color: 'var(--color-bg)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
       >
-        <LogIn className="w-4 h-4" />
+        <LogIn size={12} />
         GitHub
       </button>
     </div>

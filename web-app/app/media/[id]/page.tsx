@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 import { getMediaById, getMediaLocationsAndEras } from '@/lib/db';
+import AddToCollectionButton from '@/components/AddToCollectionButton';
 import {
   formatYear,
   getMediaTypeColor,
@@ -300,8 +301,8 @@ export default async function MediaPage({
           </div>
         </div>
 
-        {/* View in Graph link */}
-        <div style={{ marginBottom: '16px' }}>
+        {/* View in Graph link + save to collection */}
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <Link
             href={`/explore/graph?id=${encodeURIComponent(media.wikidata_id || media.media_id)}`}
             style={{
@@ -325,6 +326,11 @@ export default async function MediaPage({
             </svg>
             View in Graph
           </Link>
+          <AddToCollectionButton
+            itemId={media.wikidata_id || media.media_id}
+            itemType="media"
+            itemLabel={media.title}
+          />
         </div>
 
         {/* ================================================================

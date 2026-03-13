@@ -11,6 +11,7 @@ import CharacterProfileMatrix from '@/components/CharacterProfileMatrix';
 import PortrayalHeatmap from '@/components/PortrayalHeatmap';
 import ConnectedFigures from '@/components/ConnectedFigures';
 import DiscoverConnections from '@/components/DiscoverConnections';
+import AddToCollectionButton from '@/components/AddToCollectionButton';
 
 export async function generateMetadata({
   params,
@@ -301,8 +302,8 @@ export default async function FigurePage({
           </div>
         </div>
 
-        {/* View in Graph link */}
-        <div style={{ marginBottom: '16px' }}>
+        {/* View in Graph link + save to collection */}
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <Link
             href={`/explore/graph?id=${encodeURIComponent(figure.canonical_id)}`}
             style={{
@@ -326,6 +327,11 @@ export default async function FigurePage({
             </svg>
             View in Graph
           </Link>
+          <AddToCollectionButton
+            itemId={figure.canonical_id}
+            itemType="figure"
+            itemLabel={figure.name}
+          />
         </div>
 
         {/* ================================================================
