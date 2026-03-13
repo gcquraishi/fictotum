@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  // Site is publicly accessible — no password gate.
-  // Admin routes are gated via web-app/app/admin/layout.tsx.
+export function middleware() {
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Empty matcher — middleware effectively disabled.
+  // Admin routes gated via app/admin/layout.tsx (ADMIN_EMAILS allowlist).
+  matcher: [],
 };

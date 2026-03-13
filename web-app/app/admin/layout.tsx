@@ -1,6 +1,8 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
+
 export default async function AdminLayout({
   children,
 }: {
@@ -8,8 +10,8 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  if (!session?.user?.email) {
-    redirect('/api/auth/signin');
+  if (!session?.user?.email || !ADMIN_EMAILS.includes(session.user.email)) {
+    redirect('/');
   }
 
   return <>{children}</>;

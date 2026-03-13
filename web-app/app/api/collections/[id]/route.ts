@@ -16,7 +16,12 @@ export async function GET(_request: NextRequest, { params }: Params) {
     if (!data) {
       return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
     }
-    return NextResponse.json(data);
+    // Strip owner email from public response (PII protection)
+    const safeData = {
+      ...data,
+      owner: data.owner ? { name: data.owner.name, image: data.owner.image } : null,
+    };
+    return NextResponse.json(safeData);
   } catch (error) {
     console.error('[Collection GET] Error:', error);
     return NextResponse.json({ error: 'Failed to fetch collection' }, { status: 500 });

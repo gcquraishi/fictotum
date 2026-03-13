@@ -25,11 +25,9 @@ export default function AddToCollectionButton({ itemId, itemType, itemLabel }: A
   const [saving, setSaving] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Don't render if not authenticated
-  if (status === 'loading' || !session) return null;
-
-  // Close on outside click
+  // Close on outside click — must be before any early return (Rules of Hooks)
   useEffect(() => {
+    if (!session) return;
     const handleClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -37,7 +35,10 @@ export default function AddToCollectionButton({ itemId, itemType, itemLabel }: A
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
+  }, [session]);
+
+  // Don't render if not authenticated
+  if (status === 'loading' || !session) return null;
 
   const handleOpen = async () => {
     if (!open) {

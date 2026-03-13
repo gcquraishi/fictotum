@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { getSession as getDbSession } from '@/lib/neo4j';
 
 /**
  * CHR-44: Analytics Statistics API
@@ -36,8 +37,10 @@ interface AnalyticsStats {
 }
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  // Admin-only endpoint
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
+  const authSession = await auth();
+  if (!authSession?.user?.email || !ADMIN_EMAILS.includes(authSession.user.email)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -54,13 +57,7 @@ export async function GET(request: Request) {
     const threshold = new Date(now);
     threshold.setDate(threshold.getDate() - daysAgo);
 
-    const neo4j = require('neo4j-driver');
-    const driver = neo4j.driver(
-      process.env.NEO4J_URI!.trim(),
-      neo4j.auth.basic(process.env.NEO4J_USERNAME!.trim(), process.env.NEO4J_PASSWORD!.trim())
-    );
-
-    const session = driver.session({ database: 'neo4j' });
+    const session = await getDbSession();
 
     try {
       // 1. Overview Statistics
@@ -240,7 +237,6 @@ export async function GET(request: Request) {
       return NextResponse.json(stats);
     } finally {
       await session.close();
-      await driver.close();
     }
   } catch (error) {
     console.error('Analytics stats error:', error);

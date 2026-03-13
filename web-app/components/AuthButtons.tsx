@@ -56,48 +56,28 @@ export default function AuthButtons() {
     );
   }
 
+  // Use generic signIn() which routes to Auth.js built-in page
+  // that only lists configured providers. Safe when env vars are missing.
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <button
-        onClick={() => signIn('google')}
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          background: 'none',
-          border: '1px solid var(--color-border)',
-          padding: '4px 10px',
-          cursor: 'pointer',
-          color: 'var(--color-text)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}
-      >
-        <LogIn size={12} />
-        Google
-      </button>
-      <button
-        onClick={() => signIn('github')}
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          background: 'var(--color-text)',
-          border: '1px solid var(--color-text)',
-          padding: '4px 10px',
-          cursor: 'pointer',
-          color: 'var(--color-bg)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}
-      >
-        <LogIn size={12} />
-        GitHub
-      </button>
-    </div>
+    <button
+      onClick={() => signIn()}
+      style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: '11px',
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        background: 'none',
+        border: '1px solid var(--color-border)',
+        padding: '4px 10px',
+        cursor: 'pointer',
+        color: 'var(--color-text)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}
+    >
+      <LogIn size={12} />
+      Sign In
+    </button>
   );
 }

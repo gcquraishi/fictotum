@@ -26,6 +26,7 @@ export async function GET() {
         itemCount: count(item)
       }
       ORDER BY c.updated_at DESC
+      LIMIT 200
       `,
       { email: session.user.email }
     );
@@ -60,6 +61,9 @@ export async function POST(request: NextRequest) {
   }
   if (name.trim().length > 100) {
     return NextResponse.json({ error: 'Collection name must be 100 characters or fewer' }, { status: 400 });
+  }
+  if (description && typeof description === 'string' && description.trim().length > 500) {
+    return NextResponse.json({ error: 'Description must be 500 characters or fewer' }, { status: 400 });
   }
 
   const collectionId = `COL-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;

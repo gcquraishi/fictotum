@@ -113,9 +113,10 @@ function hasInlineData(part: unknown): part is InlineDataPart {
  * Body: { entityType: "figure" | "work", entityId: string }
  */
 export async function POST(request: NextRequest) {
-  // Auth guard: require authenticated session
+  // Auth guard: require admin session
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.email || !ADMIN_EMAILS.includes(session.user.email)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
