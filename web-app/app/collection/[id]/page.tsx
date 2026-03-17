@@ -65,6 +65,8 @@ export default async function CollectionDetailPage({ params }: Params) {
 
   const { collection, owner, items } = data;
   const session = await auth();
+  // Ownership check uses email server-side only — never sent to the client.
+  // The public API (GET /api/collections/[id]) already strips owner.email from responses.
   const isOwner = !!(session?.user?.email && owner?.email && session.user.email === owner.email);
 
   const figures = items.filter((i) => i.type === 'figure');
