@@ -1,0 +1,476 @@
+{
+  "metadata": {
+    "source": "Research compilation — Wikidata Q-IDs verified via wikidata.org API",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "Final push to 3,000+ entities — historical games, literary works, niche figures from underrepresented periods, and TV series/films not yet in the graph."
+  },
+  "figures": [
+    {
+      "name": "Empress Dowager Cixi",
+      "wikidata_id": "Q47842",
+      "canonical_id": "Q47842",
+      "birth_year": 1835,
+      "death_year": 1908,
+      "title": "De facto ruler of China",
+      "era": "Qing Dynasty China",
+      "description": "The most powerful woman in Chinese history who ruled from behind the curtain for nearly 50 years during the decline of the Qing dynasty",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Toyotomi Hideyori",
+      "wikidata_id": "Q313641",
+      "canonical_id": "Q313641",
+      "birth_year": 1593,
+      "death_year": 1615,
+      "title": "Japanese lord",
+      "era": "Sengoku Japan",
+      "description": "Son and heir of Toyotomi Hideyoshi whose defeat at the Siege of Osaka Castle by Tokugawa forces ended the Toyotomi line and secured Tokugawa supremacy",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Lady Nijo",
+      "wikidata_id": "Q1981729",
+      "canonical_id": "Q1981729",
+      "birth_year": 1258,
+      "death_year": 1307,
+      "title": "Japanese poet and court lady",
+      "era": "Kamakura Japan",
+      "description": "Imperial concubine turned Buddhist nun whose memoir The Confessions of Lady Nijo provides an intimate account of medieval Japanese court life and travel",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Empress Wu Hou",
+      "wikidata_id": "Q183694",
+      "canonical_id": "Q183694",
+      "birth_year": 1115,
+      "death_year": 1197,
+      "title": "Song dynasty empress",
+      "era": "Song Dynasty China",
+      "description": "Empress consort who dominated Southern Song court politics for decades, one of the most powerful women in Song dynasty history",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Zheng Yi Sao",
+      "wikidata_id": "Q2404505",
+      "canonical_id": "Q2404505",
+      "birth_year": 1775,
+      "death_year": 1844,
+      "title": "Chinese pirate lord",
+      "era": "Qing Dynasty China",
+      "description": "The most successful pirate in history who commanded over 1,800 vessels and 80,000 pirates in the South China Sea, retired undefeated with her wealth intact",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Yi Gwangsu",
+      "wikidata_id": "Q491710",
+      "canonical_id": "Q491710",
+      "birth_year": 1892,
+      "death_year": 1950,
+      "title": "Korean novelist",
+      "era": "Colonial Korea",
+      "description": "Father of modern Korean literature whose novel Mujong (The Heartless) is considered the first modern Korean novel, a controversial figure for his collaboration with Japan",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Baji Rao I",
+      "wikidata_id": "Q805693",
+      "canonical_id": "Q805693",
+      "birth_year": 1700,
+      "death_year": 1740,
+      "title": "Peshwa of the Maratha Empire",
+      "era": "Colonial India",
+      "description": "The greatest Maratha military commander who never lost a battle, expanding the empire to its greatest extent and establishing Maratha supremacy in India",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Zheng Chenggong",
+      "wikidata_id": "Q26421",
+      "canonical_id": "Q26421",
+      "birth_year": 1624,
+      "death_year": 1662,
+      "title": "Ming loyalist and military leader",
+      "era": "Ming Dynasty China",
+      "description": "Known as Koxinga in the West, he defeated the Dutch and established the Kingdom of Tungning on Taiwan as a base for Ming restoration",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Skanderbeg",
+      "wikidata_id": "Q169089",
+      "canonical_id": "Q169089",
+      "birth_year": 1405,
+      "death_year": 1468,
+      "title": "Albanian national hero",
+      "era": "Late Medieval",
+      "description": "Albanian nobleman who defied the Ottoman Empire for 25 years, uniting Albanian princes and becoming a symbol of Christian resistance against Ottoman expansion",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Jan Zizka",
+      "wikidata_id": "Q207711",
+      "canonical_id": "Q207711",
+      "birth_year": 1360,
+      "death_year": 1424,
+      "title": "Hussite military commander",
+      "era": "Late Medieval",
+      "description": "Blind Hussite general who never lost a battle, pioneered the use of mobile artillery and war wagons, defending Czech religious reformers against crusading armies",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Tamar of Georgia",
+      "wikidata_id": "Q192843",
+      "canonical_id": "Q192843",
+      "birth_year": 1160,
+      "death_year": 1213,
+      "title": "Queen of Georgia",
+      "era": "Medieval",
+      "description": "The first woman to rule Georgia in her own right, presiding over the Georgian Golden Age of political, economic, and cultural flourishing",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Pachacuti",
+      "wikidata_id": "Q208006",
+      "canonical_id": "Q208006",
+      "birth_year": 1418,
+      "death_year": 1471,
+      "title": "Inca Emperor",
+      "era": "Pre-Columbian Americas",
+      "description": "The greatest Inca ruler who transformed a small kingdom into the vast Tawantinsuyu empire, built Machu Picchu, and reorganized Inca society",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Snorri Sturluson",
+      "wikidata_id": "Q192668",
+      "canonical_id": "Q192668",
+      "birth_year": 1179,
+      "death_year": 1241,
+      "title": "Icelandic historian and poet",
+      "era": "Viking Age",
+      "description": "Author of the Prose Edda and Heimskringla, the primary medieval sources for Norse mythology and Scandinavian history, murdered in a political intrigue",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Rumi",
+      "wikidata_id": "Q7604",
+      "canonical_id": "Q7604",
+      "birth_year": 1207,
+      "death_year": 1273,
+      "title": "Persian poet and Sufi mystic",
+      "era": "Islamic Golden Age",
+      "description": "The most popular poet in the United States and one of the most read poets worldwide, whose ecstatic love poetry bridges cultures and centuries",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Olaudah Equiano",
+      "wikidata_id": "Q369354",
+      "canonical_id": "Q369354",
+      "birth_year": 1745,
+      "death_year": 1797,
+      "title": "Writer and abolitionist",
+      "era": "Enlightenment",
+      "description": "Former enslaved person whose autobiography The Interesting Narrative was crucial to the British abolition movement, one of the earliest slave narratives",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Sor Juana Ines de la Cruz",
+      "wikidata_id": "Q174608",
+      "canonical_id": "Q174608",
+      "birth_year": 1648,
+      "death_year": 1695,
+      "title": "Mexican poet and scholar",
+      "era": "Colonial Americas",
+      "description": "Self-taught prodigy who became the greatest poet of colonial Latin America, a proto-feminist who defended women's right to education from within a convent",
+      "historicity_status": "historical"
+    }
+  ],
+  "works": [
+    {
+      "title": "Total War: Rome II",
+      "wikidata_id": "Q863643",
+      "media_id": "total-war-rome-2-2013",
+      "media_type": "GAME",
+      "release_year": 2013,
+      "creator": "Creative Assembly",
+      "description": "Grand strategy game spanning the rise and fall of the Roman Republic, commanding armies across a massive campaign map of the ancient world",
+      "setting": "Mediterranean 272-14 BC"
+    },
+    {
+      "title": "Europa Universalis IV",
+      "wikidata_id": "Q2625075",
+      "media_id": "europa-universalis-4-2013",
+      "media_type": "GAME",
+      "release_year": 2013,
+      "creator": "Paradox Development Studios",
+      "description": "Grand strategy game where players guide a nation from the Late Middle Ages through the early modern period, navigating colonization, trade, and warfare",
+      "setting": "World 1444-1821"
+    },
+    {
+      "title": "Red Dead Redemption 2",
+      "wikidata_id": "Q27438121",
+      "media_id": "rdr2-2018",
+      "media_type": "GAME",
+      "release_year": 2018,
+      "creator": "Rockstar Games",
+      "description": "Open-world Western epic following an outlaw gang's struggle for survival in the waning days of the American frontier",
+      "setting": "American West 1899"
+    },
+    {
+      "title": "Dynasty Warriors",
+      "wikidata_id": "Q4467592",
+      "media_id": "dynasty-warriors-series",
+      "media_type": "GAME_SERIES",
+      "release_year": 1997,
+      "creator": "Omega Force",
+      "description": "Long-running action game series bringing the heroes and villains of China's Three Kingdoms period to life in massive battlefield combat",
+      "setting": "China 184-280 AD"
+    },
+    {
+      "title": "A Plague Tale: Innocence",
+      "wikidata_id": "Q54577668",
+      "media_id": "plague-tale-innocence-2019",
+      "media_type": "GAME",
+      "release_year": 2019,
+      "creator": "Asobo Studio",
+      "description": "Narrative adventure following a young noble and her brother through plague-ravaged 14th-century France, hunted by the Inquisition and swarms of rats",
+      "setting": "France 1348-1349"
+    },
+    {
+      "title": "Kingdom Come: Deliverance",
+      "wikidata_id": "Q15408545",
+      "media_id": "kingdom-come-deliverance-2018",
+      "media_type": "GAME",
+      "release_year": 2018,
+      "creator": "Warhorse Studios",
+      "description": "Historically accurate open-world RPG set during the turbulent 15th-century Bohemian wars, notable for its commitment to medieval realism",
+      "setting": "Bohemia 1403"
+    },
+    {
+      "title": "The Remains of the Day",
+      "wikidata_id": "Q1196124",
+      "media_id": "remains-of-day-1993",
+      "media_type": "FILM",
+      "release_year": 1993,
+      "creator": "James Ivory",
+      "description": "Merchant Ivory adaptation of Kazuo Ishiguro's novel about a repressed English butler reflecting on his decades of service, missed chances, and his employer's Nazi sympathies",
+      "setting": "England 1930s-1950s"
+    },
+    {
+      "title": "Atonement",
+      "wikidata_id": "Q388891",
+      "media_id": "atonement-2007",
+      "media_type": "FILM",
+      "release_year": 2007,
+      "creator": "Joe Wright",
+      "description": "A young girl's false accusation destroys the lives of two lovers, set against the backdrop of WWII England and the Dunkirk evacuation",
+      "setting": "England and France 1935-1999"
+    },
+    {
+      "title": "Beloved",
+      "wikidata_id": "Q861388",
+      "media_id": "beloved-novel-1987",
+      "media_type": "BOOK",
+      "release_year": 1987,
+      "creator": "Toni Morrison",
+      "description": "Pulitzer Prize-winning novel about a former slave haunted by the ghost of her dead daughter, exploring the psychological legacy of slavery",
+      "setting": "Ohio 1873"
+    },
+    {
+      "title": "The Underground Railroad",
+      "wikidata_id": "Q24907273",
+      "media_id": "underground-railroad-novel-2016",
+      "media_type": "BOOK",
+      "release_year": 2016,
+      "creator": "Colson Whitehead",
+      "description": "Pulitzer Prize-winning novel reimagining the Underground Railroad as a literal railroad beneath the South, following an enslaved woman's journey north",
+      "setting": "American South 1850s"
+    },
+    {
+      "title": "Wolf Hall (novel)",
+      "wikidata_id": "Q2468410",
+      "media_id": "wolf-hall-novel-2009",
+      "media_type": "BOOK",
+      "release_year": 2009,
+      "creator": "Hilary Mantel",
+      "description": "Booker Prize-winning historical novel narrating the rise of Thomas Cromwell from blacksmith's son to Henry VIII's chief minister",
+      "setting": "England 1527-1535"
+    },
+    {
+      "title": "Pachinko (novel)",
+      "wikidata_id": "Q28937012",
+      "media_id": "pachinko-novel-2017",
+      "media_type": "BOOK",
+      "release_year": 2017,
+      "creator": "Min Jin Lee",
+      "description": "Multigenerational saga following a Korean family through four generations in Japan, from colonial Korea to modern-day Osaka",
+      "setting": "Korea and Japan 1911-1989"
+    },
+    {
+      "title": "Pachinko (TV series)",
+      "wikidata_id": "Q100721555",
+      "media_id": "pachinko-tv-2022",
+      "media_type": "TV_SERIES",
+      "release_year": 2022,
+      "creator": "Soo Hugh",
+      "description": "Apple TV+ adaptation of Min Jin Lee's novel, an epic drama spanning four generations of a Korean immigrant family in Japan",
+      "setting": "Korea and Japan 1915-1989"
+    },
+    {
+      "title": "Name of the Wind",
+      "wikidata_id": "Q1756677",
+      "media_id": "name-of-wind-2007",
+      "media_type": "BOOK",
+      "release_year": 2007,
+      "creator": "Patrick Rothfuss",
+      "description": "Fantasy novel about a legendary figure narrating his own extraordinary life story, blending historical fiction conventions with epic fantasy",
+      "setting": "Fantasy world"
+    },
+    {
+      "title": "The Pillars of the Earth (novel)",
+      "wikidata_id": "Q474843",
+      "media_id": "pillars-earth-novel-1989",
+      "media_type": "BOOK",
+      "release_year": 1989,
+      "creator": "Ken Follett",
+      "description": "Epic historical novel following the building of a cathedral in 12th-century England, interweaving the lives of a stonemason, a noblewoman, and a monk",
+      "setting": "England 1135-1174"
+    },
+    {
+      "title": "Shogun (2024 TV series)",
+      "wikidata_id": "Q56276181",
+      "media_id": "shogun-2024",
+      "media_type": "TV_SERIES",
+      "release_year": 2024,
+      "creator": "Rachel Kondo",
+      "description": "Critically acclaimed adaptation of James Clavell's novel depicting political intrigue in feudal Japan",
+      "setting": "Japan 1600"
+    },
+    {
+      "title": "The Shadow of the Wind",
+      "wikidata_id": "Q2026227",
+      "media_id": "shadow-wind-2001",
+      "media_type": "BOOK",
+      "release_year": 2001,
+      "creator": "Carlos Ruiz Zafon",
+      "description": "Gothic mystery set in post-war Barcelona about a boy who discovers a forgotten book and becomes entangled in the dark history of its author",
+      "setting": "Barcelona 1945-1966"
+    },
+    {
+      "title": "All the Light We Cannot See",
+      "wikidata_id": "Q18703266",
+      "media_id": "all-light-2014",
+      "media_type": "BOOK",
+      "release_year": 2014,
+      "creator": "Anthony Doerr",
+      "description": "Pulitzer Prize-winning novel about a blind French girl and a German boy whose paths converge in occupied Saint-Malo during WWII",
+      "setting": "France and Germany 1934-1944"
+    },
+    {
+      "title": "The Book Thief",
+      "wikidata_id": "Q603677",
+      "media_id": "book-thief-2005",
+      "media_type": "BOOK",
+      "release_year": 2005,
+      "creator": "Markus Zusak",
+      "description": "Novel narrated by Death about a young girl in Nazi Germany who steals books and shares them, finding solace in words during the horror of war",
+      "setting": "Germany 1939-1943"
+    },
+    {
+      "title": "Shantaram",
+      "wikidata_id": "Q2016455",
+      "media_id": "shantaram-2003",
+      "media_type": "BOOK",
+      "release_year": 2003,
+      "creator": "Gregory David Roberts",
+      "description": "Semi-autobiographical novel about an Australian fugitive who escapes prison and reinvents himself in the Bombay underworld",
+      "setting": "Bombay 1980s"
+    },
+    {
+      "title": "The Kite Runner (film)",
+      "wikidata_id": "Q498827",
+      "media_id": "kite-runner-film-2007",
+      "media_type": "FILM",
+      "release_year": 2007,
+      "creator": "Marc Forster",
+      "description": "Film adaptation of Hosseini's novel about friendship and redemption set against Afghan history from the monarchy to the Taliban",
+      "setting": "Afghanistan and United States 1975-2000"
+    },
+    {
+      "title": "The Nightingale",
+      "wikidata_id": "Q21068961",
+      "media_id": "nightingale-novel-2015",
+      "media_type": "BOOK",
+      "release_year": 2015,
+      "creator": "Kristin Hannah",
+      "description": "Two sisters in occupied France during WWII face impossible choices — one joins the Resistance, the other struggles to survive under German occupation",
+      "setting": "France 1939-1945"
+    },
+    {
+      "title": "Circe",
+      "wikidata_id": "Q52146556",
+      "media_id": "circe-novel-2018",
+      "media_type": "BOOK",
+      "release_year": 2018,
+      "creator": "Madeline Miller",
+      "description": "Retelling of Greek mythology through the eyes of the witch Circe, from her birth as a nymph to her encounters with Odysseus and other heroes",
+      "setting": "Ancient Greece, mythological era"
+    },
+    {
+      "title": "The Song of Achilles",
+      "wikidata_id": "Q7762907",
+      "media_id": "song-achilles-2011",
+      "media_type": "BOOK",
+      "release_year": 2011,
+      "creator": "Madeline Miller",
+      "description": "Retelling of the Iliad as a love story between Achilles and Patroclus, from their boyhood friendship to the walls of Troy",
+      "setting": "Ancient Greece, Trojan War"
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q204077",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q4467592",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true,
+        "notes": "Cao Cao is a major playable character in Dynasty Warriors"
+      }
+    },
+    {
+      "from_id": "Q245315",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q4467592",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true,
+        "notes": "Liu Bei is a major playable character in Dynasty Warriors"
+      }
+    },
+    {
+      "from_id": "Q198211",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q4467592",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "notes": "Zhuge Liang is a major playable character in Dynasty Warriors"
+      }
+    },
+    {
+      "from_id": "Q47842",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q212775",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex",
+        "notes": "Cixi's era is the backdrop of The Last Emperor"
+      }
+    }
+  ]
+}
