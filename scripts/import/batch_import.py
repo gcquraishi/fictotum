@@ -13,6 +13,7 @@ import os
 import sys
 import json
 import argparse
+import difflib
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
@@ -614,51 +615,33 @@ class BatchImporter:
 
     def validate_wikidata_qids(self, data: Dict):
         """
-        Validate all Wikidata Q-IDs by querying Wikidata API.
+        Validate all Wikidata Q-IDs by querying Wikidata API in batches.
 
-        For MediaWork nodes, this is MANDATORY per entity resolution protocol.
+        Uses batched wbgetentities calls (50 IDs per request) for efficiency.
+        Compares Wikidata labels against entity names using SequenceMatcher.
+        Flags Q-IDs where similarity < 0.4 as invalid (likely wrong entity).
         """
-        print("\n🔍 Validating Wikidata Q-IDs...")
+        print("\n🔍 Validating Wikidata Q-IDs (batched)...")
 
-        # Validate figure Q-IDs
+        SIMILARITY_THRESHOLD = 0.4
+        BATCH_SIZE = 50
+
+        # Collect all Q-IDs to validate with their expected names
+        qid_entries = []  # list of (qid, name, entity_type)
+
         if "figures" in data:
             for figure in data["figures"]:
                 if "wikidata_id" in figure and figure["wikidata_id"]:
                     qid = figure["wikidata_id"]
                     if qid.startswith("Q"):
-                        try:
-                            validation = validate_qid(qid, figure["name"])
-                            if not validation["valid"]:
-                                self.invalid_qids.append({
-                                    "type": "HistoricalFigure",
-                                    "name": figure["name"],
-                                    "qid": qid,
-                                    "error": validation.get("error", "Invalid Q-ID")
-                                })
-                        except Exception as e:
-                            self.stats["warnings"].append(
-                                f"Could not validate Q-ID {qid} for {figure['name']}: {e}"
-                            )
+                        qid_entries.append((qid, figure["name"], "HistoricalFigure"))
 
-        # Validate work Q-IDs (MANDATORY)
         if "works" in data:
             for work in data["works"]:
                 if "wikidata_id" in work and work["wikidata_id"]:
                     qid = work["wikidata_id"]
                     if qid.startswith("Q"):
-                        try:
-                            validation = validate_qid(qid, work["title"])
-                            if not validation["valid"]:
-                                self.invalid_qids.append({
-                                    "type": "MediaWork",
-                                    "name": work["title"],
-                                    "qid": qid,
-                                    "error": validation.get("error", "Invalid Q-ID")
-                                })
-                        except Exception as e:
-                            self.stats["warnings"].append(
-                                f"Could not validate Q-ID {qid} for {work['title']}: {e}"
-                            )
+                        qid_entries.append((qid, work["title"], "MediaWork"))
                 else:
                     # No Q-ID provided - try to search Wikidata
                     print(f"   🔎 Searching Wikidata for: {work['title']}")
@@ -681,8 +664,97 @@ class BatchImporter:
                             f"Wikidata search failed for {work['title']}: {e}"
                         )
 
+        if not qid_entries:
+            print("   No Q-IDs to validate.")
+            return
+
+        print(f"   Validating {len(qid_entries)} Q-IDs in batches of {BATCH_SIZE}...")
+
+        # Build a lookup: qid -> list of (name, entity_type)
+        qid_lookup = {}
+        for qid, name, etype in qid_entries:
+            if qid not in qid_lookup:
+                qid_lookup[qid] = []
+            qid_lookup[qid].append((name, etype))
+
+        unique_qids = list(qid_lookup.keys())
+
+        # Validate in batches using wbgetentities API
+        headers = {
+            "User-Agent": "Fictotum-BatchImport/1.0 (https://fictotum.com; Q-ID Validation)"
+        }
+
+        for batch_start in range(0, len(unique_qids), BATCH_SIZE):
+            batch = unique_qids[batch_start:batch_start + BATCH_SIZE]
+
+            try:
+                response = requests.get(
+                    "https://www.wikidata.org/w/api.php",
+                    params={
+                        "action": "wbgetentities",
+                        "ids": "|".join(batch),
+                        "props": "labels|descriptions",
+                        "languages": "en",
+                        "format": "json",
+                    },
+                    headers=headers,
+                    timeout=30,
+                )
+                response.raise_for_status()
+                api_data = response.json()
+            except Exception as e:
+                self.stats["warnings"].append(
+                    f"Wikidata batch validation failed: {e}"
+                )
+                continue
+
+            for qid in batch:
+                entity = api_data.get("entities", {}).get(qid, {})
+
+                for name, etype in qid_lookup[qid]:
+                    if "missing" in entity:
+                        self.invalid_qids.append({
+                            "type": etype,
+                            "name": name,
+                            "qid": qid,
+                            "error": f"Q-ID {qid} not found in Wikidata",
+                        })
+                        continue
+
+                    label = entity.get("labels", {}).get("en", {}).get("value")
+                    description = entity.get("descriptions", {}).get("en", {}).get("value", "")
+
+                    if not label:
+                        self.stats["warnings"].append(
+                            f"Q-ID {qid} has no English label (for {name})"
+                        )
+                        continue
+
+                    similarity = difflib.SequenceMatcher(
+                        None, name.lower(), label.lower()
+                    ).ratio()
+
+                    if similarity < SIMILARITY_THRESHOLD:
+                        self.invalid_qids.append({
+                            "type": etype,
+                            "name": name,
+                            "qid": qid,
+                            "wikidata_label": label,
+                            "wikidata_description": description,
+                            "similarity": round(similarity, 4),
+                            "error": (
+                                f"Q-ID {qid} likely points to wrong entity: "
+                                f"'{label}' ({description}) — "
+                                f"similarity {similarity:.0%} with '{name}'"
+                            ),
+                        })
+
+            time.sleep(0.5)
+
         if self.invalid_qids:
-            print(f"❌ Found {len(self.invalid_qids)} invalid Q-IDs")
+            print(f"❌ Found {len(self.invalid_qids)} invalid Q-IDs:")
+            for inv in self.invalid_qids:
+                print(f"   - [{inv['type']}] {inv['name']}: {inv['error']}")
         else:
             print("✅ All Q-IDs validated")
 
@@ -1414,6 +1486,11 @@ Examples:
         help="Skip Wikidata Q-ID validation (faster but not recommended)"
     )
     parser.add_argument(
+        "--strict-qids",
+        action="store_true",
+        help="Block import if any Q-ID fails validation (no interactive prompt)"
+    )
+    parser.add_argument(
         "--report",
         default="batch_import_report.md",
         help="Path for import report (default: batch_import_report.md)"
@@ -1510,12 +1587,18 @@ Examples:
             importer.validate_wikidata_qids(data)
 
             if importer.invalid_qids:
-                print("\n⚠️  WARNING: Found invalid Q-IDs. Continue anyway?")
-                if not dry_run:
+                if args.strict_qids:
+                    print("\n❌ BLOCKED: Invalid Q-IDs detected (--strict-qids enabled).")
+                    print("   Fix Q-IDs before importing. Run audit_wikidata_qids.py for details.")
+                    sys.exit(1)
+                elif not dry_run:
+                    print("\n⚠️  WARNING: Found invalid Q-IDs. Continue anyway?")
                     response = input("Type 'YES' to continue: ")
                     if response != "YES":
                         print("❌ Aborted.")
                         sys.exit(0)
+                else:
+                    print("\n⚠️  WARNING: Invalid Q-IDs detected. Review before running with --execute.")
 
         # Step 5: Import data
         print("\n📋 Step 5: Importing data...")
