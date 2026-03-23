@@ -17,6 +17,7 @@ Date: 2026-03-13
 import os
 import sys
 import time
+import json
 import argparse
 import requests
 from pathlib import Path
@@ -30,6 +31,28 @@ load_dotenv(env_path)
 WIKIDATA_SPARQL_URL = "https://query.wikidata.org/sparql"
 REQUEST_DELAY = 0.5  # seconds between Wikidata requests to avoid rate limiting
 BATCH_SIZE = 20       # how many Q-IDs to query per SPARQL request
+QID_AUDIT_REPORT = Path(__file__).parent.parent.parent / "docs" / "reports" / "qid-audit-2026-03-22.json"
+
+
+def load_bad_qids() -> set[str]:
+    """Load Q-IDs flagged as incorrect in the Q-ID audit report."""
+    if not QID_AUDIT_REPORT.exists():
+        return set()
+    try:
+        with open(QID_AUDIT_REPORT) as f:
+            data = json.load(f)
+        bad = set()
+        for entry in data.get("mismatches", []):
+            bad.add(entry.get("current_qid", ""))
+        for entry in data.get("missing", []):
+            bad.add(entry.get("current_qid", ""))
+        for entry in data.get("errors", []):
+            bad.add(entry.get("current_qid", ""))
+        bad.discard("")
+        return bad
+    except Exception as e:
+        print(f"  WARNING: Could not load Q-ID audit report: {e}")
+        return set()
 
 
 def get_driver():
@@ -178,9 +201,20 @@ def main():
         print(f"ERROR: Cannot connect to Neo4j: {e}")
         sys.exit(1)
 
+    # Load exclusion list (figures with known bad Q-IDs from audit)
+    bad_qids = load_bad_qids()
+    if bad_qids:
+        print(f"Loaded {len(bad_qids)} bad Q-IDs from audit report (will be skipped).")
+    print()
+
     # Get figures needing alternate names
     print(f"Fetching figures that need alternate names...")
-    figures = get_figures_needing_alternate_names(driver, limit=args.limit)
+    all_figures = get_figures_needing_alternate_names(driver, limit=args.limit)
+    # Filter out figures with known bad Q-IDs
+    figures = [f for f in all_figures if f["wikidata_id"] not in bad_qids]
+    excluded = len(all_figures) - len(figures)
+    if excluded:
+        print(f"Excluded {excluded} figures with flagged Q-IDs.")
     print(f"Found {len(figures)} figures to process.\n")
 
     if not figures:
