@@ -20,6 +20,8 @@ interface GraphExplorerProps {
   links?: GraphLink[];
   highlightedPath?: PathVisualization;
   shouldExpandCenter?: boolean;
+  /** When true, hides chrome (legend, timeline, breadcrumb) and caps height for embedding */
+  isEmbedded?: boolean;
 }
 
 interface ExtendedGraphLink extends GraphLink {
@@ -106,7 +108,7 @@ const isBaconNode = (nodeId: string): boolean => {
   return (nodeId.includes('bacon') && !nodeId.startsWith('media-'));
 };
 
-export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks, highlightedPath, shouldExpandCenter }: GraphExplorerProps) {
+export default function GraphExplorer({ canonicalId, nodes: initialNodes, links: initialLinks, highlightedPath, shouldExpandCenter, isEmbedded }: GraphExplorerProps) {
   const router = useRouter();
   // CHR-22: Track client-side mount to avoid SSR issues with ForceGraph2D
   const [mounted, setMounted] = useState(false);
@@ -958,10 +960,12 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         const width = containerWidth > 0 ? Math.max(containerWidth - 4, 800) : 1200;
 
         // Responsive height — wider layout gets taller canvas
-        // Mobile: min(50vh, 450px) | Desktop: min(70vh, 700px)
+        // Embedded: fixed 600px | Mobile: min(50vh, 450px) | Desktop: min(70vh, 700px)
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
-        const height = isMobile
+        const height = isEmbedded
+          ? 600
+          : isMobile
           ? Math.min(viewportHeight * 0.5, 450)  // Mobile: 50vh max 450px
           : Math.min(viewportHeight * 0.75, 800); // Desktop: 70vh max 700px
 
@@ -987,7 +991,9 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
         // Use responsive fallback height
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
-        const height = isMobile
+        const height = isEmbedded
+          ? 600
+          : isMobile
           ? Math.min(viewportHeight * 0.5, 450)
           : Math.min(viewportHeight * 0.75, 800);
         setDimensions({ width: 1200, height });
@@ -1677,7 +1683,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       )}
 
       {/* Option A: Breadcrumb above canvas — page-level text */}
-      {isBloomMode && navigationHistory.length > 0 && (
+      {!isEmbedded && isBloomMode && navigationHistory.length > 0 && (
         <div className="mb-3 overflow-x-auto">
           <nav aria-label="Exploration breadcrumb" className="flex items-center gap-1.5 flex-nowrap min-w-0">
             {navigationHistory.slice(0, historyIndex + 1).map((nodeId, index) => {
@@ -1742,7 +1748,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       )}
 
       {/* Phase 3.1.3: Keyboard Shortcuts Help Panel */}
-      {showKeyboardHelp && (
+      {!isEmbedded && showKeyboardHelp && (
         <>
           {/* Overlay backdrop */}
           <div
@@ -2126,7 +2132,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           )}
 
           {/* Ghost toolbar — floating bottom-right, persistent muted gray, no borders */}
-          {isBloomMode && (
+          {!isEmbedded && isBloomMode && (
             <div
               className="absolute bottom-5 right-5 z-10 flex gap-1"
               role="toolbar"
@@ -2185,7 +2191,7 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
       </ForceGraphErrorBoundary>
 
       {/* Option A: Legend row — below canvas with FIC-126 media type shapes */}
-      <div className="flex items-center gap-4 pt-2.5 pb-2 flex-wrap" role="list" aria-label="Graph legend">
+      {!isEmbedded && <div className="flex items-center gap-4 pt-2.5 pb-2 flex-wrap" role="list" aria-label="Graph legend">
         <span className="font-mono text-[9px] uppercase tracking-wider mr-1" style={{ color: '#A09880' }}>Legend</span>
         <div className="flex items-center gap-1.5" role="listitem">
           <div className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: `conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)` }}></div>
@@ -2203,10 +2209,10 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
           <div className="w-[9px] h-[9px] flex-shrink-0" style={{ background: GRAPH_PALETTE.MEDIA_NODE_COLOR }}></div>
           <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#A09880' }}>TV</span>
         </div>
-      </div>
+      </div>}
 
       {/* Impressionistic Timeline - Shows temporal context for exploration path */}
-      {mounted && (
+      {!isEmbedded && mounted && (
         <ImpressionisticTimeline
           explorationPath={explorationPath}
           nodes={nodes}

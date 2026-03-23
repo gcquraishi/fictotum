@@ -33,8 +33,8 @@ export default function HomeGraphExplorer({ figureIds }: HomeGraphExplorerProps)
   }
 
   return (
-    <div style={{ height: '600px', position: 'relative' }}>
-      <GraphExplorer canonicalId={selectedId} />
+    <div style={{ height: '600px', position: 'relative', overflow: 'hidden' }}>
+      <GraphExplorer canonicalId={selectedId} isEmbedded />
     </div>
   );
 }
