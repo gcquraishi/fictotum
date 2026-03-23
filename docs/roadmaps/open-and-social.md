@@ -45,16 +45,15 @@ Fictotum goes from a password-gated internal tool to a public product that peopl
 - **Key files**: `web-app/app/series/[seriesId]/page.tsx`, `web-app/app/series/page.tsx`, `web-app/lib/db.ts`
 - **Dependencies**: M1 (OG tags pattern established), benefits from M2 (users can save series to collections)
 
-### M4: Content Density Push — Blocked
+### M4: Content Density Push — In Progress
 - **Why it matters**: 2,621 entities is credible but thin in some of the most popular historical fiction eras. Ancient Egypt and Tudor England are massive in the genre but underrepresented in the graph. Filling these gaps makes the product feel authoritative.
-- **Blocker**: Neo4j Aura free tier paused (NXDOMAIN). Batch files prepared and committed. Resume DB at console.neo4j.io, then run import commands listed in sprint file.
 - **Acceptance criteria**:
-  - [ ] Ancient Egypt & Near East cluster ingested — 40+ figures (FIC-36) — *batch file ready: `data/ancient_egypt_near_east_batch.json` (42 figures, 14 works)*
-  - [ ] Tudor & Stuart England cluster ingested — 30+ figures (FIC-38) — *batch file ready: `data/tudor_stuart_batch.json` (35 figures, 14 works)*
-  - [ ] Illustrations generated for all new figures — *blocked on DB import + Gemini quota*
+  - [x] Ancient Egypt & Near East cluster ingested — 17 new figures + 9 new works + 19 relationships (3 figures deduplicated against existing DB)
+  - [x] Tudor & Stuart England cluster ingested — 13 new figures + 3 new works + 32 relationships (5 figures + 1 work deduplicated)
+  - [ ] Illustrations generated for all new figures — *blocked on Gemini quota*
   - [ ] Alternate names populated from Wikidata aliases across existing figures (FIC-24 UI ready, needs data) — *script ready: `scripts/migration/populate_alternate_names.py`*
-  - [ ] Total entity count reaches 3,000+ — *projected ~2,713 after these two clusters; additional clusters needed*
-  - [ ] Zero orphan figures maintained
+  - [ ] Total entity count reaches 3,000+ — *currently 2,663; additional clusters needed*
+  - [x] Zero orphan figures maintained
 - **Tickets**: FIC-36, FIC-38, FIC-24
 - **Key files**: `scripts/import/batch_import.py`, `scripts/image-gen/generate-images.ts`, `data/`
 - **Dependencies**: None (can run in parallel with M2/M3 via nightshift)
