@@ -5,13 +5,14 @@ Detects potential duplicate HistoricalFigure nodes using multi-pass detection.
 
 import os
 import sys
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 from collections import defaultdict
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-from SPARQLWrapper import SPARQLWrapper, JSON
+import requests
 from thefuzz import fuzz
 
 # SPARQL endpoint for Wikidata
@@ -19,6 +20,20 @@ WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
 
 # Languages to fetch aliases for
 ALIAS_LANGUAGES = ["en", "la", "it", "fr", "de", "es"]
+
+# Batch size for SPARQL alias queries (matches populate_alternate_names.py)
+SPARQL_BATCH_SIZE = 20
+
+# Delay between Wikidata SPARQL requests to avoid rate limiting
+REQUEST_DELAY = 0.5
+
+
+def normalize_name(name: str) -> str:
+    """
+    NFD-normalize a name string: decompose diacritics, strip combining marks, lowercase.
+    'François' -> 'francois', 'Ångström' -> 'angstrom'
+    """
+    return unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode('ascii').lower().strip()
 
 
 class HistoricalFigureNode:
@@ -31,8 +46,8 @@ class HistoricalFigureNode:
         self.aliases: Set[str] = set()
 
     def add_aliases(self, aliases: List[str]):
-        """Add aliases from Wikidata."""
-        self.aliases.update(alias.lower() for alias in aliases if alias)
+        """Add aliases from Wikidata (NFD-normalized for comparison)."""
+        self.aliases.update(normalize_name(alias) for alias in aliases if alias)
 
     def has_real_wikidata_id(self) -> bool:
         """Check if this figure has a real Wikidata ID (not provisional)."""
@@ -95,45 +110,90 @@ class EntityResolver:
         print(f"✅ Fetched {len(self.figures)} HistoricalFigure nodes.")
 
     def enrich_with_wikidata_aliases(self):
-        """Fetch Wikidata aliases for all figures with real Wikidata IDs."""
-        print("🌍 Enriching figures with Wikidata aliases...")
+        """Fetch Wikidata aliases for all figures with real Wikidata IDs.
 
-        sparql = SPARQLWrapper(WIKIDATA_SPARQL_ENDPOINT)
-        sparql.setReturnFormat(JSON)
+        Uses batched SPARQL VALUES clauses (SPARQL_BATCH_SIZE per request)
+        matching the pattern in populate_alternate_names.py. At 1,150 figures
+        this reduces requests from ~1,150 to ~58 (20 per batch).
+        """
+        print("🌍 Enriching figures with Wikidata aliases (batched)...")
 
         figures_with_qids = [fig for fig in self.figures.values() if fig.has_real_wikidata_id()]
+        total = len(figures_with_qids)
+        print(f"  {total} figures with Q-IDs to enrich...")
 
-        for idx, fig in enumerate(figures_with_qids, 1):
-            if idx % 10 == 0:
-                print(f"  Progress: {idx}/{len(figures_with_qids)} figures processed...")
+        import time as _time
 
-            try:
-                query = self._build_alias_query(fig.wikidata_id)
-                sparql.setQuery(query)
-                results = sparql.query().convert()
+        for batch_start in range(0, total, SPARQL_BATCH_SIZE):
+            batch = figures_with_qids[batch_start:batch_start + SPARQL_BATCH_SIZE]
+            batch_num = batch_start // SPARQL_BATCH_SIZE + 1
+            batch_end = min(batch_start + SPARQL_BATCH_SIZE, total)
+            print(f"  Batch {batch_num} ({batch_start + 1}-{batch_end} of {total})...")
 
-                aliases = []
-                for result in results["results"]["bindings"]:
-                    if "altLabel" in result:
-                        aliases.append(result["altLabel"]["value"])
+            qids = [fig.wikidata_id for fig in batch]
+            aliases_by_qid = self._fetch_aliases_batch(qids)
 
-                fig.add_aliases(aliases)
+            for fig in batch:
+                if fig.wikidata_id in aliases_by_qid:
+                    fig.add_aliases(aliases_by_qid[fig.wikidata_id])
 
-            except Exception as e:
-                print(f"⚠️  Warning: Could not fetch aliases for {fig.canonical_id} ({fig.wikidata_id}): {e}")
+            _time.sleep(REQUEST_DELAY)
 
         print(f"✅ Alias enrichment complete.")
 
-    def _build_alias_query(self, wikidata_id: str) -> str:
-        """Build SPARQL query to fetch aliases for a Wikidata entity."""
-        lang_filter = " || ".join([f'lang(?altLabel) = "{lang}"' for lang in ALIAS_LANGUAGES])
+    def _fetch_aliases_batch(self, qids: List[str]) -> Dict[str, List[str]]:
+        """Fetch Wikidata aliases for a batch of Q-IDs using VALUES clause.
 
-        return f"""
-        SELECT ?altLabel WHERE {{
-          wd:{wikidata_id} skos:altLabel ?altLabel .
+        Returns a dict mapping Q-ID -> list of alias strings.
+        """
+        if not qids:
+            return {}
+
+        values_list = " ".join(f"(wd:{qid})" for qid in qids)
+        lang_filter = " || ".join([f'LANG(?altLabel) = "{lang}"' for lang in ALIAS_LANGUAGES])
+
+        sparql_query = f"""
+        SELECT ?item ?altLabel WHERE {{
+          VALUES (?item) {{ {values_list} }}
+          ?item skos:altLabel ?altLabel .
           FILTER({lang_filter})
         }}
         """
+
+        headers = {
+            "Accept": "application/sparql-results+json",
+            "User-Agent": "Fictotum-EntityResolver/1.0 (https://fictotum.com)"
+        }
+
+        try:
+            resp = requests.get(
+                WIKIDATA_SPARQL_ENDPOINT,
+                params={"query": sparql_query, "format": "json"},
+                headers=headers,
+                timeout=30
+            )
+            resp.raise_for_status()
+            data = resp.json()
+        except requests.RequestException as e:
+            print(f"  ⚠️  Wikidata batch request failed: {e}")
+            return {}
+        except Exception as e:
+            print(f"  ⚠️  Failed to parse Wikidata response: {e}")
+            return {}
+
+        result: Dict[str, List[str]] = {}
+        for binding in data.get("results", {}).get("bindings", []):
+            item_uri = binding.get("item", {}).get("value", "")
+            alt_label = binding.get("altLabel", {}).get("value", "")
+            if not item_uri or not alt_label:
+                continue
+            qid = item_uri.rsplit("/", 1)[-1]
+            if qid not in result:
+                result[qid] = []
+            if alt_label not in result[qid]:
+                result[qid].append(alt_label)
+
+        return result
 
     def detect_duplicates(self) -> List[DuplicateCluster]:
         """Run three-pass duplicate detection and return clusters."""
@@ -194,11 +254,11 @@ class EntityResolver:
         """Pass 2: Find figures where name/aliases match other figures' primary names."""
         clusters = []
 
-        # Build a lookup: name (lowercased) -> list of figures with that name
+        # Build a lookup: name (NFD-normalized) -> list of figures with that name
         name_to_figures = defaultdict(list)
         for fig in self.figures.values():
             if fig.canonical_id not in processed_ids:
-                name_to_figures[fig.name.lower()].append(fig)
+                name_to_figures[normalize_name(fig.name)].append(fig)
 
         # Check each unprocessed figure
         for fig in self.figures.values():
@@ -240,7 +300,7 @@ class EntityResolver:
                 if fig2.canonical_id in processed_ids:
                     continue
 
-                similarity = fuzz.ratio(fig1.name.lower(), fig2.name.lower())
+                similarity = fuzz.ratio(normalize_name(fig1.name), normalize_name(fig2.name))
 
                 if similarity > 90:
                     if cluster is None:

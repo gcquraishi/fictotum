@@ -13,6 +13,23 @@
 import { doubleMetaphone } from 'double-metaphone';
 
 /**
+ * Normalize input string for comparison by stripping diacritics.
+ * Decomposes Unicode characters (NFD), removes combining marks (accents),
+ * lowercases, and trims whitespace.
+ *
+ * Examples:
+ * - "François" → "francois"
+ * - "Ångström" → "angstrom"
+ * - "Crumwell" → "crumwell"
+ */
+function normalizeInput(s: string): string {
+  return s.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+/**
  * Levenshtein distance algorithm
  * Returns the minimum number of single-character edits (insertions, deletions, substitutions)
  * required to change one string into another.
@@ -52,8 +69,8 @@ function levenshteinDistance(str1: string, str2: string): number {
  * @returns 1.0 for identical strings, 0.0 for completely different
  */
 export function calculateSimilarity(str1: string, str2: string): number {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
+  const s1 = normalizeInput(str1);
+  const s2 = normalizeInput(str2);
 
   // Simple Levenshtein-based similarity
   const longer = s1.length > s2.length ? s1 : s2;
@@ -81,8 +98,9 @@ export function calculatePhoneticSimilarity(str1: string, str2: string): number 
   if (!str1 || !str2) return 0.0;
 
   // Extract name tokens (first/last names) for better phonetic matching
-  const tokens1 = str1.toLowerCase().trim().split(/\s+/).filter(t => t.length > 0);
-  const tokens2 = str2.toLowerCase().trim().split(/\s+/).filter(t => t.length > 0);
+  // NFD normalization strips diacritics before phonetic encoding
+  const tokens1 = normalizeInput(str1).split(/\s+/).filter(t => t.length > 0);
+  const tokens2 = normalizeInput(str2).split(/\s+/).filter(t => t.length > 0);
 
   if (tokens1.length === 0 || tokens2.length === 0) return 0.0;
 
@@ -130,6 +148,8 @@ export function calculatePhoneticSimilarity(str1: string, str2: string): number 
  * - "Julius Caesar" vs "Gaius Julius Caesar" → ~0.70 (partial match)
  */
 export function enhancedNameSimilarity(name1: string, name2: string): number {
+  // normalizeInput is applied inside calculateSimilarity and calculatePhoneticSimilarity,
+  // so diacritics are stripped before any comparison
   const lexicalScore = calculateSimilarity(name1, name2);
   const phoneticScore = calculatePhoneticSimilarity(name1, name2);
 
