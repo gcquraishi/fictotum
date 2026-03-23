@@ -51,8 +51,8 @@ Fictotum goes from a password-gated internal tool to a public product that peopl
   - [x] Ancient Egypt & Near East cluster ingested — 17 new figures + 9 new works + 19 relationships (3 figures deduplicated against existing DB)
   - [x] Tudor & Stuart England cluster ingested — 13 new figures + 3 new works + 32 relationships (5 figures + 1 work deduplicated)
   - [ ] Illustrations generated for all new figures — *blocked on Gemini quota*
-  - [ ] Alternate names populated from Wikidata aliases across existing figures (FIC-24 UI ready, needs data) — *script ready: `scripts/migration/populate_alternate_names.py`*
-  - [ ] Total entity count reaches 3,000+ — *currently 2,663; additional clusters needed*
+  - [x] Alternate names populated from Wikidata aliases across existing figures (FIC-24 UI ready, needs data) — 699 figures updated from Wikidata skos:altLabel
+  - [x] Total entity count reaches 3,000+ — 3,000 entities (1,317 figures + 1,683 works), up from 2,663
   - [x] Zero orphan figures maintained
 - **Tickets**: FIC-36, FIC-38, FIC-24
 - **Key files**: `scripts/import/batch_import.py`, `scripts/image-gen/generate-images.ts`, `data/`
