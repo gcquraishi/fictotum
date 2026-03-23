@@ -363,7 +363,7 @@ def apply_fixes(driver, results: List[AuditResult], auto_fix: bool = False):
     """
     fixable = [
         r for r in results
-        if r.status == "mismatch"
+        if r.status in ("mismatch", "missing")
         and r.suggested_qid
         and r.suggested_similarity >= 0.8
         and r.suggested_qid != r.qid
