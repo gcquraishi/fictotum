@@ -1,0 +1,697 @@
+{
+  "metadata": {
+    "source": "Research compilation — classic historical and literary works",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "Literary classics and historical fiction works to push entity count past 3,000. Includes major novels, plays, films, and games not yet in the knowledge graph."
+  },
+  "figures": [
+    {
+      "name": "Miguel de Cervantes",
+      "wikidata_id": "Q5682",
+      "canonical_id": "Q5682",
+      "birth_year": 1547,
+      "death_year": 1616,
+      "title": "Spanish novelist and playwright",
+      "era": "Renaissance",
+      "description": "Author of Don Quixote, considered the first modern novel and one of the greatest works of world literature, also a soldier who lost the use of his left hand at Lepanto",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Victor Hugo",
+      "wikidata_id": "Q535",
+      "canonical_id": "Q535",
+      "birth_year": 1802,
+      "death_year": 1885,
+      "title": "French poet, novelist, and dramatist",
+      "era": "Victorian Era",
+      "description": "Author of Les Miserables and The Hunchback of Notre-Dame, France's greatest romantic writer who also served as a senator and champion of the poor",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Alexandre Dumas",
+      "wikidata_id": "Q38337",
+      "canonical_id": "Q38337",
+      "birth_year": 1802,
+      "death_year": 1870,
+      "title": "French novelist and playwright",
+      "era": "Victorian Era",
+      "description": "Author of The Three Musketeers and The Count of Monte Cristo, the most widely read French author in history and grandson of a Haitian slave",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Chinua Achebe",
+      "wikidata_id": "Q42217",
+      "canonical_id": "Q42217",
+      "birth_year": 1930,
+      "death_year": 2013,
+      "title": "Nigerian novelist and critic",
+      "era": "20th Century Africa",
+      "description": "Father of modern African literature whose Things Fall Apart challenged colonial narratives and is the most widely read novel from Africa",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Gabriel Garcia Marquez",
+      "wikidata_id": "Q5878",
+      "canonical_id": "Q5878",
+      "birth_year": 1927,
+      "death_year": 2014,
+      "title": "Colombian novelist and Nobel laureate",
+      "era": "20th Century Latin America",
+      "description": "Master of magical realism whose One Hundred Years of Solitude defined a literary movement and earned the Nobel Prize in Literature",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Kazuo Ishiguro",
+      "wikidata_id": "Q81796",
+      "canonical_id": "Q81796",
+      "birth_year": 1954,
+      "death_year": null,
+      "title": "British novelist and Nobel laureate",
+      "era": "Contemporary",
+      "description": "Nobel Prize-winning author whose novels explore memory, self-deception, and the passage of time, from The Remains of the Day to Never Let Me Go",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Elie Wiesel",
+      "wikidata_id": "Q32849",
+      "canonical_id": "Q32849",
+      "birth_year": 1928,
+      "death_year": 2016,
+      "title": "Romanian-American writer and Nobel laureate",
+      "era": "World War II",
+      "description": "Holocaust survivor whose memoir Night bore witness to the horrors of Auschwitz, becoming the conscience of the Holocaust and winning the Nobel Peace Prize",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Anne Frank",
+      "wikidata_id": "Q4583",
+      "canonical_id": "Q4583",
+      "birth_year": 1929,
+      "death_year": 1945,
+      "title": "German-Dutch diarist",
+      "era": "World War II",
+      "description": "Jewish girl whose diary written while hiding from the Nazis became one of the most widely read books in the world, died in Bergen-Belsen at age 15",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Art Spiegelman",
+      "wikidata_id": "Q295035",
+      "canonical_id": "Q295035",
+      "birth_year": 1948,
+      "death_year": null,
+      "title": "American cartoonist",
+      "era": "Contemporary",
+      "description": "Creator of Maus, the first graphic novel to win a Pulitzer Prize, depicting the Holocaust through the metaphor of cats and mice",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Marjane Satrapi",
+      "wikidata_id": "Q214786",
+      "canonical_id": "Q214786",
+      "birth_year": 1969,
+      "death_year": null,
+      "title": "Iranian-French graphic novelist",
+      "era": "Contemporary",
+      "description": "Author and illustrator of Persepolis, the graphic memoir of growing up during the Iranian Revolution that became an acclaimed animated film",
+      "historicity_status": "historical"
+    }
+  ],
+  "works": [
+    {
+      "title": "The Hunchback of Notre-Dame",
+      "wikidata_id": "Q191380",
+      "media_id": "hunchback-notre-dame-1831",
+      "media_type": "BOOK",
+      "release_year": 1831,
+      "creator": "Victor Hugo",
+      "description": "Gothic novel set in medieval Paris about the deformed bell-ringer Quasimodo, the beautiful Esmeralda, and the corrupt Archdeacon Frollo",
+      "setting": "Paris 1482"
+    },
+    {
+      "title": "A Tale of Two Cities",
+      "wikidata_id": "Q308018",
+      "media_id": "tale-two-cities-1859",
+      "media_type": "BOOK",
+      "release_year": 1859,
+      "creator": "Charles Dickens",
+      "description": "Novel of the French Revolution following characters between London and Paris, the best-selling novel of all time with over 200 million copies",
+      "setting": "London and Paris 1775-1793"
+    },
+    {
+      "title": "The Scarlet Letter",
+      "wikidata_id": "Q235611",
+      "media_id": "scarlet-letter-1850",
+      "media_type": "BOOK",
+      "release_year": 1850,
+      "creator": "Nathaniel Hawthorne",
+      "description": "Novel about sin, guilt, and redemption in Puritan Massachusetts, following Hester Prynne as she bears the shame of an adultery conviction",
+      "setting": "Boston 1642-1649"
+    },
+    {
+      "title": "Moby-Dick",
+      "wikidata_id": "Q174596",
+      "media_id": "moby-dick-1851",
+      "media_type": "BOOK",
+      "release_year": 1851,
+      "creator": "Herman Melville",
+      "description": "Epic novel of Captain Ahab's obsessive pursuit of the white whale, a masterwork of American literature blending adventure, philosophy, and cetology",
+      "setting": "Atlantic and Pacific Oceans 1840s"
+    },
+    {
+      "title": "The Great Gatsby",
+      "wikidata_id": "Q214371",
+      "media_id": "great-gatsby-1925",
+      "media_type": "BOOK",
+      "release_year": 1925,
+      "creator": "F. Scott Fitzgerald",
+      "description": "Quintessential Jazz Age novel about the mysterious millionaire Jay Gatsby's doomed pursuit of the American Dream and his lost love Daisy Buchanan",
+      "setting": "Long Island 1922"
+    },
+    {
+      "title": "The Grapes of Wrath",
+      "wikidata_id": "Q272443",
+      "media_id": "grapes-wrath-1939",
+      "media_type": "BOOK",
+      "release_year": 1939,
+      "creator": "John Steinbeck",
+      "description": "Pulitzer Prize-winning novel following the Joad family's migration from Dust Bowl Oklahoma to California, a searing portrait of the Great Depression",
+      "setting": "Oklahoma and California 1930s"
+    },
+    {
+      "title": "Pride and Prejudice",
+      "wikidata_id": "Q170583",
+      "media_id": "pride-prejudice-1813",
+      "media_type": "BOOK",
+      "release_year": 1813,
+      "creator": "Jane Austen",
+      "description": "Perhaps the most beloved English novel, following Elizabeth Bennet and Mr. Darcy through the social politics of Regency England",
+      "setting": "England 1810s"
+    },
+    {
+      "title": "Jane Eyre",
+      "wikidata_id": "Q227987",
+      "media_id": "jane-eyre-1847",
+      "media_type": "BOOK",
+      "release_year": 1847,
+      "creator": "Charlotte Bronte",
+      "description": "Gothic novel about an orphan governess who falls in love with the brooding Mr. Rochester, pioneering the exploration of female independence and desire",
+      "setting": "England 1830s"
+    },
+    {
+      "title": "Wuthering Heights",
+      "wikidata_id": "Q202590",
+      "media_id": "wuthering-heights-1847",
+      "media_type": "BOOK",
+      "release_year": 1847,
+      "creator": "Emily Bronte",
+      "description": "Wild tale of obsessive love and revenge on the Yorkshire moors, following the destructive passion between Heathcliff and Catherine Earnshaw",
+      "setting": "Yorkshire 1770s-1800s"
+    },
+    {
+      "title": "Frankenstein",
+      "wikidata_id": "Q150827",
+      "media_id": "frankenstein-1818",
+      "media_type": "BOOK",
+      "release_year": 1818,
+      "creator": "Mary Shelley",
+      "description": "The first science fiction novel, about a scientist who creates a living being and the tragic consequences, written by an 18-year-old woman during the Year Without a Summer",
+      "setting": "Europe 1790s"
+    },
+    {
+      "title": "Crime and Punishment",
+      "wikidata_id": "Q168211",
+      "media_id": "crime-punishment-1866",
+      "media_type": "BOOK",
+      "release_year": 1866,
+      "creator": "Fyodor Dostoevsky",
+      "description": "Psychological novel about a poor student who murders a pawnbroker and the moral crisis that follows, a cornerstone of existentialist literature",
+      "setting": "St. Petersburg 1860s"
+    },
+    {
+      "title": "The Odyssey",
+      "wikidata_id": "Q35160",
+      "media_id": "odyssey-homer",
+      "media_type": "BOOK",
+      "release_year": -700,
+      "creator": "Homer",
+      "description": "Ancient Greek epic poem following Odysseus's ten-year journey home from the Trojan War, encountering monsters, gods, and temptations",
+      "setting": "Mediterranean 1180 BC"
+    },
+    {
+      "title": "The Iliad",
+      "wikidata_id": "Q8275",
+      "media_id": "iliad-homer",
+      "media_type": "BOOK",
+      "release_year": -750,
+      "creator": "Homer",
+      "description": "The foundational work of Western literature, depicting the climactic weeks of the Trojan War through the wrath of Achilles",
+      "setting": "Troy 1190 BC"
+    },
+    {
+      "title": "The Aeneid",
+      "wikidata_id": "Q60220",
+      "media_id": "aeneid-virgil",
+      "media_type": "BOOK",
+      "release_year": -19,
+      "creator": "Virgil",
+      "description": "Roman national epic following the Trojan hero Aeneas from the fall of Troy to the founding of Rome, rivaling Homer in literary influence",
+      "setting": "Troy, Carthage, and Italy 1180-1150 BC"
+    },
+    {
+      "title": "Beowulf",
+      "wikidata_id": "Q133563",
+      "media_id": "beowulf-poem",
+      "media_type": "BOOK",
+      "release_year": 900,
+      "creator": "Anonymous",
+      "description": "The oldest surviving long poem in Old English, following the Geatish warrior Beowulf as he battles the monster Grendel and a dragon",
+      "setting": "Scandinavia 500s AD"
+    },
+    {
+      "title": "The Divine Comedy",
+      "wikidata_id": "Q40185",
+      "media_id": "divine-comedy-dante",
+      "media_type": "BOOK",
+      "release_year": 1320,
+      "creator": "Dante Alighieri",
+      "description": "Italian epic poem describing the author's journey through Hell, Purgatory, and Paradise, the supreme expression of medieval European thought",
+      "setting": "Afterlife 1300"
+    },
+    {
+      "title": "The Canterbury Tales",
+      "wikidata_id": "Q191663",
+      "media_id": "canterbury-tales",
+      "media_type": "BOOK",
+      "release_year": 1400,
+      "creator": "Geoffrey Chaucer",
+      "description": "Collection of stories told by pilgrims traveling to Canterbury, a vivid panorama of 14th-century English society from knight to miller to wife of Bath",
+      "setting": "England 1380s"
+    },
+    {
+      "title": "One Thousand and One Nights",
+      "wikidata_id": "Q8258",
+      "media_id": "thousand-one-nights",
+      "media_type": "BOOK",
+      "release_year": 800,
+      "creator": "Various",
+      "description": "Collection of Middle Eastern folk tales including Aladdin, Ali Baba, and Sinbad, framed by Scheherazade's nightly storytelling to save her life",
+      "setting": "Islamic Golden Age"
+    },
+    {
+      "title": "The Mahabharata",
+      "wikidata_id": "Q83788",
+      "media_id": "mahabharata",
+      "media_type": "BOOK",
+      "release_year": -400,
+      "creator": "Vyasa",
+      "description": "The longest epic poem ever written, over 200,000 verses chronicling the great war between the Pandava and Kaurava families in ancient India",
+      "setting": "Ancient India"
+    },
+    {
+      "title": "The Decameron",
+      "wikidata_id": "Q208284",
+      "media_id": "decameron-1353",
+      "media_type": "BOOK",
+      "release_year": 1353,
+      "creator": "Giovanni Boccaccio",
+      "description": "Collection of 100 tales told by ten young people sheltering from the Black Death in Florence, a masterwork of Italian prose and ribald humor",
+      "setting": "Florence 1348"
+    },
+    {
+      "title": "The Decameron (TV series)",
+      "wikidata_id": "Q118315556",
+      "media_id": "decameron-tv-2024",
+      "media_type": "TV_SERIES",
+      "release_year": 2024,
+      "creator": "Kathleen Jordan",
+      "description": "Netflix dark comedy reimagining Boccaccio's classic with nobles and servants trapped together during the plague in a lavish Italian villa",
+      "setting": "Florence 1348"
+    },
+    {
+      "title": "Samurai Marathon",
+      "wikidata_id": "Q60740959",
+      "media_id": "samurai-marathon-2019",
+      "media_type": "FILM",
+      "release_year": 2019,
+      "creator": "Bernard Rose",
+      "description": "Historical action film about a feudal lord who organizes a marathon among his samurai after learning of the approach of Commodore Perry's Black Ships",
+      "setting": "Japan 1855"
+    },
+    {
+      "title": "The Power of the Dog",
+      "wikidata_id": "Q61743543",
+      "media_id": "power-dog-2021",
+      "media_type": "FILM",
+      "release_year": 2021,
+      "creator": "Jane Campion",
+      "description": "Psychological Western drama about a charismatic rancher whose cruelty threatens the gentle widow and her son who have joined his household in 1920s Montana",
+      "setting": "Montana 1925"
+    },
+    {
+      "title": "The Northman",
+      "wikidata_id": "Q87126244",
+      "media_id": "northman-2022b",
+      "media_type": "FILM",
+      "release_year": 2022,
+      "creator": "Robert Eggers",
+      "description": "Viking revenge epic based on the legend of Amleth, the source material for Shakespeare's Hamlet",
+      "setting": "Scandinavia 895-914"
+    },
+    {
+      "title": "Women Talking",
+      "wikidata_id": "Q107348916",
+      "media_id": "women-talking-2022",
+      "media_type": "FILM",
+      "release_year": 2022,
+      "creator": "Sarah Polley",
+      "description": "Drama about women in an isolated religious colony who meet secretly to discuss their response to systematic abuse, based on a true story in a Mennonite colony",
+      "setting": "Contemporary, inspired by 2009 events"
+    },
+    {
+      "title": "Ammonite",
+      "wikidata_id": "Q56860670",
+      "media_id": "ammonite-2020",
+      "media_type": "FILM",
+      "release_year": 2020,
+      "creator": "Francis Lee",
+      "description": "Period drama imagining a romantic relationship between fossil hunter Mary Anning and a young woman sent to convalesce at the seaside",
+      "setting": "Lyme Regis 1840s"
+    },
+    {
+      "title": "Miss Saigon",
+      "wikidata_id": "Q476720",
+      "media_id": "miss-saigon-1989",
+      "media_type": "PLAY",
+      "release_year": 1989,
+      "creator": "Claude-Michel Schonberg",
+      "description": "Musical retelling of Madame Butterfly set during the Vietnam War and the fall of Saigon, one of the longest-running shows in West End and Broadway history",
+      "setting": "Saigon and Bangkok 1975-1978"
+    },
+    {
+      "title": "Hamilton",
+      "wikidata_id": "Q13540549",
+      "media_id": "hamilton-2015",
+      "media_type": "PLAY",
+      "release_year": 2015,
+      "creator": "Lin-Manuel Miranda",
+      "description": "Revolutionary hip-hop musical about the life of Founding Father Alexander Hamilton, using diverse casting to tell America's origin story",
+      "setting": "New York 1776-1804"
+    },
+    {
+      "title": "Les Miserables (musical)",
+      "wikidata_id": "Q213447",
+      "media_id": "les-mis-musical-1985",
+      "media_type": "PLAY",
+      "release_year": 1985,
+      "creator": "Claude-Michel Schonberg",
+      "description": "The world's longest-running musical, based on Victor Hugo's novel of redemption and revolution in 19th-century France",
+      "setting": "France 1815-1832"
+    },
+    {
+      "title": "The Phantom of the Opera",
+      "wikidata_id": "Q193691",
+      "media_id": "phantom-opera-1986",
+      "media_type": "PLAY",
+      "release_year": 1986,
+      "creator": "Andrew Lloyd Webber",
+      "description": "The longest-running show in Broadway history about a disfigured musical genius beneath the Paris Opera House who becomes obsessed with a soprano",
+      "setting": "Paris 1881"
+    },
+    {
+      "title": "Evita",
+      "wikidata_id": "Q932347",
+      "media_id": "evita-1978",
+      "media_type": "PLAY",
+      "release_year": 1978,
+      "creator": "Andrew Lloyd Webber",
+      "description": "Rock opera chronicling the rise of Eva Peron from poverty to First Lady of Argentina and beloved icon of the descamisados",
+      "setting": "Argentina 1934-1952"
+    },
+    {
+      "title": "Sweeney Todd",
+      "wikidata_id": "Q1453651",
+      "media_id": "sweeney-todd-1979",
+      "media_type": "PLAY",
+      "release_year": 1979,
+      "creator": "Stephen Sondheim",
+      "description": "Dark musical thriller about the demon barber of Fleet Street who murders his customers while his accomplice bakes them into meat pies",
+      "setting": "London 1840s"
+    },
+    {
+      "title": "Fiddler on the Roof",
+      "wikidata_id": "Q916593",
+      "media_id": "fiddler-roof-1964",
+      "media_type": "PLAY",
+      "release_year": 1964,
+      "creator": "Jerry Bock",
+      "description": "Musical about Tevye the dairyman and his daughters in a Russian Jewish village facing the upheaval of tradition, love, and pogroms",
+      "setting": "Russia 1905"
+    },
+    {
+      "title": "The Crucible",
+      "wikidata_id": "Q1139553",
+      "media_id": "crucible-1953",
+      "media_type": "PLAY",
+      "release_year": 1953,
+      "creator": "Arthur Miller",
+      "description": "Drama about the Salem witch trials used as an allegory for McCarthyism, exploring mass hysteria, power, and the courage to refuse false confession",
+      "setting": "Salem 1692"
+    },
+    {
+      "title": "A Man for All Seasons",
+      "wikidata_id": "Q270363",
+      "media_id": "man-all-seasons-1960",
+      "media_type": "PLAY",
+      "release_year": 1960,
+      "creator": "Robert Bolt",
+      "description": "Drama about Sir Thomas More's principled refusal to endorse Henry VIII's break with Rome, ultimately choosing death over compromise of conscience",
+      "setting": "England 1529-1535"
+    },
+    {
+      "title": "Rosencrantz and Guildenstern Are Dead",
+      "wikidata_id": "Q1438497",
+      "media_id": "rosencrantz-guildenstern-1966",
+      "media_type": "PLAY",
+      "release_year": 1966,
+      "creator": "Tom Stoppard",
+      "description": "Absurdist tragicomedy retelling Hamlet from the perspective of two minor characters, trapped in a play they cannot understand",
+      "setting": "Elsinore Castle"
+    },
+    {
+      "title": "Julius Caesar",
+      "wikidata_id": "Q180589",
+      "media_id": "julius-caesar-play",
+      "media_type": "PLAY",
+      "release_year": 1599,
+      "creator": "William Shakespeare",
+      "description": "Shakespeare's political tragedy about the assassination of Julius Caesar and its bloody aftermath, exploring power, idealism, and mob mentality",
+      "setting": "Rome 44 BC"
+    },
+    {
+      "title": "Antony and Cleopatra",
+      "wikidata_id": "Q329029",
+      "media_id": "antony-cleopatra-play",
+      "media_type": "PLAY",
+      "release_year": 1607,
+      "creator": "William Shakespeare",
+      "description": "Shakespeare's sweeping tragedy of the doomed love between the Roman general Mark Antony and the Egyptian queen Cleopatra",
+      "setting": "Rome and Egypt 40-30 BC"
+    },
+    {
+      "title": "Henry V",
+      "wikidata_id": "Q327907",
+      "media_id": "henry-v-play",
+      "media_type": "PLAY",
+      "release_year": 1599,
+      "creator": "William Shakespeare",
+      "description": "Shakespeare's patriotic history play following Prince Hal's transformation into the warrior king who defeats France at the Battle of Agincourt",
+      "setting": "England and France 1413-1420"
+    },
+    {
+      "title": "Richard III",
+      "wikidata_id": "Q309834",
+      "media_id": "richard-iii-play",
+      "media_type": "PLAY",
+      "release_year": 1593,
+      "creator": "William Shakespeare",
+      "description": "Shakespeare's portrait of the ultimate villain-king, charting Richard's ruthless path to the English throne through manipulation and murder",
+      "setting": "England 1471-1485"
+    },
+    {
+      "title": "Macbeth",
+      "wikidata_id": "Q130283",
+      "media_id": "macbeth-play",
+      "media_type": "PLAY",
+      "release_year": 1606,
+      "creator": "William Shakespeare",
+      "description": "Shakespeare's darkest tragedy about a Scottish lord driven to regicide by ambition and prophecy, spiraling into madness and tyranny",
+      "setting": "Scotland 1040s"
+    },
+    {
+      "title": "Othello",
+      "wikidata_id": "Q26833",
+      "media_id": "othello-play",
+      "media_type": "PLAY",
+      "release_year": 1603,
+      "creator": "William Shakespeare",
+      "description": "Tragedy of the Moorish general Othello whose jealousy, manipulated by the villainous Iago, leads him to murder his innocent wife Desdemona",
+      "setting": "Venice and Cyprus 1570s"
+    },
+    {
+      "title": "Hamlet",
+      "wikidata_id": "Q41567",
+      "media_id": "hamlet-play",
+      "media_type": "PLAY",
+      "release_year": 1601,
+      "creator": "William Shakespeare",
+      "description": "The greatest play ever written — the Prince of Denmark's struggle with revenge, mortality, and the corruption of power after his father's ghost demands justice",
+      "setting": "Denmark, medieval"
+    },
+    {
+      "title": "The Tempest",
+      "wikidata_id": "Q36279",
+      "media_id": "tempest-play",
+      "media_type": "PLAY",
+      "release_year": 1611,
+      "creator": "William Shakespeare",
+      "description": "Shakespeare's final masterpiece about the exiled sorcerer Prospero who conjures a storm to bring his enemies to his island, exploring colonialism and forgiveness",
+      "setting": "Enchanted island"
+    },
+    {
+      "title": "King Lear",
+      "wikidata_id": "Q188875",
+      "media_id": "king-lear-play",
+      "media_type": "PLAY",
+      "release_year": 1606,
+      "creator": "William Shakespeare",
+      "description": "Devastating tragedy of an aging king who divides his kingdom among his daughters and descends into madness when betrayed by two of them",
+      "setting": "Ancient Britain"
+    },
+    {
+      "title": "A Midsummer Night's Dream",
+      "wikidata_id": "Q192977",
+      "media_id": "midsummer-nights-dream",
+      "media_type": "PLAY",
+      "release_year": 1596,
+      "creator": "William Shakespeare",
+      "description": "Enchanting comedy about lovers, fairies, and bumbling amateur actors in an Athenian forest where magic and mischief reign",
+      "setting": "Athens and enchanted forest"
+    },
+    {
+      "title": "Romeo and Juliet",
+      "wikidata_id": "Q83186",
+      "media_id": "romeo-juliet-play",
+      "media_type": "PLAY",
+      "release_year": 1597,
+      "creator": "William Shakespeare",
+      "description": "The world's most famous love story — two teenagers from feuding families fall in love and their deaths ultimately reconcile their warring parents",
+      "setting": "Verona, Italy"
+    },
+    {
+      "title": "The Merchant of Venice",
+      "wikidata_id": "Q184973",
+      "media_id": "merchant-venice-play",
+      "media_type": "PLAY",
+      "release_year": 1598,
+      "creator": "William Shakespeare",
+      "description": "Controversial comedy-drama about the moneylender Shylock who demands a pound of flesh as collateral, exploring justice, mercy, and antisemitism",
+      "setting": "Venice and Belmont 1590s"
+    },
+    {
+      "title": "Twelfth Night",
+      "wikidata_id": "Q149670",
+      "media_id": "twelfth-night-play",
+      "media_type": "PLAY",
+      "release_year": 1602,
+      "creator": "William Shakespeare",
+      "description": "Romantic comedy of mistaken identity featuring the shipwrecked Viola disguised as a man, creating a tangle of unrequited love",
+      "setting": "Illyria"
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q5682",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q480",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Cervantes is the author of Don Quixote"
+      }
+    },
+    {
+      "from_id": "Q535",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q180736",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Victor Hugo is the author of Les Miserables"
+      }
+    },
+    {
+      "from_id": "Q38337",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q287785",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Alexandre Dumas is the author of The Count of Monte Cristo"
+      }
+    },
+    {
+      "from_id": "Q38337",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q202975",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Alexandre Dumas is the author of The Three Musketeers"
+      }
+    },
+    {
+      "from_id": "Q4583",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q28000",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q32849",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1424618",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q295035",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q748568",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "notes": "Art Spiegelman created Maus"
+      }
+    },
+    {
+      "from_id": "Q214786",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1356990",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    }
+  ]
+}
