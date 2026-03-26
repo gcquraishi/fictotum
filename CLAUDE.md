@@ -17,127 +17,35 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - **Ingestion**: Python batch import scripts with JSON schema validation
 
 ## Architecture
-- **Web app**: Next.js frontend for graph exploration and visualization
-- **Neo4j graph**: Core data model with `:HistoricalFigure`, `:MediaWork`, `:FictionalCharacter`, `:Agent` nodes
-- **Relationships**: `PORTRAYED_IN`, `CREATED_BY`, and others linking entities
-- **Scripts**: Python-based batch import, migration, and health check tooling in `scripts/`
-- **Data**: JSON schemas and examples in `data/`
-
-**Key directories:**
-- `web-app/` — Next.js application
-- `scripts/import/` — Batch import tools (`batch_import.py`, `csv_to_batch_json.py`)
-- `scripts/migration/` — Schema migrations and backfills
-- `scripts/qa/` — Health check and quality assurance
-- `data/` — JSON schemas, examples, CSV templates
+- `web-app/` — Next.js frontend (App Router) for graph exploration, search, collections, analytics
+- `scripts/` — Python tooling: `import/` (batch import), `migration/`, `qa/` (health checks, Q-ID audit), `maintenance/` (dedup), `extraction/` (Gemini pipeline)
+- `data/` — JSON schemas, batch files, CSV templates
+- **Neo4j graph model**: `:HistoricalFigure`, `:MediaWork`, `:FictionalCharacter`, `:Agent`, `:User`, `:Collection`, `:HistoricalEvent`, `:Source` nodes
+- **Key relationships**: `PORTRAYED_IN`, `CREATED_BY`, `APPEARS_IN`, `PART_OF`, `OWNS`, `CONTAINS`
 
 ## Current State
 _Last updated: 2026-03-23_
 
-Database has 3,000 entity nodes (1,317 figures + 1,683 works) with 2,121 APPEARS_IN relationships. Zero duplicate entities (post-import scan clean). Site is publicly accessible — password gate removed. Auth.js v5 (next-auth@beta) configured with Google + GitHub providers; gracefully degrades when OAuth env vars absent. Users stored as :User nodes in Neo4j on sign-in. Collections (`:Collection` nodes with `OWNS`/`CONTAINS` relationships) fully implemented. All 1,008 illustrations on Cloudflare R2. Series pages fully redesigned as franchise retrospective destination pages. Alternate names migration script ready. Admin routes locked to `ADMIN_EMAILS` env var allowlist. PII stripped from public collection API responses. Staging preview live at staging.fictotum.com (deploys from `staging` branch). NFD diacritic normalization active in name matching (TypeScript + Python). Generalized batch dedup script at `scripts/maintenance/dedup_batch.py`. All Q-ID field consolidation complete (zero figures with canonical_id Q-prefix but NULL wikidata_id). Q-ID audit infrastructure at `scripts/qa/audit_wikidata_qids.py` with batch validation and auto-fix. Pre-flight Q-ID validation in `batch_import.py` uses batched Wikidata API with `--strict-qids` block option.
+3,000 entity nodes (1,317 figures + 1,683 works) with 2,121 APPEARS_IN relationships. Zero duplicate entities. All 1,008 illustrations on Cloudflare R2. Site publicly accessible at fictotum.com; staging at staging.fictotum.com.
 
-### Recent Completions
-- **M4 Content Density Push — 3,000+ entities (2026-03-23)**: Alternate names populated for 699 figures from Wikidata skos:altLabel (FIC-24 UI now has data). Built and imported 10 regional batch files covering Russian History (27 figures + 15 works), American 19th Century (21 figures + 12 works), Japanese History (15 figures + 12 works), Viking/Norse (9 figures + 5 works), China & India (18 figures + 11 works), WWI & Global (17 figures + 17 works), Classic Historical Fiction (49 works), Korean/Diverse (20 figures + 24 works), Literary Classics (10 figures + 49 works), World Cinema (15 figures + 50 works). Entity count: 3,000 (1,317 figures + 1,683 works), up from 2,663. New coverage: Korean history (Joseon dynasty, Three Kingdoms), Ottoman court (Hurrem Sultan, Barbarossa), African history (Menelik II, Yaa Asantewaa), Ancient world (Enheduanna, Zenobia), world cinema, classic literature, Shakespeare plays, and war films. Populate alternate names script enhanced with Q-ID audit exclusion filter.
-- **Homepage graph overflow fix (2026-03-22)**: Added `isEmbedded` prop to GraphExplorer — caps canvas height at 600px and hides breadcrumb, toolbar, legend, and timeline when embedded on homepage. Fixed graph canvas overflowing its container and overlapping the search bar below.
-- **Q-ID audit and mass fix (FIC-155, 2026-03-22)**: Built `scripts/qa/audit_wikidata_qids.py` — audits all Q-IDs across HistoricalFigure and MediaWork nodes using batched Wikidata API calls (50 per request), flags mismatches below configurable similarity threshold, searches for correct Q-IDs, supports `--fix` mode with conflict detection. Fixed 557 wrong Q-IDs across the database (338 figures + 219 works). Key fixes: Sherlock Holmes Q172861 (ecological niche) -> Q4653, Giotto Q7807 (year 1793) -> Q106715772, Thomas Edison Q3872 -> Q8743, Richard III Q172361 -> Q652011. Elizabeth II Q9682 confirmed correct (was wrongly flagged in prior known issues). Batch import pre-flight validation upgraded: batched wbgetentities API calls replace one-at-a-time validation, `--strict-qids` flag blocks import on validation failure. 132 remaining entities need manual review (alternative names like Tamerlane/Timur, or no Wikidata match found). Report at `docs/reports/qid-audit-2026-03-22.json`.
-- **Dedup gaps fixed + M4 content imported (2026-03-22)**: Fixed all 4 short-term dedup gaps from strategy doc. Gap 1: NFD normalization in `name-matching.ts` — `normalizeInput()` strips diacritics before Levenshtein and Double Metaphone ("François" vs "Francois" now >0.9). Gap 1b: `normalize_name()` in `resolve_entities.py` using `unicodedata.normalize('NFD')`. Gap 2: Backfilled `wikidata_id` for 6 figures where `canonical_id` started with 'Q' but `wikidata_id` was NULL. Gap 3: Single reusable `scripts/maintenance/dedup_batch.py` replaces 11 batch-specific scripts. Gap 4: `resolve_entities.py` SPARQL calls batched 20-per-request (was 1-per-figure). Egypt batch: 17 new figures + 9 new works + 19 relationships (3 figures deduplicated). Tudor batch: 13 new figures + 3 new works + 32 relationships (5 figures + 1 work deduplicated). Post-import dedup scan: zero new duplicates. Entity count: 2,663.
-- **Dedup strategy document (2026-03-18)**: Data architect produced comprehensive short-term vs long-term dedup strategy at `docs/research/dedup-strategy-2026-03-17.md`. Key findings: NFD diacritic normalization bug in `name-matching.ts` (François vs Francois scores 0.612), canonical_id→wikidata_id migration gap still open, `figure_fulltext` index online but unused (0 reads), 11 duplicate batch cleanup scripts need consolidation. O(n²) approach fine through 5K entities. Pending George's review at next standup.
-- **Codex review response (2026-03-17)**: Responded to Codex review 2026-03-13 (2 CRITICAL, 2 HIGH, 7 MEDIUM, 4 LOW). CRITICAL-1 fixed: `/api/figure/[id]/discover` now has IP-based rate limiting (5 req/15 min), LRU response caching (1 hr TTL), input validation, and Cache-Control headers. New reusable `lib/rate-limit.ts` module. CRITICAL-2 and HIGH-1 were already fixed in prior session. HIGH-2 dismissed (server-side only, no PII reaches client). MEDIUM-4 ticketed (#7), MEDIUM-7 ticketed (#8). Entity deduplication assessed and ticketed (#9). Response section added to review file.
-- **Staging subdomain live (2026-03-15)**: `staging.fictotum.com` configured — Cloudflare DNS A record, Vercel domain registration, branch routing to `staging`. Vercel SSO deployment protection disabled (was blocking custom domain access). `ADMIN_EMAILS` env var set on Vercel production + preview. Orphan `site-access/` route and 13 dead files cleaned up.
-- **Triple code review + security fixes (2026-03-14)**: Claude + Codex + Gemini reviewed staging diff (21 commits). Fixed 8 findings: admin routes locked to `ADMIN_EMAILS` env var allowlist (layout, regenerate-image, analytics), React hooks violation in AddToCollectionButton, PII leak in public collection API (owner email stripped), analytics endpoint switched to shared Neo4j driver, AuthButtons uses generic `signIn()`, collections GET capped at LIMIT 200, description length validation added. 9 items deferred (discovery API rate limiting, series N+1 query, etc.). Report at `docs/reviews/2026-03-13-unified.md`. **Requires**: set `ADMIN_EMAILS=george@bigheavy.fun` on Vercel before merging to main.
-- **M4 Content Density Push — batch files built (2026-03-13)**: `data/ancient_egypt_near_east_batch.json` (FIC-36) — 42 figures including Ramesses II, Akhenaten, Cleopatra VII, Moses, Cyrus the Great, Hammurabi, Nebuchadnezzar II, Imhotep, Hypatia, and 28 other pharaohs/kings; 14 works (The Ten Commandments, Exodus: Gods and Kings, Cleopatra 1963, Agora, The Mummy, etc.); 19 APPEARS_IN relationships. `data/tudor_stuart_batch.json` (FIC-38) — 35 figures including Henry VIII, all six wives, Elizabeth I, Mary I, Edward VI, Jane Grey, Charles I, Oliver Cromwell, Samuel Pepys, Guy Fawkes, Anne of Great Britain, Sarah Churchill; 14 works (The Tudors, Elizabeth 1998, A Man for All Seasons, The Favourite, Wolf Hall, Gunpowder, etc.); 33 APPEARS_IN relationships. Both pass schema validation. DB paused (free-tier auto-pause) — requires manual resume at console.neo4j.io before import. `scripts/migration/populate_alternate_names.py` created — queries Wikidata SPARQL for skos:altLabel and populates alternate_names property across all figures.
-- **Open & Social M3 — The Collection Experience (2026-03-13)**: Series detail page redesigned as franchise retrospective with full-width illustrated hero banner (work image strips as backdrop), two-column layout, franchise timeline (proportional horizontal spine with work nodes by release year), Featured Figures section (portrait cards ranked by fame/total_portrayal_count), character roster sidebar with micro-portraits. Series browse page converted to server component with featured strip (top 3 as tall cover cards), compact card grid for all series showing image, stats, and year span. OG tags on browse page with static metadata. Data layer enhanced: `getSeriesMetadata` returns `image_url` for works and series, `total_portrayal_count`/`era`/`historicity_status` per figure. Browse API returns `image_url` and `year_range`. Build passes, zero TypeScript errors.
-- **Open & Social M2 — User Identity + Collections (2026-03-13)**: OAuth social login (Google + GitHub) via Auth.js v5. auth.ts refactored for graceful degradation — conditionally includes providers only when env vars are set; site works identically for anonymous users when auth is unconfigured. Users upserted to :User Neo4j nodes on sign-in. Profile page shows avatar, email, and real contribution counts from CREATED_BY relationships. Collections: `/collection` (list), `/collection/new` (create), `/collection/[id]` (detail with OG tags + mini force-graph). Collections stored as `:Collection` nodes; `OWNS` links user to collection; `CONTAINS` with `item_type` property links to figures/works. `AddToCollectionButton` client component on figure and media detail pages. All collection write APIs gated via auth session with Neo4j-level ownership check. Navbar adds Profile + Collections links for authenticated users, Sign In for anonymous. `/api/user/contributions` endpoint for contribution history.
-- **Open & Social M1 — Open the Gates (2026-03-13)**: Password gate removed from middleware.ts. `/password` page and `/api/site-access` route deleted. Homepage hero intro added ("Where history meets the stories we tell about it."). OG/Twitter card metadata added to figure, media, creator, series, and all 4 explore pages. Vercel Analytics + Speed Insights components added to root layout. Next.js upgraded to 14.2.35 (CVE patch). Admin routes remain gated via `app/admin/layout.tsx`.
-- **Open & Social roadmap locked (2026-03-12)**: 4 milestones — M1 Open the Gates (public launch, OG tags, analytics), M2 User Identity + Collections (OAuth Google/GitHub), M3 The Collection Experience (series destination pages), M4 Content Density Push (3K+ entities). Browse-first, auth only for account creation. Sprint files created for all 4.
-- **Code review (2026-03-12)**: Reviewed staging diff (2 commits). Deleted re-introduced `web-app/app/api/test-db/route.ts` — unauthenticated endpoint exposing DB contents and stack traces, contradicting prior security hardening. Cleaned up trailing blank lines in `.gitignore`. Report at `docs/reviews/2026-03-12-unified.md`.
-- **Nightshift batch 2 — FIC-70** (2026-03-06) — Historical Accuracy Spectrum on media work pages. Visual spectrum bar showing historical vs fictional/legendary figure ratio, character count breakdown, classification badge (High Historical Fidelity through Primarily Fictional), inaccuracy count when flagged. Only renders for works with 2+ figures. Computed from existing portrayal data.
-- **Nightshift batch — 4 analytics features** (2026-03-06) — FIC-24: alternate names (aka) support in types, DB queries, figure page, and search dropdown (gracefully hidden until data populated). FIC-69: Temporal Signature on media detail page showing Time Depth, Historical Span, and era classification badge (Contemporary/Recent Past/Historical/Ancient). FIC-67: Portrayal Heatmap on figure pages — CSS grid heatmap showing media format × decade with hover tooltips. FIC-78: Historical Accuracy Reputation on creator pages — aggregates conflict/anachronism flags, calculates accuracy score, assigns tier (Historical Purist through Historical Fantasy), shows percentile ranking.
-- **Historical fiction protagonists batch (BIG-51)**: Ingested 23 fictional protagonists (Bernie Gunther, Brother Cadfael, Matthew Shardlake, Amelia Peabody, Richard Sharpe, Jack Aubrey, Francis Crawford of Lymond, John Blackthorne, etc.) + 22 new historical figures + 12 new works + 59 APPEARS_IN relationships. Fixed 21 failed relationships from ID mismatches (different Wikidata Q-IDs in DB vs batch). Total entities: 2,621 (1,150 figures + 1,471 works).
-- **Security hardening**: Fixed SPARQL injection in Wikidata enrichment endpoint, added auth guards to all write APIs, HMAC cookie-based password gate, security headers (HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy), deleted test-db route.
-- **Edge Runtime middleware fix**: Rewrote middleware.ts from Node.js `createHmac` to Web Crypto API (`crypto.subtle`) for Edge Runtime compatibility. Fixed invalid route exports in site-access API.
-- **R2 storage migration (BIG-51)**: Migrated file storage from Vercel Blob to Cloudflare R2. Added R2 domain to Next.js remotePatterns for portrait loading.
-- **Fictional/Legendary content expansion**: Ingested 53 fictional and legendary figures (Greek heroes, Arthurian legends, Shakespeare characters, literary classics, Assassin's Creed protagonists, etc.) with 23 new works and 65 portrayals. Historicity breakdown now: 1,049 Historical, 42 Fictional, 27 Legendary.
-- **Stale Vercel Blob URL fix**: 104 figures still had old Vercel Blob image URLs (returning 403) from before the R2 migration. Re-uploaded all 104 legacy `HF_*` images to R2 under canonical Q-ID names. Zero Vercel Blob URLs remain.
-- **All 1,008 illustrations on Cloudflare R2 (portraits-and-fiction M1)**: Force re-uploaded all 1,008 illustrations from local files to Cloudflare R2 and updated Neo4j `image_url` properties. Previous Vercel Blob URLs were returning 403 after R2 migration. Zero failures.
-- **Fictional & Legendary visibility (portraits-and-fiction M2)**: Homepage now has dedicated "Fictional & Legendary" section showing top portrayed fictional/legendary figures. Browse chips (Historical/Fictional/Legendary) on homepage link to search with historicity filter. Search page has historicity filter chips with colored borders matching figure type colors. Search result badges use colored bordered pills instead of plain text. Figure detail pages now always show historicity badge (was previously hidden for Historical). Search URL supports `?historicity=` param.
-- **Character Profile Matrix (FIC-66)**: Sortable/filterable table on figure detail pages showing how different creators interpret the same historical figure. Columns: Work (title + year + type), Creator, Interpretation (sentiment badge + lead/conflict flags), Actor/Character. Sortable by year, sentiment, creator. Filterable by media type. Replaces the placeholder stub. Only shown for figures with 2+ portrayals.
-- **Graph node spacing fix (FIC-23)**: Increased charge from -4000 to -6000, link distance from 250 to 350, collision radius from 90 to 110. Canvas height increased to 800px/75vh.
-- **Illustrations in production (portraits-and-fiction M1)**: 818/1,008 illustrations uploaded to Cloudflare R2 and linked to Neo4j nodes (480 this session + 338 prior). Search results now show portrait thumbnails via new SearchThumbnail component. Fixed upload-and-link.ts blob options (`addRandomSuffix: false`, `allowOverwrite: true`). Added `image_url` to `searchFigures()` query. Fixed pre-existing suggest-eras TS error blocking Vercel builds. 190 remaining illustrations blocked by Cloudflare R2 free tier operation limit (2,000 ops/month).
-- **Git hygiene triage**: Committed 416 previously untracked source files (web-app, scripts, docs, schemas, tests, .github). Comprehensive .gitignore added covering data files, session artifact markdown, IDE state (.claude/, .cursor/), and credentials (.mcp.json). Caught plaintext Neo4j password in .mcp.json that was not being gitignored.
-- **April 2026 roadmap M2 — Unblock Gemini + Content Growth (FIC-113, FIC-35, FIC-88)**: New Gemini API key created, GCP billing enabled, model refs updated to gemini-2.5-flash across 4 files. Fixed batch_import.py session bug (CREATED_BY called outside closed session). Medieval Europe cluster ingested (76 figures via research-compiled batch plus Crusades 14, Wars of Roses 11, Renaissance 59, supplemental global figures). Total entities: 2,501 (1,065 figures + 1,436 works), zero orphans. Illustration batch: 50 figures generated (0 failures), transparent PNGs with background removal, manifest at 1,008 total images.
-- **April 2026 roadmap M1 — Production Hardening**: All API write endpoints authenticated (FIC-150). Middleware hardened: timing-safe password comparison, segment-bounded path matching, open redirect prevention (FIC-151). Navbar hooks violation fixed, GraphExplorer 404 resolved, HomeGraphHero memory leaks plugged (FIC-152). Neo4j driver tuned for serverless: pool 10, 30s acquisition timeout, 15s connection timeout. Missing LIMIT clauses added to 4 unbounded queries (FIC-153).
-- **April 2026 roadmap M3 — Global Portrayal Timeline (FIC-112)**: Canvas-based visualization at `/explore/portrayal-timeline`. Figure lifespan bars with media work dots overlaid by release year. Era and media type filters with URL sync. Fisk visual language. Hover tooltips and click-to-navigate.
-- **April 2026 roadmap M4 — Creator Analytics Suite**: TemporalObsessionMap (FIC-75) shows which eras creators gravitate toward. SentimentSignature (FIC-77) shows portrayal tone distribution. CastRepertoryCompany (FIC-76) was already implemented. Analytics section hidden for creators with <3 works.
-- **April 2026 roadmap M5 — Production Polish (FIC-154)**: Console.logs removed from production code (auth, cache, wikidata, forms). Admin routes gated behind auth via layout.tsx. Shared Neo4j driver used in health and analytics endpoints. FIC-148, FIC-149 tickets closed.
-- **FIC-149 — Historicity normalization**: Canonical enum (`Historical`, `Fictional`, `Legendary`) with 100% coverage across 898 figures.
-- **March 2026 roadmap M2 — Discovery Agent**: On-demand "Discover Connections" section on figure detail pages. Graph-only scoring (`lib/connection-scoring.ts`) with Claude Sonnet 4.6 narration. Performance guard skips shortestPath for figures with >12 portrayals. Tested on 7+ figures.
-- **March 2026 roadmap M3 — Gemini Extraction Pipeline**: `scripts/extraction/extract-from-wikipedia.ts` built and tested. Wikipedia fetch → Gemini structured extraction → Wikidata entity resolution → batch-import JSON. Blocked on Gemini free tier quota (429 errors).
-- **March 2026 roadmap M5 — Orphan Connection**: Zero orphans (was 175). Wikidata SPARQL discovery (`scripts/qa/connect-orphans.py`), era-based broad media connections, individual curation. Removed 4 misclassified nodes (3 actors, 1 author). Total entities: 2,197.
-- **Dynamic page titles**: `generateMetadata` on figure detail (`Napoleon Bonaparte — Fictotum`), media detail (`Gladiator — Fictotum`), and search pages. Improves SEO and browser tab readability.
-- **Custom 404 pages**: Root, figure (`/figure/[id]`), and media (`/media/[id]`) routes have styled not-found pages matching Fictotum visual identity with Home and Search Archive links. Replaced old dark-mode figure 404.
-- **Search flow improvements**: Filter-only browsing works (search page shows results when era/type filter active without text query). Homepage era links now properly route to search with `tab=figures`. Enter key navigates to full search page from HomepageSearch and Navbar search. Search link added to desktop navbar. Homepage explore section expanded to 4 items (Graph, Timeline, Search, Pathfinder). SearchInput pre-fills from URL `q` param (no empty input when navigating to search results).
-- **Cross-linking fixes**: WorkCard now links to `/media/[id]` detail page instead of graph explorer. PortrayalCard titles link to media detail pages. Media detail "View in Graph" uses `wikidata_id` when available (was always using `media_id`). Homepage departments section deduplicated (replaced duplicate Pathfinder with Timeline).
-- **FIC-49**: Advanced search with Figures/Works tabs, era filter chips, media type filter chips, active filter indicator. `searchFigures` and `searchMedia` support optional filters. Increased search limit from 10 to 50.
-- **FIC-73**: Portrayals grouped by sentiment on media detail page (Heroic, Complex, Villainous sections with colored headers and counts). Figure detail page gains sentiment distribution bar showing portrayal breakdown with dominant sentiment label.
-- **FIC-128**: Graph physics tuning verified done — relaxed forces, node pinning on drag end already implemented.
-- **FIC-123**: Graph entrypoint on figure/media detail pages verified done — "View in Graph" links already present.
-- **FIC-139**: Series collapsing in graph — component works collapse into parent series node in `getGraphData` and `getNodeNeighbors`. Expanding a series node shows figures from all child works via PART_OF traversal. Removed obsolete seriesMetadata badge. Link deduplication prevents multiple edges from same figure to same series.
-- **FIC-141/142**: Navbar search — expandable magnifying glass icon on right side, inline search input with grouped results dropdown (figures, works, series, creators, actors). Closes on Escape, click outside, or route change.
-- **FIC-126**: Media type shapes in graph — rounded rects for films, diamonds for books/plays, squares for TV, hexagons for other. Figures remain circles. Legend updated. Fixed missing `media_type` propagation in 3 graph data functions.
-- **Sentry filter**: `NEXT_NOT_FOUND` and `NEXT_REDIRECT` errors now filtered in `sentry.server.config.ts` — these are intentional Next.js control-flow, not bugs.
-- **FIC-129**: Graph legend bottom padding prevents overlap with mini-timeline.
-- **FIC-130**: Portrayal page work search now uses dedicated `/api/media/search` (limit 10) instead of universal search (limit 3).
-- **FIC-135**: Created Shakespeare (Q692) and Christopher Marlowe (Q28975) as HistoricalFigure nodes. Added Shakespeare in Love portrayals (Fiennes, Everett, Dench). Fixed missing `media_id` on Shakespeare in Love.
-- **FIC-136**: Year field truly optional in media create API — stores null instead of 0, uses timestamp fallback for ID generation. Fixed create work page response parsing bugs.
-- **FIC-138**: Fixed import creator page — was making GET request to POST-only `/api/wikidata/enrich` endpoint.
-- **FIC-143**: Removed non-functional sidebar filters from search page (checkboxes weren't wired to anything).
-- **FIC-124**: Removed center node amber halo from GraphExplorer.
-- **FIC-127**: Added `onEngineStop` zoomToFit callback for better initial graph framing.
-- **FIC-107**: Deduplicated 65 MediaWork nodes across 64 groups with different Wikidata Q-IDs for same work.
-- **FIC-140**: Series detail page now rolls up figures from child works via PART_OF traversal in `getMediaById()`. Fixed Wolf Hall Trilogy data: removed duplicate PART_OF rels (3 children appeared 6x), set creator to Hilary Mantel, removed fabricated `Q2657795-series` wikidata_id.
-- **FIC-125**: Merged duplicate Wolf Hall TV Series nodes (Q17060328=HyperTransport Consortium, Q18154901=Agents of SHIELD episode) into single node with correct Q-ID Q17039455. Cardinal Wolsey relationship preserved.
-- **FIC-137**: Renamed "Create a new work/figure" to "Add" on portrayal and work contribute pages.
-- **FIC-146**: Removed confusing two-letter initials from MediaWork card thumbnails (WorkCard, PortrayalCard). Placeholders now show only the media type icon on a colored square.
-- **FIC-145**: Merged two duplicate Passion of the Christ nodes (wrong Wikidata IDs: Q356690=French tripe dish, Q165467=Jimmy Page) into single node with correct Q-ID Q51668.
-- **FIC-144**: Updated illustration `STYLE_PREAMBLE` in both `prompt-templates.ts` and admin regenerate-image API to require complete facial features (visible eyes, nose, mouth). Jesus (Q302) and Peter (Q33923) portraits need regeneration once Gemini quota resets.
-- **FIC-131**: Timeline era filter already pushes browser history (verified, no fix needed).
-- **FIC-134**: `/contribute/creator` 404 — no code generates these links (verified, no fix needed).
-- **Password protection (FIC-147)**: Cookie-based password gate via Next.js middleware. `SITE_PASSWORD` env var controls access. 30-day httpOnly cookie. Styled password page at `/password` with Fictotum visual identity. Middleware exempts `/password`, `/api/site-access`, `/api/auth`, and static assets. Disabled when env var is unset (dev mode).
-- **Domain setup (FIC-147)**: fictotum.com and www.fictotum.com pointed to Vercel. DNS: A record → 76.76.21.21, CNAME www → cname.vercel-dns.com (configured on Hover).
-- **Graph chrome simplification (Option A)**: Breadcrumb moved above canvas (page-level, not overlay). Ghost toolbar (bottom-right, borderless buttons, persistent #666 gray, no hover effects). Legend moved below canvas as tiny dot row. Canvas border removed — cream background bleeds into page with faint dashed outline. Full-width layout (removed 1100px max-width). Canvas height increased to 70vh/700px.
-- **Search bar removed from graph page**: SearchInput component removed entirely from `/explore/graph`. Graph renders directly without search chrome. Navbar search trigger also removed.
-- **Sentry error monitoring**: @sentry/nextjs wired (client, server, edge). Error boundary, instrumentation hook, source map uploads. Sentry project: `fictotum` in `big-heavy` org.
-- **Dense graph hover clarity (FIC-121)**: Node name label above action buttons, 1.3x scale-up with gold ring on hovered node, 0.3 opacity dimming of non-hovered nodes via `dimFactor` multiplier in `nodeCanvasObject`.
-- **Fisk color unification (FIC-117)**: Shared `lib/colors.ts` module with `ERA_COLORS`, `getEraColor()`, and `GRAPH_PALETTE` constants. Era-based node coloring, cream backgrounds, warm translucent links across GraphExplorer, HomeGraphHero, and Timeline. Graph legend updated to match (FIC-122).
-- **Timeline readability overhaul**: Row-packing algorithm (greedy first-fit) condenses figures into minimal lanes within a single viewport. Minimum 10px bar height with scroll overflow. White text with drop shadow on bars, overflow labels for short bars, alternating zebra-stripe lane shading. Inspired by Harold Fisk's Mississippi River meander maps.
-- **Graph API temporal metadata**: `getGraphData()`, `getLandingGraphData()`, `getHighDegreeNetwork()` now populate `temporal.era` on figure nodes (was already in `getNodeNeighbors()`).
-- **Mini-timeline overlap fix**: ImpressionisticTimeline labels no longer overlap in dense graphs — greedy row stagger with dashed connector lines, dynamic container height.
-- **Wheel zoom fix**: Canvas wheel handler uses native `addEventListener` with `{ passive: false }` so `preventDefault()` works correctly.
-- `:HistoricalEvent` and `:Source` node types: full schema, JSON batch import schema, batch_import.py support
-- Timeline view: canvas-based zoomable/pannable timeline at `/explore/timeline`
-- Graph Explorer UX overhaul: suppressed duplicate HTML tooltips, label text halos, always-on bloom-mode expansion
-- Dual-click behavior: click node circle = expand/re-center, click label text = navigate to detail page
-- Homepage graph hero (HomeGraphHero) ported with same label fixes and halo effects
-- CHR-40: Batch import infrastructure (JSON validation, duplicate detection, dry-run mode)
-- Provenance tracking: 100% CREATED_BY coverage across all entity nodes
-- Wikidata-first canonical ID strategy with provisional ID fallback
+Auth.js v5 (Google + GitHub) with graceful degradation when OAuth env vars absent. Users stored as :User nodes. Collections fully implemented. Admin routes locked to `ADMIN_EMAILS` env var. Series pages redesigned as franchise retrospective destination pages. NFD diacritic normalization active (TypeScript + Python). Q-ID audit infrastructure with batch validation and auto-fix. Pre-flight Q-ID validation in `batch_import.py` with `--strict-qids` block option. Sentry error monitoring wired (client, server, edge).
 
 ### Active Work
 - Data enrichment and population via batch imports (supports figures, works, events, sources)
-- Upload generated illustrations to cloud storage and link to Neo4j nodes (1,008 images ready)
+- 132 entities need manual Q-ID review (alternative names like Tamerlane/Timur, or no Wikidata match). Report: `docs/reports/qid-audit-2026-03-22.json`
 
 ### Known Issues
-- **Neo4j Aura free tier auto-pause**: Pauses after 3 days inactivity — DNS returns NXDOMAIN. Must resume from Neo4j Aura console (console.neo4j.io). Keep alive by visiting fictotum.com periodically.
-- Stale `.next` webpack cache can cause HMR failures after edits to graph components — fix with `rm -rf .next` and restart dev server
-- Google Safe Browsing may flag `/api/auth/signin` on new domains — false positive that resolves in days
+- **Neo4j Aura free tier auto-pause**: Pauses after 3 days inactivity — DNS returns NXDOMAIN. Must resume from console.neo4j.io. Keep alive by visiting fictotum.com periodically.
+- Stale `.next` webpack cache can cause HMR failures after graph component edits — fix with `rm -rf .next`
+- Google Safe Browsing may flag `/api/auth/signin` on new domains — false positive, resolves in days
 - No automated CI/CD pipeline
 
 ## Roadmap
-### Active: Open & Social (`docs/roadmaps/open-and-social.md`)
-- **M1: Open the Gates** — Remove password, public landing/about, OG tags, analytics (FIC-43, FIC-44)
-- **M2: User Identity + Collections** — OAuth (Google/GitHub), contribution tracking, curated paths (FIC-103, FIC-116)
-- **M3: The Collection Experience** — Series pages as shareable destination pages
-- **M4: Content Density Push** — Ancient Egypt (FIC-36), Tudor England (FIC-38), alternate names, target 3K+
+### Completed: Open & Social (`docs/roadmaps/open-and-social.md`)
+- **M1: Open the Gates** — Public launch, OG tags, Vercel Analytics
+- **M2: User Identity + Collections** — OAuth login, contribution tracking, collections
+- **M3: The Collection Experience** — Series pages as franchise retrospective destinations
+- **M4: Content Density Push** — 3,000+ entities, alternate names, regional batches, Q-ID mass fix
 
 ### Backlog
 - **FIC-132/133**: Location data and map filtering
@@ -152,7 +60,7 @@ Database has 3,000 entity nodes (1,317 figures + 1,683 works) with 2,121 APPEARS
 - **Provenance**: Every node MUST have a `CREATED_BY` relationship to an `:Agent` node
 - **Batch imports**: Always dry-run first, then execute with `--execute` flag
 - **Safety**: Never touch files outside `/Documents/big-heavy/fictotum`
-- **Vercel deploy**: Always deploy from the repo root (`/fictotum/`), never from `web-app/`. The Vercel project is linked at the root via `.vercel/project.json`. Deploying from `web-app/` creates a separate project.
+- **Vercel deploy**: Always deploy from the repo root (`/fictotum/`), never from `web-app/`. The Vercel project is linked at the root via `.vercel/project.json`.
 
 ## Protocols
 
@@ -167,7 +75,7 @@ Database has 3,000 entity nodes (1,317 figures + 1,683 works) with 2,121 APPEARS
 - **Priority 1**: Wikidata Q-ID as `canonical_id` (e.g., `Q517` for Napoleon)
 - **Priority 2**: Provisional ID (`PROV:{slug}-{timestamp}`) when Q-ID unavailable
 - **Similarity scoring**: Weighted 70% lexical (Levenshtein) + 30% phonetic (Double Metaphone)
-- **Thresholds**: High ≥0.9, Medium 0.7-0.89, Low <0.7
+- **Thresholds**: High >=0.9, Medium 0.7-0.89, Low <0.7
 
 ### CREATED_BY Provenance (Mandatory)
 ```cypher
@@ -188,8 +96,4 @@ python3 scripts/import/batch_import.py data/batch.json --execute
 
 ## Session Close Protocol
 
-Before ending a work session:
-1. Update `## Current State` with what was accomplished
-2. Bump `_Last updated_` date
-3. Commit changes with a descriptive message
-4. If blocked, document the blocker under Known Issues
+Run /close before ending any panel session.
