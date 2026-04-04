@@ -24,9 +24,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Neo4j connection (assumes environment variables are set)
-const NEO4J_URI = process.env.NEO4J_URI;
-const NEO4J_USER = process.env.NEO4J_USER;
-const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD;
+const NEO4J_URI = process.env.NEO4J_URI?.trim();
+const NEO4J_USER = process.env.NEO4J_USER?.trim();
+const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD?.trim();
 
 interface HardcodedId {
   file: string;
@@ -146,7 +146,7 @@ function extractHardcodedIds(filePath: string): HardcodedId[] {
  * Validate ID against Neo4j database via API
  */
 async function validateId(id: string): Promise<ValidationResult> {
-  const port = process.env.PORT || '3001';
+  const port = process.env.PORT?.trim() || '3001';
   try {
     const response = await fetch(`http://localhost:${port}/api/entities/validate?id=${id}`);
 

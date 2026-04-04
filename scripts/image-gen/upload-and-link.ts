@@ -75,9 +75,9 @@ function parseArgs(): CliArgs {
 // ---------------------------------------------------------------------------
 
 function createDriver(): Driver {
-  const uri = process.env.NEO4J_URI;
-  const username = process.env.NEO4J_USERNAME;
-  const password = process.env.NEO4J_PASSWORD;
+  const uri = process.env.NEO4J_URI?.trim();
+  const username = process.env.NEO4J_USERNAME?.trim();
+  const password = process.env.NEO4J_PASSWORD?.trim();
 
   if (!uri || !username || !password) {
     throw new Error('Missing Neo4j env vars.');
@@ -95,10 +95,10 @@ function createDriver(): Driver {
 function getR2Client(): S3Client {
   return new S3Client({
     region: 'auto',
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    endpoint: `https://${process.env.R2_ACCOUNT_ID?.trim()}.r2.cloudflarestorage.com`,
     credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!.trim(),
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!.trim(),
     },
   });
 }
@@ -109,8 +109,8 @@ async function uploadToR2(
 ): Promise<string> {
   const fileBuffer = fs.readFileSync(filePath);
   const client = getR2Client();
-  const bucketName = process.env.R2_BUCKET_NAME || 'big-heavy-assets';
-  const publicUrl = process.env.R2_PUBLIC_URL!;
+  const bucketName = process.env.R2_BUCKET_NAME?.trim() || 'big-heavy-assets';
+  const publicUrl = process.env.R2_PUBLIC_URL!.trim();
 
   await client.send(
     new PutObjectCommand({
@@ -187,7 +187,7 @@ async function main() {
 
   // Validate R2 credentials if not local mode
   if (!args.local && !args.dryRun) {
-    if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_PUBLIC_URL) {
+    if (!process.env.R2_ACCOUNT_ID?.trim() || !process.env.R2_ACCESS_KEY_ID?.trim() || !process.env.R2_PUBLIC_URL?.trim()) {
       console.error(
         'ERROR: R2 credentials not set.\n' +
           'Required env vars: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_PUBLIC_URL\n' +

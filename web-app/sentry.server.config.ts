@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
+  dsn: process.env.SENTRY_DSN?.trim(),
   environment: "production",
 
   // Disable performance monitoring to conserve free-tier quota

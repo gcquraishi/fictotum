@@ -516,15 +516,15 @@ async function main() {
   if (args.dryRun) console.log(`  Mode: DRY RUN (no output file)`);
 
   // Check environment
-  const geminiKey = process.env.GEMINI_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY?.trim();
   if (!geminiKey) {
     console.error('\n  ERROR: GEMINI_API_KEY not set');
     process.exit(1);
   }
 
-  const neo4jUri = process.env.NEO4J_URI;
-  const neo4jUser = process.env.NEO4J_USERNAME;
-  const neo4jPassword = process.env.NEO4J_PASSWORD;
+  const neo4jUri = process.env.NEO4J_URI?.trim();
+  const neo4jUser = process.env.NEO4J_USERNAME?.trim();
+  const neo4jPassword = process.env.NEO4J_PASSWORD?.trim();
   if (!neo4jUri || !neo4jUser || !neo4jPassword) {
     console.error('\n  ERROR: NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD must be set');
     process.exit(1);
