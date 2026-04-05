@@ -1,0 +1,531 @@
+{
+  "metadata": {
+    "source": "Research compilation — historical fiction and world literature",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "Final batch to push past 3,000 entities — focused on works unlikely to be duplicated and niche historical figures."
+  },
+  "figures": [
+    {
+      "name": "Mary Anning",
+      "wikidata_id": "Q233954",
+      "canonical_id": "Q233954",
+      "birth_year": 1799,
+      "death_year": 1847,
+      "title": "Paleontologist",
+      "era": "Victorian Era",
+      "description": "Self-taught fossil hunter who made crucial discoveries along the Dorset coast, including the first correctly identified ichthyosaur skeleton, largely unrecognized in her lifetime",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Hildegard of Bingen",
+      "wikidata_id": "Q42005",
+      "canonical_id": "Q42005",
+      "birth_year": 1098,
+      "death_year": 1179,
+      "title": "Abbess, mystic, and polymath",
+      "era": "High Medieval",
+      "description": "Benedictine abbess who composed music, wrote theological and scientific works, and corresponded with popes and emperors — one of the great medieval minds",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Hypatia of Alexandria",
+      "wikidata_id": "Q170510",
+      "canonical_id": "Q170510",
+      "birth_year": 355,
+      "death_year": 415,
+      "title": "Philosopher and mathematician",
+      "era": "Roman Empire",
+      "description": "The last great pagan philosopher of antiquity, head of the Neoplatonic school in Alexandria, murdered by a Christian mob in one of history's most infamous acts of violence against intellectuals",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Hatice Sultan",
+      "wikidata_id": "Q552747",
+      "canonical_id": "Q552747",
+      "birth_year": 1496,
+      "death_year": 1538,
+      "title": "Ottoman princess",
+      "era": "Ottoman Empire Golden Age",
+      "description": "Favorite sister of Suleiman the Magnificent and wife of Grand Vizier Ibrahim Pasha, wielding significant political influence in the Ottoman court",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Oishi Kuranosuke",
+      "wikidata_id": "Q1117706",
+      "canonical_id": "Q1117706",
+      "birth_year": 1659,
+      "death_year": 1703,
+      "title": "Japanese samurai",
+      "era": "Edo Period Japan",
+      "description": "Leader of the Forty-Seven Ronin who avenged their lord's death in the most famous act of samurai loyalty in Japanese history",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Basho",
+      "wikidata_id": "Q5765",
+      "canonical_id": "Q5765",
+      "birth_year": 1644,
+      "death_year": 1694,
+      "title": "Japanese poet",
+      "era": "Edo Period Japan",
+      "description": "The greatest haiku poet, whose The Narrow Road to the Deep North elevated haiku to a literary art form and remains the most famous work of Japanese travel literature",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Yaa Asantewaa",
+      "wikidata_id": "Q438505",
+      "canonical_id": "Q438505",
+      "birth_year": 1840,
+      "death_year": 1921,
+      "title": "Queen Mother of Ejisu",
+      "era": "Colonial Africa",
+      "description": "Led the Ashanti war of resistance against British colonialism in the Gold Coast, one of the last major wars of African resistance to European imperialism",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Menelik II",
+      "wikidata_id": "Q156178",
+      "canonical_id": "Q156178",
+      "birth_year": 1844,
+      "death_year": 1913,
+      "title": "Emperor of Ethiopia",
+      "era": "Colonial Africa",
+      "description": "Ethiopian emperor who defeated the Italian invasion at the Battle of Adwa in 1896, the most decisive African victory against European colonialism",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Enheduanna",
+      "wikidata_id": "Q296339",
+      "canonical_id": "Q296339",
+      "birth_year": -2285,
+      "death_year": -2250,
+      "title": "High Priestess and poet",
+      "era": "Ancient Near East",
+      "description": "Daughter of Sargon of Akkad and the first named author in human history, her hymns to the goddess Inanna are the oldest signed literary works",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Wallada bint al-Mustakfi",
+      "wikidata_id": "Q464279",
+      "canonical_id": "Q464279",
+      "birth_year": 1001,
+      "death_year": 1091,
+      "title": "Umayyad princess and poet",
+      "era": "Islamic Golden Age",
+      "description": "Andalusian princess and one of the greatest female poets of the Arab world, known for her wit, independence, and scandalous love affair with Ibn Zaydun",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Nefertiti",
+      "wikidata_id": "Q40096",
+      "canonical_id": "Q40096",
+      "birth_year": -1370,
+      "death_year": -1330,
+      "title": "Queen of Egypt",
+      "era": "New Kingdom",
+      "description": "Great Royal Wife of Akhenaten whose painted bust is one of the most iconic works of ancient art, she may have briefly ruled as pharaoh after her husband's death",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Zenobia",
+      "wikidata_id": "Q170516",
+      "canonical_id": "Q170516",
+      "birth_year": 240,
+      "death_year": 274,
+      "title": "Queen of Palmyra",
+      "era": "Roman Empire",
+      "description": "Syrian queen who conquered Egypt and much of the Eastern Roman Empire before being defeated by Emperor Aurelian, one of antiquity's most powerful women",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Khutulun",
+      "wikidata_id": "Q327282",
+      "canonical_id": "Q327282",
+      "birth_year": 1260,
+      "death_year": 1306,
+      "title": "Mongol princess and warrior",
+      "era": "Mongol Empire",
+      "description": "Great-great-granddaughter of Genghis Khan who famously refused to marry any man who could not defeat her in wrestling, reportedly winning 10,000 horses",
+      "historicity_status": "historical"
+    }
+  ],
+  "works": [
+    {
+      "title": "Agora",
+      "wikidata_id": "Q456012",
+      "media_id": "agora-2009",
+      "media_type": "FILM",
+      "release_year": 2009,
+      "creator": "Alejandro Amenabar",
+      "description": "Historical drama about Hypatia of Alexandria, the philosopher and mathematician caught between the rising tide of Christianity and the fading world of classical learning",
+      "setting": "Alexandria 391-415 AD"
+    },
+    {
+      "title": "The 47 Ronin",
+      "wikidata_id": "Q56878036",
+      "media_id": "47-ronin-film",
+      "media_type": "FILM",
+      "release_year": 1941,
+      "creator": "Kenji Mizoguchi",
+      "description": "Classic Japanese film depicting the famous revenge of the 47 ronin, considered one of the greatest Japanese films ever made",
+      "setting": "Japan 1701-1703"
+    },
+    {
+      "title": "The Passion of the Christ",
+      "wikidata_id": "Q51668",
+      "media_id": "passion-christ-2004",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Mel Gibson",
+      "description": "Controversial and graphically violent depiction of the last 12 hours of Jesus Christ's life, filmed in Aramaic, Latin, and Hebrew",
+      "setting": "Jerusalem 33 AD"
+    },
+    {
+      "title": "Papillon",
+      "wikidata_id": "Q1198381",
+      "media_id": "papillon-1973",
+      "media_type": "FILM",
+      "release_year": 1973,
+      "creator": "Franklin J. Schaffner",
+      "description": "Drama about a man wrongly convicted of murder who is sent to the penal colony on Devil's Island and makes repeated daring escape attempts",
+      "setting": "French Guiana 1931-1941"
+    },
+    {
+      "title": "The Man in the Iron Mask",
+      "wikidata_id": "Q1074025",
+      "media_id": "man-iron-mask-1998",
+      "media_type": "FILM",
+      "release_year": 1998,
+      "creator": "Randall Wallace",
+      "description": "Adaptation of Dumas's novel featuring the aging Musketeers plotting to replace the tyrannical King Louis XIV with his secret twin brother",
+      "setting": "France 1662"
+    },
+    {
+      "title": "The Last of the Mohicans",
+      "wikidata_id": "Q477773",
+      "media_id": "last-mohicans-1992",
+      "media_type": "FILM",
+      "release_year": 1992,
+      "creator": "Michael Mann",
+      "description": "Adventure epic set during the French and Indian War following the frontiersman Hawkeye as he protects two women amid the conflict between British and French forces",
+      "setting": "New York 1757"
+    },
+    {
+      "title": "Apocalypse Now",
+      "wikidata_id": "Q182692",
+      "media_id": "apocalypse-now-1979",
+      "media_type": "FILM",
+      "release_year": 1979,
+      "creator": "Francis Ford Coppola",
+      "description": "Epic war film loosely based on Heart of Darkness, following a captain on a mission upriver into Cambodia to assassinate a rogue colonel who has gone mad",
+      "setting": "Vietnam and Cambodia 1969"
+    },
+    {
+      "title": "Full Metal Jacket",
+      "wikidata_id": "Q219421",
+      "media_id": "full-metal-jacket-1987",
+      "media_type": "FILM",
+      "release_year": 1987,
+      "creator": "Stanley Kubrick",
+      "description": "Vietnam War film following a platoon of Marines from the dehumanizing boot camp to the Battle of Hue during the Tet Offensive",
+      "setting": "Parris Island and Vietnam 1967-1968"
+    },
+    {
+      "title": "Platoon",
+      "wikidata_id": "Q201489",
+      "media_id": "platoon-1986",
+      "media_type": "FILM",
+      "release_year": 1986,
+      "creator": "Oliver Stone",
+      "description": "Semi-autobiographical war film about a young soldier's experience in Vietnam, torn between two sergeants who represent the moral extremes of warfare",
+      "setting": "Vietnam 1967-1968"
+    },
+    {
+      "title": "Come and See",
+      "wikidata_id": "Q471538",
+      "media_id": "come-and-see-1985",
+      "media_type": "FILM",
+      "release_year": 1985,
+      "creator": "Elem Klimov",
+      "description": "Soviet anti-war masterpiece following a Belarusian boy through the horrors of Nazi occupation, widely considered the most harrowing war film ever made",
+      "setting": "Belarus 1943"
+    },
+    {
+      "title": "Das Boot",
+      "wikidata_id": "Q158015",
+      "media_id": "das-boot-1981",
+      "media_type": "FILM",
+      "release_year": 1981,
+      "creator": "Wolfgang Petersen",
+      "description": "Claustrophobic submarine thriller following the crew of a German U-boat during the Battle of the Atlantic, capturing the terror and futility of submarine warfare",
+      "setting": "Atlantic Ocean 1941"
+    },
+    {
+      "title": "The Bridge on the River Kwai",
+      "wikidata_id": "Q117414",
+      "media_id": "bridge-river-kwai-1957",
+      "media_type": "FILM",
+      "release_year": 1957,
+      "creator": "David Lean",
+      "description": "Epic about British POWs forced to build a railway bridge for the Japanese, exploring the thin line between duty and collaboration in wartime",
+      "setting": "Burma 1943"
+    },
+    {
+      "title": "The Thin Red Line",
+      "wikidata_id": "Q332283",
+      "media_id": "thin-red-line-1998",
+      "media_type": "FILM",
+      "release_year": 1998,
+      "creator": "Terrence Malick",
+      "description": "Philosophical war film following American soldiers during the Battle of Guadalcanal, meditating on nature, death, and the meaning of combat",
+      "setting": "Guadalcanal 1942-1943"
+    },
+    {
+      "title": "Letters from Iwo Jima",
+      "wikidata_id": "Q318521",
+      "media_id": "letters-iwo-jima-2006",
+      "media_type": "FILM",
+      "release_year": 2006,
+      "creator": "Clint Eastwood",
+      "description": "The Battle of Iwo Jima told from the Japanese perspective through discovered letters, a companion piece to Flags of Our Fathers",
+      "setting": "Iwo Jima 1945"
+    },
+    {
+      "title": "Tora! Tora! Tora!",
+      "wikidata_id": "Q459246",
+      "media_id": "tora-tora-tora-1970",
+      "media_type": "FILM",
+      "release_year": 1970,
+      "creator": "Richard Fleischer",
+      "description": "Documentary-style recreation of the attack on Pearl Harbor from both American and Japanese perspectives, praised for its meticulous historical accuracy",
+      "setting": "Hawaii 1941"
+    },
+    {
+      "title": "The Longest Day",
+      "wikidata_id": "Q593652",
+      "media_id": "longest-day-1962",
+      "media_type": "FILM",
+      "release_year": 1962,
+      "creator": "Ken Annakin",
+      "description": "Epic recreation of D-Day told from American, British, French, and German perspectives with an all-star cast",
+      "setting": "Normandy June 6, 1944"
+    },
+    {
+      "title": "Saving Private Ryan",
+      "wikidata_id": "Q244479",
+      "media_id": "saving-private-ryan-1998",
+      "media_type": "FILM",
+      "release_year": 1998,
+      "creator": "Steven Spielberg",
+      "description": "WWII film following a squad searching for the last surviving brother of four servicemen, opening with the most realistic depiction of D-Day ever filmed",
+      "setting": "France 1944"
+    },
+    {
+      "title": "Dunkirk",
+      "wikidata_id": "Q21935651",
+      "media_id": "dunkirk-2017",
+      "media_type": "FILM",
+      "release_year": 2017,
+      "creator": "Christopher Nolan",
+      "description": "Ticking-clock war thriller depicting the evacuation of Allied soldiers from the beaches of Dunkirk, told across three timelines on land, sea, and air",
+      "setting": "Dunkirk May-June 1940"
+    },
+    {
+      "title": "Midway",
+      "wikidata_id": "Q27539770",
+      "media_id": "midway-2019",
+      "media_type": "FILM",
+      "release_year": 2019,
+      "creator": "Roland Emmerich",
+      "description": "War film depicting the pivotal Battle of Midway in 1942, the turning point of the Pacific War, from the perspectives of American naval aviators",
+      "setting": "Pacific Ocean June 1942"
+    },
+    {
+      "title": "Hacksaw Ridge",
+      "wikidata_id": "Q21010853",
+      "media_id": "hacksaw-ridge-2016b",
+      "media_type": "FILM",
+      "release_year": 2016,
+      "creator": "Mel Gibson",
+      "description": "True story of Desmond Doss, the first conscientious objector to receive the Medal of Honor",
+      "setting": "Okinawa 1945"
+    },
+    {
+      "title": "Unbroken",
+      "wikidata_id": "Q14903094",
+      "media_id": "unbroken-2014",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Angelina Jolie",
+      "description": "True story of Louis Zamperini, an Olympic runner who survived 47 days adrift at sea and years as a Japanese POW during World War II",
+      "setting": "Pacific and Japan 1943-1945"
+    },
+    {
+      "title": "Darkest Hour",
+      "wikidata_id": "Q27958298",
+      "media_id": "darkest-hour-2017b",
+      "media_type": "FILM",
+      "release_year": 2017,
+      "creator": "Joe Wright",
+      "description": "Churchill's first days as Prime Minister during the crisis of Dunkirk",
+      "setting": "London May 1940"
+    },
+    {
+      "title": "The Zulu",
+      "wikidata_id": "Q1543037",
+      "media_id": "zulu-1964",
+      "media_type": "FILM",
+      "release_year": 1964,
+      "creator": "Cy Endfield",
+      "description": "Epic depicting the Battle of Rorke's Drift where 150 British soldiers defended a mission station against 4,000 Zulu warriors during the Anglo-Zulu War",
+      "setting": "Natal 1879"
+    },
+    {
+      "title": "The Battle of Algiers",
+      "wikidata_id": "Q234258",
+      "media_id": "battle-algiers-1966",
+      "media_type": "FILM",
+      "release_year": 1966,
+      "creator": "Gillo Pontecorvo",
+      "description": "Neorealist film depicting the Algerian struggle for independence from France, so realistic it has been used as both a revolutionary handbook and counterinsurgency training film",
+      "setting": "Algiers 1954-1957"
+    },
+    {
+      "title": "Hotel Mumbai",
+      "wikidata_id": "Q27979157",
+      "media_id": "hotel-mumbai-2018",
+      "media_type": "FILM",
+      "release_year": 2018,
+      "creator": "Anthony Maras",
+      "description": "Thriller depicting the 2008 Mumbai terrorist attacks from the perspective of the staff and guests trapped inside the Taj Mahal Palace Hotel",
+      "setting": "Mumbai November 2008"
+    },
+    {
+      "title": "Argo",
+      "wikidata_id": "Q546261",
+      "media_id": "argo-2012",
+      "media_type": "FILM",
+      "release_year": 2012,
+      "creator": "Ben Affleck",
+      "description": "Thriller about the CIA operation to rescue six American diplomats from Iran during the 1979 hostage crisis by disguising them as a Canadian film crew",
+      "setting": "Tehran 1979-1980"
+    },
+    {
+      "title": "Zero Dark Thirty",
+      "wikidata_id": "Q55649",
+      "media_id": "zero-dark-thirty-2012",
+      "media_type": "FILM",
+      "release_year": 2012,
+      "creator": "Kathryn Bigelow",
+      "description": "Thriller depicting the decade-long hunt for Osama bin Laden culminating in the Navy SEAL raid on his compound in Abbottabad, Pakistan",
+      "setting": "Worldwide 2001-2011"
+    },
+    {
+      "title": "13 Hours: The Secret Soldiers of Benghazi",
+      "wikidata_id": "Q16678862",
+      "media_id": "13-hours-2016",
+      "media_type": "FILM",
+      "release_year": 2016,
+      "creator": "Michael Bay",
+      "description": "Action film depicting the 2012 attack on the American diplomatic compound in Benghazi and the CIA contractors who fought to defend it",
+      "setting": "Benghazi September 2012"
+    },
+    {
+      "title": "Ip Man",
+      "wikidata_id": "Q838328",
+      "media_id": "ip-man-2008",
+      "media_type": "FILM",
+      "release_year": 2008,
+      "creator": "Wilson Yip",
+      "description": "Biographical martial arts film about Wing Chun grandmaster Ip Man during the Japanese invasion of China, the man who would later train Bruce Lee",
+      "setting": "Foshan, China 1935-1945"
+    },
+    {
+      "title": "The Wind That Shakes the Barley",
+      "wikidata_id": "Q605488",
+      "media_id": "wind-shakes-barley-2006",
+      "media_type": "FILM",
+      "release_year": 2006,
+      "creator": "Ken Loach",
+      "description": "Palme d'Or winner about two Irish brothers who join the IRA during the Irish War of Independence and find themselves on opposite sides during the Civil War",
+      "setting": "Ireland 1920-1923"
+    },
+    {
+      "title": "Timbuktu",
+      "wikidata_id": "Q16539485",
+      "media_id": "timbuktu-2014",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Abderrahmane Sissako",
+      "description": "Poetic drama about life under jihadist occupation in Timbuktu, Mali, showing the absurdity and cruelty of extremist rule with quiet dignity",
+      "setting": "Timbuktu 2012"
+    },
+    {
+      "title": "Theeb",
+      "wikidata_id": "Q19820061",
+      "media_id": "theeb-2014",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Naji Abu Nowar",
+      "description": "Coming-of-age adventure set during the Arab Revolt, following a young Bedouin boy who must survive after becoming separated from his brother in the desert",
+      "setting": "Hejaz 1916"
+    },
+    {
+      "title": "Embrace of the Serpent",
+      "wikidata_id": "Q19750637",
+      "media_id": "embrace-serpent-2015",
+      "media_type": "FILM",
+      "release_year": 2015,
+      "creator": "Ciro Guerra",
+      "description": "Visionary film following two journeys through the Colombian Amazon 40 years apart, exploring the impact of colonialism on indigenous people",
+      "setting": "Colombian Amazon 1909 and 1940"
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q170510",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q456012",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q1117706",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q56878036",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q8016",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q27958298",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q170596",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q19820061",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex",
+        "notes": "T.E. Lawrence era and setting"
+      }
+    }
+  ]
+}

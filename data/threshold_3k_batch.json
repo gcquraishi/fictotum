@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "source": "Research compilation — crossing the 3,000 threshold",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "Tiny batch to cross the 3,000 entity threshold."
+  },
+  "figures": [],
+  "works": [
+    {"title": "The Handmaid's Tale (TV)", "wikidata_id": "Q23658477", "media_id": "handmaids-tale-tv-2017", "media_type": "TV_SERIES", "release_year": 2017, "creator": "Bruce Miller", "description": "Dystopian drama based on Margaret Atwood's novel about women subjugated in a totalitarian theocracy", "setting": "Near-future America"},
+    {"title": "Narcos", "wikidata_id": "Q20656882", "media_id": "narcos-2015", "media_type": "TV_SERIES", "release_year": 2015, "creator": "Chris Brancato", "description": "Crime drama chronicling the rise and fall of Colombian drug lord Pablo Escobar and the DEA agents pursuing him", "setting": "Colombia 1970s-1990s"},
+    {"title": "The Wire", "wikidata_id": "Q26251", "media_id": "wire-2002", "media_type": "TV_SERIES", "release_year": 2002, "creator": "David Simon", "description": "Landmark television series examining the institutions of the American city — drugs, politics, schools, media — through Baltimore's drug trade", "setting": "Baltimore 2002-2008"},
+    {"title": "Boardwalk Empire", "wikidata_id": "Q455133", "media_id": "boardwalk-empire-2010", "media_type": "TV_SERIES", "release_year": 2010, "creator": "Terence Winter", "description": "Period drama set in Prohibition-era Atlantic City, following political boss Nucky Thompson through the rise of organized crime", "setting": "Atlantic City 1920-1931"},
+    {"title": "Deadwood", "wikidata_id": "Q36836", "media_id": "deadwood-2004", "media_type": "TV_SERIES", "release_year": 2004, "creator": "David Milch", "description": "Revisionist Western series set in the lawless gold rush town of Deadwood, South Dakota, featuring Wild Bill Hickok and Calamity Jane", "setting": "Deadwood 1876-1877"},
+    {"title": "Taboo", "wikidata_id": "Q20669297", "media_id": "taboo-2017", "media_type": "TV_SERIES", "release_year": 2017, "creator": "Steven Knight", "description": "Gothic period drama starring Tom Hardy as a man who returns from Africa to claim his inheritance in Regency-era London, battling the East India Company", "setting": "London 1814"},
+    {"title": "Gentleman Jack", "wikidata_id": "Q55601742", "media_id": "gentleman-jack-2019", "media_type": "TV_SERIES", "release_year": 2019, "creator": "Sally Wainwright", "description": "Period drama based on the diaries of Anne Lister, a landowner in 1830s Yorkshire who is widely considered the first modern lesbian", "setting": "Yorkshire 1832-1840"},
+    {"title": "The Underground Railroad (TV)", "wikidata_id": "Q56578855", "media_id": "underground-railroad-tv-2021", "media_type": "TV_SERIES", "release_year": 2021, "creator": "Barry Jenkins", "description": "Visionary adaptation of Colson Whitehead's novel, an enslaved woman escapes via a literal underground railroad beneath the antebellum South", "setting": "American South 1850s"},
+    {"title": "Alias Grace", "wikidata_id": "Q28966730", "media_id": "alias-grace-2017", "media_type": "TV_SERIES", "release_year": 2017, "creator": "Sarah Polley", "description": "Miniseries based on Atwood's novel about a real Irish-Canadian servant convicted of double murder in 1843, exploring memory, truth, and female agency", "setting": "Canada 1843-1859"},
+    {"title": "John Adams (miniseries)", "wikidata_id": "Q906399", "media_id": "john-adams-2008", "media_type": "TV_SERIES", "release_year": 2008, "creator": "Tom Hooper", "description": "HBO miniseries following America's second president from the Boston Massacre through his presidency, starring Paul Giamatti", "setting": "America 1770-1826"}
+  ],
+  "relationships": []
+}

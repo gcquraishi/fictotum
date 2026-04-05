@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option B — 36px header strip inside canvas</title>
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Design Tokens — Fictotum
+    ───────────────────────────────────────────────────────────── */
+    :root {
+      --cream:       #FAF8F0;
+      --stone-900:   #1C1917;
+      --stone-600:   #57534E;
+      --stone-400:   #A09880;
+      --stone-200:   #D6D0C4;
+      --stone-100:   #EAE6DA;
+      --gold:        #B8860B;
+      --gold-light:  #D4A017;
+      --era-brown:   #8B6914;
+      --era-gray:    #6B7280;
+      --era-teal:    #2D6A4F;
+
+      --font-serif:  Georgia, 'Times New Roman', serif;
+      --font-mono:   'IBM Plex Mono', 'Courier New', monospace;
+
+      --navbar-h:    52px;
+      --strip-h:     36px;
+      --radius:      3px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--cream);
+      color: var(--stone-900);
+      font-family: var(--font-serif);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Navbar ─── */
+    .navbar {
+      height: var(--navbar-h);
+      background: var(--stone-900);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      flex-shrink: 0;
+    }
+
+    .navbar-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--cream);
+      text-transform: uppercase;
+    }
+
+    .navbar-logo span { color: var(--gold-light); }
+
+    .navbar-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .navbar-links a {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .navbar-links a:hover { color: var(--cream); }
+    .navbar-links a.active { color: var(--gold-light); }
+
+    /* ─── Page wrapper ─── */
+    .page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 32px 0;
+    }
+
+    /* ─── Canvas frame: no external chrome ─── */
+    .canvas-frame {
+      position: relative;
+      flex: 1;
+      border: 1px solid var(--stone-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--cream);
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Subtle grid on the canvas body */
+    .canvas-body {
+      flex: 1;
+      position: relative;
+    }
+
+    .canvas-body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--stone-100) 1px, transparent 1px),
+        linear-gradient(90deg, var(--stone-100) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ─── Header strip — 36px, INSIDE canvas top ─── */
+    .canvas-header {
+      height: var(--strip-h);
+      background: var(--cream);
+      border-bottom: 1px solid var(--stone-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    /* Breadcrumb left */
+    .breadcrumb {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .breadcrumb a {
+      color: var(--stone-400);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .breadcrumb a:hover { color: var(--gold); }
+
+    .breadcrumb-sep {
+      color: var(--stone-200);
+      font-size: 12px;
+    }
+
+    .breadcrumb-current {
+      color: var(--stone-900);
+      font-weight: 600;
+    }
+
+    /* Icon buttons right */
+    .strip-actions {
+      display: flex;
+      gap: 2px;
+    }
+
+    .strip-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: var(--radius);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--stone-400);
+      transition: background 0.15s, color 0.15s;
+      font-family: var(--font-serif);
+      user-select: none;
+    }
+
+    .strip-btn:hover {
+      background: var(--stone-100);
+      color: var(--stone-900);
+    }
+
+    /* ─── Fake graph nodes ─── */
+    .graph-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Option label watermark */
+    .option-label {
+      position: fixed;
+      top: 60px;
+      right: 16px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      background: var(--cream);
+      border: 1px solid var(--stone-200);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+      pointer-events: none;
+    }
+
+    /* ─── Mini-timeline ─── */
+    .mini-timeline {
+      height: 36px;
+      background: var(--stone-900);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: auto;
+    }
+
+    .timeline-track {
+      flex: 1;
+      height: 2px;
+      background: var(--stone-600);
+      position: relative;
+    }
+
+    .timeline-tick {
+      position: absolute;
+      top: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timeline-tick-line {
+      width: 1px;
+      height: 8px;
+      background: var(--stone-400);
+    }
+
+    .timeline-tick-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      color: var(--stone-400);
+      white-space: nowrap;
+      position: absolute;
+      top: 8px;
+    }
+
+    .timeline-era-bar {
+      position: absolute;
+      height: 100%;
+      top: 0;
+      opacity: 0.25;
+      border-radius: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-logo">Ficto<span>tum</span></div>
+    <ul class="navbar-links">
+      <li><a href="#">Contribute</a></li>
+      <li><a href="#" class="active">Graph</a></li>
+      <li><a href="#">Timeline</a></li>
+      <li><a href="#">Sign Out</a></li>
+    </ul>
+  </nav>
+
+  <!-- Option label -->
+  <div class="option-label">Option B</div>
+
+  <!-- Page -->
+  <main class="page">
+
+    <!-- Canvas frame: header strip lives INSIDE this border -->
+    <div class="canvas-frame">
+
+      <!-- 36px header strip: breadcrumb left, icon buttons right -->
+      <header class="canvas-header">
+        <nav class="breadcrumb" aria-label="Graph navigation">
+          <a href="#">Henry VIII</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current">Cardinal Wolsey</span>
+        </nav>
+
+        <div class="strip-actions" role="toolbar" aria-label="Graph controls">
+          <button class="strip-btn" title="Navigate back" aria-label="Navigate back">←</button>
+          <button class="strip-btn" title="Navigate forward" aria-label="Navigate forward">→</button>
+          <button class="strip-btn" title="Reset view" aria-label="Reset view">↺</button>
+          <button class="strip-btn" title="Help" aria-label="Help">?</button>
+        </div>
+      </header>
+
+      <!-- Canvas body: graph lives here, zero other chrome -->
+      <div class="canvas-body" role="img" aria-label="Graph canvas showing connections for Cardinal Wolsey">
+
+        <svg class="graph-svg" viewBox="0 0 900 490" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <defs>
+            <radialGradient id="focusGlowB" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#B8860B" stop-opacity="0.18" />
+              <stop offset="100%" stop-color="#B8860B" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+
+          <!-- Links -->
+          <line x1="450" y1="248" x2="265" y2="148" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+          <line x1="450" y1="248" x2="640" y2="143" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+          <line x1="450" y1="248" x2="685" y2="282" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+          <line x1="450" y1="248" x2="558" y2="390" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+          <line x1="450" y1="248" x2="285" y2="360" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+          <line x1="265" y1="148" x2="640" y2="143" stroke="#A09880" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="4 3" />
+
+          <!-- Focus glow -->
+          <circle cx="450" cy="248" r="56" fill="url(#focusGlowB)" />
+
+          <!-- Cardinal Wolsey (center) -->
+          <circle cx="450" cy="248" r="32" fill="#8B6914" stroke="#B8860B" stroke-width="2.5" />
+          <text x="450" y="294" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917" font-weight="600">Cardinal Wolsey</text>
+
+          <!-- Henry VIII -->
+          <circle cx="265" cy="148" r="26" fill="#8B6914" stroke="#D6D0C4" stroke-width="1.5" />
+          <text x="265" y="190" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">Henry VIII</text>
+
+          <!-- Thomas Cromwell -->
+          <circle cx="640" cy="143" r="22" fill="#8B6914" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+          <text x="640" y="182" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">Thomas Cromwell</text>
+
+          <!-- Wolf Hall -->
+          <circle cx="685" cy="282" r="20" fill="#6B7280" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+          <text x="685" y="319" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">Wolf Hall</text>
+
+          <!-- A Man for All Seasons -->
+          <circle cx="558" cy="390" r="19" fill="#6B7280" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+          <text x="558" y="427" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1C1917">A Man for All Seasons</text>
+
+          <!-- The Tudors -->
+          <circle cx="285" cy="360" r="18" fill="#6B7280" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+          <text x="285" y="395" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">The Tudors</text>
+        </svg>
+
+      </div><!-- /.canvas-body -->
+
+    </div><!-- /.canvas-frame -->
+
+  </main>
+
+  <!-- Mini-timeline strip -->
+  <div class="mini-timeline" aria-label="Historical timeline" role="complementary">
+    <div class="timeline-track">
+      <div class="timeline-era-bar" style="left:0%;width:18%;background:#8B6914;"></div>
+      <div class="timeline-era-bar" style="left:18%;width:24%;background:#2D6A4F;"></div>
+      <div class="timeline-era-bar" style="left:42%;width:20%;background:#6B7280;"></div>
+      <div class="timeline-era-bar" style="left:62%;width:22%;background:#8B6914;"></div>
+      <div class="timeline-era-bar" style="left:84%;width:16%;background:#2D6A4F;"></div>
+
+      <div class="timeline-tick" style="left:0%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1400</span>
+      </div>
+      <div class="timeline-tick" style="left:25%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1500</span>
+      </div>
+      <div class="timeline-tick" style="left:50%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1600</span>
+      </div>
+      <div class="timeline-tick" style="left:75%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1700</span>
+      </div>
+      <div class="timeline-tick" style="left:100%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1800</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

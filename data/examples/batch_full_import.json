@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "source": "Wikipedia + IMDb Export",
+    "curator": "Historical Media Research Team",
+    "date": "2026-02-01",
+    "description": "Example full batch import with figures, works, and relationships"
+  },
+  "figures": [
+    {
+      "name": "Napoleon Bonaparte",
+      "wikidata_id": "Q517",
+      "birth_year": 1769,
+      "death_year": 1821,
+      "title": "French Military Leader and Emperor",
+      "era": "Napoleonic Era",
+      "description": "French military and political leader who rose to prominence during the French Revolution"
+    },
+    {
+      "name": "Josephine de Beauharnais",
+      "wikidata_id": "Q5982",
+      "birth_year": 1763,
+      "death_year": 1814,
+      "title": "Empress of France",
+      "era": "Napoleonic Era",
+      "description": "First wife of Napoleon Bonaparte and Empress of the French"
+    },
+    {
+      "name": "Arthur Wellesley, 1st Duke of Wellington",
+      "wikidata_id": "Q131691",
+      "birth_year": 1769,
+      "death_year": 1852,
+      "title": "British Military Leader",
+      "era": "Napoleonic Era",
+      "description": "Anglo-Irish soldier and statesman who defeated Napoleon at Waterloo"
+    }
+  ],
+  "works": [
+    {
+      "title": "War and Peace",
+      "wikidata_id": "Q161531",
+      "media_type": "BOOK",
+      "release_year": 1869,
+      "creator": "Leo Tolstoy",
+      "description": "Literary work by Leo Tolstoy, first published in 1869",
+      "setting": "Russia during Napoleonic Wars"
+    },
+    {
+      "title": "Napoleon",
+      "wikidata_id": "Q109690995",
+      "media_type": "FILM",
+      "release_year": 2023,
+      "creator": "Ridley Scott",
+      "description": "Epic historical drama film directed by Ridley Scott"
+    },
+    {
+      "title": "Waterloo",
+      "wikidata_id": "Q1044522",
+      "media_type": "FILM",
+      "release_year": 1970,
+      "creator": "Sergei Bondarchuk",
+      "description": "Soviet-Italian historical war film about the Battle of Waterloo"
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q517",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q161531",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "role": "protagonist",
+        "is_protagonist": true,
+        "sentiment": "complex",
+        "notes": "Napoleon is a major character throughout the narrative"
+      }
+    },
+    {
+      "from_id": "Q517",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q109690995",
+      "to_type": "MediaWork",
+      "rel_type": "PORTRAYED_IN",
+      "properties": {
+        "sentiment": "complex",
+        "notes": "Biographical portrayal by Joaquin Phoenix"
+      }
+    },
+    {
+      "from_id": "Q517",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1044522",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "role": "protagonist",
+        "is_protagonist": true,
+        "sentiment": "heroic",
+        "notes": "Depicts Napoleon at the Battle of Waterloo"
+      }
+    },
+    {
+      "from_id": "Q131691",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1044522",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "role": "protagonist",
+        "is_protagonist": true,
+        "sentiment": "heroic",
+        "notes": "Wellington's victory at Waterloo"
+      }
+    },
+    {
+      "from_id": "Q5982",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q109690995",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "role": "supporting",
+        "is_protagonist": false,
+        "sentiment": "complex",
+        "notes": "Portrayal of Napoleon's first wife"
+      }
+    }
+  ]
+}

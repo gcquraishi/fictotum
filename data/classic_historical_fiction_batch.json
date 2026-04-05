@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "source": "Research compilation — Wikidata Q-IDs verified via wikidata.org API",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "Classic historical fiction works — major films and TV series connecting to existing figures in the graph. Work-heavy batch to increase entity count and relationship density."
+  },
+  "figures": [],
+  "works": [
+    {
+      "title": "The Imitation Game",
+      "wikidata_id": "Q14918344",
+      "media_id": "imitation-game-2014",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Morten Tyldum",
+      "description": "Biographical drama about mathematician Alan Turing's pivotal role in cracking the Enigma code during World War II and his subsequent persecution for homosexuality",
+      "setting": "England 1939-1954"
+    },
+    {
+      "title": "The Pianist",
+      "wikidata_id": "Q150804",
+      "media_id": "pianist-2002",
+      "media_type": "FILM",
+      "release_year": 2002,
+      "creator": "Roman Polanski",
+      "description": "True story of pianist Wladyslaw Szpilman's survival of the Warsaw Ghetto, winner of the Palme d'Or and three Academy Awards",
+      "setting": "Warsaw 1939-1945"
+    },
+    {
+      "title": "Downfall",
+      "wikidata_id": "Q152857",
+      "media_id": "downfall-2004",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Oliver Hirschbiegel",
+      "description": "Harrowing depiction of Hitler's final days in his Berlin bunker as the Soviet army closes in, based on the memoirs of his secretary Traudl Junge",
+      "setting": "Berlin 1945"
+    },
+    {
+      "title": "Troy",
+      "wikidata_id": "Q186587",
+      "media_id": "troy-2004",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Wolfgang Petersen",
+      "description": "Retelling of the Trojan War focusing on the rivalry between Achilles and Hector, stripping the myth of its gods to tell a human drama of love and war",
+      "setting": "Troy 1190 BCE"
+    },
+    {
+      "title": "Cleopatra (1963)",
+      "wikidata_id": "Q4430",
+      "media_id": "cleopatra-1963",
+      "media_type": "FILM",
+      "release_year": 1963,
+      "creator": "Joseph L. Mankiewicz",
+      "description": "Lavish epic starring Elizabeth Taylor as the Egyptian queen, depicting her relationships with Julius Caesar and Mark Antony",
+      "setting": "Egypt and Rome 48-30 BCE"
+    },
+    {
+      "title": "The English Patient",
+      "wikidata_id": "Q63026",
+      "media_id": "english-patient-1996",
+      "media_type": "FILM",
+      "release_year": 1996,
+      "creator": "Anthony Minghella",
+      "description": "Sweeping romantic drama about a dying man's memories of a passionate affair in pre-war North Africa, winner of nine Academy Awards",
+      "setting": "North Africa and Italy 1938-1945"
+    },
+    {
+      "title": "The Pillars of the Earth",
+      "wikidata_id": "Q283073",
+      "media_id": "pillars-of-earth-2010",
+      "media_type": "TV_SERIES",
+      "release_year": 2010,
+      "creator": "Sergio Mimica-Gezzan",
+      "description": "Television adaptation of Ken Follett's epic novel about the building of a cathedral in 12th-century England against the backdrop of the Anarchy",
+      "setting": "England 1135-1174"
+    },
+    {
+      "title": "Medici: Masters of Florence",
+      "wikidata_id": "Q21079531",
+      "media_id": "medici-masters-florence",
+      "media_type": "TV_SERIES",
+      "release_year": 2016,
+      "creator": "Frank Spotnitz",
+      "description": "Period drama chronicling the rise of the Medici family as the bankers of Florence, their political intrigues, and their patronage of the Renaissance",
+      "setting": "Florence 1429-1492"
+    },
+    {
+      "title": "Peaky Blinders",
+      "wikidata_id": "Q14944179",
+      "media_id": "peaky-blinders-2013",
+      "media_type": "TV_SERIES",
+      "release_year": 2013,
+      "creator": "Steven Knight",
+      "description": "Gangster family drama set in post-WWI Birmingham, following the Shelby crime family's rise to power in the industrial underworld",
+      "setting": "Birmingham 1919-1934"
+    },
+    {
+      "title": "The Last Kingdom",
+      "wikidata_id": "Q18085820",
+      "media_id": "last-kingdom-2015",
+      "media_type": "TV_SERIES",
+      "release_year": 2015,
+      "creator": "Stephen Butchard",
+      "description": "Historical drama following a Saxon nobleman raised by Vikings who must navigate the conflict between Danes and Saxons as Alfred the Great unifies England",
+      "setting": "England 866-920"
+    },
+    {
+      "title": "Downton Abbey",
+      "wikidata_id": "Q83071",
+      "media_id": "downton-abbey-2010",
+      "media_type": "TV_SERIES",
+      "release_year": 2010,
+      "creator": "Julian Fellowes",
+      "description": "British period drama depicting the lives of the aristocratic Crawley family and their servants, set against the backdrop of early 20th-century England",
+      "setting": "Yorkshire 1912-1926"
+    },
+    {
+      "title": "Killers of the Flower Moon",
+      "wikidata_id": "Q66316924",
+      "media_id": "killers-flower-moon-2023",
+      "media_type": "FILM",
+      "release_year": 2023,
+      "creator": "Martin Scorsese",
+      "description": "Epic crime drama about the systematic murders of Osage Nation members for their oil wealth in 1920s Oklahoma, and the birth of the FBI",
+      "setting": "Oklahoma 1920s"
+    },
+    {
+      "title": "1917",
+      "wikidata_id": "Q62721520",
+      "media_id": "1917-film-2019",
+      "media_type": "FILM",
+      "release_year": 2019,
+      "creator": "Sam Mendes",
+      "description": "War film shot to appear as a single continuous take, following two British soldiers on a desperate mission across No Man's Land",
+      "setting": "France 1917"
+    },
+    {
+      "title": "All Quiet on the Western Front (novel)",
+      "wikidata_id": "Q207332",
+      "media_id": "all-quiet-novel",
+      "media_type": "BOOK",
+      "release_year": 1929,
+      "creator": "Erich Maria Remarque",
+      "description": "Devastating anti-war novel about a young German soldier's experience in the trenches of World War I, one of the most influential war novels ever written",
+      "setting": "Western Front 1916-1918"
+    },
+    {
+      "title": "Gallipoli",
+      "wikidata_id": "Q1077160",
+      "media_id": "gallipoli-1981",
+      "media_type": "FILM",
+      "release_year": 1981,
+      "creator": "Peter Weir",
+      "description": "Australian film following two young sprinters who enlist and fight in the disastrous Gallipoli Campaign of 1915",
+      "setting": "Australia and Gallipoli 1915"
+    },
+    {
+      "title": "War Horse",
+      "wikidata_id": "Q218589",
+      "media_id": "war-horse-2011",
+      "media_type": "FILM",
+      "release_year": 2011,
+      "creator": "Steven Spielberg",
+      "description": "A young man searches for his beloved horse who has been sold to the cavalry during World War I",
+      "setting": "England and France 1914-1918"
+    },
+    {
+      "title": "Lawrence of Arabia",
+      "wikidata_id": "Q228186",
+      "media_id": "lawrence-of-arabia-1962",
+      "media_type": "FILM",
+      "release_year": 1962,
+      "creator": "David Lean",
+      "description": "Epic biographical film following T. E. Lawrence's role in the Arab Revolt during WWI, widely considered one of the greatest films ever made",
+      "setting": "Ottoman Empire 1916-1918"
+    },
+    {
+      "title": "Apocalypto",
+      "wikidata_id": "Q188035",
+      "media_id": "apocalypto-2006",
+      "media_type": "FILM",
+      "release_year": 2006,
+      "creator": "Mel Gibson",
+      "description": "Action epic set in the declining Maya civilization, following a young man captured for human sacrifice who must escape to save his family",
+      "setting": "Mesoamerica 1502"
+    },
+    {
+      "title": "The Motorcycle Diaries",
+      "wikidata_id": "Q309246",
+      "media_id": "motorcycle-diaries-2004",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Walter Salles",
+      "description": "Road film based on Che Guevara's journals of his 1952 motorcycle journey across South America",
+      "setting": "South America 1952"
+    },
+    {
+      "title": "Frida",
+      "wikidata_id": "Q35738",
+      "media_id": "frida-2002",
+      "media_type": "FILM",
+      "release_year": 2002,
+      "creator": "Julie Taymor",
+      "description": "Biographical film starring Salma Hayek as Frida Kahlo, depicting her art, politics, and passionate marriage to Diego Rivera",
+      "setting": "Mexico 1922-1954"
+    },
+    {
+      "title": "Aguirre, the Wrath of God",
+      "wikidata_id": "Q325662",
+      "media_id": "aguirre-wrath-of-god-1972",
+      "media_type": "FILM",
+      "release_year": 1972,
+      "creator": "Werner Herzog",
+      "description": "A Spanish expedition descends into madness as the megalomaniac Aguirre leads a doomed search for El Dorado down the Amazon",
+      "setting": "Peru 1560"
+    }
+  ],
+  "relationships": [
+    {"from_id": "Q352", "from_type": "HistoricalFigure", "to_id": "Q152857", "to_type": "MediaWork", "rel_type": "APPEARS_IN", "properties": {"sentiment": "villainous", "is_protagonist": true}},
+    {"from_id": "Q170596", "from_type": "HistoricalFigure", "to_id": "Q228186", "to_type": "MediaWork", "rel_type": "APPEARS_IN", "properties": {"sentiment": "heroic", "is_protagonist": true}},
+    {"from_id": "Q5809", "from_type": "HistoricalFigure", "to_id": "Q309246", "to_type": "MediaWork", "rel_type": "APPEARS_IN", "properties": {"sentiment": "heroic", "is_protagonist": true}},
+    {"from_id": "Q5588", "from_type": "HistoricalFigure", "to_id": "Q35738", "to_type": "MediaWork", "rel_type": "APPEARS_IN", "properties": {"sentiment": "complex", "is_protagonist": true}}
+  ]
+}

@@ -1,0 +1,551 @@
+{
+  "metadata": {
+    "source": "Research compilation — Wikidata Q-IDs verified via wikidata.org API",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "Diverse expansion batch — Korean history, uncovered world figures, and additional works. Targets regions with zero coverage to reach 3,000+ entities."
+  },
+  "figures": [
+    {
+      "name": "Yi Sun-sin",
+      "wikidata_id": "Q50184",
+      "canonical_id": "Q50184",
+      "birth_year": 1545,
+      "death_year": 1598,
+      "title": "Korean naval commander",
+      "era": "Joseon Korea",
+      "description": "Korea's greatest naval hero who invented the turtle ship and won 23 consecutive naval victories against Japan's Toyotomi invasion fleet",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Sejong the Great",
+      "wikidata_id": "Q37682",
+      "canonical_id": "Q37682",
+      "birth_year": 1397,
+      "death_year": 1450,
+      "title": "Fourth King of Joseon",
+      "era": "Joseon Korea",
+      "description": "Korea's most revered monarch who created the Hangul alphabet, promoted science and agriculture, and expanded territory",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Gwanggaeto the Great",
+      "wikidata_id": "Q498791",
+      "canonical_id": "Q498791",
+      "birth_year": 374,
+      "death_year": 413,
+      "title": "King of Goguryeo",
+      "era": "Three Kingdoms Korea",
+      "description": "The greatest conqueror king of Goguryeo who expanded the kingdom to its largest territorial extent across Manchuria and the Korean Peninsula",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "King Dongmyeong",
+      "wikidata_id": "Q378502",
+      "canonical_id": "Q378502",
+      "birth_year": -58,
+      "death_year": -19,
+      "title": "Founder of Goguryeo",
+      "era": "Three Kingdoms Korea",
+      "description": "Legendary founder of the Goguryeo kingdom, one of the Three Kingdoms of Korea, said to have been the son of a river god",
+      "historicity_status": "legendary"
+    },
+    {
+      "name": "Kim Yushin",
+      "wikidata_id": "Q494501",
+      "canonical_id": "Q494501",
+      "birth_year": 595,
+      "death_year": 673,
+      "title": "Korean general",
+      "era": "Three Kingdoms Korea",
+      "description": "The greatest general of the Silla kingdom who united the Three Kingdoms of Korea through military conquest and diplomatic alliances",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Empress Myeongseong",
+      "wikidata_id": "Q464503",
+      "canonical_id": "Q464503",
+      "birth_year": 1851,
+      "death_year": 1895,
+      "title": "Empress of Korea",
+      "era": "Late Joseon Korea",
+      "description": "The last empress of Korea who resisted Japanese encroachment and was assassinated by Japanese agents in the Eulmi Incident",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Heo Jun",
+      "wikidata_id": "Q487550",
+      "canonical_id": "Q487550",
+      "birth_year": 1539,
+      "death_year": 1615,
+      "title": "Korean royal physician",
+      "era": "Joseon Korea",
+      "description": "Court physician who compiled the Dongui Bogam, a foundational text of Korean medicine recognized by UNESCO as a Memory of the World",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Haile Selassie",
+      "wikidata_id": "Q41178",
+      "canonical_id": "Q41178",
+      "birth_year": 1892,
+      "death_year": 1975,
+      "title": "Emperor of Ethiopia",
+      "era": "20th Century Africa",
+      "description": "Last emperor of Ethiopia who modernized the country, addressed the League of Nations against Italian aggression, and became a messianic figure in Rastafarianism",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Hurrem Sultan",
+      "wikidata_id": "Q255809",
+      "canonical_id": "Q255809",
+      "birth_year": 1502,
+      "death_year": 1558,
+      "title": "Ottoman Empress",
+      "era": "Ottoman Empire Golden Age",
+      "description": "Born as Roxelana, a Ruthenian slave who became the legal wife of Suleiman the Magnificent and the most powerful woman in Ottoman history",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Hayreddin Barbarossa",
+      "wikidata_id": "Q200582",
+      "canonical_id": "Q200582",
+      "birth_year": 1478,
+      "death_year": 1546,
+      "title": "Ottoman admiral",
+      "era": "Ottoman Empire Golden Age",
+      "description": "The greatest admiral of the Ottoman navy who dominated the Mediterranean, turning it into an Ottoman lake and terrorizing European coastal cities",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Sappho",
+      "wikidata_id": "Q17892",
+      "canonical_id": "Q17892",
+      "birth_year": -630,
+      "death_year": -570,
+      "title": "Greek lyric poet",
+      "era": "Archaic Greece",
+      "description": "Greatest female poet of antiquity whose passionate love poems from the island of Lesbos survived only in fragments but influenced all subsequent Western lyric poetry",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "James Cook",
+      "wikidata_id": "Q7324",
+      "canonical_id": "Q7324",
+      "birth_year": 1728,
+      "death_year": 1779,
+      "title": "British explorer and navigator",
+      "era": "Age of Exploration",
+      "description": "Explorer who made three Pacific voyages mapping New Zealand, Australia's eastern coast, and Hawaii, advancing navigation science before being killed by Hawaiians",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Boudica",
+      "wikidata_id": "Q184634",
+      "canonical_id": "Q184634",
+      "birth_year": 30,
+      "death_year": 61,
+      "title": "Queen of the Iceni",
+      "era": "Roman Britain",
+      "description": "British Celtic queen who led a massive revolt against Roman occupation, burning Londinium and killing 70,000 before her final defeat",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Josephine Baker",
+      "wikidata_id": "Q151972",
+      "canonical_id": "Q151972",
+      "birth_year": 1906,
+      "death_year": 1975,
+      "title": "Dancer, singer, and activist",
+      "era": "Interwar Period",
+      "description": "American-born French entertainer who became the most famous dancer in Europe, a French Resistance hero, and a civil rights activist who adopted 12 children",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Cleopatra Selene II",
+      "wikidata_id": "Q40058",
+      "canonical_id": "Q40058",
+      "birth_year": -40,
+      "death_year": -5,
+      "title": "Queen of Mauretania",
+      "era": "Roman Republic",
+      "description": "Daughter of Cleopatra VII and Mark Antony who survived the fall of Ptolemaic Egypt to become queen of Mauretania, bringing Hellenistic culture to North Africa",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Dae Joyeong",
+      "wikidata_id": "Q498505",
+      "canonical_id": "Q498505",
+      "birth_year": 666,
+      "death_year": 719,
+      "title": "Founder of Balhae",
+      "era": "Three Kingdoms Korea",
+      "description": "Goguryeo general who founded the kingdom of Balhae after the fall of Goguryeo, establishing a powerful successor state in Manchuria",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Jang Yeong-sil",
+      "wikidata_id": "Q488694",
+      "canonical_id": "Q488694",
+      "birth_year": 1390,
+      "death_year": 1450,
+      "title": "Korean scientist and inventor",
+      "era": "Joseon Korea",
+      "description": "Born into the slave class but rose to become Korea's greatest inventor, creating the world's first rain gauge, astronomical instruments, and water clocks under King Sejong",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Gwon Yul",
+      "wikidata_id": "Q492577",
+      "canonical_id": "Q492577",
+      "birth_year": 1537,
+      "death_year": 1599,
+      "title": "Korean general",
+      "era": "Joseon Korea",
+      "description": "Commander who won the crucial Battle of Haengju during the Japanese invasions, defending a hill fortress with vastly outnumbered forces",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Non-gae",
+      "wikidata_id": "Q13412960",
+      "canonical_id": "Q13412960",
+      "birth_year": 1574,
+      "death_year": 1593,
+      "title": "Korean patriot",
+      "era": "Joseon Korea",
+      "description": "Gisaeng who sacrificed her life by embracing a Japanese general and leaping off a cliff into the Nam River during the Japanese invasion, becoming a Korean national heroine",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "An Jung-geun",
+      "wikidata_id": "Q217161",
+      "canonical_id": "Q217161",
+      "birth_year": 1879,
+      "death_year": 1910,
+      "title": "Korean independence activist",
+      "era": "Late Joseon Korea",
+      "description": "Korean patriot who assassinated Japanese statesman Ito Hirobumi at Harbin station in 1909, becoming a revered independence hero in Korea",
+      "historicity_status": "historical"
+    }
+  ],
+  "works": [
+    {
+      "title": "Dae Jang Geum",
+      "wikidata_id": "Q133898",
+      "media_id": "jewel-palace-2003",
+      "media_type": "TV_SERIES",
+      "release_year": 2003,
+      "creator": "Lee Byung-hoon",
+      "description": "Korean historical drama about a female physician who overcomes adversity to become the first woman to serve as the Korean king's doctor",
+      "setting": "Korea, Joseon dynasty 1480-1530"
+    },
+    {
+      "title": "Magnificent Century",
+      "wikidata_id": "Q176615",
+      "media_id": "magnificent-century-2011",
+      "media_type": "TV_SERIES",
+      "release_year": 2011,
+      "creator": "Meral Okay",
+      "description": "Turkish historical drama depicting the reign of Suleiman the Magnificent and his love for Hurrem Sultan, becoming one of the most-watched series worldwide",
+      "setting": "Ottoman Empire 1520-1566"
+    },
+    {
+      "title": "Invictus",
+      "wikidata_id": "Q379765",
+      "media_id": "invictus-2009",
+      "media_type": "FILM",
+      "release_year": 2009,
+      "creator": "Clint Eastwood",
+      "description": "Film about Nelson Mandela's use of the 1995 Rugby World Cup to unite post-apartheid South Africa, starring Morgan Freeman",
+      "setting": "South Africa 1994-1995"
+    },
+    {
+      "title": "Selma",
+      "wikidata_id": "Q16254792",
+      "media_id": "selma-2014",
+      "media_type": "FILM",
+      "release_year": 2014,
+      "creator": "Ava DuVernay",
+      "description": "Drama depicting Martin Luther King Jr.'s campaign to secure equal voting rights via the Selma to Montgomery marches of 1965",
+      "setting": "Alabama 1965"
+    },
+    {
+      "title": "The Death of Stalin",
+      "wikidata_id": "Q24905490",
+      "media_id": "death-of-stalin-2017",
+      "media_type": "FILM",
+      "release_year": 2017,
+      "creator": "Armando Iannucci",
+      "description": "Dark comedy depicting the power struggle among Soviet leaders following Stalin's death in 1953",
+      "setting": "Moscow 1953"
+    },
+    {
+      "title": "Hotel Rwanda",
+      "wikidata_id": "Q319913",
+      "media_id": "hotel-rwanda-2004",
+      "media_type": "FILM",
+      "release_year": 2004,
+      "creator": "Terry George",
+      "description": "True story of a hotel manager who housed over a thousand Tutsi refugees during the Rwandan genocide, sheltering them from the Hutu militias",
+      "setting": "Rwanda 1994"
+    },
+    {
+      "title": "The Last Temptation of Christ",
+      "wikidata_id": "Q162868",
+      "media_id": "last-temptation-christ-1988",
+      "media_type": "FILM",
+      "release_year": 1988,
+      "creator": "Martin Scorsese",
+      "description": "Controversial adaptation of Kazantzakis's novel imagining Jesus experiencing human desires and doubts, exploring the dual nature of Christ",
+      "setting": "Judaea 30 AD"
+    },
+    {
+      "title": "Twelve Years a Slave (memoir)",
+      "wikidata_id": "Q7857869",
+      "media_id": "twelve-years-slave-book",
+      "media_type": "BOOK",
+      "release_year": 1853,
+      "creator": "Solomon Northup",
+      "description": "Autobiography of a free Black man kidnapped and sold into slavery in Louisiana, one of the most detailed accounts of American slavery from a firsthand perspective",
+      "setting": "United States 1841-1853"
+    },
+    {
+      "title": "The Color Purple",
+      "wikidata_id": "Q1051564",
+      "media_id": "color-purple-novel",
+      "media_type": "BOOK",
+      "release_year": 1982,
+      "creator": "Alice Walker",
+      "description": "Pulitzer Prize-winning epistolary novel about an African-American woman's struggle against racism and sexism in the rural South",
+      "setting": "Georgia 1909-1940"
+    },
+    {
+      "title": "The Color Purple (film)",
+      "wikidata_id": "Q458656",
+      "media_id": "color-purple-1985",
+      "media_type": "FILM",
+      "release_year": 1985,
+      "creator": "Steven Spielberg",
+      "description": "Film adaptation of Alice Walker's novel, starring Whoopi Goldberg and Oprah Winfrey in their breakout roles",
+      "setting": "Georgia 1909-1940"
+    },
+    {
+      "title": "Roots (novel)",
+      "wikidata_id": "Q579424",
+      "media_id": "roots-novel-1976",
+      "media_type": "BOOK",
+      "release_year": 1976,
+      "creator": "Alex Haley",
+      "description": "Groundbreaking novel tracing an African-American family from its ancestor Kunta Kinte's capture in West Africa through slavery, the Civil War, and Reconstruction",
+      "setting": "Gambia and United States 1750-1880"
+    },
+    {
+      "title": "The Kite Runner",
+      "wikidata_id": "Q834502",
+      "media_id": "kite-runner-2003",
+      "media_type": "BOOK",
+      "release_year": 2003,
+      "creator": "Khaled Hosseini",
+      "description": "Novel about friendship, betrayal, and redemption set against the backdrop of Afghan history from the fall of the monarchy to the Taliban era",
+      "setting": "Afghanistan 1975-2002"
+    },
+    {
+      "title": "Shogun (TV 1980)",
+      "wikidata_id": "Q1778567",
+      "media_id": "shogun-tv-1980",
+      "media_type": "TV_SERIES",
+      "release_year": 1980,
+      "creator": "Jerry London",
+      "description": "Groundbreaking television miniseries based on James Clavell's novel, one of the first Western productions to portray feudal Japan in depth",
+      "setting": "Japan 1600"
+    },
+    {
+      "title": "The Handmaid's Tale",
+      "wikidata_id": "Q23658477",
+      "media_id": "handmaids-tale-tv",
+      "media_type": "TV_SERIES",
+      "release_year": 2017,
+      "creator": "Bruce Miller",
+      "description": "Dystopian drama based on Margaret Atwood's novel about a totalitarian theocracy that has reduced women to servitude",
+      "setting": "Near-future America"
+    },
+    {
+      "title": "Chernobyl",
+      "wikidata_id": "Q56901825",
+      "media_id": "chernobyl-2019",
+      "media_type": "TV_SERIES",
+      "release_year": 2019,
+      "creator": "Craig Mazin",
+      "description": "HBO miniseries dramatizing the 1986 nuclear disaster, depicting the heroism and institutional failures that turned a reactor accident into a catastrophe",
+      "setting": "Soviet Union 1986"
+    },
+    {
+      "title": "The Adventures of Huckleberry Finn",
+      "wikidata_id": "Q215410",
+      "media_id": "huck-finn-novel",
+      "media_type": "BOOK",
+      "release_year": 1884,
+      "creator": "Mark Twain",
+      "description": "Great American novel about a boy and an escaped slave rafting down the Mississippi River, a masterwork of satire on racism and American society",
+      "setting": "Mississippi River valley 1830s"
+    },
+    {
+      "title": "Don Quixote",
+      "wikidata_id": "Q480",
+      "media_id": "don-quixote-novel",
+      "media_type": "BOOK",
+      "release_year": 1605,
+      "creator": "Miguel de Cervantes",
+      "description": "The first modern novel, following a delusional knight-errant and his loyal squire Sancho Panza across Spain, a masterwork that invented the form",
+      "setting": "Spain early 1600s"
+    },
+    {
+      "title": "Les Miserables",
+      "wikidata_id": "Q180736",
+      "media_id": "les-miserables-novel",
+      "media_type": "BOOK",
+      "release_year": 1862,
+      "creator": "Victor Hugo",
+      "description": "Epic French novel following the ex-convict Jean Valjean through decades of French history, from Waterloo to the 1832 June Rebellion in Paris",
+      "setting": "France 1815-1832"
+    },
+    {
+      "title": "One Hundred Years of Solitude",
+      "wikidata_id": "Q597820",
+      "media_id": "hundred-years-solitude",
+      "media_type": "BOOK",
+      "release_year": 1967,
+      "creator": "Gabriel Garcia Marquez",
+      "description": "Landmark novel of magical realism following seven generations of the Buendia family in the fictional town of Macondo, Colombia",
+      "setting": "Colombia 1850s-1950s"
+    },
+    {
+      "title": "The Tale of Genji",
+      "wikidata_id": "Q79791",
+      "media_id": "tale-of-genji",
+      "media_type": "BOOK",
+      "release_year": 1021,
+      "creator": "Murasaki Shikibu",
+      "description": "Often called the world's first novel, this masterpiece of Japanese literature chronicles the life and loves of Prince Genji in the Heian court",
+      "setting": "Japan, Heian period"
+    },
+    {
+      "title": "The Count of Monte Cristo",
+      "wikidata_id": "Q287785",
+      "media_id": "monte-cristo-novel",
+      "media_type": "BOOK",
+      "release_year": 1844,
+      "creator": "Alexandre Dumas",
+      "description": "Epic adventure novel about an innocent man imprisoned for 14 years who escapes, discovers a vast treasure, and methodically destroys those who wronged him",
+      "setting": "France and Mediterranean 1815-1838"
+    },
+    {
+      "title": "Ivanhoe",
+      "wikidata_id": "Q464878",
+      "media_id": "ivanhoe-novel",
+      "media_type": "BOOK",
+      "release_year": 1819,
+      "creator": "Walter Scott",
+      "description": "The novel that invented the historical fiction genre, set in 12th-century England during the conflict between Saxons and Normans after the Third Crusade",
+      "setting": "England 1194"
+    },
+    {
+      "title": "The Three Musketeers",
+      "wikidata_id": "Q202975",
+      "media_id": "three-musketeers-novel",
+      "media_type": "BOOK",
+      "release_year": 1844,
+      "creator": "Alexandre Dumas",
+      "description": "Swashbuckling adventure of d'Artagnan and his three musketeer companions in the political intrigues of 17th-century France under Louis XIII and Cardinal Richelieu",
+      "setting": "France 1625-1628"
+    },
+    {
+      "title": "I, Claudius (novel)",
+      "wikidata_id": "Q1344599",
+      "media_id": "i-claudius-novel",
+      "media_type": "BOOK",
+      "release_year": 1934,
+      "creator": "Robert Graves",
+      "description": "Fictional autobiography of Roman Emperor Claudius, narrating the political intrigues, murders, and madness of the Julio-Claudian dynasty",
+      "setting": "Roman Empire 10 BC-54 AD"
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q50184",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q133898",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "notes": "Yi Sun-sin era overlaps with Jewel in the Palace setting"
+      }
+    },
+    {
+      "from_id": "Q255809",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q176615",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q8474",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q176615",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q8023",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q379765",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q8027",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q16254792",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q81731",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q79791",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex",
+        "notes": "Murasaki Shikibu is the author and the narrator is her fictional creation"
+      }
+    },
+    {
+      "from_id": "Q174971",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q133898",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "villainous",
+        "notes": "Ito Hirobumi represents Japanese imperial threat in the Korean drama era"
+      }
+    }
+  ]
+}

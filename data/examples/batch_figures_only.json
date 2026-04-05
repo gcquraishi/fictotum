@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "source": "Example Dataset",
+    "curator": "Fictotum Team",
+    "date": "2026-02-01",
+    "description": "Example batch import file with historical figures only"
+  },
+  "figures": [
+    {
+      "name": "Marcus Tullius Cicero",
+      "wikidata_id": "Q1541",
+      "birth_year": -106,
+      "death_year": -43,
+      "title": "Roman Statesman and Orator",
+      "era": "Roman Republic",
+      "description": "Roman statesman, lawyer, scholar, and writer who tried to uphold republican principles in the final civil wars"
+    },
+    {
+      "name": "Gaius Julius Caesar",
+      "wikidata_id": "Q1048",
+      "birth_year": -100,
+      "death_year": -44,
+      "title": "Roman General and Dictator",
+      "era": "Roman Republic",
+      "description": "Roman general and statesman who played a critical role in the events that led to the demise of the Roman Republic"
+    },
+    {
+      "name": "Marcus Junius Brutus",
+      "wikidata_id": "Q1539",
+      "birth_year": -85,
+      "death_year": -42,
+      "title": "Roman Senator",
+      "era": "Roman Republic",
+      "description": "Roman senator and the most famous of the assassins of Julius Caesar"
+    },
+    {
+      "name": "Cleopatra VII",
+      "wikidata_id": "Q635",
+      "birth_year": -69,
+      "death_year": -30,
+      "title": "Queen of Egypt",
+      "era": "Ptolemaic Egypt",
+      "description": "Last active pharaoh of Ptolemaic Egypt"
+    },
+    {
+      "name": "Marcus Antonius",
+      "wikidata_id": "Q51673",
+      "birth_year": -83,
+      "death_year": -30,
+      "title": "Roman Politician and General",
+      "era": "Roman Republic",
+      "description": "Roman politician and general who played a key role in the transformation of the Roman Republic from a constitutional republic into the autocratic Roman Empire"
+    }
+  ]
+}

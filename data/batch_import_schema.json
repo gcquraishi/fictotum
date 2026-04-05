@@ -1,0 +1,401 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fictotum.com/schemas/batch-import-v1.json",
+  "title": "Fictotum Batch Import Schema",
+  "description": "JSON schema for Fictotum batch import files",
+  "type": "object",
+  "required": ["metadata"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["source", "curator", "date"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Source of the data (e.g., 'Wikipedia', 'IMDb Export')",
+          "minLength": 1
+        },
+        "curator": {
+          "type": "string",
+          "description": "Name of person or organization curating this data",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date of data curation (YYYY-MM-DD)",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description of this batch"
+        }
+      }
+    },
+    "figures": {
+      "type": "array",
+      "description": "Array of historical figures to import",
+      "items": {
+        "$ref": "#/definitions/HistoricalFigure"
+      }
+    },
+    "works": {
+      "type": "array",
+      "description": "Array of media works to import",
+      "items": {
+        "$ref": "#/definitions/MediaWork"
+      }
+    },
+    "events": {
+      "type": "array",
+      "description": "Array of historical events to import",
+      "items": {
+        "$ref": "#/definitions/HistoricalEvent"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "description": "Array of source documents to import",
+      "items": {
+        "$ref": "#/definitions/Source"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "description": "Array of relationships between entities",
+      "items": {
+        "$ref": "#/definitions/Relationship"
+      }
+    }
+  },
+  "anyOf": [
+    { "required": ["figures"] },
+    { "required": ["works"] },
+    { "required": ["events"] },
+    { "required": ["sources"] },
+    { "required": ["relationships"] }
+  ],
+  "definitions": {
+    "HistoricalFigure": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name of the historical figure",
+          "minLength": 1
+        },
+        "canonical_id": {
+          "type": "string",
+          "description": "Unique identifier (auto-generated if not provided)",
+          "pattern": "^(Q\\d+|PROV:[a-z0-9-]+|[a-z_][a-z0-9_-]*)$"
+        },
+        "wikidata_id": {
+          "type": "string",
+          "description": "Wikidata Q-ID (e.g., 'Q517' for Napoleon)",
+          "pattern": "^Q\\d+$"
+        },
+        "birth_year": {
+          "type": "integer",
+          "description": "Birth year (negative for BCE)",
+          "minimum": -10000,
+          "maximum": 2100
+        },
+        "death_year": {
+          "type": "integer",
+          "description": "Death year (negative for BCE)",
+          "minimum": -10000,
+          "maximum": 2100
+        },
+        "title": {
+          "type": "string",
+          "description": "Primary title or role (e.g., 'Roman Emperor')"
+        },
+        "era": {
+          "type": "string",
+          "description": "Historical era (e.g., 'Roman Republic', 'Victorian Era')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the figure"
+        },
+        "historicity_status": {
+          "type": "string",
+          "enum": ["Historical", "Fictional", "Legendary"],
+          "description": "Level of historical authenticity"
+        }
+      },
+      "anyOf": [
+        { "required": ["canonical_id"] },
+        { "required": ["wikidata_id"] }
+      ]
+    },
+    "MediaWork": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the media work",
+          "minLength": 1
+        },
+        "wikidata_id": {
+          "type": "string",
+          "description": "Wikidata Q-ID (REQUIRED per entity resolution protocol)",
+          "pattern": "^Q\\d+$"
+        },
+        "media_id": {
+          "type": "string",
+          "description": "Internal identifier (auto-generated if not provided)"
+        },
+        "media_type": {
+          "type": "string",
+          "enum": [
+            "BOOK",
+            "FILM",
+            "TV_SERIES",
+            "GAME",
+            "PLAY",
+            "COMIC",
+            "BOOK_SERIES",
+            "FILM_SERIES",
+            "TV_SERIES_COLLECTION",
+            "GAME_SERIES"
+          ],
+          "description": "Type of media"
+        },
+        "release_year": {
+          "type": "integer",
+          "description": "Year of release or publication",
+          "minimum": -3000,
+          "maximum": 2100
+        },
+        "creator": {
+          "type": "string",
+          "description": "Name of creator/director/author"
+        },
+        "creator_wikidata_id": {
+          "type": "string",
+          "description": "Wikidata Q-ID of the creator",
+          "pattern": "^Q\\d+$"
+        },
+        "publisher": {
+          "type": "string",
+          "description": "Publisher name (for books)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the work"
+        },
+        "setting": {
+          "type": "string",
+          "description": "Historical setting or time period"
+        }
+      }
+    },
+    "HistoricalEvent": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name of the event (e.g., 'Battle of Waterloo')",
+          "minLength": 1
+        },
+        "event_id": {
+          "type": "string",
+          "description": "Unique identifier (Wikidata Q-ID preferred, auto-generated if not provided)"
+        },
+        "wikidata_id": {
+          "type": "string",
+          "description": "Wikidata Q-ID (e.g., 'Q48314' for Battle of Waterloo)",
+          "pattern": "^Q\\d+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the event"
+        },
+        "date": {
+          "type": "string",
+          "description": "Primary date (ISO 8601 or year, e.g., '1815-06-18' or '1815')"
+        },
+        "date_precision": {
+          "type": "string",
+          "enum": ["day", "month", "year", "decade", "century"],
+          "description": "Precision of the date"
+        },
+        "start_date": {
+          "type": "string",
+          "description": "Start date for spanning events (e.g., wars, reigns)"
+        },
+        "end_date": {
+          "type": "string",
+          "description": "End date for spanning events"
+        },
+        "start_year": {
+          "type": "integer",
+          "description": "Start year (negative for BCE)",
+          "minimum": -10000,
+          "maximum": 2100
+        },
+        "end_year": {
+          "type": "integer",
+          "description": "End year (negative for BCE)",
+          "minimum": -10000,
+          "maximum": 2100
+        },
+        "location": {
+          "type": "string",
+          "description": "Primary location of the event"
+        },
+        "era": {
+          "type": "string",
+          "description": "Historical era"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": ["battle", "treaty", "coronation", "revolution", "discovery", "founding", "assassination", "other"],
+          "description": "Type of historical event"
+        }
+      },
+      "anyOf": [
+        { "required": ["event_id"] },
+        { "required": ["wikidata_id"] }
+      ]
+    },
+    "Source": {
+      "type": "object",
+      "required": ["title", "source_type"],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "description": "Unique identifier (auto-generated if not provided)"
+        },
+        "source_type": {
+          "type": "string",
+          "enum": ["wikipedia_article", "book", "documentary", "academic_paper", "database"],
+          "description": "Type of source document"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the source",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "description": "URL for online sources",
+          "format": "uri"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author or contributor"
+        },
+        "publication_year": {
+          "type": "integer",
+          "description": "Year of publication",
+          "minimum": -3000,
+          "maximum": 2100
+        },
+        "accessed_date": {
+          "type": "string",
+          "description": "Date the source was accessed (YYYY-MM-DD)",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "wikidata_id": {
+          "type": "string",
+          "description": "Wikidata Q-ID if the source itself has one",
+          "pattern": "^Q\\d+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the source"
+        }
+      }
+    },
+    "Relationship": {
+      "type": "object",
+      "required": ["from_id", "from_type", "to_id", "to_type", "rel_type"],
+      "properties": {
+        "from_id": {
+          "type": "string",
+          "description": "Source node identifier (canonical_id for figures, wikidata_id for works, event_id for events)",
+          "minLength": 1
+        },
+        "from_type": {
+          "type": "string",
+          "enum": ["HistoricalFigure", "MediaWork", "FictionalCharacter", "HistoricalEvent", "Source"],
+          "description": "Source node type"
+        },
+        "to_id": {
+          "type": "string",
+          "description": "Target node identifier",
+          "minLength": 1
+        },
+        "to_type": {
+          "type": "string",
+          "enum": ["HistoricalFigure", "MediaWork", "FictionalCharacter", "HistoricalEvent", "Source"],
+          "description": "Target node type"
+        },
+        "rel_type": {
+          "type": "string",
+          "enum": [
+            "APPEARS_IN",
+            "PORTRAYED_IN",
+            "INTERACTED_WITH",
+            "BASED_ON",
+            "FICTIONAL_PROXY",
+            "CONTEMPORARY",
+            "NEMESIS_OF",
+            "SUBJECT_OF",
+            "PARTICIPATED_IN",
+            "DEPICTED_IN",
+            "LED_TO",
+            "SOURCED_FROM"
+          ],
+          "description": "Relationship type"
+        },
+        "properties": {
+          "type": "object",
+          "description": "Optional relationship properties",
+          "properties": {
+            "role": {
+              "type": "string",
+              "description": "Role in the work or event (e.g., 'protagonist', 'commander', 'witness')"
+            },
+            "is_protagonist": {
+              "type": "boolean",
+              "description": "Whether this is a main character"
+            },
+            "sentiment": {
+              "type": "string",
+              "enum": ["heroic", "villainous", "neutral", "complex"],
+              "description": "How the figure is portrayed"
+            },
+            "accuracy": {
+              "type": "string",
+              "enum": ["faithful", "dramatized", "fictionalized"],
+              "description": "How accurately an event is depicted in media"
+            },
+            "confidence": {
+              "type": "string",
+              "enum": ["high", "medium", "low"],
+              "description": "Confidence level for source attribution"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Additional notes about the relationship"
+            },
+            "context": {
+              "type": "string",
+              "description": "Context of the relationship"
+            },
+            "relationship_type": {
+              "type": "string",
+              "description": "Specific type of interaction"
+            }
+          }
+        }
+      }
+    }
+  }
+}

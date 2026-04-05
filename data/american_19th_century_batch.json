@@ -1,0 +1,488 @@
+{
+  "metadata": {
+    "source": "Research compilation — Wikidata Q-IDs verified via wikidata.org API",
+    "curator": "claude-research-analyst",
+    "date": "2026-03-23",
+    "description": "American 19th Century cluster — Civil War figures, frontier era, abolitionists, writers, and key media works. Fills gaps in American historical fiction coverage."
+  },
+  "figures": [
+    {
+      "name": "Robert E. Lee",
+      "wikidata_id": "Q165557",
+      "canonical_id": "Q165557",
+      "birth_year": 1807,
+      "death_year": 1870,
+      "title": "General of the Confederate States Army",
+      "era": "US Civil War",
+      "description": "Commander of the Confederate Army of Northern Virginia whose tactical brilliance at Chancellorsville and Second Bull Run was ultimately overcome by Union resources and strategy",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Stonewall Jackson",
+      "wikidata_id": "Q216124",
+      "canonical_id": "Q216124",
+      "birth_year": 1824,
+      "death_year": 1863,
+      "title": "Confederate general",
+      "era": "US Civil War",
+      "description": "Brilliant Confederate commander known for his Valley Campaign and stand at First Bull Run, accidentally killed by friendly fire at Chancellorsville",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "John Brown",
+      "wikidata_id": "Q189366",
+      "canonical_id": "Q189366",
+      "birth_year": 1800,
+      "death_year": 1859,
+      "title": "Abolitionist",
+      "era": "US Civil War",
+      "description": "Radical abolitionist whose raid on Harpers Ferry in 1859 electrified the nation and helped precipitate the Civil War, executed for treason",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Sojourner Truth",
+      "wikidata_id": "Q105180",
+      "canonical_id": "Q105180",
+      "birth_year": 1797,
+      "death_year": 1883,
+      "title": "Abolitionist and women's rights activist",
+      "era": "US Civil War",
+      "description": "Born into slavery in New York, escaped to freedom and became one of the most powerful voices for abolition and women's rights, famous for her 'Ain't I a Woman?' speech",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "John Wilkes Booth",
+      "wikidata_id": "Q180914",
+      "canonical_id": "Q180914",
+      "birth_year": 1838,
+      "death_year": 1865,
+      "title": "Actor and assassin",
+      "era": "US Civil War",
+      "description": "Prominent stage actor and Confederate sympathizer who assassinated President Abraham Lincoln at Ford's Theatre on April 14, 1865",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Clara Barton",
+      "wikidata_id": "Q188039",
+      "canonical_id": "Q188039",
+      "birth_year": 1821,
+      "death_year": 1912,
+      "title": "Nurse and founder of the American Red Cross",
+      "era": "US Civil War",
+      "description": "Civil War nurse known as the 'Angel of the Battlefield' who later founded the American Red Cross and led it for 23 years",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Sitting Bull",
+      "wikidata_id": "Q43527",
+      "canonical_id": "Q43527",
+      "birth_year": 1831,
+      "death_year": 1890,
+      "title": "Hunkpapa Lakota chief",
+      "era": "American Frontier",
+      "description": "Lakota holy man who united the Sioux tribes against US expansion, led the coalition that defeated Custer at Little Bighorn, and became a symbol of Indigenous resistance",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Geronimo",
+      "wikidata_id": "Q2791",
+      "canonical_id": "Q2791",
+      "birth_year": 1829,
+      "death_year": 1909,
+      "title": "Apache leader",
+      "era": "American Frontier",
+      "description": "Bedonkohe Apache leader who fought against Mexico and the United States for decades in defense of Apache lands, becoming the last Native American leader to formally surrender",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Crazy Horse",
+      "wikidata_id": "Q44555",
+      "canonical_id": "Q44555",
+      "birth_year": 1840,
+      "death_year": 1877,
+      "title": "Oglala Lakota war leader",
+      "era": "American Frontier",
+      "description": "Visionary Lakota war leader who played a key role in the victory at Little Bighorn and resisted reservation life, killed while in custody at Fort Robinson",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Mark Twain",
+      "wikidata_id": "Q7245",
+      "canonical_id": "Q7245",
+      "birth_year": 1835,
+      "death_year": 1910,
+      "title": "American author and humorist",
+      "era": "Gilded Age",
+      "description": "Author of Adventures of Huckleberry Finn and The Adventures of Tom Sawyer, widely regarded as the father of American literature",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Walt Whitman",
+      "wikidata_id": "Q81438",
+      "canonical_id": "Q81438",
+      "birth_year": 1819,
+      "death_year": 1892,
+      "title": "American poet",
+      "era": "US Civil War",
+      "description": "Revolutionary poet whose Leaves of Grass broke with conventional verse forms, served as a volunteer nurse during the Civil War",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Edgar Allan Poe",
+      "wikidata_id": "Q16867",
+      "canonical_id": "Q16867",
+      "birth_year": 1809,
+      "death_year": 1849,
+      "title": "American writer and critic",
+      "era": "Antebellum America",
+      "description": "Master of macabre fiction and poetry, pioneer of the detective story and a key figure in American Romanticism, died under mysterious circumstances at age 40",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Sacagawea",
+      "wikidata_id": "Q238960",
+      "canonical_id": "Q238960",
+      "birth_year": 1788,
+      "death_year": 1812,
+      "title": "Lemhi Shoshone interpreter and guide",
+      "era": "Early Republic",
+      "description": "Shoshone woman who accompanied the Lewis and Clark Expedition as interpreter and guide, carrying her infant son across the continent to the Pacific",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Meriwether Lewis",
+      "wikidata_id": "Q313492",
+      "canonical_id": "Q313492",
+      "birth_year": 1774,
+      "death_year": 1809,
+      "title": "Explorer and governor",
+      "era": "Early Republic",
+      "description": "Co-leader of the Corps of Discovery expedition that explored the Louisiana Purchase territory and the Pacific Northwest, later Governor of Louisiana Territory",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "William Clark",
+      "wikidata_id": "Q355348",
+      "canonical_id": "Q355348",
+      "birth_year": 1770,
+      "death_year": 1838,
+      "title": "Explorer and territorial governor",
+      "era": "Early Republic",
+      "description": "Co-leader of the Lewis and Clark Expedition, skilled cartographer who mapped the American West, later served as Superintendent of Indian Affairs",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Wyatt Earp",
+      "wikidata_id": "Q44616",
+      "canonical_id": "Q44616",
+      "birth_year": 1848,
+      "death_year": 1929,
+      "title": "Lawman and gambler",
+      "era": "American Frontier",
+      "description": "Deputy marshal of Tombstone, Arizona, who with his brothers and Doc Holliday fought the Gunfight at the O.K. Corral, becoming an enduring icon of the American West",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Billy the Kid",
+      "wikidata_id": "Q44200",
+      "canonical_id": "Q44200",
+      "birth_year": 1859,
+      "death_year": 1881,
+      "title": "Outlaw and gunfighter",
+      "era": "American Frontier",
+      "description": "Legendary outlaw of the American Southwest who participated in the Lincoln County War and became one of the most famous figures of the Wild West",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Jesse James",
+      "wikidata_id": "Q213626",
+      "canonical_id": "Q213626",
+      "birth_year": 1847,
+      "death_year": 1882,
+      "title": "Outlaw and gang leader",
+      "era": "American Frontier",
+      "description": "Confederate guerrilla turned bank and train robber who became a folk hero, assassinated by a member of his own gang for reward money",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Theodore Roosevelt",
+      "wikidata_id": "Q33866",
+      "canonical_id": "Q33866",
+      "birth_year": 1858,
+      "death_year": 1919,
+      "title": "26th President of the United States",
+      "era": "Gilded Age",
+      "description": "Youngest president in US history, trust-buster, conservationist, Nobel Peace Prize winner, and leader of the Rough Riders in the Spanish-American War",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Susan B. Anthony",
+      "wikidata_id": "Q192245",
+      "canonical_id": "Q192245",
+      "birth_year": 1820,
+      "death_year": 1906,
+      "title": "Women's rights activist",
+      "era": "Gilded Age",
+      "description": "Leading figure in the women's suffrage movement who co-founded the National Woman Suffrage Association and was arrested for voting illegally in 1872",
+      "historicity_status": "historical"
+    },
+    {
+      "name": "Andrew Jackson",
+      "wikidata_id": "Q11817",
+      "canonical_id": "Q11817",
+      "birth_year": 1767,
+      "death_year": 1845,
+      "title": "7th President of the United States",
+      "era": "Early Republic",
+      "description": "Military hero of the Battle of New Orleans who became a populist president, championing the common man while controversially enacting the Indian Removal Act",
+      "historicity_status": "historical"
+    }
+  ],
+  "works": [
+    {
+      "title": "Tombstone",
+      "wikidata_id": "Q1420651",
+      "media_id": "tombstone-1993",
+      "media_type": "FILM",
+      "release_year": 1993,
+      "creator": "George P. Cosmatos",
+      "description": "Western depicting Wyatt Earp's arrival in Tombstone, the Gunfight at the O.K. Corral, and the Earp Vendetta Ride, with Val Kilmer's iconic portrayal of Doc Holliday",
+      "setting": "Tombstone, Arizona 1879-1882"
+    },
+    {
+      "title": "Dances with Wolves",
+      "wikidata_id": "Q20456",
+      "media_id": "dances-with-wolves-1990",
+      "media_type": "FILM",
+      "release_year": 1990,
+      "creator": "Kevin Costner",
+      "description": "Epic Western about a Union soldier who befriends a band of Lakota Sioux during the Civil War era, winner of seven Academy Awards including Best Picture",
+      "setting": "American Great Plains 1863"
+    },
+    {
+      "title": "Django Unchained",
+      "wikidata_id": "Q571032",
+      "media_id": "django-unchained-2012",
+      "media_type": "FILM",
+      "release_year": 2012,
+      "creator": "Quentin Tarantino",
+      "description": "Revisionist Western about a freed slave who teams up with a German bounty hunter to rescue his wife from a Mississippi plantation owner",
+      "setting": "American South 1858"
+    },
+    {
+      "title": "Gangs of New York",
+      "wikidata_id": "Q154581",
+      "media_id": "gangs-of-new-york-2002",
+      "media_type": "FILM",
+      "release_year": 2002,
+      "creator": "Martin Scorsese",
+      "description": "Epic crime drama set in the Five Points neighborhood during the Civil War draft riots, depicting the clash between immigrant Irish gangs and native-born Americans",
+      "setting": "New York City 1846-1863"
+    },
+    {
+      "title": "The Assassination of Jesse James by the Coward Robert Ford",
+      "wikidata_id": "Q388950",
+      "media_id": "assassination-jesse-james-2007",
+      "media_type": "FILM",
+      "release_year": 2007,
+      "creator": "Andrew Dominik",
+      "description": "Elegiac Western depicting the final months of Jesse James's life and his betrayal by a young gang member obsessed with fame",
+      "setting": "Missouri 1881-1882"
+    },
+    {
+      "title": "Cold Mountain",
+      "wikidata_id": "Q390097",
+      "media_id": "cold-mountain-2003",
+      "media_type": "FILM",
+      "release_year": 2003,
+      "creator": "Anthony Minghella",
+      "description": "Civil War drama following a wounded Confederate soldier's perilous journey home to the woman he loves in the mountains of North Carolina",
+      "setting": "North Carolina 1864-1865"
+    },
+    {
+      "title": "The Revenant",
+      "wikidata_id": "Q18002795",
+      "media_id": "revenant-2015",
+      "media_type": "FILM",
+      "release_year": 2015,
+      "creator": "Alejandro Gonzalez Inarritu",
+      "description": "Survival epic based on frontier legend Hugh Glass, who was mauled by a bear and left for dead by his companions, then crawled 200 miles seeking revenge",
+      "setting": "American frontier 1823"
+    },
+    {
+      "title": "Harriet",
+      "wikidata_id": "Q30609465",
+      "media_id": "harriet-2019",
+      "media_type": "FILM",
+      "release_year": 2019,
+      "creator": "Kasi Lemmons",
+      "description": "Biographical film following Harriet Tubman's escape from slavery and her transformation into one of the most important conductors of the Underground Railroad",
+      "setting": "Maryland and Philadelphia 1849-1858"
+    },
+    {
+      "title": "Bury My Heart at Wounded Knee",
+      "wikidata_id": "Q1339541",
+      "media_id": "bury-my-heart-wounded-knee",
+      "media_type": "BOOK",
+      "release_year": 1970,
+      "creator": "Dee Brown",
+      "description": "Landmark non-fiction account of the systematic destruction of Native American peoples and culture from 1860 to 1890, told from the Indigenous perspective",
+      "setting": "American West 1860-1890"
+    },
+    {
+      "title": "Gone with the Wind (novel)",
+      "wikidata_id": "Q2870",
+      "media_id": "gone-with-wind-novel",
+      "media_type": "BOOK",
+      "release_year": 1936,
+      "creator": "Margaret Mitchell",
+      "description": "Pulitzer Prize-winning novel set during the Civil War and Reconstruction, following the indomitable Scarlett O'Hara through the destruction of the plantation South",
+      "setting": "Georgia 1861-1873"
+    },
+    {
+      "title": "Gone with the Wind (film)",
+      "wikidata_id": "Q2875",
+      "media_id": "gone-with-wind-1939",
+      "media_type": "FILM",
+      "release_year": 1939,
+      "creator": "Victor Fleming",
+      "description": "Epic romantic drama set during the Civil War, one of the highest-grossing films in cinema history, winner of ten Academy Awards",
+      "setting": "Georgia 1861-1873"
+    },
+    {
+      "title": "Little Women",
+      "wikidata_id": "Q523076",
+      "media_id": "little-women-novel",
+      "media_type": "BOOK",
+      "release_year": 1868,
+      "creator": "Louisa May Alcott",
+      "description": "Beloved semi-autobiographical novel about four sisters growing up during the Civil War, a foundational work of American young adult literature",
+      "setting": "Massachusetts 1861-1869"
+    }
+  ],
+  "relationships": [
+    {
+      "from_id": "Q165557",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q390097",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex"
+      }
+    },
+    {
+      "from_id": "Q165557",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q2875",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic"
+      }
+    },
+    {
+      "from_id": "Q180914",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q32433",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "villainous"
+      }
+    },
+    {
+      "from_id": "Q44616",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1420651",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q43527",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q20456",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex"
+      }
+    },
+    {
+      "from_id": "Q213626",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q388950",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "complex",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q102870",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q30609465",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic",
+        "is_protagonist": true
+      }
+    },
+    {
+      "from_id": "Q102870",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q3023357",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic"
+      }
+    },
+    {
+      "from_id": "Q215562",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q32433",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic"
+      }
+    },
+    {
+      "from_id": "Q44555",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1339541",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic"
+      }
+    },
+    {
+      "from_id": "Q43527",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1339541",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic"
+      }
+    },
+    {
+      "from_id": "Q2791",
+      "from_type": "HistoricalFigure",
+      "to_id": "Q1339541",
+      "to_type": "MediaWork",
+      "rel_type": "APPEARS_IN",
+      "properties": {
+        "sentiment": "heroic"
+      }
+    }
+  ]
+}

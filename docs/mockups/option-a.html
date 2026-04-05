@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option A — Breadcrumb above canvas, ghost toolbar</title>
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Design Tokens — Fictotum
+    ───────────────────────────────────────────────────────────── */
+    :root {
+      --cream:       #FAF8F0;
+      --stone-900:   #1C1917;
+      --stone-600:   #57534E;
+      --stone-400:   #A09880;
+      --stone-200:   #D6D0C4;
+      --stone-100:   #EAE6DA;
+      --gold:        #B8860B;
+      --gold-light:  #D4A017;
+      --era-brown:   #8B6914;
+      --era-gray:    #6B7280;
+      --era-teal:    #2D6A4F;
+
+      --font-serif:  Georgia, 'Times New Roman', serif;
+      --font-mono:   'IBM Plex Mono', 'Courier New', monospace;
+
+      --navbar-h:    52px;
+      --radius:      3px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--cream);
+      color: var(--stone-900);
+      font-family: var(--font-serif);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Navbar ─── */
+    .navbar {
+      height: var(--navbar-h);
+      background: var(--stone-900);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      flex-shrink: 0;
+    }
+
+    .navbar-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--cream);
+      text-transform: uppercase;
+    }
+
+    .navbar-logo span {
+      color: var(--gold-light);
+    }
+
+    .navbar-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .navbar-links a {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .navbar-links a:hover { color: var(--cream); }
+    .navbar-links a.active { color: var(--gold-light); }
+
+    /* ─── Page wrapper ─── */
+    .page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 32px 0;
+      gap: 0;
+    }
+
+    /* ─── Breadcrumb — page-level text, ABOVE canvas ─── */
+    .breadcrumb-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      margin-bottom: 12px;
+    }
+
+    .breadcrumb {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .breadcrumb a {
+      color: var(--stone-400);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .breadcrumb a:hover { color: var(--gold); }
+
+    .breadcrumb-sep {
+      color: var(--stone-200);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .breadcrumb-current {
+      color: var(--stone-900);
+      font-weight: 600;
+    }
+
+    /* ─── Canvas frame ─── */
+    .canvas-frame {
+      position: relative;
+      flex: 1;
+      border: 1px solid var(--stone-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--cream);
+      min-height: 480px;
+    }
+
+    /* Subtle grid pattern to suggest a canvas */
+    .canvas-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--stone-100) 1px, transparent 1px),
+        linear-gradient(90deg, var(--stone-100) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ─── Fake graph nodes (SVG) ─── */
+    .graph-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── Ghost toolbar — floating bottom-right ─── */
+    .ghost-toolbar {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 4px;
+      opacity: 0.15;
+      transition: opacity 0.25s ease;
+    }
+
+    .ghost-toolbar:hover { opacity: 1; }
+
+    .ghost-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--stone-200);
+      border-radius: var(--radius);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--stone-600);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      font-family: var(--font-serif);
+      user-select: none;
+    }
+
+    .ghost-btn:hover {
+      background: var(--stone-900);
+      border-color: var(--stone-900);
+      color: var(--cream);
+    }
+
+    /* ─── Legend row — below canvas ─── */
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 10px 0 0;
+      border-top: 1px solid var(--stone-200);
+      margin-top: -1px;
+    }
+
+    .legend-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      margin-right: 6px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-text {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+    }
+
+    /* ─── Mini-timeline ─── */
+    .mini-timeline {
+      height: 36px;
+      background: var(--stone-900);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 0;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: auto;
+    }
+
+    .timeline-track {
+      flex: 1;
+      height: 2px;
+      background: var(--stone-600);
+      position: relative;
+    }
+
+    .timeline-tick {
+      position: absolute;
+      top: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timeline-tick-line {
+      width: 1px;
+      height: 8px;
+      background: var(--stone-400);
+    }
+
+    .timeline-tick-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      color: var(--stone-400);
+      white-space: nowrap;
+      position: absolute;
+      top: 8px;
+    }
+
+    .timeline-era-bar {
+      position: absolute;
+      height: 100%;
+      top: 0;
+      opacity: 0.25;
+      border-radius: 1px;
+    }
+
+    /* Option label watermark */
+    .option-label {
+      position: fixed;
+      top: 60px;
+      right: 16px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--stone-400);
+      background: var(--cream);
+      border: 1px solid var(--stone-200);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+      pointer-events: none;
+    }
+
+    .bottom-section {
+      display: flex;
+      flex-direction: column;
+      padding: 0 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-logo">Ficto<span>tum</span></div>
+    <ul class="navbar-links">
+      <li><a href="#">Contribute</a></li>
+      <li><a href="#" class="active">Graph</a></li>
+      <li><a href="#">Timeline</a></li>
+      <li><a href="#">Sign Out</a></li>
+    </ul>
+  </nav>
+
+  <!-- Option label -->
+  <div class="option-label">Option A</div>
+
+  <!-- Page -->
+  <main class="page">
+
+    <!-- Breadcrumb: page-level text, above the canvas -->
+    <div class="breadcrumb-row">
+      <nav class="breadcrumb" aria-label="Graph navigation">
+        <a href="#">Henry VIII</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Cardinal Wolsey</span>
+      </nav>
+    </div>
+
+    <!-- Canvas frame -->
+    <div class="canvas-frame" role="img" aria-label="Graph explorer canvas showing connections for Cardinal Wolsey">
+
+      <!-- Fake force-graph SVG -->
+      <svg class="graph-svg" viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#A09880" opacity="0.5" />
+          </marker>
+          <!-- Soft radial glow for focused node -->
+          <radialGradient id="focusGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#B8860B" stop-opacity="0.18" />
+            <stop offset="100%" stop-color="#B8860B" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+
+        <!-- Links -->
+        <line x1="450" y1="250" x2="270" y2="150" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+        <line x1="450" y1="250" x2="640" y2="145" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+        <line x1="450" y1="250" x2="680" y2="280" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+        <line x1="450" y1="250" x2="560" y2="390" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+        <line x1="450" y1="250" x2="290" y2="360" stroke="#A09880" stroke-width="1.5" stroke-opacity="0.45" />
+        <line x1="270" y1="150" x2="640" y2="145" stroke="#A09880" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="4 3" />
+
+        <!-- Focus glow behind center node -->
+        <circle cx="450" cy="250" r="56" fill="url(#focusGlow)" />
+
+        <!-- Center: Cardinal Wolsey (focused) -->
+        <circle cx="450" cy="250" r="32" fill="#8B6914" stroke="#B8860B" stroke-width="2.5" />
+        <text x="450" y="296" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917" font-weight="600">Cardinal Wolsey</text>
+
+        <!-- Henry VIII -->
+        <circle cx="270" cy="150" r="26" fill="#8B6914" stroke="#D6D0C4" stroke-width="1.5" />
+        <text x="270" y="192" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">Henry VIII</text>
+
+        <!-- Thomas Cromwell -->
+        <circle cx="640" cy="145" r="22" fill="#8B6914" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+        <text x="640" y="184" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">Thomas Cromwell</text>
+
+        <!-- Wolf Hall -->
+        <circle cx="680" cy="285" r="20" fill="#6B7280" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+        <text x="680" y="321" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">Wolf Hall</text>
+
+        <!-- A Man for All Seasons -->
+        <circle cx="560" cy="395" r="19" fill="#6B7280" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+        <text x="560" y="430" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1C1917">A Man for All Seasons</text>
+
+        <!-- The Tudors -->
+        <circle cx="290" cy="365" r="18" fill="#6B7280" stroke="#D6D0C4" stroke-width="1.5" opacity="0.85" />
+        <text x="290" y="400" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1C1917">The Tudors</text>
+      </svg>
+
+      <!-- Ghost toolbar: icon-only, barely visible until hover -->
+      <div class="ghost-toolbar" role="toolbar" aria-label="Graph controls">
+        <button class="ghost-btn" title="Navigate back" aria-label="Navigate back">←</button>
+        <button class="ghost-btn" title="Navigate forward" aria-label="Navigate forward">→</button>
+        <button class="ghost-btn" title="Reset view" aria-label="Reset view">↺</button>
+        <button class="ghost-btn" title="Help" aria-label="Help">?</button>
+      </div>
+
+    </div><!-- /.canvas-frame -->
+
+    <!-- Legend row: tiny, below canvas -->
+    <div class="bottom-section">
+      <div class="legend-row" role="list" aria-label="Graph legend">
+        <span class="legend-label">Legend</span>
+        <div class="legend-item" role="listitem">
+          <div class="legend-dot" style="background:#8B6914;"></div>
+          <span class="legend-text">Historical Figure</span>
+        </div>
+        <div class="legend-item" role="listitem">
+          <div class="legend-dot" style="background:#6B7280;"></div>
+          <span class="legend-text">Media Work</span>
+        </div>
+        <div class="legend-item" role="listitem">
+          <div class="legend-dot" style="background:#2D6A4F;"></div>
+          <span class="legend-text">Fictional Character</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Mini-timeline strip -->
+  <div class="mini-timeline" aria-label="Historical timeline" role="complementary">
+    <div class="timeline-track">
+      <!-- Era bars -->
+      <div class="timeline-era-bar" style="left:0%;width:18%;background:#8B6914;"></div>
+      <div class="timeline-era-bar" style="left:18%;width:24%;background:#2D6A4F;"></div>
+      <div class="timeline-era-bar" style="left:42%;width:20%;background:#6B7280;"></div>
+      <div class="timeline-era-bar" style="left:62%;width:22%;background:#8B6914;"></div>
+      <div class="timeline-era-bar" style="left:84%;width:16%;background:#2D6A4F;"></div>
+
+      <!-- Ticks -->
+      <div class="timeline-tick" style="left:0%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1400</span>
+      </div>
+      <div class="timeline-tick" style="left:25%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1500</span>
+      </div>
+      <div class="timeline-tick" style="left:50%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1600</span>
+      </div>
+      <div class="timeline-tick" style="left:75%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1700</span>
+      </div>
+      <div class="timeline-tick" style="left:100%">
+        <div class="timeline-tick-line"></div>
+        <span class="timeline-tick-label">1800</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
