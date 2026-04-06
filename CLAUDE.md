@@ -30,8 +30,14 @@ _Last updated: 2026-04-05_
 
 Auth.js v5 (Google + GitHub) with graceful degradation when OAuth env vars absent. Users stored as :User nodes. Collections fully implemented. Admin routes locked to `ADMIN_EMAILS` env var. Series pages redesigned as franchise retrospective destination pages. NFD diacritic normalization active (TypeScript + Python). Q-ID audit infrastructure with batch validation and auto-fix. Pre-flight Q-ID validation in `batch_import.py` with `--strict-qids` block option. Sentry error monitoring wired (client, server, edge).
 
+### Recent Completions
+- Restored 485+ files accidentally deleted by BIG-88 commit (all source, scripts, docs, configs)
+- Verified graph UI fixes (FIC-157) via Puppeteer — all 5 acceptance criteria pass
+- Marked FIC-157 and Content Density Push sprints as done
+
 ### Active Work
 - No active sprints or roadmap milestones — all Open & Social milestones complete
+- Next step: run `/roadmap` to plan next phase (backlog: location data, narrative timelines, connection scoring)
 - 132 entities need manual Q-ID review (alternative names like Tamerlane/Timur, or no Wikidata match). Report: `docs/reports/qid-audit-2026-03-22.json`
 
 ### Known Issues
