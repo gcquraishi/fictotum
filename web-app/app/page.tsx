@@ -161,7 +161,7 @@ export default async function HomePage() {
             maxWidth: '680px',
           }}
         >
-          Where history meets the stories we tell about it.
+          Fictotum
         </h1>
         <p
           style={{
@@ -173,9 +173,8 @@ export default async function HomePage() {
             maxWidth: '560px',
           }}
         >
-          Fictotum is a knowledge graph mapping how real historical figures are
-          portrayed across film, television, literature, and theatre — and the
-          liberties taken along the way.
+          Graphing portrayals of historical figures and fictional characters
+          across books, film, games, and more.
         </p>
       </section>
 
