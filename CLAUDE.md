@@ -24,16 +24,15 @@ Historical figures and media works knowledge graph. A Next.js web app backed by 
 - **Key relationships**: `PORTRAYED_IN`, `CREATED_BY`, `APPEARS_IN`, `PART_OF`, `OWNS`, `CONTAINS`
 
 ## Current State
-_Last updated: 2026-04-05_
+_Last updated: 2026-04-17_
 
 3,132 entity nodes (1,317 figures + 1,683 works + 101 characters + 10 agents + 10 series). Zero duplicate entities. All 1,008 illustrations on Cloudflare R2. Site publicly accessible at fictotum.com; staging at staging.fictotum.com.
 
 Auth.js v5 (Google + GitHub) with graceful degradation when OAuth env vars absent. Users stored as :User nodes. Collections fully implemented. Admin routes locked to `ADMIN_EMAILS` env var. Series pages redesigned as franchise retrospective destination pages. NFD diacritic normalization active (TypeScript + Python). Q-ID audit infrastructure with batch validation and auto-fix. Pre-flight Q-ID validation in `batch_import.py` with `--strict-qids` block option. Sentry error monitoring wired (client, server, edge).
 
 ### Recent Completions
-- Restored 485+ files accidentally deleted by BIG-88 commit (all source, scripts, docs, configs)
+- Landing page graph UI polish: legend matches actual Fisk palette + FIC-126 shapes, search section isolated from graph z-index, control buttons labeled with text + keyboard shortcut tooltips
 - Verified graph UI fixes (FIC-157) via Puppeteer — all 5 acceptance criteria pass
-- Marked FIC-157 and Content Density Push sprints as done
 
 ### Active Work
 - No active sprints or roadmap milestones — all Open & Social milestones complete
