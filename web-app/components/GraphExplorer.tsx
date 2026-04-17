@@ -2131,61 +2131,70 @@ export default function GraphExplorer({ canonicalId, nodes: initialNodes, links:
             </div>
           )}
 
-          {/* Ghost toolbar — floating bottom-right, persistent muted gray, no borders */}
+          {/* Labeled toolbar — floating bottom-right with text labels */}
           {isBloomMode && (
             <div
-              className="absolute bottom-5 right-5 z-10 flex gap-1"
+              className="absolute bottom-4 right-4 z-10 flex items-center gap-0.5 rounded-sm"
               role="toolbar"
               aria-label="Graph controls"
+              style={{ background: 'rgba(250,248,240,0.85)', backdropFilter: 'blur(4px)', padding: '4px 6px', border: '1px solid rgba(160,147,125,0.2)' }}
             >
               <button
                 onClick={navigateBack}
                 disabled={historyIndex === 0}
-                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
-                style={{ background: 'transparent', border: 'none', color: historyIndex === 0 ? '#ccc' : '#666' }}
-                title="Navigate back"
+                className="h-[28px] px-2 flex items-center gap-1.5 cursor-pointer rounded-sm transition-colors"
+                style={{ background: 'transparent', border: 'none', color: historyIndex === 0 ? '#ccc' : '#666', fontSize: '10px', fontFamily: 'var(--font-mono, monospace)', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                title="Navigate back (Left arrow or B)"
                 aria-label="Navigate back"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
+                <span>Back</span>
               </button>
               <button
                 onClick={navigateForward}
                 disabled={historyIndex >= navigationHistory.length - 1}
-                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
-                style={{ background: 'transparent', border: 'none', color: historyIndex >= navigationHistory.length - 1 ? '#ccc' : '#666' }}
-                title="Navigate forward"
+                className="h-[28px] px-2 flex items-center gap-1.5 cursor-pointer rounded-sm transition-colors"
+                style={{ background: 'transparent', border: 'none', color: historyIndex >= navigationHistory.length - 1 ? '#ccc' : '#666', fontSize: '10px', fontFamily: 'var(--font-mono, monospace)', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                title="Navigate forward (Right arrow or F)"
                 aria-label="Navigate forward"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
+                <span>Fwd</span>
               </button>
+              <span style={{ width: '1px', height: '16px', background: 'rgba(160,147,125,0.3)', margin: '0 2px' }} aria-hidden="true" />
               <button
                 onClick={resetView}
-                className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
-                style={{ background: 'transparent', border: 'none', color: '#666' }}
-                title="Reset view"
+                className="h-[28px] px-2 flex items-center gap-1.5 cursor-pointer rounded-sm transition-colors"
+                style={{ background: 'transparent', border: 'none', color: '#666', fontSize: '10px', fontFamily: 'var(--font-mono, monospace)', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                title="Reset to starting node (R)"
                 aria-label="Reset view"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
+                <span>Reset</span>
               </button>
               {!isEmbedded && (
-                <button
-                  onClick={() => setShowKeyboardHelp(prev => !prev)}
-                  className="w-[34px] h-[34px] flex items-center justify-center cursor-pointer"
-                  style={{ background: 'transparent', border: 'none', color: '#666' }}
-                  title="Keyboard shortcuts"
-                  aria-label="Toggle keyboard shortcuts help"
-                  aria-expanded={showKeyboardHelp}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
+                <>
+                  <span style={{ width: '1px', height: '16px', background: 'rgba(160,147,125,0.3)', margin: '0 2px' }} aria-hidden="true" />
+                  <button
+                    onClick={() => setShowKeyboardHelp(prev => !prev)}
+                    className="h-[28px] px-2 flex items-center gap-1.5 cursor-pointer rounded-sm transition-colors"
+                    style={{ background: 'transparent', border: 'none', color: '#666', fontSize: '10px', fontFamily: 'var(--font-mono, monospace)', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                    title="Keyboard shortcuts (? or H)"
+                    aria-label="Toggle keyboard shortcuts help"
+                    aria-expanded={showKeyboardHelp}
+                  >
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Keys</span>
+                  </button>
+                </>
               )}
             </div>
           )}

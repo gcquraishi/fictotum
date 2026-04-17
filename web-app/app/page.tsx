@@ -188,6 +188,7 @@ export default async function HomePage() {
           borderBottom: '1px solid var(--color-border)',
           position: 'relative',
           zIndex: 1,
+          isolation: 'isolate',
         }}
       >
         <HomeGraphExplorer figureIds={graphFigureIds} />
@@ -199,19 +200,21 @@ export default async function HomePage() {
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: '12px',
+            gap: '16px',
             padding: '16px 40px',
             borderTop: '1px solid var(--color-border)',
             background: 'var(--color-bg)',
+            position: 'relative',
+            zIndex: 2,
           }}
         >
-          {/* Legend */}
+          {/* Legend — matches actual graph rendering (Fisk palette + FIC-126 shapes) */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               flexWrap: 'wrap',
-              gap: '16px',
+              gap: '20px',
             }}
           >
             <span
@@ -226,44 +229,129 @@ export default async function HomePage() {
             >
               Legend
             </span>
-            {[
-              { label: 'Historical', color: '#4A4A4A', shape: 'circle' as const },
-              { label: 'Fictional', color: '#5D4E6D', shape: 'circle' as const },
-              { label: 'Legendary', color: '#8B6914', shape: 'circle' as const },
-              { label: 'Media Work', color: '#8B7355', shape: 'square' as const },
-            ].map((item) => (
-              <div
-                key={item.label}
+            {/* Figure — circle with era-gradient swatch */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  whiteSpace: 'nowrap',
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  background: 'conic-gradient(#B8860B, #556B2F, #6A5ACD, #4682B4, #2F4F4F, #B8860B)',
+                  display: 'inline-block',
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: 'var(--color-gray)',
                 }}
               >
-                <span
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: item.shape === 'circle' ? '50%' : '2px',
-                    background: item.color,
-                    display: 'inline-block',
-                    flexShrink: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: 'var(--color-gray)',
-                  }}
-                >
-                  {item.label}
-                </span>
-              </div>
-            ))}
+                Figure
+              </span>
+            </div>
+            {/* Film — rounded rectangle */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span
+                style={{
+                  width: '12px',
+                  height: '8px',
+                  borderRadius: '2px',
+                  background: '#A0937D',
+                  display: 'inline-block',
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: 'var(--color-gray)',
+                }}
+              >
+                Film
+              </span>
+            </div>
+            {/* Book — diamond (rotated square) */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span
+                style={{
+                  width: '9px',
+                  height: '9px',
+                  background: '#A0937D',
+                  display: 'inline-block',
+                  flexShrink: 0,
+                  transform: 'rotate(45deg)',
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: 'var(--color-gray)',
+                }}
+              >
+                Book
+              </span>
+            </div>
+            {/* TV — square */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span
+                style={{
+                  width: '9px',
+                  height: '9px',
+                  background: '#A0937D',
+                  display: 'inline-block',
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: 'var(--color-gray)',
+                }}
+              >
+                TV
+              </span>
+            </div>
           </div>
 
           {/* Explore CTA */}
@@ -291,7 +379,7 @@ export default async function HomePage() {
       </section>
 
       {/* ================================================================
-          SEARCH BAR
+          SEARCH BAR — zIndex higher than graph hero to prevent overlap
           ================================================================ */}
       <section
         style={{
@@ -301,6 +389,7 @@ export default async function HomePage() {
           borderBottom: '1px solid var(--color-border)',
           position: 'relative',
           zIndex: 10,
+          background: 'var(--color-bg)',
         }}
       >
         <p
